@@ -1,0 +1,25 @@
+{
+  "name": "hia-phat",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "เฮียผัด! — a 1-4 player Thai street-food co-op cooking game (Three.js)",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.14.0",
+    "n8ao": "^1.9.4",
+    "peerjs": "^1.5.4",
+    "postprocessing": "^6.36.4",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  }
+}
