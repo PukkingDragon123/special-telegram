@@ -14,7 +14,9 @@ Read `docs/GAME_BRIEF.md` (vision + non-negotiable style rules) and `references/
    Several agents share this working tree at the same time.
 3. **Shared dev server**: `http://127.0.0.1:5173/` is already running (Vite). If it's down, start your
    own on another port: `npx vite --port 51xx --host 127.0.0.1` and set `HP_URL`.
-4. **Test visually and often**: `node scripts/shot.mjs "<query>" <out.png> <wait> [--eval "<js>"] [--keys "KeyW:800"]`
+4. The machine is shared and CPU-bound (software WebGL): run only ONE headless browser at a time, keep quick checks
+   small (`HP_W=800 HP_H=450`, `&quality=low`, `&only=<the modules you need>`), save high-quality shots for final checks.
+   **Test visually and often**: `node scripts/shot.mjs "<query>" <out.png> <wait> [--eval "<js>"] [--keys "KeyW:800"]`
    then look at the PNG with the Read tool. Headless WebGL is software-rendered (slow): use
    `HP_W=800 HP_H=450` and `&quality=low` for quick checks, high quality for final look checks.
    `window.__hp = { game, engine, Input, Sound, Assets, Overlay }` is available for `--eval`.
@@ -165,6 +167,9 @@ until then a stub world with the same anchors is used. Static colliders: `game.p
 * `game.ui.say(anchor, text|tl, {style, duration, sub, voice, tailX})`, `think(...)`, `shout(...)` — organic noise
   bubbles with typewriter reveal + babble blips. `anchor` = Object3D | Vector3 | () => Vector3.
 * `game.ui.popup(pos, '+60 ฿', {style})` rising text; `game.ui.tag(anchor, title, sub)` small dark label.
+* **Quick choice (mad system / bargaining)**: `game.ui.choose({ options: [tl(..),tl(..),tl(..)], seconds: 3, onPick: (i) => … })`
+  — 3 reply bubbles in front of the LOCAL camera with a burning fuse; 1/2/3 or mouse-slide + click; `i = -1` on timeout.
+  Local-only UI: send the outcome to the host yourself (`game.intent`). Pair it with `game.ui.shout(npcAnchor, line)`.
 * Networked versions: `game.say(eid, ...)`, `game.popup(pos, text)`.
 * Canvas text with Thai shaping: `renderText([{text, style}], {pad, scale})`, styles `TS.*`, fonts `F.*`.
 * Cloud material: `makeCloudMaterial({style:'speech'|'thought'|'tag'|'shout', ...})`.
