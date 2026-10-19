@@ -114,7 +114,7 @@ export class LocalPlayer {
     } else { this.lookDX = 0; this.lookDY = 0; }
 
     // ---- slot selection (1-5 / wheel)
-    if (playing) {
+    if (playing && !this.game.ui.choosing) {
       for (let i = 0; i < 5; i++) if (Input.wasPressed('Digit' + (i + 1))) this.select(i);
       if (Input.wheel) this.select(((me.sel ?? 0) + Input.wheel + 5) % 5);
     }

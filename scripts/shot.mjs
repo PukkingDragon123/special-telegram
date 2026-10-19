@@ -53,7 +53,7 @@ if (ev) {
   catch (e) { console.log('EVAL ERROR', e.message); }
   await page.waitForTimeout(Number(opt('--after') || 1500));
 }
-await page.screenshot({ path: out });
+await page.screenshot({ path: out, timeout: 240000 });
 const fps = await page.evaluate(() => window.__hp?.engine?.fps?.toFixed(1)).catch(() => null);
 console.log(`shot → ${out} (${((Date.now() - start) / 1000).toFixed(1)}s, fps≈${fps})`);
 for (const [k, n] of seen) console.log(`${n}× ${k}`);

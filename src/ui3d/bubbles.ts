@@ -3,6 +3,7 @@ import { makeCloudMaterial, CLOUD_STYLE } from './cloud';
 import { renderText, canvasTexture, TS, TextStyle } from './text';
 import { Sound } from '../core/audio';
 import { Ease, TL, clamp } from '../core/util';
+import { ChoicePrompt, ChoiceOpts } from './choice';
 
 /**
  * Diegetic 3D UI: speech bubbles, thought puffs, shouts, floating pop-up text and small tags
@@ -37,7 +38,7 @@ export interface BubbleHandle { close(): void; readonly alive: boolean; mesh: TH
 
 export interface TagHandle { set(text: string, sub?: string): void; remove(): void; mesh: THREE.Mesh; visible: boolean }
 
-const PX = 0.00105; // metres per canvas px at scale 1
+const PX = 0.0015; // metres per canvas px at scale 1
 
 interface Live {
   mesh: THREE.Mesh;
@@ -204,12 +205,25 @@ export class UI3D {
     L.tex?.dispose();
   }
 
-  closeAll() { for (const L of [...this.live]) if (L.kind !== 'tag') this.dispose(L); }
+  closeAll() { for (const L of [...this.live]) if (L.kind !== 'tag') this.dispose(L); this.choice?.cancel(); this.choice = null; }
+
+  // ------------------------------------------------------------------ quick choice (mad system / bargaining)
+  private choice: ChoicePrompt | null = null;
+  /** true while a quick-choice is on screen (the player controller ignores slot keys). */
+  get choosing() { return !!this.choice; }
+  /** Show 2–3 reply options in front of the local camera with a burning fuse (default 3 s). */
+  choose(o: ChoiceOpts): ChoicePrompt | null {
+    this.choice?.cancel();
+    if (!this.camera) { o.onPick(-1); return null; }
+    this.choice = new ChoicePrompt(this.camera, o);
+    return this.choice;
+  }
 
   update(dt: number) {
     this.time += dt;
     const cam = this.camera;
     if (!cam) return;
+    if (this.choice && !this.choice.update(dt)) this.choice = null;
     const camPos = cam.getWorldPosition(new THREE.Vector3());
     for (const L of [...this.live]) {
       L.age += dt;
@@ -229,7 +243,9 @@ export class UI3D {
       L.mesh.position.copy(this.tmp).y += L.offset;
       L.mesh.quaternion.copy(cam.quaternion);
       const dist = L.mesh.position.distanceTo(camPos);
-      const distK = L.kind === 'tag' ? clamp(dist / 1.6, 0.6, 2.2) : clamp(dist / 4.5, 0.75, 2.6);
+      const distK = L.kind === 'tag' ? clamp(dist / 2.2, 0.45, 2.0) : clamp(dist / 2.0, 0.8, 6);
+      // far bubbles fade out (keeps the screen clean)
+      if (L.kind === 'bubble') L.mat.uniforms.uOpacity.value = L.closing >= 0 ? L.mat.uniforms.uOpacity.value : clamp(1 - (dist - 22) / 8, 0, 1);
       let s = 1;
       if (L.age < 0.35) s = Ease.outBack(Math.min(1, L.age / 0.3), 2.2);
       const u = L.mat.uniforms;
