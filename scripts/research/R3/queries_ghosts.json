@@ -1,0 +1,17 @@
+[
+ {"q": "กระสือ ผีไทย", "prefix": "krasue", "n": 5},
+ {"q": "Krasue Thai ghost floating head entrails", "prefix": "krasue_en", "n": 3},
+ {"q": "ผีปอบ ผีไทย", "prefix": "phipop", "n": 4},
+ {"q": "นางตานี ผีต้นกล้วย", "prefix": "nangtani", "n": 5},
+ {"q": "แม่นาคพระโขนง ผี มือยาว", "prefix": "maenak", "n": 5},
+ {"q": "เปรต ผีไทย ตัวสูง ปากเท่ารูเข็ม", "prefix": "pret", "n": 5},
+ {"q": "ภาพจิตรกรรม เปรต วัด นรก", "prefix": "pret_mural", "n": 3},
+ {"q": "ผีหัวขาด ขี่มอเตอร์ไซค์", "prefix": "headless_rider", "n": 4},
+ {"q": "ผีกระหัง กระด้ง สาก", "prefix": "krahang", "n": 4},
+ {"q": "กุมารทอง รูปปั้น", "prefix": "kumanthong", "n": 4},
+ {"q": "ผีไทย หนังผี โปสเตอร์ ย้อนยุค", "prefix": "thai_ghost_poster", "n": 4},
+ {"q": "ผีตายโหง ผีไทย ชุดขาว ผมยาว", "prefix": "white_lady", "n": 3},
+ {"q": "ต้นกล้วย กลางคืน ไฟฉาย", "prefix": "banana_night", "n": 3},
+ {"q": "ศาลพระภูมิ กลางคืน พวงมาลัย", "prefix": "spirithouse_night", "n": 3},
+ {"q": "Thai temple painting hell scenes Wat Phai Rong Wua pret", "prefix": "hell_garden", "n": 3}
+]

@@ -1,0 +1,22 @@
+{
+ "rice": {"commons": ["steamed white rice close-up", "cooked jasmine rice", "cooked white rice bowl", "incategory:\"Cooked rice\""], "flickr": ["steamed rice closeup", "cooked rice texture", "jasmine rice cooked"], "n": 10},
+ "pork_raw": {"commons": ["minced pork", "ground pork raw", "incategory:\"Minced meat\"", "raw ground meat"], "flickr": ["minced pork", "ground pork raw"], "n": 8},
+ "kaphrao": {"commons": ["phat kaphrao", "pad kra pao", "incategory:\"Phat kaphrao\"", "kaphrao mu sap", "Phat kaphrao mu sap"], "flickr": ["pad kra pao", "pad krapow", "kaprao moo"], "n": 14},
+ "basil": {"commons": ["Ocimum tenuiflorum leaves", "holy basil leaves", "Ocimum tenuiflorum", "basil leaves white background"], "flickr": ["holy basil leaves", "thai holy basil", "kaprao leaves"], "n": 12},
+ "chili": {"commons": ["bird's eye chili", "Capsicum frutescens", "thai chili peppers white background", "red chili pepper isolated", "green chili isolated"], "flickr": ["bird's eye chili", "thai chilies", "prik kee noo"], "n": 12},
+ "garlic": {"commons": ["garlic cloves white background", "garlic cloves", "crushed garlic", "peeled garlic cloves"], "flickr": ["garlic cloves", "crushed garlic", "thai garlic"], "n": 10},
+ "egg_fried": {"commons": ["fried egg", "sunny side up egg", "kai dao", "fried egg isolated", "fried egg in pan"], "flickr": ["fried egg top view", "sunny side up egg", "kai dao", "crispy fried egg"], "n": 16},
+ "omelette": {"commons": ["khai chiao", "thai omelette", "kai jeow", "Thai omelet"], "flickr": ["kai jeow", "thai omelette", "khai jiao"], "n": 10},
+ "longbean": {"commons": ["Vigna unguiculata sesquipedalis", "yardlong bean", "long beans market"], "flickr": ["long beans", "yardlong beans"], "n": 8},
+ "cucumber": {"commons": ["cucumber slices", "sliced cucumber white background", "cucumber slice"], "flickr": ["cucumber slices"], "n": 8},
+ "onion": {"commons": ["sliced onion", "onion slices", "onion rings raw"], "flickr": ["sliced onion"], "n": 8},
+ "friedrice": {"commons": ["khao phat", "thai fried rice", "fried rice close-up", "khao phat mu"], "flickr": ["thai fried rice", "khao pad"], "n": 10},
+ "noodles": {"commons": ["pad see ew", "phat si-io", "rat na noodles", "wide rice noodles", "kuaitiao rat na"], "flickr": ["pad see ew", "rad na", "wide rice noodles"], "n": 12},
+ "tomyum": {"commons": ["tom yum", "tom yam kung", "tom yum soup", "tom yam nam khon"], "flickr": ["tom yum", "tom yum goong"], "n": 12},
+ "moogratiam": {"commons": ["mu thot krathiam", "garlic pork thai", "fried garlic"], "flickr": ["garlic pork rice thai", "fried garlic"], "n": 8},
+ "morningglory": {"commons": ["phat phak bung", "stir fried morning glory", "Ipomoea aquatica"], "flickr": ["morning glory stir fry", "pak boong fai daeng"], "n": 8},
+ "woodend": {"commons": ["tree trunk cross section", "end grain wood", "wooden chopping board", "tamarind wood"], "flickr": ["thai chopping board", "tree rings cross section", "wooden chopping block"], "n": 12},
+ "wok": {"commons": ["wok", "carbon steel wok", "seasoned wok", "wok hei"], "flickr": ["seasoned wok", "carbon steel wok", "wok patina"], "n": 12},
+ "burnt": {"commons": ["burnt food", "charred food", "burnt rice", "scorched pan"], "flickr": ["burnt food texture", "charred"], "n": 8},
+ "sack": {"commons": ["woven polypropylene bag", "rice sack", "polypropylene sack"], "flickr": ["rice sack", "woven polypropylene"], "n": 8}
+}

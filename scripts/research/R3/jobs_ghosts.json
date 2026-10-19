@@ -1,0 +1,22 @@
+[
+ {"src": "ddg", "q": "Krasue Thai ghost floating head entrails film", "prefix": "krasue", "n": 6},
+ {"src": "ddg", "q": "กระสือ ผี ไส้ ห้อย", "prefix": "krasue_th", "n": 4},
+ {"src": "ddg", "q": "Phi Pop Thai ghost film", "prefix": "phipop", "n": 4},
+ {"src": "ddg", "q": "ผีปอบ หนังไทย", "prefix": "phipop_th", "n": 3},
+ {"src": "ddg", "q": "Nang Tani Thai banana tree ghost woman green dress", "prefix": "nangtani", "n": 5},
+ {"src": "ddg", "q": "นางตานี ต้นกล้วย", "prefix": "nangtani_th", "n": 3},
+ {"src": "ddg", "q": "Mae Nak Phra Khanong ghost long arm film", "prefix": "maenak", "n": 5},
+ {"src": "ddg", "q": "Mae Nak shrine Wat Mahabut Bangkok", "prefix": "maenak_shrine", "n": 3},
+ {"src": "ddg", "q": "Pret Thai hungry ghost tall thin statue temple", "prefix": "pret", "n": 5},
+ {"src": "ddg", "q": "เปรต รูปปั้น วัด", "prefix": "pret_th", "n": 3},
+ {"src": "ddg", "q": "Wat Phai Rong Wua hell garden statues", "prefix": "hell_garden", "n": 4},
+ {"src": "ddg", "q": "Thai headless ghost motorcycle rider", "prefix": "headless_rider", "n": 3},
+ {"src": "ddg", "q": "ผีหัวขาด ขี่มอเตอร์ไซค์", "prefix": "headless_rider_th", "n": 3},
+ {"src": "ddg", "q": "Phi Krahang Thai flying ghost rice winnower", "prefix": "krahang", "n": 4},
+ {"src": "ddg", "q": "Kuman Thong statue gold child amulet Thailand", "prefix": "kumanthong", "n": 4},
+ {"src": "ddg", "q": "old Thai horror movie poster ghost", "prefix": "thai_horror_poster", "n": 5},
+ {"src": "ddg", "q": "Thai spirit house at night offerings garlands", "prefix": "spirithouse_night", "n": 3},
+ {"src": "ddg", "q": "banana trees at night Thailand rural", "prefix": "banana_night", "n": 3},
+ {"src": "ddg", "q": "burnt rusty motorcycle wreck", "prefix": "burnt_motorbike", "n": 3},
+ {"src": "ddg", "q": "pork intestines market Thailand raw", "prefix": "intestines_market", "n": 3}
+]

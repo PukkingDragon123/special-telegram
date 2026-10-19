@@ -1,0 +1,411 @@
+{
+ "page": {
+  "width": 1448,
+  "height": 2048,
+  "template": "front_template_blank.jpg",
+  "examples": {
+   "day1": "front_example_day1.jpg",
+   "good": "front_example_good_day.jpg",
+   "disaster": "front_example_disaster_day.jpg"
+  },
+  "paper_tile": "newsprint_tile_2048.jpg",
+  "sheet_folded": "newsprint_sheet_folded_1448x2048.jpg",
+  "sheet_normal": "newsprint_sheet_folded_normal_1448x2048.jpg",
+  "masthead": "masthead_thairua.png"
+ },
+ "coordinates": "pixels in the 1448x2048 page, origin top-left; uv = x/1448, 1-(y/2048) for three.js",
+ "render_hints": {
+  "blend": "draw dynamic text/photos with ctx.globalCompositeOperation='multiply' onto the template so paper grain + folds show through",
+  "ink_softening": "draw text at 2x then downscale, or add ctx.filter='blur(0.4px)'; optional 0.5-1px offset duplicate in magenta/yellow for misregistration on colour text",
+  "white_on_bar": "regions with on/bg: draw text in paper colour #E6E1D3 (not pure white) using 'source-over'",
+  "condense": "Thai tabloid headlines are condensed: ctx.save(); ctx.scale(sx,1) with sx=min(maxSX, regionW/textW), never below 0.62",
+  "thai_wrap": "use Intl.Segmenter('th',{granularity:'word'}) to find line breaks; justify by widening existing spaces only",
+  "fonts": "LOOPED Thai only. @font-face{font-family:'Noto Sans Thai Looped';src:url(assets/fonts/NotoSansThaiLooped.woff2);font-weight:100 900;font-stretch:62% 100%} — headlines weight 900 + font-stretch 68-75%; decks 800/75%; body 400; captions Sarabun-SemiBold; masthead Taviraj-Black",
+  "photos": "photos/*_color.jpg are pre-halftoned on white: draw with multiply into photo_* regions (object-fit: cover)"
+ },
+ "ink_colors_on_paper": {
+  "K": "#322F2C",
+  "red": "#BF2210",
+  "blue": "#191759",
+  "navy": "#191657",
+  "yellow": "#DFC821",
+  "orange": "#D5941C",
+  "green": "#42871D",
+  "grey": "#69655F"
+ },
+ "regions": {
+  "teasers": {
+   "x": 206,
+   "y": 34,
+   "w": 1202,
+   "h": 116,
+   "dynamic": false,
+   "note": "static teaser strip (4 cells)"
+  },
+  "masthead": {
+   "x": 40,
+   "y": 160,
+   "w": 780,
+   "h": 232,
+   "dynamic": false
+  },
+  "day_number": {
+   "x": 842,
+   "y": 202,
+   "w": 158,
+   "h": 92,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 96,
+   "color": "#1F1C1C",
+   "align": "center",
+   "example": "1",
+   "note": "day counter (big digits)"
+  },
+  "dateline": {
+   "x": 40,
+   "y": 408,
+   "w": 1368,
+   "h": 34,
+   "dynamic": true,
+   "font": "Sarabun-SemiBold",
+   "size": 22,
+   "color": "#1F1C1C",
+   "align": "justify-3",
+   "example": "ปีที่ 1 ฉบับที่ 1 | วันจันทร์ที่ 1 มิถุนายน พ.ศ. 2569 | ราคา 10 บาท",
+   "note": "3 parts: left issue, centre Thai date with พ.ศ., right price"
+  },
+  "kicker": {
+   "x": 40,
+   "y": 456,
+   "w": 480,
+   "h": 44,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 34,
+   "color": "#FFFFFF",
+   "bg": "#D5271A",
+   "note": "small red tag above the headline (white text on red bar); optional"
+  },
+  "headline_1": {
+   "x": 40,
+   "y": 506,
+   "w": 1368,
+   "h": 150,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 170,
+   "color": "#1F1C1C",
+   "condense": "fit width, scaleX 0.62..1.0",
+   "align": "left"
+  },
+  "headline_2": {
+   "x": 40,
+   "y": 662,
+   "w": 1368,
+   "h": 150,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 170,
+   "color": "#D5271A",
+   "condense": "fit width, scaleX 0.62..1.0",
+   "align": "left"
+  },
+  "photo_main": {
+   "x": 40,
+   "y": 830,
+   "w": 890,
+   "h": 522,
+   "dynamic": true,
+   "kind": "photo",
+   "note": "paste a halftoned photo (photos/*.jpg) with multiply blend; 2px black frame is printed"
+  },
+  "caption_main": {
+   "x": 62,
+   "y": 1356,
+   "w": 868,
+   "h": 68,
+   "dynamic": true,
+   "font": "Sarabun-SemiBold",
+   "size": 23,
+   "color": "#1F1C1C",
+   "lines": 2,
+   "note": "photo caption (red square bullet is printed)"
+  },
+  "deck": {
+   "x": 948,
+   "y": 830,
+   "w": 460,
+   "h": 210,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@800w85",
+   "size": 44,
+   "colors": [
+    "#D5271A",
+    "#1C2A7A",
+    "#1F1C1C"
+   ],
+   "lines": 3,
+   "condense": "scaleX 0.8",
+   "note": "3 sub-headline lines, alternating red / blue / black"
+  },
+  "body_main": {
+   "x": 948,
+   "y": 1054,
+   "w": 460,
+   "h": 142,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped",
+   "size": 20,
+   "line_height": 27,
+   "color": "#1F1C1C",
+   "justify": true,
+   "note": "main story body; or use pre-rendered parts/body_*.png"
+  },
+  "stat_money": {
+   "x": 1098,
+   "y": 1264,
+   "w": 240,
+   "h": 40,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 34,
+   "color": "#1F1C1C",
+   "align": "right",
+   "bg": "#F1ECDF",
+   "note": "erase the dotted leader under the value with bg colour before drawing"
+  },
+  "stat_customers": {
+   "x": 1098,
+   "y": 1306,
+   "w": 240,
+   "h": 40,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 34,
+   "color": "#1F1C1C",
+   "align": "right",
+   "bg": "#F1ECDF",
+   "note": "erase the dotted leader under the value with bg colour before drawing"
+  },
+  "stat_dish": {
+   "x": 1098,
+   "y": 1348,
+   "w": 240,
+   "h": 40,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 34,
+   "color": "#1F1C1C",
+   "align": "right",
+   "bg": "#F1ECDF",
+   "note": "erase the dotted leader under the value with bg colour before drawing"
+  },
+  "stat_rating": {
+   "x": 1098,
+   "y": 1390,
+   "w": 240,
+   "h": 40,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 34,
+   "color": "#1F1C1C",
+   "align": "right",
+   "bg": "#F1ECDF",
+   "note": "draw number + stars (★)"
+  },
+  "headline_bar": {
+   "x": 252,
+   "y": 1454,
+   "w": 1140,
+   "h": 74,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 64,
+   "color": "#FFFFFF",
+   "on": "black bar (paper shows through white text)",
+   "condense": "fit width, scaleX 0.65..0.92"
+  },
+  "photo_second": {
+   "x": 40,
+   "y": 1552,
+   "w": 430,
+   "h": 218,
+   "dynamic": true,
+   "kind": "photo"
+  },
+  "caption_second": {
+   "x": 40,
+   "y": 1774,
+   "w": 430,
+   "h": 32,
+   "dynamic": true,
+   "font": "Sarabun-SemiBold",
+   "size": 19,
+   "color": "#1F1C1C",
+   "lines": 1
+  },
+  "text_second": {
+   "x": 40,
+   "y": 1810,
+   "w": 430,
+   "h": 80,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped",
+   "size": 18,
+   "line_height": 24,
+   "color": "#1F1C1C",
+   "lines": 3
+  },
+  "lotto_numbers": {
+   "x": 966,
+   "y": 1602,
+   "w": 203,
+   "h": 68,
+   "dynamic": true,
+   "font": "NotoSansThaiLooped@900w75",
+   "size": 64,
+   "color": "#1F1C1C",
+   "align": "center",
+   "example": "58 · 85"
+  }
+ },
+ "parts": [
+  "ad_herbal.png",
+  "ad_lottery.png",
+  "ad_room_for_rent.png",
+  "ad_takrut.png",
+  "bar_black.png",
+  "bar_blue.png",
+  "bar_red.png",
+  "bar_yellow_tint.png",
+  "barcode.png",
+  "body_bad.png",
+  "body_day1.png",
+  "body_good.png",
+  "body_neutral.png",
+  "caption_bar.png",
+  "column_rules.png",
+  "photo_frame_900x600.png",
+  "price_burst.png",
+  "ribbon_breaking.png",
+  "ribbon_exclusive.png",
+  "ribbon_highlight.png",
+  "ribbon_special.png",
+  "ribbon_thrill.png",
+  "stars_rating.png",
+  "stats_box.png"
+ ],
+ "photos": {
+  "wok_fire": {
+   "color": "photos/wok_fire_color.jpg",
+   "bw": "photos/wok_fire_bw.jpg"
+  },
+  "kaprao_egg": {
+   "color": "photos/kaprao_egg_color.jpg",
+   "bw": "photos/kaprao_egg_bw.jpg"
+  },
+  "kaprao_egg_closeup": {
+   "color": "photos/kaprao_egg_closeup_color.jpg",
+   "bw": "photos/kaprao_egg_closeup_bw.jpg"
+  },
+  "soi_dog": {
+   "color": "photos/soi_dog_color.jpg",
+   "bw": "photos/soi_dog_bw.jpg"
+  },
+  "soi_dog_sitting": {
+   "color": "photos/soi_dog_sitting_color.jpg",
+   "bw": "photos/soi_dog_sitting_bw.jpg"
+  },
+  "crowd_foodcourt": {
+   "color": "photos/crowd_foodcourt_color.jpg",
+   "bw": "photos/crowd_foodcourt_bw.jpg"
+  },
+  "food_cart": {
+   "color": "photos/food_cart_color.jpg",
+   "bw": "photos/food_cart_bw.jpg"
+  },
+  "flood_shop": {
+   "color": "photos/flood_shop_color.jpg",
+   "bw": "photos/flood_shop_bw.jpg"
+  },
+  "flood_night": {
+   "color": "photos/flood_night_color.jpg",
+   "bw": "photos/flood_night_bw.jpg"
+  },
+  "traffic_night": {
+   "color": "photos/traffic_night_color.jpg",
+   "bw": "photos/traffic_night_bw.jpg"
+  },
+  "hippo_baby": {
+   "color": "photos/hippo_baby_color.jpg",
+   "bw": "photos/hippo_baby_bw.jpg"
+  },
+  "casino_tables": {
+   "color": "photos/casino_tables_color.jpg",
+   "bw": "photos/casino_tables_bw.jpg"
+  },
+  "wok_vendor_flames": {
+   "color": "photos/wok_vendor_flames_color.jpg",
+   "bw": "photos/wok_vendor_flames_bw.jpg"
+  },
+  "market_garlic": {
+   "color": "photos/market_garlic_color.jpg",
+   "bw": "photos/market_garlic_bw.jpg"
+  }
+ },
+ "photo_suggestions": {
+  "day1": [
+   "casino_tables",
+   "soi_dog",
+   "food_cart"
+  ],
+  "good": [
+   "crowd_foodcourt",
+   "kaprao_egg",
+   "wok_fire"
+  ],
+  "disaster": [
+   "wok_fire",
+   "flood_shop",
+   "flood_night",
+   "traffic_night"
+  ],
+  "event": [
+   "soi_dog_sitting",
+   "hippo_baby",
+   "market_garlic",
+   "wok_vendor_flames"
+  ]
+ },
+ "headline_templates": "see references/culture/lines.json -> newspaper_headlines (placeholders {money} {customers} {dish} {rating} {day})",
+ "date_format": {
+  "pattern": "วัน{weekday}ที่ {d} {month} พ.ศ. {year_be}",
+  "year_be": "gregorian + 543",
+  "weekdays": [
+   "จันทร์",
+   "อังคาร",
+   "พุธ",
+   "พฤหัสบดี",
+   "ศุกร์",
+   "เสาร์",
+   "อาทิตย์"
+  ],
+  "months": [
+   "มกราคม",
+   "กุมภาพันธ์",
+   "มีนาคม",
+   "เมษายน",
+   "พฤษภาคม",
+   "มิถุนายน",
+   "กรกฎาคม",
+   "สิงหาคม",
+   "กันยายน",
+   "ตุลาคม",
+   "พฤศจิกายน",
+   "ธันวาคม"
+  ],
+  "left": "ปีที่ 1 ฉบับที่ {day}",
+  "right": "ราคา 10 บาท  ·  ไทยรั่วออนไลน์"
+ }
+}

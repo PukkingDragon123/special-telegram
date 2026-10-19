@@ -1,0 +1,48 @@
+shophouse | ตึกแถว เก่า กรุงเทพ
+shophouse | old shophouse bangkok roller shutter street
+shophouse | ตึกแถว ประตูม้วน
+soi | ซอย กรุงเทพ ตึกแถว
+soi | bangkok soi street everyday life
+wires | สายไฟ เสาไฟฟ้า รก กรุงเทพ
+wires | bangkok tangled wires utility pole
+curb | ขอบทาง ขาวแดง ฟุตบาท
+curb | ขอบฟุตบาท เหลืองดำ
+sidewalk | ฟุตบาท พัง กรุงเทพ
+sidewalk | ทางเท้า กระเบื้อง กรุงเทพ
+road | ถนน หลุมบ่อ น้ำขัง
+food | street food stall bangkok sidewalk umbrella
+food | ร้านอาหารตามสั่ง ริมทาง
+market | ตลาดสด หน้าตลาด
+store | ร้านสะดวกซื้อ หน้าร้าน กลางคืน
+store | ร้านโชห่วย
+winmotosai | วินมอเตอร์ไซค์รับจ้าง เสื้อวิน
+spirit | ศาลพระภูมิ หน้าบ้าน
+temple | กำแพงวัด ถนน
+canal | บ้านริมคลอง ไม้
+rural | ถนนชนบท ทุ่งนา ต้นมะพร้าว
+rural | บ้านไม้ใต้ถุนสูง ต่างจังหวัด
+rural | ต้นกล้วย ข้างบ้าน
+provincial | ตลาด อำเภอ ต่างจังหวัด ตึกแถว
+night | bangkok soi night fluorescent street food
+night | ถนน กลางคืน ไฟโซเดียม
+rain | ฝนตก ถนน กรุงเทพ น้ำท่วม ซอย
+tuktuk | tuk tuk bangkok street
+songthaew | รถสองแถว
+taxi | แท็กซี่ สีชมพู เขียวเหลือง
+bus | รถเมล์ ครีมแดง ขสมก
+pickup | กระบะ บรรทุก ของ ต่างจังหวัด
+scooter | ฮอนด้า เวฟ ขี่ ซอย
+delivery | ไรเดอร์ ส่งอาหาร มอเตอร์ไซค์
+plate | ป้ายทะเบียนรถ ขาว ตัวอักษรดำ
+signs | ป้ายชื่อซอย กทม สีน้ำเงิน
+signs | ป้ายห้ามจอด
+signs | ป้ายร้าน ตึกแถว เก่า
+signs | ป้ายไวนิล ร้านอาหาร
+grille | เหล็กดัด หน้าต่าง ตึกแถว
+gate | ประตูเหล็กยืด ร้าน
+ac | คอมแอร์ ผนังตึก
+balcony | ระเบียง ตึกแถว ต้นไม้ ตากผ้า
+corrugated | สังกะสี สนิม
+tarp | ผ้าใบสีฟ้า แผงลอย
+furniture | ร้านเก้าอี้พลาสติก
+hardware | ร้านวัสดุก่อสร้าง หน้าร้าน

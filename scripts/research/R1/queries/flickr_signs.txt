@@ -1,0 +1,50 @@
+s_gold | gold shop bangkok
+s_gold | ร้านทอง
+s_pharm | thai pharmacy sign
+s_pharm | ร้านขายยา
+s_barber | thai barber shop
+s_barber | ร้านตัดผม
+s_massage | thai massage sign street
+s_noodle | noodle shop bangkok sign
+s_noodle | ก๋วยเตี๋ยว ร้าน
+s_chicken | khao man gai
+s_chicken | ข้าวมันไก่
+s_grocery | thai grocery shop shophouse
+s_grocery | โชห่วย
+s_moto | motorcycle repair shop thailand
+s_laundry | thai laundry shop
+s_rent | room for rent thailand
+s_rent | ห้องเช่า
+s_lottery | thai lottery seller
+s_clinic | clinic thailand street
+s_coffee | thai old coffee shop
+s_market | thai market sign entrance
+s_market | ตลาดสด
+s_711 | 7-eleven thailand
+s_makro | makro thailand
+s_hardware | hardware shop thailand
+s_furniture | plastic chairs shop thailand
+s_phone | mobile phone shop thailand
+s_soi | soi sign bangkok
+s_soi | ป้ายซอย
+s_noparking | no parking thailand
+s_noparking | ห้ามจอด
+s_traffic | thai traffic sign
+s_traffic | thailand road sign
+s_winmoto | motorcycle taxi bangkok sign
+s_winmoto | วินมอเตอร์ไซค์
+s_nolitter | ห้ามทิ้งขยะ
+s_dog | beware of dog thailand
+s_plate | thai license plate
+s_plate | ป้ายทะเบียน
+s_vinyl | thai vinyl banner
+s_handpaint | thai hand painted sign
+s_tamsang | อาหารตามสั่ง
+s_tamsang | thai street food sign menu
+s_signs | bangkok shop signs
+s_signs | thai shop sign
+s_signs | thai signboard
+s_signs | ป้ายร้าน
+s_flyer | thailand flyers pole
+s_flyer | thai poster wall street
+s_manhole | manhole cover thailand

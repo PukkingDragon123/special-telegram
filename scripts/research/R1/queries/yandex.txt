@@ -1,0 +1,84 @@
+sign_chicken | khao man gai shop sign bangkok
+sign_chicken2 | chicken rice restaurant thailand shopfront sign
+sign_noodle | noodle shop sign thailand thai script
+sign_noodle2 | thai noodle soup stall signboard
+sign_gold | gold shop yaowarat sign
+sign_gold2 | thai gold shop signboard red
+sign_grocery | thai grocery shop front sign
+sign_grocery2 | thai mom and pop shop shophouse
+sign_pharmacy | thai pharmacy shop sign
+sign_motorepair | motorcycle repair shop thailand sign
+sign_barber | thai barber shop sign
+sign_massage | thai massage shop sign street
+sign_furniture | plastic furniture shop thailand
+sign_hardware | hardware store thailand shop front
+sign_phone | mobile phone shop thailand sign
+sign_game | internet cafe thailand sign
+sign_laundry | laundry shop thailand sign
+sign_rent | room for rent sign thailand
+sign_apartment | apartment sign bangkok thai
+sign_lottery | lottery ticket seller thailand stall
+sign_clinic | clinic sign thailand shophouse
+sign_coffee | thai coffee shop old style sign
+sign_market | thai fresh market entrance sign
+sign_711 | 7-eleven thailand storefront
+sign_711b | 7-eleven bangkok shop front night
+sign_makro | makro thailand store front
+sign_tamsang | aharn tam sang sign thailand
+sign_tamsang2 | made to order thai food stall sign
+sign_vinyl | thai vinyl banner restaurant food photo
+sign_handwritten | thai handwritten sign cardboard street
+sign_lightbox | thai light box sign restaurant
+sign_soi | bangkok soi sign blue
+sign_soi2 | bangkok street name sign
+sign_noparking | thailand no parking sign
+sign_noparking2 | bangkok no parking sign thai
+sign_bump | thailand speed bump sign
+sign_uturn | thailand u-turn sign road
+sign_winmoto | motorcycle taxi stand bangkok
+sign_winmoto2 | bangkok motorbike taxi price board
+sign_nolitter | thailand no littering sign
+sign_dog | thailand beware of dog sign
+sign_oldboard | old rusty shop sign thailand
+sign_tin | thai tin sign old shop
+plate | thai license plate close up
+plate2 | thailand car registration plate bangkok
+plate3 | thailand motorcycle license plate
+shutter | roller shutter shophouse thailand
+shutter2 | rusty roller shutter door closed
+shutter3 | roller shutter graffiti
+gate | folding gate shop thailand
+gate2 | collapsible gate shop front
+grille | window grill thailand house
+grille2 | burglar bars window asia
+ac | air conditioner outdoor unit front view
+ac2 | aircon compressor on wall thailand
+woodwin | old wooden louvre window thailand
+wooddoor | wooden folding door shophouse thailand
+balcony | balcony railing shophouse thailand
+tiles | mosaic tiles shop front thailand
+streaks | black mold streaks concrete wall
+corrugated | rusty corrugated iron sheet texture
+tarp | blue tarpaulin texture
+paver | thai sidewalk tiles
+paver2 | interlocking paver top view
+paver3 | bangkok pavement tiles pattern
+curb | red white curb thailand
+curb2 | yellow black curb road
+zebra | zebra crossing top view
+manhole | manhole cover bangkok
+manhole2 | manhole cover thailand
+grate | drain grate street
+pothole | pothole top view asphalt
+puddle | puddle on asphalt top view
+oil | oil stain on concrete floor
+litter | litter on street ground thailand
+butts | cigarette butts on ground
+roadtext | thai road marking text
+flyer | flyers on utility pole thailand
+flyer2 | thai poster on electric pole
+flyer3 | loan shark stickers thailand pole
+sticker | stickers on pole thailand
+wires | tangled wires sky bangkok
+moss | moss on concrete wall texture
+cable | black electrical cable texture

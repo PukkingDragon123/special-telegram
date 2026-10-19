@@ -1,0 +1,141 @@
+{
+ "la_sugar": {
+  "commons": [
+   "sugarcane stalks"
+  ],
+  "flickr": [
+   "sugar cane stalks"
+  ],
+  "n": 4
+ },
+ "la_pepper": {
+  "commons": [
+   "white peppercorns",
+   "peppercorns close-up"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_chiliflake": {
+  "commons": [
+   "dried red chili peppers",
+   "chili flakes"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_palm": {
+  "commons": [
+   "oil palm fruit bunch",
+   "Elaeis guineensis fruit"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_ricefield": {
+  "commons": [
+   "rice paddy thailand",
+   "rice plant grain ear"
+  ],
+  "flickr": [],
+  "n": 5
+ },
+ "la_noodle": {
+  "commons": [
+   "tom yum instant noodles",
+   "instant noodles bowl"
+  ],
+  "flickr": [
+   "mama noodles tom yum"
+  ],
+  "n": 6
+ },
+ "la_orange": {
+  "commons": [
+   "orange fruit white background",
+   "orange slice"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_strawberry": {
+  "commons": [
+   "strawberry white background"
+  ],
+  "flickr": [],
+  "n": 3
+ },
+ "la_water": {
+  "commons": [
+   "water splash",
+   "clear water drops"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_barley": {
+  "commons": [
+   "barley ears",
+   "hops cones"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_zebra": {
+  "commons": [
+   "zebra side view",
+   "plains zebra profile"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_rhino": {
+  "commons": [
+   "rhinoceros side view",
+   "white rhinoceros profile"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_elephant": {
+  "commons": [
+   "elephant lying down sleeping",
+   "asian elephant side view"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_polarbear": {
+  "commons": [
+   "polar bear standing",
+   "polar bear profile"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_chicken": {
+  "commons": [
+   "hen side view",
+   "chicken hen white background"
+  ],
+  "flickr": [],
+  "n": 4
+ },
+ "la_cola": {
+  "commons": [
+   "cola ice glass",
+   "soda bubbles"
+  ],
+  "flickr": [],
+  "n": 3
+ },
+ "la_tea": {
+  "commons": [
+   "thai iced tea"
+  ],
+  "flickr": [
+   "cha yen thai tea"
+  ],
+  "n": 3
+ }
+}

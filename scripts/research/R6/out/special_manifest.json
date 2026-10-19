@@ -1,0 +1,175 @@
+{
+ "concrete_streaked": {
+  "albedo": "concrete_streaked/albedo.jpg",
+  "normal": "concrete_streaked/normal.jpg",
+  "orm": "concrete_streaked/orm.jpg",
+  "tileMeters": 3.0,
+  "tint": false,
+  "tags": [
+   "wall",
+   "concrete",
+   "water-streaks",
+   "algae",
+   "rising-damp",
+   "storey-height",
+   "shophouse-side"
+  ],
+  "source": "polyhaven:concrete_wall_008 + ambientcg:Leaking004,Leaking001,Leaking008",
+  "sourceUrl": "https://polyhaven.com/a/concrete_wall_008 ; https://ambientcg.com/a/Leaking004 ; https://ambientcg.com/a/Leaking001 ; https://ambientcg.com/a/Leaking008",
+  "author": "Poly Haven (see credits) + ambientCG (Lennart Demes)",
+  "license": "CC0",
+  "note": "One tile = one storey (3 m): dark algae streaks hang from the top edge, rain-splash band at the bottom. Tile horizontally; align V to the storey.",
+  "resolution": 1024
+ },
+ "stainless_dented_greasy": {
+  "albedo": "stainless_dented_greasy/albedo.jpg",
+  "normal": "stainless_dented_greasy/normal.jpg",
+  "orm": "stainless_dented_greasy/orm.jpg",
+  "tileMeters": 0.5,
+  "tint": false,
+  "tags": [
+   "metal",
+   "stainless",
+   "dented",
+   "greasy",
+   "smudged",
+   "cart",
+   "kitchen",
+   "counter"
+  ],
+  "source": "ambientcg:Metal049C (dents/normal) + ambientcg:Metal049B (smears) + ambientcg:SurfaceImperfections008 (grease)",
+  "sourceUrl": "https://ambientcg.com/a/Metal049C ; https://ambientcg.com/a/Metal049B ; https://ambientcg.com/a/SurfaceImperfections008",
+  "author": "ambientCG (Lennart Demes)",
+  "license": "CC0",
+  "resolution": 1024
+ },
+ "carpet_casino": {
+  "albedo": "carpet_casino/albedo.jpg",
+  "normal": "carpet_casino/normal.jpg",
+  "orm": "carpet_casino/orm.jpg",
+  "tileMeters": 0.8,
+  "tint": false,
+  "tags": [
+   "fabric",
+   "carpet",
+   "casino",
+   "patterned",
+   "red",
+   "gold",
+   "interior"
+  ],
+  "source": "procedural ornament (R6) printed over ambientcg:Carpet015 pile (colour detail, normal, roughness, AO)",
+  "sourceUrl": "https://ambientcg.com/a/Carpet015",
+  "author": "R6-pbr (pattern, CC0) + ambientCG (Lennart Demes)",
+  "license": "CC0",
+  "resolution": 1024
+ },
+ "felt_casino_green": {
+  "albedo": "felt_casino_green/albedo.jpg",
+  "normal": "felt_casino_green/normal.jpg",
+  "orm": "felt_casino_green/orm.jpg",
+  "tileMeters": 0.4,
+  "tint": false,
+  "tags": [
+   "fabric",
+   "felt",
+   "baize",
+   "green",
+   "casino",
+   "card-table"
+  ],
+  "source": "ambientcg:Fabric034 (re-coloured casino green)",
+  "sourceUrl": "https://ambientcg.com/a/Fabric034",
+  "author": "ambientCG (Lennart Demes)",
+  "license": "CC0",
+  "note": "Baked casino green. For other colours use the luminance of albedo x your colour.",
+  "resolution": 1024
+ },
+ "glass_dirty": {
+  "albedo": "glass_dirty/albedo.jpg",
+  "normal": "glass_dirty/normal.jpg",
+  "orm": "glass_dirty/orm.jpg",
+  "mask": "glass_dirty/mask.jpg",
+  "tileMeters": 1.0,
+  "tint": false,
+  "tags": [
+   "glass",
+   "dirty",
+   "dust",
+   "smudges",
+   "fingerprints",
+   "window",
+   "display-case",
+   "overlay"
+  ],
+  "source": "ambientcg:SurfaceImperfections014 + ambientcg:SurfaceImperfections016 + ambientcg:Fingerprints008 + ambientcg:Smear005",
+  "sourceUrl": "https://ambientcg.com/a/SurfaceImperfections014 ; https://ambientcg.com/a/Fingerprints008 ; https://ambientcg.com/a/Smear005",
+  "author": "ambientCG (Lennart Demes)",
+  "license": "CC0",
+  "note": "Dirt layer for glass. mask.jpg = dirt amount (use as alphaMap on an overlay mesh, or to mix roughness/transmission). Clean glass roughness ~0.04 in orm.G.",
+  "resolution": 1024
+ },
+ "water_ripples_puddle": {
+  "albedo": null,
+  "normal": "water_ripples_puddle/normal.jpg",
+  "orm": null,
+  "height": "water_ripples_puddle/height.jpg",
+  "tileMeters": 0.5,
+  "tint": false,
+  "tags": [
+   "water",
+   "normal-only",
+   "ripples",
+   "puddle",
+   "rain"
+  ],
+  "source": "procedural (R6-pbr, FFT ocean/ripple spectrum)",
+  "sourceUrl": "",
+  "author": "R6-pbr (generated)",
+  "license": "CC0",
+  "note": "Tileable capillary ripples for puddles; scroll two copies in opposite directions for motion.",
+  "resolution": 1024
+ },
+ "water_canal_calm": {
+  "albedo": null,
+  "normal": "water_canal_calm/normal.jpg",
+  "orm": null,
+  "height": "water_canal_calm/height.jpg",
+  "tileMeters": 6.0,
+  "tint": false,
+  "tags": [
+   "water",
+   "normal-only",
+   "calm",
+   "canal",
+   "klong"
+  ],
+  "source": "procedural (R6-pbr, FFT ocean/ripple spectrum)",
+  "sourceUrl": "",
+  "author": "R6-pbr (generated)",
+  "license": "CC0",
+  "note": "Gentle wind-swell for a still canal (klong). Scroll slowly along the wind direction (~34 deg).",
+  "resolution": 1024
+ },
+ "water_wind_chop": {
+  "albedo": null,
+  "normal": "water_wind_chop/normal.jpg",
+  "orm": null,
+  "height": "water_wind_chop/height.jpg",
+  "tileMeters": 2.5,
+  "tint": false,
+  "tags": [
+   "water",
+   "normal-only",
+   "chop",
+   "canal",
+   "klong"
+  ],
+  "source": "procedural (R6-pbr, FFT ocean/ripple spectrum)",
+  "sourceUrl": "",
+  "author": "R6-pbr (generated)",
+  "license": "CC0",
+  "note": "Choppier wind waves / boat wake chop. Blend with water_canal_calm at a different scale.",
+  "resolution": 1024
+ }
+}

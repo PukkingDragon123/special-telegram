@@ -1,0 +1,761 @@
+{
+ "wok_sizzle_loop": {
+  "files": [
+   "sfx/cooking/wok_sizzle_loop.mp3"
+  ],
+  "vol": 0.55,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Steady hard sizzle of food stir-frying in a hot wok (loop under all cooking)."
+ },
+ "sizzle_burst": {
+  "files": [
+   "sfx/cooking/sizzle_burst_1.mp3",
+   "sfx/cooking/sizzle_burst_2.mp3",
+   "sfx/cooking/sizzle_burst_3.mp3"
+  ],
+  "vol": 0.75,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Food/ingredient hits hot oil: hiss + sizzle swell that settles (play on add-to-wok)."
+ },
+ "oil_pour": {
+  "files": [
+   "sfx/cooking/oil_pour.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Pouring cooking oil into the wok (thick pour, first drops start to sizzle)."
+ },
+ "sauce_glug": {
+  "files": [
+   "sfx/cooking/sauce_glug_1.mp3",
+   "sfx/cooking/sauce_glug_2.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Glugging a sauce bottle (fish sauce / oyster sauce / soy) - air bubbles + thick pour."
+ },
+ "liquid_splash": {
+  "files": [
+   "sfx/cooking/liquid_splash.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Small liquid splash (water/sauce splashed into the wok or a bowl)."
+ },
+ "sprinkle": {
+  "files": [
+   "sfx/cooking/sprinkle_1.mp3",
+   "sfx/cooking/sprinkle_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.1,
+  "desc": "Sprinkling sugar / MSG / pepper / chili flakes from a shaker or spoon."
+ },
+ "spatula_scrape": {
+  "files": [
+   "sfx/cooking/spatula_scrape_1.mp3",
+   "sfx/cooking/spatula_scrape_2.mp3",
+   "sfx/cooking/spatula_scrape_3.mp3",
+   "sfx/cooking/spatula_scrape_4.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Metal spatula (ตะหลิว) scraping/stirring in the wok - play on every stir stroke."
+ },
+ "wok_toss": {
+  "files": [
+   "sfx/cooking/wok_toss_1.mp3",
+   "sfx/cooking/wok_toss_2.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Wok toss: whoosh + metal clank on the burner + food landing back with a sizzle swell."
+ },
+ "egg_crack": {
+  "files": [
+   "sfx/cooking/egg_crack_1.mp3",
+   "sfx/cooking/egg_crack_2.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Egg shell cracked on the wok rim."
+ },
+ "egg_fry_crackle_loop": {
+  "files": [
+   "sfx/cooking/egg_fry_crackle_loop.mp3"
+  ],
+  "vol": 0.6,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Fried egg (ไข่ดาว) bubbling/crackling in lots of oil (loop while the egg fries)."
+ },
+ "gas_ignite": {
+  "files": [
+   "sfx/cooking/gas_ignite.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Gas burner ignition: click-click-click then WHOOMP as the flame catches."
+ },
+ "burner_roar_loop": {
+  "files": [
+   "sfx/cooking/burner_roar_loop.mp3"
+  ],
+  "vol": 0.45,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Thai high-pressure LPG burner (เตาฟู่) jet roar, loop while the flame is on."
+ },
+ "knife_chop_board": {
+  "files": [
+   "sfx/cooking/knife_chop_board_1.mp3",
+   "sfx/cooking/knife_chop_board_2.mp3",
+   "sfx/cooking/knife_chop_board_3.mp3",
+   "sfx/cooking/knife_chop_board_4.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Cleaver/knife chop on a wooden cutting board (one hit per chop)."
+ },
+ "mortar_pound": {
+  "files": [
+   "sfx/cooking/mortar_pound_1.mp3",
+   "sfx/cooking/mortar_pound_2.mp3",
+   "sfx/cooking/mortar_pound_3.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Wooden pestle pounding garlic/chili in a clay mortar (ครก): thunk + crunch."
+ },
+ "rice_scoop": {
+  "files": [
+   "sfx/cooking/rice_scoop_1.mp3",
+   "sfx/cooking/rice_scoop_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Plastic paddle scooping sticky cooked rice from the rice cooker + tap on the rim."
+ },
+ "plate_down": {
+  "files": [
+   "sfx/cooking/plate_down_1.mp3",
+   "sfx/cooking/plate_down_2.mp3",
+   "sfx/cooking/plate_down_3.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Plate set down on a table/counter (ceramic / melamine)."
+ },
+ "spoon_clink": {
+  "files": [
+   "sfx/cooking/spoon_clink_1.mp3",
+   "sfx/cooking/spoon_clink_2.mp3",
+   "sfx/cooking/spoon_clink_3.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Spoon/fork clinking on a plate."
+ },
+ "dishes_stack": {
+  "files": [
+   "sfx/cooking/dishes_stack_1.mp3",
+   "sfx/cooking/dishes_stack_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Stacking plates / bowls on top of each other."
+ },
+ "dish_clatter": {
+  "files": [
+   "sfx/cooking/dish_clatter.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.04,
+  "desc": "Pile of dishes clattering (collecting dirty dishes / dropping them in the basin)."
+ },
+ "tap_water_loop": {
+  "files": [
+   "sfx/cooking/tap_water_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Tap water running into a basin (dish washing station)."
+ },
+ "scrub_loop": {
+  "files": [
+   "sfx/cooking/scrub_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Sponge scrubbing a plate in soapy water (loop while washing)."
+ },
+ "water_splash": {
+  "files": [
+   "sfx/cooking/water_splash_1.mp3",
+   "sfx/cooking/water_splash_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.07,
+  "desc": "Water splash (dunking a dish / bucket water)."
+ },
+ "boil_loop": {
+  "files": [
+   "sfx/cooking/boil_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Pot of water/soup boiling (noodle pot, tom yum)."
+ },
+ "steam_hiss": {
+  "files": [
+   "sfx/cooking/steam_hiss.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Burst of steam hiss (lid lifted / water hits hot wok)."
+ },
+ "burnt_smoke_hiss": {
+  "files": [
+   "sfx/cooking/burnt_smoke_hiss.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.04,
+  "desc": "Food burning: angry hiss + crackle + smoke (play when burnt-ness passes the limit)."
+ },
+ "fire_whoosh": {
+  "files": [
+   "sfx/cooking/fire_whoosh.mp3"
+  ],
+  "vol": 0.75,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Wok flame-up whoosh (oil catches fire, big orange flame for a second)."
+ },
+ "rice_cooker_click": {
+  "files": [
+   "sfx/cooking/rice_cooker_click.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Rice cooker switch pops up (cooking done) - plastic clack."
+ },
+ "timer_ding": {
+  "files": [
+   "sfx/cooking/timer_ding.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Kitchen timer / bell ding."
+ },
+ "pickup": {
+  "files": [
+   "sfx/items/pickup_1.mp3",
+   "sfx/items/pickup_2.mp3",
+   "sfx/items/pickup_3.mp3"
+  ],
+  "vol": 0.45,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.1,
+  "desc": "Picking an item up (E): cloth rustle + small whoosh."
+ },
+ "drop_plastic": {
+  "files": [
+   "sfx/items/drop_plastic_1.mp3",
+   "sfx/items/drop_plastic_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.1,
+  "desc": "Plastic item dropped (bottle, basket, plastic container)."
+ },
+ "drop_metal": {
+  "files": [
+   "sfx/items/drop_metal_1.mp3",
+   "sfx/items/drop_metal_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Metal item dropped (pan, ladle, can, tools)."
+ },
+ "drop_wood": {
+  "files": [
+   "sfx/items/drop_wood_1.mp3",
+   "sfx/items/drop_wood_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Wooden item dropped (cutting board, chopsticks box, crate)."
+ },
+ "drop_glass": {
+  "files": [
+   "sfx/items/drop_glass_1.mp3",
+   "sfx/items/drop_glass_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Glass bottle/cup set down hard or dropped without breaking."
+ },
+ "glass_break": {
+  "files": [
+   "sfx/items/glass_break.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Glass shatters (dropped glass / bottle breaks)."
+ },
+ "drop_soft": {
+  "files": [
+   "sfx/items/drop_soft_1.mp3",
+   "sfx/items/drop_soft_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Soft item / bag dropped (rice sack, ingredient bag, clothes)."
+ },
+ "plastic_chair_scrape": {
+  "files": [
+   "sfx/items/plastic_chair_scrape_1.mp3",
+   "sfx/items/plastic_chair_scrape_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Red plastic stool/chair dragged on concrete (the classic street-restaurant sound)."
+ },
+ "chair_stack": {
+  "files": [
+   "sfx/items/chair_stack.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Stacking plastic chairs on top of each other."
+ },
+ "table_drag": {
+  "files": [
+   "sfx/items/table_drag.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Folding/plastic table dragged across concrete."
+ },
+ "cardboard": {
+  "files": [
+   "sfx/items/cardboard_1.mp3",
+   "sfx/items/cardboard_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Cardboard box handled / put down (also the cardboard you sleep on)."
+ },
+ "paper_rustle": {
+  "files": [
+   "sfx/items/paper_rustle_1.mp3",
+   "sfx/items/paper_rustle_2.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Paper rustle (newspaper, menu poster, receipts)."
+ },
+ "book_open": {
+  "files": [
+   "sfx/items/book_open.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.04,
+  "desc": "Opening the old man's recipe book."
+ },
+ "page_turn": {
+  "files": [
+   "sfx/items/page_turn_1.mp3",
+   "sfx/items/page_turn_2.mp3",
+   "sfx/items/page_turn_3.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Turning a page of the recipe book / magazine / newspaper."
+ },
+ "plastic_bag_rustle": {
+  "files": [
+   "sfx/items/plastic_bag_rustle_1.mp3",
+   "sfx/items/plastic_bag_rustle_2.mp3"
+  ],
+  "vol": 0.45,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.1,
+  "desc": "Thin plastic carrier bag crinkle (ถุงก๊อบแก๊บ) - market shopping, take-away."
+ },
+ "coin_clink": {
+  "files": [
+   "sfx/items/coin_clink_1.mp3",
+   "sfx/items/coin_clink_2.mp3",
+   "sfx/items/coin_clink_3.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "A couple of coins clinking (paying, giving change)."
+ },
+ "coins_handful": {
+  "files": [
+   "sfx/items/coins_handful_1.mp3",
+   "sfx/items/coins_handful_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Handful of coins jingling (pulling out coins - the 100 baht scene)."
+ },
+ "coin_on_table": {
+  "files": [
+   "sfx/items/coin_on_table_1.mp3",
+   "sfx/items/coin_on_table_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Single coin dropped on a table (2nd variant spins down like a wobbling disc)."
+ },
+ "banknote": {
+  "files": [
+   "sfx/items/banknote_1.mp3",
+   "sfx/items/banknote_2.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Banknote snapped / counted / handed over."
+ },
+ "cash_drawer": {
+  "files": [
+   "sfx/items/cash_drawer.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Cash drawer opening with a bell ding and coins (shop till)."
+ },
+ "bottle_open_fizz": {
+  "files": [
+   "sfx/items/bottle_open_fizz.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Crown cap popped off a soda/beer bottle + fizz."
+ },
+ "can_open": {
+  "files": [
+   "sfx/items/can_open.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Ring-pull can opened: click + psssht + fizz."
+ },
+ "ice_cubes": {
+  "files": [
+   "sfx/items/ice_cubes.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Ice cubes dropped into a glass."
+ },
+ "cup_fill": {
+  "files": [
+   "sfx/items/cup_fill.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.04,
+  "desc": "Pouring water/drink into a cup (water machine, iced tea)."
+ },
+ "footstep_concrete": {
+  "files": [
+   "sfx/player/footstep_concrete_1.mp3",
+   "sfx/player/footstep_concrete_2.mp3",
+   "sfx/player/footstep_concrete_3.mp3",
+   "sfx/player/footstep_concrete_4.mp3"
+  ],
+  "vol": 0.35,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Footstep on concrete / pavement (shoes)."
+ },
+ "footstep_flipflop": {
+  "files": [
+   "sfx/player/footstep_flipflop_1.mp3",
+   "sfx/player/footstep_flipflop_2.mp3",
+   "sfx/player/footstep_flipflop_3.mp3",
+   "sfx/player/footstep_flipflop_4.mp3"
+  ],
+  "vol": 0.4,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Rubber flip-flop (รองเท้าแตะ) step: sole slap + heel flap. The players' default!"
+ },
+ "footstep_wet": {
+  "files": [
+   "sfx/player/footstep_wet_1.mp3",
+   "sfx/player/footstep_wet_2.mp3",
+   "sfx/player/footstep_wet_3.mp3"
+  ],
+  "vol": 0.4,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Footstep in a puddle / on wet market floor."
+ },
+ "overloaded_breath_loop": {
+  "files": [
+   "sfx/player/overloaded_breath_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Heavy panting while carrying too much (5/5 slots = overloaded)."
+ },
+ "grunt": {
+  "files": [
+   "sfx/player/grunt_1.mp3",
+   "sfx/player/grunt_2.mp3",
+   "sfx/player/grunt_3.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Effort grunt (lifting, throwing, snatching)."
+ },
+ "slap_hard": {
+  "files": [
+   "sfx/player/slap_hard_1.mp3",
+   "sfx/player/slap_hard_2.mp3",
+   "sfx/player/slap_hard_3.mp3"
+  ],
+  "vol": 0.75,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.07,
+  "desc": "Comedic face slap (right-click slap a friend): whoosh + smack + room."
+ },
+ "high_five": {
+  "files": [
+   "sfx/player/high_five_1.mp3",
+   "sfx/player/high_five_2.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "High five clap."
+ },
+ "whoosh_swing": {
+  "files": [
+   "sfx/player/whoosh_swing_1.mp3",
+   "sfx/player/whoosh_swing_2.mp3",
+   "sfx/player/whoosh_swing_3.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.1,
+  "desc": "Arm swing / throw whoosh."
+ },
+ "tug_strain": {
+  "files": [
+   "sfx/player/tug_strain_1.mp3",
+   "sfx/player/tug_strain_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Straining voice during the snatch tug-of-war."
+ },
+ "body_thud": {
+  "files": [
+   "sfx/player/body_thud.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Body falls / bumps into something (slapstick)."
+ },
+ "snore_loop": {
+  "files": [
+   "sfx/player/snore_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Snoring while sleeping on cardboard at midnight."
+ },
+ "yawn": {
+  "files": [
+   "sfx/player/yawn.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Big tired yawn (late night, waking up)."
+ },
+ "burp": {
+  "files": [
+   "sfx/player/burp_1.mp3",
+   "sfx/player/burp_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Burp after eating / drinking soda."
+ },
+ "hiccup": {
+  "files": [
+   "sfx/player/hiccup_1.mp3",
+   "sfx/player/hiccup_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Hiccup (drunk in the intro / ate too fast)."
+ },
+ "cough": {
+  "files": [
+   "sfx/player/cough_1.mp3",
+   "sfx/player/cough_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Cough (smoke from the wok, chili fumes)."
+ },
+ "sneeze": {
+  "files": [
+   "sfx/player/sneeze.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Sneeze (chili fumes in the wok!)."
+ },
+ "eat_chomp": {
+  "files": [
+   "sfx/player/eat_chomp_1.mp3",
+   "sfx/player/eat_chomp_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.07,
+  "desc": "Eating / chomping food."
+ },
+ "drink_gulp": {
+  "files": [
+   "sfx/player/drink_gulp.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Gulp of a drink."
+ }
+}

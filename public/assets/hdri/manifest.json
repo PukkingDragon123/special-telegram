@@ -1,0 +1,159 @@
+{
+ "day_hazy_street": {
+  "mood": "hazy bright urban day: hot high sun, pale washed-out sky, dusty light ground",
+  "file1k": "day_hazy_street_1k.hdr",
+  "file2k": "day_hazy_street_2k.hdr",
+  "preview": "day_hazy_street_preview.jpg",
+  "recommendedExposure": 1.3,
+  "envMapIntensity": 1.0,
+  "sunDirection": [
+   0.4861,
+   0.7986,
+   0.3548
+  ],
+  "sunElevationDeg": 53.0,
+  "sunAzimuthDeg_threejs": 36.1,
+  "stats": {
+   "meanLuminance": 0.9263,
+   "logAvgLuminance": 0.1694,
+   "upperHemisphereMean": 1.6937,
+   "sunPixel_uv": [
+    0.6003,
+    0.7944
+   ],
+   "sunPeakLuminance": 163412.2
+  },
+  "note": "Default daytime street lighting. Sky near the horizon is milky; pair with warm-white fog for the hot hazy look.",
+  "source": "polyhaven:wide_street_01",
+  "sourceUrl": "https://polyhaven.com/a/wide_street_01",
+  "author": "Sergej Majboroda",
+  "license": "CC0",
+  "mapping": "equirectangular (THREE.EquirectangularReflectionMapping); load with RGBELoader / HDRLoader"
+ },
+ "overcast_day": {
+  "mood": "overcast day (rainy-season grey sky), soft shadowless light",
+  "file1k": "overcast_day_1k.hdr",
+  "file2k": "overcast_day_2k.hdr",
+  "preview": "overcast_day_preview.jpg",
+  "recommendedExposure": 1.16,
+  "envMapIntensity": 1.0,
+  "stats": {
+   "meanLuminance": 0.4758,
+   "logAvgLuminance": 0.19,
+   "upperHemisphereMean": 0.8476
+  },
+  "note": "Use for rainy/monsoon moments together with asphalt_wet / concrete_wet_puddles.",
+  "source": "polyhaven:urban_courtyard_02",
+  "sourceUrl": "https://polyhaven.com/a/urban_courtyard_02",
+  "author": "Sergej Majboroda",
+  "license": "CC0",
+  "mapping": "equirectangular (THREE.EquirectangularReflectionMapping); load with RGBELoader / HDRLoader"
+ },
+ "golden_hour_riverside": {
+  "mood": "golden hour / late-afternoon sunset over an Asian riverside city",
+  "file1k": "golden_hour_riverside_1k.hdr",
+  "file2k": "golden_hour_riverside_2k.hdr",
+  "preview": "golden_hour_riverside_preview.jpg",
+  "recommendedExposure": 0.81,
+  "envMapIntensity": 1.0,
+  "sunDirection": [
+   0.7576,
+   0.347,
+   0.5529
+  ],
+  "sunElevationDeg": 20.3,
+  "sunAzimuthDeg_threejs": 36.1,
+  "stats": {
+   "meanLuminance": 0.5525,
+   "logAvgLuminance": 0.2733,
+   "upperHemisphereMean": 0.9096,
+   "sunPixel_uv": [
+    0.6003,
+    0.6128
+   ],
+   "sunPeakLuminance": 41369.2
+  },
+  "note": "Low warm sun; long shadows. Good for evening rush-hour scenes and the canal edge.",
+  "source": "polyhaven:shanghai_riverside",
+  "sourceUrl": "https://polyhaven.com/a/shanghai_riverside",
+  "author": "Alex Radosnov",
+  "license": "CC0",
+  "mapping": "equirectangular (THREE.EquirectangularReflectionMapping); load with RGBELoader / HDRLoader"
+ },
+ "dusk_blue_hour": {
+  "mood": "dusk / blue hour: purple-pink twilight sky, sodium lamps switching on",
+  "file1k": "dusk_blue_hour_1k.hdr",
+  "file2k": "dusk_blue_hour_2k.hdr",
+  "preview": "dusk_blue_hour_preview.jpg",
+  "recommendedExposure": 1.42,
+  "envMapIntensity": 1.0,
+  "stats": {
+   "meanLuminance": 0.589,
+   "logAvgLuminance": 0.1547,
+   "upperHemisphereMean": 0.8672
+  },
+  "note": "Transition between day and night; lamps are visible as small warm hotspots.",
+  "source": "polyhaven:rooftop_night",
+  "sourceUrl": "https://polyhaven.com/a/rooftop_night",
+  "author": "Greg Zaal",
+  "license": "CC0",
+  "mapping": "equirectangular (THREE.EquirectangularReflectionMapping); load with RGBELoader / HDRLoader"
+ },
+ "night_street_sodium": {
+  "mood": "night city street lit by orange sodium lamps, purple night sky, palm silhouette",
+  "file1k": "night_street_sodium_1k.hdr",
+  "file2k": "night_street_sodium_2k.hdr",
+  "preview": "night_street_sodium_preview.jpg",
+  "recommendedExposure": 4.14,
+  "envMapIntensity": 1.0,
+  "stats": {
+   "meanLuminance": 0.2672,
+   "logAvgLuminance": 0.0531,
+   "upperHemisphereMean": 0.4524
+  },
+  "note": "Main night environment. Keep envMapIntensity modest and let practical lights (street lamps, shop signs) dominate.",
+  "source": "polyhaven:courtyard_night",
+  "sourceUrl": "https://polyhaven.com/a/courtyard_night",
+  "author": "Greg Zaal",
+  "license": "CC0",
+  "mapping": "equirectangular (THREE.EquirectangularReflectionMapping); load with RGBELoader / HDRLoader"
+ },
+ "interior_warm_casino": {
+  "mood": "warm interior, red seats + gold ceiling lights (casino-like / lounge)",
+  "file1k": "interior_warm_casino_1k.hdr",
+  "file2k": "interior_warm_casino_2k.hdr",
+  "preview": "interior_warm_casino_preview.jpg",
+  "recommendedExposure": 6.21,
+  "envMapIntensity": 1.0,
+  "stats": {
+   "meanLuminance": 0.5365,
+   "logAvgLuminance": 0.0354,
+   "upperHemisphereMean": 1.0329
+  },
+  "note": "Casino intro cutscene and warm interiors; red/gold reflections on chrome, glass, brass_gold, leather_red_quilted.",
+  "source": "polyhaven:pretville_cinema",
+  "sourceUrl": "https://polyhaven.com/a/pretville_cinema",
+  "author": "Dimitrios Savva, Jarod Guest",
+  "license": "CC0",
+  "mapping": "equirectangular (THREE.EquirectangularReflectionMapping); load with RGBELoader / HDRLoader"
+ },
+ "studio_neutral": {
+  "mood": "neutral photo studio with softboxes",
+  "file1k": "studio_neutral_1k.hdr",
+  "file2k": "studio_neutral_2k.hdr",
+  "preview": "studio_neutral_preview.jpg",
+  "recommendedExposure": 1.64,
+  "envMapIntensity": 1.0,
+  "stats": {
+   "meanLuminance": 0.8541,
+   "logAvgLuminance": 0.1343,
+   "upperHemisphereMean": 1.1458
+  },
+  "note": "Main-menu album-cover scene, magazine/fashion renders, item turntables.",
+  "source": "polyhaven:studio_small_09",
+  "sourceUrl": "https://polyhaven.com/a/studio_small_09",
+  "author": "Sergej Majboroda",
+  "license": "CC0",
+  "mapping": "equirectangular (THREE.EquirectangularReflectionMapping); load with RGBELoader / HDRLoader"
+ }
+}

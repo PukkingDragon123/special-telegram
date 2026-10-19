@@ -1,0 +1,478 @@
+{
+ "asphalt_road_sunbleached": {
+  "gl_check": [
+   -0.6758296489715576,
+   0.7340453863143921
+  ],
+  "src": "ph:asphalt_04"
+ },
+ "asphalt_wet": {
+  "gl_check": [
+   -0.5647321343421936,
+   0.6347779631614685
+  ],
+  "src": "ph:asphalt_04"
+ },
+ "sidewalk_pavers_square": {
+  "gl_check": [
+   -0.6611612439155579,
+   0.6560209393501282
+  ],
+  "src": "acg:PavingStones112"
+ },
+ "stainless_brushed": {
+  "gl_check": [
+   -0.3783248960971832,
+   0.5232053399085999
+  ],
+  "src": "acg:Metal009"
+ },
+ "asphalt_cracked": {
+  "gl_check": [
+   -0.6137191653251648,
+   0.6427711844444275
+  ],
+  "src": "ph:asphalt_02"
+ },
+ "asphalt_patched": {
+  "gl_check": [
+   -0.7016162276268005,
+   0.634367048740387
+  ],
+  "src": "acg:Road015B"
+ },
+ "concrete_soi_road": {
+  "gl_check": [
+   -0.7517731785774231,
+   0.7677618265151978
+  ],
+  "src": "ph:brushed_concrete"
+ },
+ "concrete_old_cracked": {
+  "gl_check": [
+   -0.802331805229187,
+   0.774479866027832
+  ],
+  "src": "ph:cracked_concrete"
+ },
+ "concrete_wet_puddles": {
+  "gl_check": [
+   -0.6778815388679504,
+   0.7076082229614258
+  ],
+  "src": "ph:garage_floor"
+ },
+ "sidewalk_pavers_interlocking": {
+  "gl_check": [
+   -0.8489015698432922,
+   0.8494809865951538
+  ],
+  "src": "acg:PavingStones072"
+ },
+ "sidewalk_tactile_yellow": {
+  "gl_check": [
+   -0.9676803946495056,
+   0.9676530361175537
+  ],
+  "src": "acg:TactilePaving003"
+ },
+ "gravel_crushed": {
+  "gl_check": [
+   -0.6544376015663147,
+   0.6711236238479614
+  ],
+  "src": "acg:Gravel033"
+ },
+ "dirt_path_dry": {
+  "gl_check": [
+   -0.6361368894577026,
+   0.6715027093887329
+  ],
+  "src": "ph:dirt_floor"
+ },
+ "mud_wet_rural": {
+  "gl_check": [
+   -0.6859714388847351,
+   0.6836389303207397
+  ],
+  "src": "ph:brown_mud_02"
+ },
+ "laterite_red_dirt": {
+  "gl_check": [
+   -0.6930157542228699,
+   0.7456993460655212
+  ],
+  "src": "ph:red_laterite_soil_stones"
+ },
+ "grass_dry": {
+  "gl_check": [
+   -0.5168977379798889,
+   0.5779957175254822
+  ],
+  "src": "ph:withered_grass"
+ },
+ "grass_lush": {
+  "gl_check": [
+   -0.45666056871414185,
+   0.45440196990966797
+  ],
+  "src": "acg:Grass004"
+ },
+ "leaf_litter_dry": {
+  "gl_check": [
+   -0.4410560429096222,
+   0.45391330122947693
+  ],
+  "src": "ph:dry_decay_leaves"
+ },
+ "plaster_painted_clean": {
+  "gl_check": [
+   -0.7550923824310303,
+   0.7943089604377747
+  ],
+  "src": "ph:painted_plaster_wall"
+ },
+ "plaster_painted_dirty": {
+  "gl_check": [
+   -0.6296329498291016,
+   0.6642671823501587
+  ],
+  "src": "ph:white_plaster_02"
+ },
+ "plaster_moldy_stained": {
+  "gl_check": [
+   -0.7591105699539185,
+   0.8221547603607178
+  ],
+  "src": "ph:concrete_wall_003"
+ },
+ "plaster_peeling": {
+  "gl_check": [
+   -0.4458952844142914,
+   0.32260194420814514
+  ],
+  "src": "ph:worn_plaster_wall"
+ },
+ "plaster_peeling_red": {
+  "gl_check": [
+   -0.5895515084266663,
+   0.5809471011161804
+  ],
+  "src": "ph:peeling_painted_wall"
+ },
+ "plaster_broken_brick": {
+  "gl_check": [
+   -0.7267020344734192,
+   0.714246392250061
+  ],
+  "src": "acg:PaintedPlaster014"
+ },
+ "concrete_mossy": {
+  "gl_check": [
+   -0.5810442566871643,
+   0.6382288336753845
+  ],
+  "src": "ph:worn_mossy_plasterwall"
+ },
+ "brick_exposed_red": {
+  "gl_check": [
+   -0.8782505989074707,
+   0.8930816650390625
+  ],
+  "src": "acg:Bricks090"
+ },
+ "tiles_wall_white_dirty": {
+  "gl_check": [
+   -0.9131773114204407,
+   0.9095108509063721
+  ],
+  "src": "acg:Tiles133B"
+ },
+ "terrazzo_floor": {
+  "gl_check": [
+   -0.4164375960826874,
+   0.42743855714797974
+  ],
+  "src": "acg:Tiles043"
+ },
+ "tiles_floor_ceramic": {
+  "gl_check": [
+   -0.84527587890625,
+   0.8151544332504272
+  ],
+  "src": "ph:floor_tiles_08"
+ },
+ "tiles_floor_terracotta": {
+  "gl_check": [
+   -0.9092186689376831,
+   0.9112535715103149
+  ],
+  "src": "ph:terracotta_floor_tiles"
+ },
+ "cement_block_wall": {
+  "gl_check": [
+   -0.8522156476974487,
+   0.8976245522499084
+  ],
+  "src": "ph:concrete_block_wall"
+ },
+ "temple_white_wall": {
+  "gl_check": [
+   -0.6001318097114563,
+   0.5994434952735901
+  ],
+  "src": "acg:Plaster003"
+ },
+ "galvanized_steel": {
+  "gl_check": [
+   -0.5747420787811279,
+   0.5800989270210266
+  ],
+  "src": "acg:Metal014"
+ },
+ "steel_rusty": {
+  "gl_check": [
+   -0.7550374269485474,
+   0.7832900881767273
+  ],
+  "src": "ph:rusty_metal_02"
+ },
+ "corrugated_painted": {
+  "gl_check": [
+   -0.9601029753684998,
+   0.4536658823490143
+  ],
+  "src": "acg:CorrugatedSteel003"
+ },
+ "corrugated_rusty": {
+  "gl_check": [
+   -0.9916496276855469,
+   -0.13870422542095184
+  ],
+  "src": "ph:rusty_corrugated_iron"
+ },
+ "metal_painted_chipped": {
+  "gl_check": [
+   -0.4577796757221222,
+   0.40515416860580444
+  ],
+  "src": "acg:PaintedMetal012"
+ },
+ "shutter_roller_rusty": {
+  "gl_check": [
+   -0.25114473700523376,
+   0.9795252680778503
+  ],
+  "src": "ph:rusty_metal_shutter"
+ },
+ "shutter_roller_painted": {
+  "gl_check": [
+   0.00597559055313468,
+   0.955727756023407
+  ],
+  "src": "ph:painted_metal_shutter"
+ },
+ "cast_iron_wok": {
+  "gl_check": [
+   -0.6428622603416443,
+   0.6453900337219238
+  ],
+  "src": "acg:Metal046B"
+ },
+ "chrome": {
+  "gl_check": [
+   0.0,
+   0.0
+  ],
+  "src": "acg:Metal049A"
+ },
+ "brass_gold": {
+  "gl_check": [
+   -0.3471697270870209,
+   0.4301879107952118
+  ],
+  "src": "acg:Metal048B"
+ },
+ "aluminium_scratched": {
+  "gl_check": [
+   -0.62613445520401,
+   0.6970754265785217
+  ],
+  "src": "acg:Metal050C"
+ },
+ "wood_planks_old": {
+  "gl_check": [
+   -0.8045209050178528,
+   0.6830918788909912
+  ],
+  "src": "ph:old_planks_02"
+ },
+ "wood_painted_weathered": {
+  "gl_check": [
+   -0.9281404614448547,
+   0.14973203837871552
+  ],
+  "src": "ph:distressed_painted_planks"
+ },
+ "plywood": {
+  "gl_check": [
+   -0.38518935441970825,
+   0.6447909474372864
+  ],
+  "src": "ph:plywood"
+ },
+ "wood_teak": {
+  "gl_check": [
+   -0.2509097754955292,
+   0.7832739353179932
+  ],
+  "src": "ph:dark_wood"
+ },
+ "bamboo_poles": {
+  "gl_check": [
+   -0.9647096991539001,
+   0.4216800332069397
+  ],
+  "src": "ph:bamboo_wall"
+ },
+ "bamboo_woven": {
+  "gl_check": [
+   -0.70046466588974,
+   0.7655484080314636
+  ],
+  "src": "ph:bamboo_wall_03"
+ },
+ "chopping_board_endgrain": {
+  "gl_check": [
+   -0.6683630347251892,
+   0.7012803554534912
+  ],
+  "src": "acg:TreeEnd003"
+ },
+ "roof_clay_tiles": {
+  "gl_check": [
+   -0.8512164950370789,
+   0.8471816182136536
+  ],
+  "src": "ph:clay_roof_tiles_03"
+ },
+ "roof_corrugated_galvanized": {
+  "gl_check": [
+   -0.9964314699172974,
+   0.35200411081314087
+  ],
+  "src": "ph:corrugated_iron"
+ },
+ "roof_fibrecement_corrugated": {
+  "gl_check": [
+   -0.9797952175140381,
+   0.45503395795822144
+  ],
+  "src": "ph:asbestos_sheet"
+ },
+ "roof_concrete_slab": {
+  "gl_check": [
+   -0.712346613407135,
+   0.7620107531547546
+  ],
+  "src": "ph:concrete_floor_damaged_01"
+ },
+ "plastic_rough": {
+  "gl_check": [
+   -0.25567659735679626,
+   0.3752087950706482
+  ],
+  "src": "acg:Plastic013B"
+ },
+ "plastic_glossy": {
+  "gl_check": [
+   -0.36482834815979004,
+   0.3832177519798279
+  ],
+  "src": "acg:Plastic010"
+ },
+ "plastic_woven_mat": {
+  "gl_check": [
+   -0.18924859166145325,
+   0.30812421441078186
+  ],
+  "src": "acg:Fabric015"
+ },
+ "rubber_black": {
+  "gl_check": [
+   -0.6759557723999023,
+   0.6767241954803467
+  ],
+  "src": "acg:Rubber004"
+ },
+ "cardboard_worn": {
+  "gl_check": [
+   -0.7666240334510803,
+   0.417235404253006
+  ],
+  "src": "acg:Cardboard003"
+ },
+ "paper_creased": {
+  "gl_check": [
+   -0.9811394810676575,
+   0.987743079662323
+  ],
+  "src": "acg:Paper003"
+ },
+ "canvas_tarp": {
+  "gl_check": [
+   -0.8606774806976318,
+   0.8042995929718018
+  ],
+  "src": "acg:Fabric061"
+ },
+ "cotton_jersey": {
+  "gl_check": [
+   -0.4054681658744812,
+   0.1941969394683838
+  ],
+  "src": "ph:cotton_jersey"
+ },
+ "denim": {
+  "gl_check": [
+   -0.3599207401275635,
+   0.5228634476661682
+  ],
+  "src": "ph:denim_fabric_04"
+ },
+ "velvet_red": {
+  "gl_check": [
+   -0.732637882232666,
+   0.8149188756942749
+  ],
+  "src": "ph:velour_velvet"
+ },
+ "leather_black": {
+  "gl_check": [
+   -0.6364728212356567,
+   0.6426082849502563
+  ],
+  "src": "acg:Leather026"
+ },
+ "leather_red_quilted": {
+  "gl_check": [
+   -0.9723442196846008,
+   0.9729196429252625
+  ],
+  "src": "acg:Leather011"
+ },
+ "marble_white": {
+  "gl_check": [
+   -0.18824809789657593,
+   0.22050362825393677
+  ],
+  "src": "acg:Marble021"
+ },
+ "marble_checker_floor": {
+  "gl_check": [
+   -0.4415886700153351,
+   0.44837090373039246
+  ],
+  "src": "ph:floor_tiles_06"
+ }
+}
