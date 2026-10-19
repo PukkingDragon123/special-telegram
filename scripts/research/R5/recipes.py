@@ -169,3 +169,81 @@ add("eat_chomp", PL, "sfx", "Eating / chomping food.",
     [V(mk(2252)), V(mk(117))], vol=0.55, pitchVar=0.07)
 add("drink_gulp", PL, "sfx", "Gulp of a drink.",
     [V(mk(155))], vol=0.55, pitchVar=0.05)
+
+import designs_world as W
+WO = "sfx/world"
+AM = "amb"
+# ----------------------------------------------------------------------------------------------- WORLD
+add("traffic_bangkok_loop", AM, "amb", "Busy Bangkok road: traffic bed, swarms of scooters, tuk-tuk, horns. Main road areas.",
+    [V(W.traffic_bangkok, xfade=2.0)], vol=0.7, loop=True, pitchVar=0.0)
+add("motorbike_pass", WO, "sfx", "Motorbike / scooter passing by (approach-pass-recede). Use for ambient passes.",
+    [V(P(W.motorbike_pass_rec, 1), fout=0.3), V(P(W.motorbike_pass_rec, 2), fout=0.2),
+     V(P(W.motorbike_pass_syn, 3), fout=0.3), V(P(W.motorbike_pass_syn, 8), fout=0.3)], vol=0.6, pitchVar=0.08)
+add("scooter_idle_loop", WO, "sfx", "Small scooter idling (motorbike-taxi stand, parked delivery rider).",
+    [V(W.scooter_idle, xfade=0.3)], vol=0.5, loop=True, pitchVar=0.05, lufs=-19)
+add("tuktuk_engine_loop", WO, "sfx", "Tuk-tuk two-stroke putt-putt idle/putter with rattling body (loop; pitch up with speed).",
+    [V(W.tuktuk_loop, xfade=0.5)], vol=0.55, loop=True, pitchVar=0.0, lufs=-19)
+add("car_horn_short", WO, "sfx", "Short car horn honk (everyone honks).",
+    [V(mk(717)), V(mk(718)), V(mk(719)), V(mk(1565))], vol=0.55, pitchVar=0.05)
+add("truck_horn", WO, "sfx", "Truck / pickup air horn blast.",
+    [V(mk(720))], vol=0.6, pitchVar=0.03)
+add("bus_airbrake", WO, "sfx", "Bus / truck air-brake release 'PSSSHH'.",
+    [V(W.bus_airbrake)], vol=0.55, pitchVar=0.05)
+add("siren_distant", WO, "sfx", "Distant ambulance siren drifting across the city.",
+    [V(W.siren_distant, fout=1.0)], vol=0.4, pitchVar=0.0, lufs=-20)
+add("songthaew_engine_loop", WO, "sfx", "Songthaew / pickup diesel engine running (loop).",
+    [V(W.songthaew, xfade=0.8)], vol=0.5, loop=True, pitchVar=0.03, lufs=-19)
+add("market_crowd_loop", AM, "amb", "Fresh market (ตลาดสด) bed: crowd chatter, plastic bags, cleaver chops, Thai voices.",
+    [V(P(W.market_crowd, 40.0, 21), xfade=2.0)], vol=0.75, loop=True, pitchVar=0.0)
+add("street_ambience_day_loop", AM, "amb", "Daytime neighbourhood street: distant traffic, scooters, birds, people, occasional horn.",
+    [V(W.street_day, xfade=2.0)], vol=0.75, loop=True, pitchVar=0.0)
+add("street_ambience_night_loop", AM, "amb", "Night street: crickets/insects, faint distant traffic, far-off dogs and scooters.",
+    [V(W.street_night, xfade=2.0)], vol=0.75, loop=True, pitchVar=0.0)
+add("dog_bark", WO, "sfx", "Stray dog (หมาจร) bark.",
+    [V(mk(1), ss=0.0, t=0.45), V(mk(54), ss=0.55, t=0.4), V(mk(51), ss=0.0, t=0.62), V(mk(1), ss=0.8, t=0.45, rate=1.06)],
+    vol=0.65, pitchVar=0.08)
+add("dog_whine", WO, "sfx", "Dog whimper / whine (begging for food, sad).",
+    [V(mk(466), ss=0.6, t=1.0), V(mk(467), ss=1.7, t=1.4, fout=0.25)], vol=0.55, pitchVar=0.06)
+add("dog_eat", WO, "sfx", "Dog wolfing down food (the dog that eats your rice and pork).",
+    [V(mk(2246), ss=0.0, t=2.8, fout=0.3)], vol=0.6, pitchVar=0.05)
+add("dog_happy_pant", WO, "sfx", "Happy dog panting (following you around).",
+    [V(mk(52), ss=0.1, t=3.3, fout=0.2)], vol=0.5, pitchVar=0.05)
+add("cat_meow", WO, "sfx", "Street cat meow.",
+    [V(mk(45)), V(mk(93)), V(og("cat", "cat_mewfood.wav"), ss=0.5, t=0.6), V(mk(87), rate=1.04)], vol=0.55, pitchVar=0.07)
+add("cat_purr_loop", WO, "sfx", "Cat purring (adopted cat sitting with you).",
+    [V(og("cat", "cat_purractive_loop.wav"), xfade=0.5)], vol=0.5, loop=True, pitchVar=0.0, lufs=-20)
+add("birds_loop", AM, "amb", "Tropical city birds (morning/day) - myna/bulbul-like chatter layer.",
+    [V(W.birds_city, xfade=2.0)], vol=0.6, loop=True, pitchVar=0.0)
+add("pigeons", WO, "sfx", "Pigeons cooing / fluttering (temple courtyard, wires).",
+    [V(mk(74), fout=0.4)], vol=0.5, pitchVar=0.05)
+add("crow", WO, "sfx", "House crow caw.",
+    [V(mk(316))], vol=0.55, pitchVar=0.06)
+add("rooster", WO, "sfx", "Rooster crowing (rural edge, dawn).",
+    [V(mk(2462)), V(mk(2470))], vol=0.6, pitchVar=0.04)
+add("cicadas_loop", AM, "amb", "Hot-afternoon cicada chorus (trees, empty lot, temple). Play 12:00-16:00.",
+    [V(W.cicada_chorus, xfade=2.0)], vol=0.45, loop=True, pitchVar=0.0)
+add("crickets_frogs_night_loop", AM, "amb", "Night insects + frogs near the canal / rice-field edge.",
+    [V(W.crickets_frogs, xfade=2.0)], vol=0.6, loop=True, pitchVar=0.0)
+add("tokay_gecko", WO, "sfx", "Tokay gecko 'TOK-KAE, TOK-KAE' call (ตุ๊กแก) - iconic Thai night sound.",
+    [V(W.tokay_call, fout=0.3)],
+    vol=0.6, pitchVar=0.03)
+add("temple_bell", WO, "sfx", "Temple bells: (1) big bronze bell struck, (2) small eave wind-bells tinkling.",
+    [V(P(W.thai_temple_bell, 1, 6.0), fout=0.6), V(P(W.wind_bells, 2, 6.0, False), fout=0.6)], vol=0.55, pitchVar=0.02)
+add("gong", WO, "sfx", "Thai bossed gong (ฆ้อง) strike.",
+    [V(P(W.gong, 1, 5.0), fout=0.5)], vol=0.55, pitchVar=0.02)
+add("wind_loop", AM, "amb", "Soft wind / breeze bed (open lot, rooftop, evening).",
+    [V(mk(1173), ss=2.0, t=30.0, xfade=2.0)], vol=0.5, loop=True, pitchVar=0.0)
+add("rain_loop", AM, "amb", "Heavy tropical rain (monsoon downpour).",
+    [V(mk(1255), ss=1.0, t=29.0, xfade=2.0)], vol=0.7, loop=True, pitchVar=0.0)
+add("thunder", WO, "sfx", "Thunder: (1) close crack + rumble, (2) long distant rumble.",
+    [V(mk(1298), fout=1.0), V(mk(1301), ss=0.0, t=12.5, fout=1.5)], vol=0.7, pitchVar=0.03, stereo=False)
+add("ac_hum_loop", WO, "sfx", "Air-conditioner unit hum (shophouse wall AC, convenience store).",
+    [V(W.ac_hum, rate=0.85, xfade=1.0)], vol=0.4, loop=True, pitchVar=0.0, lufs=-21)
+add("fluorescent_buzz_loop", WO, "sfx", "Fluorescent tube buzz (100 Hz) - night stalls, convenience store, shop interiors.",
+    [V(W.fluorescent_buzz, xfade=0.5)], vol=0.3, loop=True, pitchVar=0.0, lufs=-24)
+add("convenience_door_chime", WO, "sfx", "Original 'ding-dong' entry chime for the 8-Twelve parody store.",
+    [V(W.door_chime, fout=0.4)], vol=0.55, pitchVar=0.0)
+add("fan_loop", WO, "sfx", "Standing electric fan whirring and slowly oscillating (restaurant, home).",
+    [V(W.fan_loop, xfade=1.0)], vol=0.4, loop=True, pitchVar=0.0, lufs=-21)
+add("icecream_cart_bell", WO, "sfx", "Ice-cream cart hand-bell rung in bursts (ไอติมกะทิ seller passing by).",
+    [V(W.icecream_bell, fout=0.3)], vol=0.5, pitchVar=0.02)

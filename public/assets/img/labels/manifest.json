@@ -1,0 +1,919 @@
+{
+ "note": "Real Thai product label textures, flattened from web product photos (client rule 2026-10-19: use real products, any licence). *_worn.png = greasy/worn variant.",
+ "labels": [
+  {
+   "name": "seasoning_sauce_golden_mountain",
+   "files": [
+    "seasoning_sauce_golden_mountain.png",
+    "seasoning_sauce_golden_mountain_worn.png"
+   ],
+   "size_px": [
+    659,
+    780
+   ],
+   "aspect_w_over_h": 0.845,
+   "product": "ซอสปรุงรส ฝาเขียว (seasoning sauce)",
+   "brand_real": "ภูเขาทอง Golden Mountain",
+   "package": "glass bottle (200-600 ml); main body label, front ~140° unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 24.5,
+    "bottle_d": 7.2,
+    "label_h": 9.0
+   },
+   "cap": "green plastic cap (#1f8a3c)",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://i5.walmartimages.com/seo/Golden-Mountain-Seasoning-Soybean-Sauce-HYZ01-6-8-fl-oz-bottle_4df88d7c-de9a-4983-9500-55bc3c2ea1fb.c8bc94900fec5f5d6ebd21405f9ba6ec.jpeg",
+   "source_page_url": "https://www.walmart.com/ip/Golden-Mountain-Seasoning-Soybean-Sauce-HYZ01-6-8-fl-oz-bottle/16321710506",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "fish_sauce_tiparos",
+   "files": [
+    "fish_sauce_tiparos.png",
+    "fish_sauce_tiparos_worn.png"
+   ],
+   "size_px": [
+    508,
+    494
+   ],
+   "aspect_w_over_h": 1.028,
+   "product": "น้ำปลาแท้ (fish sauce)",
+   "brand_real": "ทิพรส Tiparos",
+   "package": "PET bottle 700 ml; front label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 29.0,
+    "bottle_d": 7.5,
+    "label_h": 8.5
+   },
+   "cap": "white plastic cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://www.gosupps.com/media/catalog/product/cache/25/image/1500x/040ec09b1e35df139433887a97daa66f/7/1/717NXSfhv8L.jpg",
+   "source_page_url": "https://www.gosupps.com/tiparos-fish-sauce-700-ml.html",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "fish_sauce_squid",
+   "files": [
+    "fish_sauce_squid.png"
+   ],
+   "size_px": [
+    399,
+    470
+   ],
+   "aspect_w_over_h": 0.849,
+   "product": "น้ำปลาแท้ (fish sauce)",
+   "brand_real": "ตราปลาหมึก Squid Brand",
+   "package": "glass bottle 725 ml; front label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 28.0,
+    "bottle_d": 7.6,
+    "label_h": 9.5
+   },
+   "cap": "green plastic cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://shoplilimart.com/cdn/shop/files/SquidBrandFishSauce.jpg?v=1749448210&width=1080",
+   "source_page_url": "https://shoplilimart.com/products/squid-brand-fish-sauce-750ml-1",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "oyster_sauce_maekrua",
+   "files": [
+    "oyster_sauce_maekrua.png",
+    "oyster_sauce_maekrua_worn.png"
+   ],
+   "size_px": [
+    395,
+    510
+   ],
+   "aspect_w_over_h": 0.775,
+   "product": "ซอสหอยนางรม (oyster sauce)",
+   "brand_real": "แม่ครัว Maekrua",
+   "package": "glass bottle 600 cc; main label unwrapped (neck foil label not included)",
+   "real_dims_cm": {
+    "bottle_h": 25.5,
+    "bottle_d": 7.6,
+    "label_h": 10.0
+   },
+   "cap": "red cap + gold neck foil",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://m.media-amazon.com/images/I/61Z4txyXhCL._SL1500_.jpg",
+   "source_page_url": "https://www.amazon.com/Chuew-Huad-Co-Oyster-Sauce/dp/B003WOYEDK",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "light_soy_healthy_boy",
+   "files": [
+    "light_soy_healthy_boy.png",
+    "light_soy_healthy_boy_worn.png"
+   ],
+   "size_px": [
+    999,
+    1024
+   ],
+   "aspect_w_over_h": 0.976,
+   "product": "ซีอิ๊วขาว สูตร 1 (thin soy sauce)",
+   "brand_real": "เด็กสมบูรณ์ Healthy Boy / Dek Som Boon",
+   "package": "glass bottle 700 ml; front label unwrapped from a close-up",
+   "real_dims_cm": {
+    "bottle_h": 27.0,
+    "bottle_d": 7.0,
+    "label_h": 11.0
+   },
+   "cap": "yellow cap / plastic sleeve",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://www.nudlekongen.no/users/nudlekongenno_mystore_no/images/srybd_Healthy_Boy_THIN_SOY_SAUCE_-_700_ML_1.webp",
+   "source_page_url": "https://www.nudlekongen.no/products/thin-soy-sauce-700-ml",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "dark_soy_healthy_boy",
+   "files": [
+    "dark_soy_healthy_boy.png",
+    "dark_soy_healthy_boy_worn.png"
+   ],
+   "size_px": [
+    542,
+    610
+   ],
+   "aspect_w_over_h": 0.889,
+   "product": "ซีอิ๊วดำหวาน (sweet dark soy sauce)",
+   "brand_real": "เด็กสมบูรณ์ Healthy Boy",
+   "package": "PET/glass bottle 970 g; green front label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 26.0,
+    "bottle_d": 7.6,
+    "label_h": 9.0
+   },
+   "cap": "white/red cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://southernasiangroceries.com.au/wp-content/uploads/2024/09/20240926_162521-scaled.jpg",
+   "source_page_url": "https://southernasiangroceries.com.au/product/healthy-boy-black-sweet-soy-sauce-970g/",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "sugar_mitr_phol_1kg",
+   "files": [
+    "sugar_mitr_phol_1kg.png",
+    "sugar_mitr_phol_1kg_worn.png"
+   ],
+   "size_px": [
+    406,
+    849
+   ],
+   "aspect_w_over_h": 0.478,
+   "product": "น้ำตาลทรายขาว 1 กก. (refined sugar bag)",
+   "brand_real": "มิตรผล Mitr Phol",
+   "package": "PE pillow bag 1 kg, front face",
+   "real_dims_cm": {
+    "bag_w": 16.0,
+    "bag_h": 26.0
+   },
+   "cap": "heat-sealed",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/29/88/8850256000529/8850256000529_1-20240913110212-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/mitrphol-pure-refined-sugar-1-kg-pack-25-8850256000529.1953167",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "msg_ajinomoto_500g",
+   "files": [
+    "msg_ajinomoto_500g.png",
+    "msg_ajinomoto_500g_worn.png"
+   ],
+   "size_px": [
+    953,
+    1024
+   ],
+   "aspect_w_over_h": 0.931,
+   "product": "ผงชูรส 500 ก. (MSG pouch)",
+   "brand_real": "อายิโนะโมะโต๊ะ ตราถ้วยแดง Ajinomoto",
+   "package": "printed PE pouch 500 g, front face",
+   "real_dims_cm": {
+    "bag_w": 17.0,
+    "bag_h": 20.0
+   },
+   "cap": "heat-sealed",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://thaiwholesaleaus.com.au/cdn/shop/files/ajinomoto-msg-red-bowl-500g.jpg?v=1776866524&width=3840",
+   "source_page_url": "https://thaiwholesaleaus.com.au/products/ajinomoto-msg-red-bowl-500g",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "white_pepper_hand_brand_jar",
+   "files": [
+    "white_pepper_hand_brand_jar.png",
+    "white_pepper_hand_brand_jar_worn.png"
+   ],
+   "size_px": [
+    526,
+    590
+   ],
+   "aspect_w_over_h": 0.892,
+   "product": "พริกไทยขาวป่น (ground white pepper)",
+   "brand_real": "ตรามือที่ 1 Hand Brand (Nguan Soon)",
+   "package": "glass/PET shaker jar; label sleeve unwrapped",
+   "real_dims_cm": {
+    "jar_h": 13.0,
+    "jar_d": 5.5,
+    "label_h": 5.8
+   },
+   "cap": "green shaker cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://www.nguansoon.com/public/product/thumb/a1acae8fff401695350da1acbebc76de245.jpg",
+   "source_page_url": "https://www.nguansoon.com/index.php?page=product&lang=_en",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "white_pepper_hand_brand_tin",
+   "files": [
+    "white_pepper_hand_brand_tin.png"
+   ],
+   "size_px": [
+    485,
+    1024
+   ],
+   "aspect_w_over_h": 0.474,
+   "product": "พริกไทยขาวป่น กระป๋อง (pepper tin)",
+   "brand_real": "ตรามือที่ 1 Hand Brand",
+   "package": "tin can 20 g/50 g, printed body unwrapped",
+   "real_dims_cm": {
+    "tin_h": 9.5,
+    "tin_d": 4.8
+   },
+   "cap": "red plastic cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://drasiangrocery.com/cdn/shop/files/WhitePepperF.jpg?v=1718666268",
+   "source_page_url": "https://drasiangrocery.com/products/number-one-hand-brand-thai-ground-white-pepper-%E0%B8%9E%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%82%E0%B8%B2%E0%B8%A7%E0%B8%9B%E0%B9%88%E0%B8%99-%E0%B8%95%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%97%E0%B8%B5%E0%B9%88-1-0-7oz",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "chili_powder_hand_brand",
+   "files": [
+    "chili_powder_hand_brand.png"
+   ],
+   "size_px": [
+    467,
+    645
+   ],
+   "aspect_w_over_h": 0.724,
+   "product": "พริกขี้หนูป่น (ground chili)",
+   "brand_real": "ตรามือที่ 1 Hand Brand",
+   "package": "glass shaker jar; red label sleeve unwrapped",
+   "real_dims_cm": {
+    "jar_h": 11.5,
+    "jar_d": 5.5
+   },
+   "cap": "red cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://th-test-11.slatic.net/p/9017609bd8ec381fabd677d69b4d7791.jpg",
+   "source_page_url": "https://thaipick.com/product/lazada/2140500",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "palm_oil_morakot_1l",
+   "files": [
+    "palm_oil_morakot_1l.png",
+    "palm_oil_morakot_1l_worn.png"
+   ],
+   "size_px": [
+    314,
+    347
+   ],
+   "aspect_w_over_h": 0.905,
+   "product": "น้ำมันปาล์ม 1 ลิตร (palm cooking oil)",
+   "brand_real": "มรกต Morakot",
+   "package": "PET bottle 1 L; green front label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 30.0,
+    "bottle_d": 8.4,
+    "label_h": 10.5
+   },
+   "cap": "green plastic cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://media.allonline.7eleven.co.th/pdzoom/437757-01-Palm-Oil-Morakot.jpg",
+   "source_page_url": "https://www.allonline.7eleven.co.th/p/%E0%B8%A1%E0%B8%A3%E0%B8%81%E0%B8%95-%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%A1%E0%B8%B1%E0%B8%99%E0%B8%9B%E0%B8%B2%E0%B8%A5%E0%B9%8C%E0%B8%A1-1-%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A3/508094/",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "vinegar_osor",
+   "files": [
+    "vinegar_osor.png"
+   ],
+   "size_px": [
+    229,
+    302
+   ],
+   "aspect_w_over_h": 0.758,
+   "product": "น้ำส้มสายชูกลั่น 5% (distilled vinegar)",
+   "brand_real": "อสร. (OSOR)",
+   "package": "PET bottle 250-750 ml; front label unwrapped (low-res source)",
+   "real_dims_cm": {
+    "bottle_h": 23.0,
+    "bottle_d": 6.5,
+    "label_h": 7.0
+   },
+   "cap": "white cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://images.mango-prod.siammakro.cloud/SOURCE/9e4f688279b14e869a9abcd88ccdeb9a?eo-img.resize=w%2F1080&eo-img.format=webp",
+   "source_page_url": "https://www.makro.pro/th/p/SR-VN-250x3-352763950206766",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "eggs_cp_pack_label",
+   "files": [
+    "eggs_cp_pack_label.png"
+   ],
+   "size_px": [
+    666,
+    894
+   ],
+   "aspect_w_over_h": 0.745,
+   "product": "ไข่ไก่สด (eggs pack sleeve/label)",
+   "brand_real": "ซีพี CP Selection",
+   "package": "printed paper sleeve on a 6/10-egg pulp tray (use as tray band / top label)",
+   "real_dims_cm": {
+    "label_w": 14.0,
+    "label_h": 20.0
+   },
+   "cap": "n/a",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/35/88/8850653193435/8850653193435_1-20260420160022-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/cp-fresh-chicken-egg-vitamin-e-pack-4.5028556",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "rice_5kg_tra_chat",
+   "files": [
+    "rice_5kg_tra_chat.png",
+    "rice_5kg_tra_chat_worn.png"
+   ],
+   "size_px": [
+    722,
+    1024
+   ],
+   "aspect_w_over_h": 0.705,
+   "product": "ข้าวหอม 100% 5 กก. (jasmine rice bag)",
+   "brand_real": "ตราฉัตร Royal Umbrella",
+   "package": "PE rice bag 5 kg, front face",
+   "real_dims_cm": {
+    "bag_w": 30.0,
+    "bag_h": 45.0
+   },
+   "cap": "heat-sealed",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/17/88/8850187604117/8850187604117_1-20250909140951-.jpg",
+   "source_page_url": "https://www.bigc.co.th/en/product/royal-umbrella-thai-jasmine-rice-100-5-kg.11013965",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "rice_5kg_hong_thong",
+   "files": [
+    "rice_5kg_hong_thong.png"
+   ],
+   "size_px": [
+    588,
+    966
+   ],
+   "aspect_w_over_h": 0.609,
+   "product": "ข้าวหอมมะลิ 5 กก. (jasmine rice bag)",
+   "brand_real": "หงษ์ทอง Golden Phoenix",
+   "package": "PE rice bag 5 kg, front face",
+   "real_dims_cm": {
+    "bag_w": 30.0,
+    "bag_h": 45.0
+   },
+   "cap": "heat-sealed",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/75/88/8850443220075/8850443220075_1-20260528154438-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/golden-phoenix-limited-edition-100-new-crop-rice-5-kg.4609434",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "rice_15kg_sack_surin",
+   "files": [
+    "rice_15kg_sack_surin.png"
+   ],
+   "size_px": [
+    481,
+    670
+   ],
+   "aspect_w_over_h": 0.718,
+   "product": "ข้าวขาวหอมมะลิ 15 กก. (woven PP rice sack)",
+   "brand_real": "สกต. สุรินทร์ (green elephant print)",
+   "package": "woven polypropylene sack 15 kg, printed front (photo crop)",
+   "real_dims_cm": {
+    "sack_w": 50.0,
+    "sack_h": 80.0
+   },
+   "cap": "sewn top",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://down-th.img.susercontent.com/file/th-11134207-7ra0l-mda8idui32ou6b",
+   "source_page_url": "https://shopee.co.th/%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B8%AB%E0%B8%AD%E0%B8%A1%E0%B8%A1%E0%B8%B0%E0%B8%A5%E0%B8%B4%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88-%E0%B8%AA%E0%B8%B8%E0%B8%A3%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C%E0%B9%81%E0%B8%97%E0%B9%89-100-%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%AD%E0%B8%9A-15-%E0%B8%81%E0%B8%81.-%E0%B9%80%E0%B8%A1%E0%B9%87%E0%B8%94%E0%B9%80%E0%B8%95%E0%B9%87%E0%B8%A1-%E0%B8%AB%E0%B8%AD%E0%B8%A1-%E0%B8%99%E0%B8%B8%E0%B9%88%E0%B8%A1-%E0%B8%AB%E0%B8%B8%E0%B8%87%E0%B8%82%E0%B8%B6%E0%B9%89%E0%B8%99%E0%B8%AB%E0%B8%A1%E0%B9%89%E0%B8%AD-i.634182776.42512408401",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "lpg_cylinder_world_gas",
+   "files": [
+    "lpg_cylinder_world_gas.png"
+   ],
+   "size_px": [
+    830,
+    890
+   ],
+   "aspect_w_over_h": 0.933,
+   "product": "ก๊าซหุงต้ม LPG 15 กก. (cylinder body print)",
+   "brand_real": "เวิลด์แก๊ส World Gas",
+   "package": "steel LPG cylinder 15 kg; painted body band unwrapped (logo centred)",
+   "real_dims_cm": {
+    "cylinder_h": 59.0,
+    "cylinder_d": 30.0
+   },
+   "cap": "brass valve + regulator",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://th-test-11.slatic.net/p/97c47f2f628bd43d77fb4e8d7288846f.jpg",
+   "source_page_url": "https://www.lazada.co.th/products/15-kg-i720806790.html",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "water_crystal_600ml",
+   "files": [
+    "water_crystal_600ml.png"
+   ],
+   "size_px": [
+    472,
+    356
+   ],
+   "aspect_w_over_h": 1.326,
+   "product": "น้ำดื่ม (drinking water)",
+   "brand_real": "คริสตัล Crystal",
+   "package": "PET bottle 600 ml-1.5 L; film label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 22.0,
+    "bottle_d": 6.5,
+    "label_h": 5.5
+   },
+   "cap": "light-blue cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://th-test-11.slatic.net/p/e5369377c2e1068896e5fc5ac3b5f38b.jpg",
+   "source_page_url": "https://thaipick.com/product/lazada/3072341",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "cola_coke_can_325",
+   "files": [
+    "cola_coke_can_325.png"
+   ],
+   "size_px": [
+    427,
+    834
+   ],
+   "aspect_w_over_h": 0.512,
+   "product": "โค้ก รสชาติออริจินัล (cola can)",
+   "brand_real": "Coca-Cola โค้ก",
+   "package": "aluminium can 325 ml; printed body unwrapped",
+   "real_dims_cm": {
+    "can_h": 11.5,
+    "can_d": 6.6
+   },
+   "cap": "pull-tab top",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/12/88/8851959132012/8851959132012_3-20230704141437-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/coke-original-soft-drink-325-ml-8851959132012.91",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "soda_fanta_orange_can",
+   "files": [
+    "soda_fanta_orange_can.png"
+   ],
+   "size_px": [
+    498,
+    984
+   ],
+   "aspect_w_over_h": 0.506,
+   "product": "แฟนต้า กลิ่นส้ม (orange soda can)",
+   "brand_real": "Fanta แฟนต้า",
+   "package": "aluminium can 325 ml; printed body unwrapped",
+   "real_dims_cm": {
+    "can_h": 11.5,
+    "can_d": 6.6
+   },
+   "cap": "pull-tab top",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://st.bigc-cs.com/public/media/catalog/product/66/88/8851959132166/8851959132166_1-20230620100541-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/fanta-orange-flavored-soft-drink-can-325-ml-8851959132166.13206",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "soda_fanta_red_bottle",
+   "files": [
+    "soda_fanta_red_bottle.png"
+   ],
+   "size_px": [
+    367,
+    222
+   ],
+   "aspect_w_over_h": 1.653,
+   "product": "แฟนต้า น้ำแดง กลิ่นสตรอเบอร์รี่ (red soda)",
+   "brand_real": "Fanta แฟนต้า",
+   "package": "PET bottle 1.25-1.95 L; label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 32.0,
+    "bottle_d": 9.5,
+    "label_h": 9.0
+   },
+   "cap": "blue cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/73/88/8851959129173/8851959129173_7-20260525175215-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/fanta-strawberry-flavored-soft-drink-size-1-95-l.6643246",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "soda_fanta_green_can",
+   "files": [
+    "soda_fanta_green_can.png"
+   ],
+   "size_px": [
+    567,
+    1024
+   ],
+   "aspect_w_over_h": 0.554,
+   "product": "แฟนต้า น้ำเขียว (green cream soda can)",
+   "brand_real": "Fanta แฟนต้า",
+   "package": "aluminium can 325 ml; printed body unwrapped",
+   "real_dims_cm": {
+    "can_h": 11.5,
+    "can_d": 6.6
+   },
+   "cap": "pull-tab top",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://yaothaifood.co.uk/wp-content/uploads/2021/03/20201017_205327-scaled.jpg?v=1615490592",
+   "source_page_url": "https://yaothaifood.co.uk/shop-2021/drinks/fanta-green-soda-flavour-soft-drink-325ml/",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "energy_krating_daeng",
+   "files": [
+    "energy_krating_daeng.png"
+   ],
+   "size_px": [
+    456,
+    508
+   ],
+   "aspect_w_over_h": 0.898,
+   "product": "เครื่องดื่มชูกำลัง (energy drink)",
+   "brand_real": "กระทิงแดง Krating Daeng",
+   "package": "brown glass bottle 150 ml; label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 12.5,
+    "bottle_d": 5.2,
+    "label_h": 5.5
+   },
+   "cap": "red/gold metal cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://usabites.co.uk/cdn/shop/files/21FFE78B-12EB-48DD-9C25-3D4565D966A7.jpg?v=1766877170&width=1445",
+   "source_page_url": "https://usabites.co.uk/products/krating-daeng-red-bull-extra-abc-145ml-thailand",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "energy_m150",
+   "files": [
+    "energy_m150.png"
+   ],
+   "size_px": [
+    469,
+    498
+   ],
+   "aspect_w_over_h": 0.942,
+   "product": "เครื่องดื่มชูกำลัง (energy drink)",
+   "brand_real": "เอ็ม-150 M-150",
+   "package": "brown glass bottle 150 ml; label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 12.5,
+    "bottle_d": 5.2,
+    "label_h": 6.0
+   },
+   "cap": "gold metal screw cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://arcaera.com/cdn/shop/files/M-150-Energy-Drink---5.07oz_1200x.jpg?v=1696001638",
+   "source_page_url": "https://arcaera.com/products/m-150-energy-drink-5-07oz",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "instant_noodle_mama_cup",
+   "files": [
+    "instant_noodle_mama_cup.png"
+   ],
+   "size_px": [
+    882,
+    1024
+   ],
+   "aspect_w_over_h": 0.861,
+   "product": "บะหมี่กึ่งสำเร็จรูป คัพ (instant noodle cup)",
+   "brand_real": "มาม่า MAMA Cup (Shrimp Creamy Tom Yum)",
+   "package": "paper/PS cup 60 g, conical; side print unwrapped (approx.)",
+   "real_dims_cm": {
+    "cup_h": 10.0,
+    "top_d": 9.5,
+    "bottom_d": 6.5
+   },
+   "cap": "foil lid",
+   "method": "conical (cup) unwrap",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://images-na.ssl-images-amazon.com/images/I/91j8A1jQVCL.jpg",
+   "source_page_url": "https://fado.vn/uk/amazon/mama-instant-cup-noodle-with-creamy-shrimp-tom-yum-flavor-70-g-pack-of-12-B07YXG7942.html",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "beer_chang_can",
+   "files": [
+    "beer_chang_can.png"
+   ],
+   "size_px": [
+    633,
+    872
+   ],
+   "aspect_w_over_h": 0.726,
+   "product": "เบียร์ (beer can)",
+   "brand_real": "ช้าง Chang Classic",
+   "package": "aluminium can 320-490 ml; printed body unwrapped",
+   "real_dims_cm": {
+    "can_h": 12.2,
+    "can_d": 6.6
+   },
+   "cap": "pull-tab top",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://media.nedigital.sg/fairprice/fpol/media/images/product/XL/10627149_XL1_20230328.jpg",
+   "source_page_url": "https://www.fairprice.com.sg/product/ctn-chang-beer-24s-x-320ml-10627149",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "beer_singha_bottle",
+   "files": [
+    "beer_singha_bottle.png"
+   ],
+   "size_px": [
+    351,
+    377
+   ],
+   "aspect_w_over_h": 0.931,
+   "product": "เบียร์ (beer bottle label)",
+   "brand_real": "สิงห์ Singha",
+   "package": "brown glass bottle 620 ml; body label unwrapped (neck label not included)",
+   "real_dims_cm": {
+    "bottle_h": 28.5,
+    "bottle_d": 7.4,
+    "label_h": 9.0
+   },
+   "cap": "gold crown cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://www.sukhothai-one.fr/wp-content/uploads/2023/06/Singha-330ml-12-16__69250.jpg",
+   "source_page_url": "https://www.sukhothai-one.fr/produit/singha/",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "whisky_sangsom",
+   "files": [
+    "whisky_sangsom.png"
+   ],
+   "size_px": [
+    414,
+    622
+   ],
+   "aspect_w_over_h": 0.666,
+   "product": "สุรา (Thai rum) front label",
+   "brand_real": "แสงโสม SangSom",
+   "package": "glass bottle 700 ml; front label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 28.0,
+    "bottle_d": 8.5,
+    "label_h": 9.5
+   },
+   "cap": "gold metal screw cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://www.homeofmalts.com/thumbnail/da/60/e7/1743427343/19064-SangSom-Special-Rum_1920x1920.jpg?ts=1743427348",
+   "source_page_url": "https://www.homeofmalts.com/en/19064/sangsom-special-rum",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "ice_bag_siri_mit_tube_ice",
+   "files": [
+    "ice_bag_siri_mit_tube_ice.png"
+   ],
+   "size_px": [
+    729,
+    926
+   ],
+   "aspect_w_over_h": 0.787,
+   "product": "น้ำแข็งหลอด (tube ice bag)",
+   "brand_real": "ศิริมิตร Sirimit",
+   "package": "clear PE ice bag (print on clear film) 1.4-20 kg; front face crop",
+   "real_dims_cm": {
+    "bag_w": 30.0,
+    "bag_h": 45.0
+   },
+   "cap": "tied/heat-sealed",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "http://www.sirimitrice.com/images/main_1309399303/sirimitr%20ice%20pack%202.jpg",
+   "source_page_url": "http://www.sirimitrice.com/Products.html",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "chayen_chatramue_cup_logo",
+   "files": [
+    "chayen_chatramue_cup_logo.png"
+   ],
+   "size_px": [
+    368,
+    273
+   ],
+   "aspect_w_over_h": 1.348,
+   "product": "โลโก้แก้วชาเย็น (Thai tea cup logo)",
+   "brand_real": "ชาตรามือ ChaTraMue",
+   "package": "printed logo on clear PP cup (crop incl. tea behind)",
+   "real_dims_cm": {
+    "logo_w": 7.0,
+    "logo_h": 5.0
+   },
+   "cap": "dome/sealed lid",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://cdn.ennxo.com/content/uploads/1600/thai-tea-chatramue.jpg",
+   "source_page_url": "https://www.ennxo.com/tourism/guide/chatramue-menus-and-branches",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "pork_tray_cp_top",
+   "files": [
+    "pork_tray_cp_top.png"
+   ],
+   "size_px": [
+    1024,
+    564
+   ],
+   "aspect_w_over_h": 1.816,
+   "product": "หมูสดปลอดสาร ถาด (pork tray top film incl. meat window)",
+   "brand_real": "ซีพี CP Selection",
+   "package": "PS foam/PET tray with printed top film; whole top face",
+   "real_dims_cm": {
+    "tray_w": 22.0,
+    "tray_h": 16.0
+   },
+   "cap": "cling film",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://storage.googleapis.com/cmpd-sit-bucket-app/images/cpknow/1655451074_image-from-ios.png",
+   "source_page_url": "https://www.cpknowwhatyoueat.com/product/21211756",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "pork_tray_cp_price_sticker",
+   "files": [
+    "pork_tray_cp_price_sticker.png"
+   ],
+   "size_px": [
+    370,
+    374
+   ],
+   "aspect_w_over_h": 0.989,
+   "product": "สติ๊กเกอร์ราคา/น้ำหนัก ถาดหมู (scale label)",
+   "brand_real": "ซีพี CP",
+   "package": "paper scale sticker on tray film",
+   "real_dims_cm": {
+    "sticker_w": 6.0,
+    "sticker_h": 4.5
+   },
+   "cap": "n/a",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://storage.googleapis.com/cmpd-sit-bucket-app/images/cpknow/1655451074_image-from-ios.png",
+   "source_page_url": "https://www.cpknowwhatyoueat.com/product/21211756",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "pork_tray_cheeva_sleeve",
+   "files": [
+    "pork_tray_cheeva_sleeve.png"
+   ],
+   "size_px": [
+    217,
+    512
+   ],
+   "aspect_w_over_h": 0.424,
+   "product": "ปลอกฉลากถาดหมู (pork tray sleeve)",
+   "brand_real": "หมูชีวา CHEEVA",
+   "package": "paper sleeve around foam tray",
+   "real_dims_cm": {
+    "sleeve_w": 7.0,
+    "sleeve_h": 16.0
+   },
+   "cap": "n/a",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://o2o-static.lotuss.com/products/107486/75692746.jpg",
+   "source_page_url": "https://www.lotuss.com/th/product/75692746",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "basil_pack_sleeve",
+   "files": [
+    "basil_pack_sleeve.png"
+   ],
+   "size_px": [
+    190,
+    512
+   ],
+   "aspect_w_over_h": 0.371,
+   "product": "ใบกะเพรา แพ็ค (packaged holy basil sleeve)",
+   "brand_real": "We Fresh ผักสดปลอดภัย",
+   "package": "printed PP sleeve with basil inside (supermarket pack)",
+   "real_dims_cm": {
+    "pack_w": 10.0,
+    "pack_h": 28.0
+   },
+   "cap": "n/a",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/11/20/2000000411811/2000000411811_1-20260324154908-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/holy-basil-pack.85489",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "carton_mama_face",
+   "files": [
+    "carton_mama_face.png"
+   ],
+   "size_px": [
+    943,
+    1024
+   ],
+   "aspect_w_over_h": 0.921,
+   "product": "ลังมาม่า หน้ากล่อง (Mama carton face)",
+   "brand_real": "มาม่า MAMA (ต้มยำกุ้งน้ำข้น 30 ซอง)",
+   "package": "corrugated carton face, perspective-flattened (for cardboard props)",
+   "real_dims_cm": {
+    "face_w": 37.0,
+    "face_h": 40.0
+   },
+   "cap": "n/a",
+   "method": "4-point perspective flatten",
+   "uv_note": "flat face",
+   "source_image_url": "https://th-test-11.slatic.net/p/f0b6115e3361f513add64d1ac5086aba.jpg",
+   "source_page_url": "https://thaipick.com/product/lazada/3084175",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "carton_chang_3pack",
+   "files": [
+    "carton_chang_3pack.png"
+   ],
+   "size_px": [
+    1024,
+    604
+   ],
+   "aspect_w_over_h": 1.695,
+   "product": "แพ็คเบียร์ช้าง 3 ขวด (printed paperboard carrier)",
+   "brand_real": "ช้าง Chang Classic",
+   "package": "printed paperboard bottle carrier front",
+   "real_dims_cm": {
+    "face_w": 23.0,
+    "face_h": 14.0
+   },
+   "cap": "n/a",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://obs-ect.line-scdn.net/r/ect/ect/image_16750909624921274126c6b8686t11140302",
+   "source_page_url": "https://shop.line.me/@743dsecr/product/1003790764",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  }
+ ]
+}

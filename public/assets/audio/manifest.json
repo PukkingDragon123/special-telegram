@@ -757,5 +757,371 @@
   "cat": "sfx",
   "pitchVar": 0.05,
   "desc": "Gulp of a drink."
+ },
+ "traffic_bangkok_loop": {
+  "files": [
+   "amb/traffic_bangkok_loop.mp3"
+  ],
+  "vol": 0.7,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Busy Bangkok road: traffic bed, swarms of scooters, tuk-tuk, horns. Main road areas."
+ },
+ "motorbike_pass": {
+  "files": [
+   "sfx/world/motorbike_pass_1.mp3",
+   "sfx/world/motorbike_pass_2.mp3",
+   "sfx/world/motorbike_pass_3.mp3",
+   "sfx/world/motorbike_pass_4.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Motorbike / scooter passing by (approach-pass-recede). Use for ambient passes."
+ },
+ "scooter_idle_loop": {
+  "files": [
+   "sfx/world/scooter_idle_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Small scooter idling (motorbike-taxi stand, parked delivery rider)."
+ },
+ "tuktuk_engine_loop": {
+  "files": [
+   "sfx/world/tuktuk_engine_loop.mp3"
+  ],
+  "vol": 0.55,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Tuk-tuk two-stroke putt-putt idle/putter with rattling body (loop; pitch up with speed)."
+ },
+ "car_horn_short": {
+  "files": [
+   "sfx/world/car_horn_short_1.mp3",
+   "sfx/world/car_horn_short_2.mp3",
+   "sfx/world/car_horn_short_3.mp3",
+   "sfx/world/car_horn_short_4.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Short car horn honk (everyone honks)."
+ },
+ "truck_horn": {
+  "files": [
+   "sfx/world/truck_horn.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Truck / pickup air horn blast."
+ },
+ "bus_airbrake": {
+  "files": [
+   "sfx/world/bus_airbrake.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Bus / truck air-brake release 'PSSSHH'."
+ },
+ "siren_distant": {
+  "files": [
+   "sfx/world/siren_distant.mp3"
+  ],
+  "vol": 0.4,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Distant ambulance siren drifting across the city."
+ },
+ "songthaew_engine_loop": {
+  "files": [
+   "sfx/world/songthaew_engine_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Songthaew / pickup diesel engine running (loop)."
+ },
+ "market_crowd_loop": {
+  "files": [
+   "amb/market_crowd_loop.mp3"
+  ],
+  "vol": 0.75,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Fresh market (ตลาดสด) bed: crowd chatter, plastic bags, cleaver chops, Thai voices."
+ },
+ "street_ambience_day_loop": {
+  "files": [
+   "amb/street_ambience_day_loop.mp3"
+  ],
+  "vol": 0.75,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Daytime neighbourhood street: distant traffic, scooters, birds, people, occasional horn."
+ },
+ "street_ambience_night_loop": {
+  "files": [
+   "amb/street_ambience_night_loop.mp3"
+  ],
+  "vol": 0.75,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Night street: crickets/insects, faint distant traffic, far-off dogs and scooters."
+ },
+ "dog_bark": {
+  "files": [
+   "sfx/world/dog_bark_1.mp3",
+   "sfx/world/dog_bark_2.mp3",
+   "sfx/world/dog_bark_3.mp3",
+   "sfx/world/dog_bark_4.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.08,
+  "desc": "Stray dog (หมาจร) bark."
+ },
+ "dog_whine": {
+  "files": [
+   "sfx/world/dog_whine_1.mp3",
+   "sfx/world/dog_whine_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Dog whimper / whine (begging for food, sad)."
+ },
+ "dog_eat": {
+  "files": [
+   "sfx/world/dog_eat.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Dog wolfing down food (the dog that eats your rice and pork)."
+ },
+ "dog_happy_pant": {
+  "files": [
+   "sfx/world/dog_happy_pant.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Happy dog panting (following you around)."
+ },
+ "cat_meow": {
+  "files": [
+   "sfx/world/cat_meow_1.mp3",
+   "sfx/world/cat_meow_2.mp3",
+   "sfx/world/cat_meow_3.mp3",
+   "sfx/world/cat_meow_4.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.07,
+  "desc": "Street cat meow."
+ },
+ "cat_purr_loop": {
+  "files": [
+   "sfx/world/cat_purr_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Cat purring (adopted cat sitting with you)."
+ },
+ "birds_loop": {
+  "files": [
+   "amb/birds_loop.mp3"
+  ],
+  "vol": 0.6,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Tropical city birds (morning/day) - myna/bulbul-like chatter layer."
+ },
+ "pigeons": {
+  "files": [
+   "sfx/world/pigeons.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Pigeons cooing / fluttering (temple courtyard, wires)."
+ },
+ "crow": {
+  "files": [
+   "sfx/world/crow.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "House crow caw."
+ },
+ "rooster": {
+  "files": [
+   "sfx/world/rooster_1.mp3",
+   "sfx/world/rooster_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.04,
+  "desc": "Rooster crowing (rural edge, dawn)."
+ },
+ "cicadas_loop": {
+  "files": [
+   "amb/cicadas_loop.mp3"
+  ],
+  "vol": 0.45,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Hot-afternoon cicada chorus (trees, empty lot, temple). Play 12:00-16:00."
+ },
+ "crickets_frogs_night_loop": {
+  "files": [
+   "amb/crickets_frogs_night_loop.mp3"
+  ],
+  "vol": 0.6,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Night insects + frogs near the canal / rice-field edge."
+ },
+ "tokay_gecko": {
+  "files": [
+   "sfx/world/tokay_gecko.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Tokay gecko 'TOK-KAE, TOK-KAE' call (ตุ๊กแก) - iconic Thai night sound."
+ },
+ "temple_bell": {
+  "files": [
+   "sfx/world/temple_bell_1.mp3",
+   "sfx/world/temple_bell_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.02,
+  "desc": "Temple bells: (1) big bronze bell struck, (2) small eave wind-bells tinkling."
+ },
+ "gong": {
+  "files": [
+   "sfx/world/gong.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.02,
+  "desc": "Thai bossed gong (ฆ้อง) strike."
+ },
+ "wind_loop": {
+  "files": [
+   "amb/wind_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Soft wind / breeze bed (open lot, rooftop, evening)."
+ },
+ "rain_loop": {
+  "files": [
+   "amb/rain_loop.mp3"
+  ],
+  "vol": 0.7,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Heavy tropical rain (monsoon downpour)."
+ },
+ "thunder": {
+  "files": [
+   "sfx/world/thunder_1.mp3",
+   "sfx/world/thunder_2.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Thunder: (1) close crack + rumble, (2) long distant rumble."
+ },
+ "ac_hum_loop": {
+  "files": [
+   "sfx/world/ac_hum_loop.mp3"
+  ],
+  "vol": 0.4,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Air-conditioner unit hum (shophouse wall AC, convenience store)."
+ },
+ "fluorescent_buzz_loop": {
+  "files": [
+   "sfx/world/fluorescent_buzz_loop.mp3"
+  ],
+  "vol": 0.3,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Fluorescent tube buzz (100 Hz) - night stalls, convenience store, shop interiors."
+ },
+ "convenience_door_chime": {
+  "files": [
+   "sfx/world/convenience_door_chime.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Original 'ding-dong' entry chime for the 8-Twelve parody store."
+ },
+ "fan_loop": {
+  "files": [
+   "sfx/world/fan_loop.mp3"
+  ],
+  "vol": 0.4,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Standing electric fan whirring and slowly oscillating (restaurant, home)."
+ },
+ "icecream_cart_bell": {
+  "files": [
+   "sfx/world/icecream_cart_bell.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.02,
+  "desc": "Ice-cream cart hand-bell rung in bursts (ไอติมกะทิ seller passing by)."
  }
 }

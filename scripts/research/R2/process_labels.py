@@ -162,6 +162,32 @@ job("chayen_chatramue_cup_logo", "chatramue/chatramue_04.jpg", "crop", "โล�
     cap="dome/sealed lid", box=(0.385, 0.565, 0.615, 0.735), deshade=0, wb=False, out_w=512)
 
 
+job("pork_tray_cp_top", "pork_tray/pork_tray_02.jpg", "crop", "หมูสดปลอดสาร ถาด (pork tray top film incl. meat window)",
+    "ซีพี CP Selection", "PS foam/PET tray with printed top film; whole top face", {"tray_w": 22.0, "tray_h": 16.0},
+    cap="cling film", box=(0.07, 0.165, 0.935, 0.815), deshade=0, wb=False)
+
+job("pork_tray_cp_price_sticker", "pork_tray/pork_tray_02.jpg", "crop", "สติ๊กเกอร์ราคา/น้ำหนัก ถาดหมู (scale label)",
+    "ซีพี CP", "paper scale sticker on tray film", {"sticker_w": 6.0, "sticker_h": 4.5}, cap="n/a",
+    box=(0.745, 0.555, 0.93, 0.81), deshade=0, wb=False, out_w=512)
+
+job("pork_tray_cheeva_sleeve", "pork_tray/pork_tray_01.jpg", "crop", "ปลอกฉลากถาดหมู (pork tray sleeve)",
+    "หมูชีวา CHEEVA", "paper sleeve around foam tray", {"sleeve_w": 7.0, "sleeve_h": 16.0}, cap="n/a",
+    box=(0.13, 0.19, 0.395, 0.815), deshade=0, wb=False, out_w=512)
+
+job("basil_pack_sleeve", "basil_pack/basil_pack_05.jpg", "crop", "ใบกะเพรา แพ็ค (packaged holy basil sleeve)",
+    "We Fresh ผักสดปลอดภัย", "printed PP sleeve with basil inside (supermarket pack)", {"pack_w": 10.0, "pack_h": 28.0},
+    cap="n/a", box=(0.355, 0.095, 0.655, 0.905), deshade=0, wb=False, out_w=512)
+
+job("carton_mama_face", "mama_carton/mama_carton_07.jpg", "persp", "ลังมาม่า หน้ากล่อง (Mama carton face)",
+    "มาม่า MAMA (ต้มยำกุ้งน้ำข้น 30 ซอง)", "corrugated carton face, perspective-flattened (for cardboard props)",
+    {"face_w": 37.0, "face_h": 40.0}, cap="n/a", pts=[(0.065, 0.075), (0.795, 0.02), (0.825, 0.862), (0.025, 0.885)],
+    aspect=0.92, px_w=1100, deshade=0, wb=False)
+
+job("carton_chang_3pack", "chang_carton/chang_carton_01.jpg", "crop", "แพ็คเบียร์ช้าง 3 ขวด (printed paperboard carrier)",
+    "ช้าง Chang Classic", "printed paperboard bottle carrier front", {"face_w": 23.0, "face_h": 14.0}, cap="n/a",
+    box=(0.025, 0.415, 0.975, 0.975), deshade=0)
+
+
 def run(j):
     img = FL.load(os.path.join(RAW, j["src"]))
     H, W = img.shape[:2]
@@ -199,11 +225,68 @@ def run(j):
     return size
 
 
+def worn_variant(name, strength=0.75, base_col=(92, 52, 18)):
+    """Greasy / worn copy of a finished label (oil soak, sauce drips, scuffs, edge wear)."""
+    import labelkit as LK
+    from PIL import Image
+    src = os.path.join(OUT, name + ".png")
+    im = Image.open(src).convert("RGBA")
+    g = LK.greasy(im, seed=abs(hash(name)) % 997, strength=strength, base_col=base_col)
+    g = LK.finish(g, seed=3, grain=3.0, misreg=0, blur=0.0, uneven=0.0)
+    g.convert("RGB").save(os.path.join(OUT, name + "_worn.png"), optimize=True)
+    return name + "_worn.png"
+
+
+def write_manifest():
+    logs = {}
+    for lf in ("_log.jsonl",):
+        p = os.path.join(RAW, lf)
+        if os.path.exists(p):
+            for line in open(p, encoding="utf-8"):
+                d = json.loads(line)
+                logs[d["file"]] = d
+    entries = []
+    for n, j in JOBS.items():
+        f = os.path.join(OUT, n + ".png")
+        if not os.path.exists(f):
+            continue
+        from PIL import Image
+        w, h = Image.open(f).size
+        src = logs.get(j["src"], {})
+        files = [n + ".png"] + ([n + "_worn.png"] if os.path.exists(os.path.join(OUT, n + "_worn.png")) else [])
+        entries.append({
+            "name": n, "files": files, "size_px": [w, h], "aspect_w_over_h": round(w / h, 3),
+            "product": j["product"], "brand_real": j["brand"], "package": j["package"],
+            "real_dims_cm": j["real_dims_cm"], "cap": j["cap"],
+            "method": {"cyl": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+                       "frustum": "conical (cup) unwrap", "persp": "4-point perspective flatten",
+                       "crop": "straight crop"}[j["method"]],
+            "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, "
+                       "map it to the front of the container and tint the back with the edge colour"
+            if j["method"] in ("cyl", "frustum") else "flat face",
+            "source_image_url": src.get("image", ""), "source_page_url": src.get("page", ""),
+            "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)",
+        })
+    data = {"note": "Real Thai product label textures, flattened from web product photos (client rule 2026-10-19: "
+                    "use real products, any licence). *_worn.png = greasy/worn variant.",
+            "labels": entries}
+    json.dump(data, open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    return len(entries)
+
+
 def main():
-    names = sys.argv[1:] or list(JOBS)
+    args = sys.argv[1:]
+    if args == ["--manifest"]:
+        print("manifest entries:", write_manifest())
+        return
+    names = args or list(JOBS)
     for n in names:
         size = run(JOBS[n])
-        print(n, size, flush=True)
+        extra = ""
+        if JOBS[n].get("worn"):
+            extra = worn_variant(n, **JOBS[n].get("worn_kw", {}))
+        print(n, size, extra, flush=True)
+    print("manifest entries:", write_manifest())
 
 
 if __name__ == "__main__":

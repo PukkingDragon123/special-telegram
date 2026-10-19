@@ -781,8 +781,8 @@ def crowd_vowel(kind="aww", voices=26, seed=3):
         S.place(out, S.pan(x * r.uniform(0.5, 1.0), r.uniform(-0.8, 0.8)), r.uniform(0.0, 0.18))
     ir = S.make_ir(1.8, 1.2, 5000, stereo=True, seed_=21)
     out = S.reverb(out, ir, wet=0.3)[: n + int(0.5 * SR)]
-    out += 0.01 * S.stereo(S.butter(S.noise(len(out), "pink"), "lowpass", 2000, 2)) * \
-        S.stereo(env_points(len(out), [(0, 0), (0.1, 1), (d, 1), (d + 0.6, 0)]))
+    out += 0.01 * A.stereo(S.butter(S.noise(len(out), "pink"), "lowpass", 2000, 2)) * \
+        A.stereo(env_points(len(out), [(0, 0), (0.1, 1), (d, 1), (d + 0.6, 0)]))
     return A.mono(out), [SY("crowd_vowel")]
 
 

@@ -33,13 +33,16 @@ export const wb = (bone: number): W => [bone, 1];
 
 /** Skinned geometry accumulator with two material groups (0 = atlas, 1 = accessory palette). */
 export class Geo {
-  P: number[] = []; N: number[] = []; UV: number[] = []; SI: number[] = []; SW: number[] = [];
+  P: number[] = []; N: number[] = []; UV: number[] = []; SI: number[] = []; SW: number[] = []; C: number[] = [];
   I: number[][] = [[], []];
+  /** vertex colour applied to subsequently added vertices (accessory tint) */
+  color: V3 = [1, 1, 1];
 
   get count() { return this.P.length / 3; }
 
   v(p: V3, n: V3, u: number, v: number, w: W): number {
     this.P.push(p[0], p[1], p[2]);
+    this.C.push(this.color[0], this.color[1], this.color[2]);
     const l = Math.hypot(n[0], n[1], n[2]) || 1;
     this.N.push(n[0] / l, n[1] / l, n[2] / l);
     this.UV.push(u, v);
@@ -69,7 +72,7 @@ export class Geo {
 
   append(o: Geo) {
     const off = this.count;
-    this.P.push(...o.P); this.N.push(...o.N); this.UV.push(...o.UV); this.SI.push(...o.SI); this.SW.push(...o.SW);
+    this.P.push(...o.P); this.N.push(...o.N); this.UV.push(...o.UV); this.SI.push(...o.SI); this.SW.push(...o.SW); this.C.push(...o.C);
     for (let g = 0; g < 2; g++) for (const i of o.I[g]) this.I[g].push(i + off);
   }
 
@@ -80,6 +83,7 @@ export class Geo {
     g.setAttribute('uv', new THREE.Float32BufferAttribute(this.UV, 2));
     g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(this.SI, 4));
     g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(this.SW, 4));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(this.C, 3));
     const idx = [...this.I[0], ...this.I[1]];
     g.setIndex(idx);
     g.addGroup(0, this.I[0].length, 0);

@@ -6,119 +6,119 @@
    "h": 466,
    "note": "main title, Chonburi fattened + rounded (bubbly 70s serif like the cover). Place bottom-centre over the rug, ~62% of screen width"
   },
-  "title_hiaphat_alt_mitr.png": {
-   "w": 1337,
-   "h": 431,
-   "note": "alternate title, Mitr Bold (rounder, cleaner)"
+  "title_hiaphat_alt_noto.png": {
+   "w": 1400,
+   "h": 455,
+   "note": "alternate title, Noto Sans Thai Looped Black (cleaner, looped)"
   },
   "subtitle_hiaphat_latin.png": {
-   "w": 904,
-   "h": 202,
+   "w": 917,
+   "h": 229,
    "note": "romanised subtitle in the cover's 'hong ser' position"
   },
   "tagline_roi_baht_sang_tua.png": {
-   "w": 1243,
-   "h": 172,
+   "w": 1251,
+   "h": 189,
    "note": "Thai tagline: 'building a life from 100 baht'"
   },
   "tagline_tamnan_kaprao.png": {
-   "w": 1657,
-   "h": 177,
+   "w": 1733,
+   "h": 189,
    "note": "alt tagline: 'legend of the 100-baht kaprao'"
   },
   "btn_host.png": {
-   "w": 864,
-   "h": 265,
+   "w": 850,
+   "h": 289,
    "note": "button 'สร้างห้อง' / HOST (normal)"
   },
   "btn_host_hover.png": {
-   "w": 864,
-   "h": 265,
+   "w": 850,
+   "h": 289,
    "note": "button 'สร้างห้อง' / HOST (hover)"
   },
   "btn_host_pressed.png": {
-   "w": 864,
-   "h": 265,
+   "w": 850,
+   "h": 289,
    "note": "button 'สร้างห้อง' / HOST (pressed)"
   },
   "btn_host_disabled.png": {
-   "w": 864,
-   "h": 265,
+   "w": 850,
+   "h": 289,
    "note": "button 'สร้างห้อง' / HOST (disabled)"
   },
   "btn_join.png": {
-   "w": 672,
-   "h": 265,
+   "w": 654,
+   "h": 305,
    "note": "button 'เข้าร่วม' / JOIN (normal)"
   },
   "btn_join_hover.png": {
-   "w": 672,
-   "h": 265,
+   "w": 654,
+   "h": 305,
    "note": "button 'เข้าร่วม' / JOIN (hover)"
   },
   "btn_join_pressed.png": {
-   "w": 672,
-   "h": 265,
+   "w": 654,
+   "h": 305,
    "note": "button 'เข้าร่วม' / JOIN (pressed)"
   },
   "btn_join_disabled.png": {
-   "w": 672,
-   "h": 265,
+   "w": 654,
+   "h": 305,
    "note": "button 'เข้าร่วม' / JOIN (disabled)"
   },
   "btn_start.png": {
-   "w": 726,
-   "h": 301,
+   "w": 733,
+   "h": 332,
    "note": "button 'เริ่มเลย!' / START (normal)"
   },
   "btn_start_hover.png": {
-   "w": 726,
-   "h": 301,
+   "w": 733,
+   "h": 332,
    "note": "button 'เริ่มเลย!' / START (hover)"
   },
   "btn_start_pressed.png": {
-   "w": 726,
-   "h": 301,
+   "w": 733,
+   "h": 332,
    "note": "button 'เริ่มเลย!' / START (pressed)"
   },
   "btn_start_disabled.png": {
-   "w": 726,
-   "h": 301,
+   "w": 733,
+   "h": 332,
    "note": "button 'เริ่มเลย!' / START (disabled)"
   },
   "btn_customize.png": {
-   "w": 675,
-   "h": 264,
+   "w": 655,
+   "h": 284,
    "note": "button 'แต่งตัว' / CUSTOMIZE (normal)"
   },
   "btn_customize_hover.png": {
-   "w": 675,
-   "h": 264,
+   "w": 655,
+   "h": 284,
    "note": "button 'แต่งตัว' / CUSTOMIZE (hover)"
   },
   "btn_customize_pressed.png": {
-   "w": 675,
-   "h": 264,
+   "w": 655,
+   "h": 284,
    "note": "button 'แต่งตัว' / CUSTOMIZE (pressed)"
   },
   "btn_customize_disabled.png": {
-   "w": 675,
-   "h": 264,
+   "w": 655,
+   "h": 284,
    "note": "button 'แต่งตัว' / CUSTOMIZE (disabled)"
   },
   "btn_quit.png": {
-   "w": 412,
-   "h": 223,
+   "w": 416,
+   "h": 231,
    "note": "button 'ออก' / QUIT (normal)"
   },
   "btn_quit_hover.png": {
-   "w": 412,
-   "h": 223,
+   "w": 416,
+   "h": 231,
    "note": "button 'ออก' / QUIT (hover)"
   },
   "plate_room_code.png": {
    "w": 804,
-   "h": 237,
+   "h": 241,
    "note": "room-code plate (game draws the code in the white area)",
    "text_region": {
     "x": 111,
@@ -126,7 +126,7 @@
     "w": 658,
     "h": 109
    },
-   "text_font": "Kanit-Black",
+   "text_font": "NotoSansThaiLooped@900",
    "text_color": "#1E3314"
   },
   "plate_player_name.png": {
@@ -139,37 +139,37 @@
     "w": 542,
     "h": 84
    },
-   "text_font": "Kanit-Black",
+   "text_font": "NotoSansThaiLooped@900",
    "text_color": "#1E3314"
   },
   "arrow_you.png": {
    "w": 347,
-   "h": 665,
+   "h": 672,
    "note": "arrow that bobs above YOUR character on the menu ('คุณ' = you); click to customise"
   },
   "label_waiting_friend.png": {
-   "w": 575,
-   "h": 179,
+   "w": 648,
+   "h": 193,
    "note": "label over an empty (silhouette) slot: 'waiting for a friend...'"
   },
   "label_p1.png": {
-   "w": 158,
-   "h": 108,
+   "w": 147,
+   "h": 111,
    "note": "player slot number 1"
   },
   "label_p2.png": {
-   "w": 162,
-   "h": 109,
+   "w": 157,
+   "h": 113,
    "note": "player slot number 2"
   },
   "label_p3.png": {
-   "w": 166,
-   "h": 111,
+   "w": 157,
+   "h": 114,
    "note": "player slot number 3"
   },
   "label_p4.png": {
-   "w": 168,
-   "h": 108,
+   "w": 160,
+   "h": 111,
    "note": "player slot number 4"
   }
  }

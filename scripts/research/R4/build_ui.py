@@ -30,8 +30,30 @@ def scaled_to_width(img, w):
 t = cover_title("เฮียผัด!", "Chonburi-Regular", 420, round_px=420 * 0.022, fatten_px=420 * 0.03)
 save(scaled_to_width(t, 2048) if t.width > 2048 else t, "title_hiaphat.png",
      "main title, Chonburi fattened + rounded (bubbly 70s serif like the cover). Place bottom-centre over the rug, ~62% of screen width")
-t2 = cover_title("เฮียผัด!", "Mitr-Bold", 400, round_px=400 * 0.015, fatten_px=400 * 0.012)
-save(t2, "title_hiaphat_alt_mitr.png", "alternate title, Mitr Bold (rounder, cleaner)")
+t2 = cover_title("เฮียผัด!", "NotoSansThaiLooped@900", 400, round_px=400 * 0.015, fatten_px=400 * 0.012)
+save(t2, "title_hiaphat_alt_noto.png", "alternate title, Noto Sans Thai Looped Black (cleaner, looped)")
+
+# 1b) stacked two-line title, staggered exactly like the cover ("Tattoo" / "Colour": line 2 shifted right,
+#     lines touching so the green bands merge into one sticker)
+def stacked_title(l1, l2, font, size, shift=0.22, overlap=0.30, name="title_hiaphat_stacked.png"):
+    pad = int(size * 0.4)
+    m1 = glyph_mask(l1, font, size, pad, ss=2)
+    m2 = glyph_mask(l2, font, size, pad, ss=2)
+    W = int(max(m1.shape[1], m2.shape[1] + shift * size * 2.2)) + pad
+    Hh = int(m1.shape[0] + m2.shape[0] * (1 - overlap))
+    big = np.zeros((Hh, W), f32)
+    big[:m1.shape[0], :m1.shape[1]] = np.maximum(big[:m1.shape[0], :m1.shape[1]], m1)
+    ox, oy = int(shift * size * 2.2), int(m1.shape[0] * (1 - overlap))
+    h2, w2 = m2.shape
+    big[oy:oy + h2, ox:ox + w2] = np.maximum(big[oy:oy + h2, ox:ox + w2], m2[:Hh - oy, :W - ox])
+    mb = bubble(big, size * 0.022, size * 0.03)
+    img = compose(mb, size * 0.72)
+    img = img.crop(img.getbbox())
+    save(img, name, "two-line staggered title like the cover's 'Tattoo / Colour' (line 2 shifted right, outlines merged)")
+
+
+# stacked_title("เฮีย", "ผัด!", "Chonburi-Regular", 400)  # tested: Thai lines are too short -> near-square block; single line matches the cover better
+
 
 # 2) subtitles (the cover's small 'hong ser' line: rounded bold, white fill, thin green outline, no inner line)
 def subtitle(text, font, size, name, note):
@@ -43,16 +65,16 @@ def subtitle(text, font, size, name, note):
     save(img, name, note)
 
 
-subtitle("hia phat!", "Mitr-Bold", 200, "subtitle_hiaphat_latin.png", "romanised subtitle in the cover's 'hong ser' position")
-subtitle("ร้อยบาทสร้างตัว", "Mitr-Medium", 180, "tagline_roi_baht_sang_tua.png", "Thai tagline: 'building a life from 100 baht'")
-subtitle("ตำนานกะเพราร้อยบาท", "Mitr-Medium", 180, "tagline_tamnan_kaprao.png", "alt tagline: 'legend of the 100-baht kaprao'")
+subtitle("hia phat!", "NotoSansThaiLooped@900", 200, "subtitle_hiaphat_latin.png", "romanised subtitle in the cover's 'hong ser' position")
+subtitle("ร้อยบาทสร้างตัว", "NotoSansThaiLooped@800", 180, "tagline_roi_baht_sang_tua.png", "Thai tagline: 'building a life from 100 baht'")
+subtitle("ตำนานกะเพราร้อยบาท", "NotoSansThaiLooped@800", 180, "tagline_tamnan_kaprao.png", "alt tagline: 'legend of the 100-baht kaprao'")
 
 # 3) buttons: text-only bubble stickers + small English line under (in the same style but thinner)
 def button(th, en, name, styles=(("", STYLE_COVER), ("_hover", HOVER), ("_pressed", PRESSED), ("_disabled", DISABLED))):
     for suffix, st in styles:
-        main = cover_title(th, "Mitr-Bold", 200, round_px=3, fatten_px=2.5, style=st)
+        main = cover_title(th, "NotoSansThaiLooped@900", 200, round_px=3, fatten_px=2.5, style=st)
         pad = 24
-        m = glyph_mask(en, "Kanit-Black", 74, pad, ss=2, tracking=6)
+        m = glyph_mask(en, "NotoSansThaiLooped@900", 74, pad, ss=2, tracking=6)
         small = compose(bubble(m, 1.0, 1.0), 74 * 0.72, inner_w=0.0, green_w=0.11, outer_w=0.03, shadow=(0.03, 0.05), style=st)
         small = small.crop(small.getbbox())
         W = max(main.width, small.width) + 8
@@ -78,11 +100,11 @@ def plate(w, h, name, note, label=None):
     m = np.asarray(im) > 127
     img = compose(m, h * 0.9, inner_w=0.022, green_w=0.10, outer_w=0.025, shadow=(0.03, 0.06))
     if label:
-        lab = cover_title(label, "Mitr-Bold", 70, round_px=1.5, fatten_px=1.0)
+        lab = cover_title(label, "NotoSansThaiLooped@900", 70, round_px=1.5, fatten_px=1.0)
         img.alpha_composite(lab, (pad + 30, max(0, pad - lab.height // 2)))
     img = img.crop(img.getbbox())
     inner = dict(x=pad + int(h * 0.30), y=pad + int(h * 0.18), w=w - int(h * 0.6), h=h - int(h * 0.36))
-    save(img, name, note, text_region=inner, text_font="Kanit-Black", text_color="#1E3314")
+    save(img, name, note, text_region=inner, text_font="NotoSansThaiLooped@900", text_color="#1E3314")
 
 
 plate(760, 170, "plate_room_code.png", "room-code plate (game draws the code in the white area)", label="รหัสห้อง")
@@ -100,7 +122,7 @@ def arrow(name):
     m = np.asarray(im) > 127
     m = bubble(m, 9, 0)
     img = compose(m, 260, inner_w=0.016, green_w=0.10, outer_w=0.022, shadow=(0.035, 0.05))
-    lab = cover_title("คุณ", "Mitr-Bold", 150, round_px=3, fatten_px=2)
+    lab = cover_title("คุณ", "NotoSansThaiLooped@900", 150, round_px=3, fatten_px=2)
     canvas = Image.new("RGBA", (max(img.width, lab.width) + 20, img.height + lab.height - 10), (0, 0, 0, 0))
     canvas.alpha_composite(lab, ((canvas.width - lab.width) // 2, 0))
     canvas.alpha_composite(img, ((canvas.width - img.width) // 2, lab.height - 10))
@@ -109,10 +131,10 @@ def arrow(name):
 
 
 arrow("arrow_you.png")
-w = cover_title("รอเพื่อน...", "Mitr-Bold", 140, round_px=1.5, fatten_px=0.5, style=DISABLED)
+w = cover_title("รอเพื่อน...", "NotoSansThaiLooped@900", 140, round_px=1.5, fatten_px=0.5, style=DISABLED)
 save(w, "label_waiting_friend.png", "label over an empty (silhouette) slot: 'waiting for a friend...'")
 for i in range(1, 5):
-    n = cover_title(f"P{i}", "Mitr-Bold", 120, round_px=1.5, fatten_px=0.5)
+    n = cover_title(f"P{i}", "NotoSansThaiLooped@900", 120, round_px=1.5, fatten_px=0.5)
     save(n, f"label_p{i}.png", f"player slot number {i}")
 
 with open(OUT + "manifest.json", "w", encoding="utf-8") as f:

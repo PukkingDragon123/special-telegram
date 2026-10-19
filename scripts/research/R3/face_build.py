@@ -192,14 +192,14 @@ def remove_hair(rgb, lm, dbg=None):
         if main > 0:
             kb = (cc == main).astype(np.uint8) * 255
     kb = cv2.erode(kb, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
-    keep = gblur(kb.astype(np.float32) / 255.0, 2.5)
+    keep = gblur(kb.astype(np.float32) / 255.0, 5.0)
     lin = T.srgb_to_lin(rgb)
     sk_w = (keep > 0.97).astype(np.float32) * (1 - np.clip(eyes + brows + lips, 0, 1))
     sk_w = cv2.erode(sk_w, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)))
     fill = pull_push_fill(lin, sk_w + 1e-5)
     # clamp fill brightness to the forehead/cheek skin range (no glare carried in from edges)
     Yk = lum(lin)[sk_w > 0.5]
-    lo_y, hi_y = np.percentile(Yk, [25, 75]) if Yk.size > 100 else (0.1, 0.5)
+    lo_y, hi_y = np.percentile(Yk, [12, 70]) if Yk.size > 100 else (0.1, 0.5)
     Yf = lum(fill)
     scale = np.clip(Yf, lo_y, hi_y) / np.maximum(Yf, 1e-4)
     fill = fill * scale[..., None]
@@ -248,21 +248,21 @@ def relight(rgb, lm, keep, dbg=None, flatten=0.55):
     eyes, brows, lips, nose = feature_masks(lm, (h, w))
     oval_full = poly_mask(lm[FACE_OVAL], (h, w), 0)
     oval = poly_mask(lm[FACE_OVAL], (h, w), -int(0.012 * N))
-    W = oval * keep * (1 - np.clip(eyes + brows + lips, 0, 1)) + 1e-4
+    W = oval * (1 - np.clip(eyes + brows + lips, 0, 1)) + 1e-4
     sig = 0.05 * N
     L_low = norm_conv(Y, W, sig)
     L_mir = L_low[:, ::-1]
     W_mir = W[:, ::-1]
     # mirror about x = N/2 (faces are centred there after alignment)
     L_sym = (L_low * W_s(W, sig) + L_mir * W_s(W_mir, sig)) / (W_s(W, sig) + W_s(W_mir, sig) + 1e-5)
-    ref = float(np.median(L_low[(oval > 0.5) & (keep > 0.5)]))
+    ref = float(np.median(L_low[(oval > 0.5)]))
     # flatten more towards the oval edge so the rim melts into the flat surround
     din = cv2.distanceTransform((oval_full > 0.5).astype(np.uint8), cv2.DIST_L2, 5)
     din = din / max(float(din.max()), 1.0)
     fl = flatten + (1 - flatten) * (1 - smoothstep_np(0.10, 0.45, din))
     fl = gblur(fl.astype(np.float32), 0.02 * N)
     tgt = np.exp((1 - fl) * np.log(np.maximum(L_sym, 1e-4)) + fl * math.log(ref))
-    G = np.clip(tgt / np.maximum(L_low, 1e-4), 0.5, 2.8)
+    G = np.clip(tgt / np.maximum(L_low, 1e-4), 0.55, 2.2)
     G = gblur(G, 0.015 * N)
     lin = lin * G[..., None]
     if dbg is not None:

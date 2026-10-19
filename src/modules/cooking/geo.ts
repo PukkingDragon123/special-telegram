@@ -12,7 +12,7 @@ import { fbm3, mulberry, vnoise3 } from './util';
 export function lathe(profile: [number, number][], segs = 16, o: { wobble?: number; seed?: number; freq?: number; phase?: number } = {}) {
   const pts = profile.map(([r, y]) => new THREE.Vector2(Math.max(0.0001, r), y));
   // phase: rotate so u=0.5 (label front) faces +Z
-  const g = new THREE.LatheGeometry(pts, segs, o.phase ?? -Math.PI / 2, Math.PI * 2);
+  const g = new THREE.LatheGeometry(pts, segs, o.phase ?? -Math.PI, Math.PI * 2);
   const pos = g.getAttribute('position') as THREE.BufferAttribute;
   const uv = g.getAttribute('uv') as THREE.BufferAttribute;
   const ymin = profile.reduce((a, p) => Math.min(a, p[1]), Infinity), ymax = profile.reduce((a, p) => Math.max(a, p[1]), -Infinity);

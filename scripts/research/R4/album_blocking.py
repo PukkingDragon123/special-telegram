@@ -8,7 +8,7 @@ from printfx import F
 W, H = 2000, 1000
 im = Image.new("RGB", (W, H), "#20211C")
 d = ImageDraw.Draw(im)
-f, fs, fb = F("Kanit-Regular", 22), F("Kanit-Regular", 17), F("Kanit-Bold", 26)
+f, fs, fb = F("Sarabun-Regular", 22), F("Sarabun-Regular", 17), F("Sarabun-Bold", 26)
 # ---------------- front view (square 900px) ----------------
 S, ox, oy = 900, 50, 60
 def P(x, y):  # normalised -> px
@@ -19,7 +19,7 @@ for r, c in [(0.62, "#473E28"), (0.55, "#6E6141"), (0.5, "#8F7E50"), (0.46, "#C9
     d.ellipse((cx - r * S, cy - r * S * 0.92, cx + r * S, cy + r * S * 0.92), fill=c)
 d.rectangle((ox, oy, ox + S, oy + S), outline="#999", width=2)
 # mask outside square
-d.rectangle((0, 0, ox - 1, H), fill="#20211C"); d.rectangle((ox + S + 1, 0, 1000, H), fill="#20211C")
+d.rectangle((0, 0, ox - 1, H), fill="#20211C"); d.rectangle((ox + S + 1, 0, 1095, H), fill="#20211C")
 d.rectangle((0, 0, 1000, oy - 1), fill="#20211C"); d.rectangle((0, oy + S + 1, 1000, H), fill="#20211C")
 # floor & rug
 d.polygon([P(0, 0.68), P(1, 0.68), P(1, 1), P(0, 1)], fill="#DFD7C7")
