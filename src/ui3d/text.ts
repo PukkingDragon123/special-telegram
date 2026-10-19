@@ -25,7 +25,7 @@ export interface TextStyle {
 const seg: any = (Intl as any).Segmenter ? new (Intl as any).Segmenter('th', { granularity: 'word' }) : null;
 
 export function fontStr(s: TextStyle) {
-  return `${s.italic ? 'italic ' : ''}${s.weight ?? 500} ${s.size ?? 48}px ${s.font ?? F.ui}, "Kanit", sans-serif`;
+  return `${s.italic ? 'italic ' : ''}${s.weight ?? 500} ${s.size ?? 48}px ${s.font ?? F.ui}, "Sarabun", sans-serif`;
 }
 
 /** Split into lines that fit maxWidth (Thai-aware). Explicit \n always breaks. */

@@ -59,10 +59,10 @@ export class WorldScene implements SceneDef {
       Input.setWantLock(false);
       const d = (this.pauseEl = document.createElement('div'));
       d.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,8,6,.55);backdrop-filter:blur(3px);z-index:20;cursor:pointer';
-      d.innerHTML = `<div style="text-align:center;color:#fff6e2;font-family:Mitr,sans-serif">
-        <div style="font:400 64px Pattaya;-webkit-text-stroke:2px #2f7d32;paint-order:stroke fill;text-shadow:0 4px 0 #1b4d1e">พักก่อน</div>
+      d.innerHTML = `<div style="text-align:center;color:#fff6e2;font-family:'IBM Plex Sans Thai Looped',sans-serif">
+        <div style="font:700 64px Kodchasan;-webkit-text-stroke:2px #2f7d32;paint-order:stroke fill;text-shadow:0 4px 0 #1b4d1e">พักก่อน</div>
         <div style="opacity:.8;margin-top:8px">คลิกเพื่อเล่นต่อ · click to resume</div>
-        ${game.session.online ? `<div style="margin-top:14px;font:600 20px 'Chakra Petch'">ห้อง ROOM: ${game.session.room}</div>` : ''}</div>`;
+        ${game.session.online ? `<div style="margin-top:14px;font:800 20px K2D">ห้อง ROOM: ${game.session.room}</div>` : ''}</div>`;
       d.onclick = () => this.pause(false);
       document.body.appendChild(d);
       if (!game.session.online) game.g.paused = true;

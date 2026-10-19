@@ -79,7 +79,7 @@ export class BroadcastTransport implements Transport {
       let tries = 0;
       const iv = setInterval(() => {
         if (t.hostId) { clearInterval(iv); resolve(t); return; }
-        if (++tries > 16) { clearInterval(iv); t.close(); reject(new Error('notfound')); return; }
+        if (++tries > 60) { clearInterval(iv); t.close(); reject(new Error('notfound')); return; }
         t.post('*', { _: 'hello' });
       }, 250);
     });
@@ -114,10 +114,10 @@ export class BroadcastTransport implements Transport {
     const now = Date.now();
     if (this.isHost) {
       this.post('*', { _: 'ping' });
-      for (const [p, t] of this.lastSeen) if (now - t > 6000) this.drop(p);
+      for (const [p, t] of this.lastSeen) if (now - t > 25000) this.drop(p);
     } else if (this.hostId) {
       this.post(this.hostId, { _: 'ping' });
-      if (now - (this.lastSeen.get(this.hostId) ?? now) > 6000) { this.onClose('host-timeout'); this.close(); }
+      if (now - (this.lastSeen.get(this.hostId) ?? now) > 25000) { this.onClose('host-timeout'); this.close(); }
     }
   }
 

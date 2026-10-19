@@ -25,8 +25,11 @@ Look references (on disk, view them with the Read tool):
 2. **No lazy simple shapes.** Never ship an untextured box/sphere/cylinder/circle. Bevel, chip,
    dent, noise-displace, break symmetry. Organic shapes. Smoke, steam, clouds, fire, speech
    bubbles, thought clouds use **noise (fbm) shaders / noise maps**, never flat circles.
-3. **Everything is textured and detailed.** Use real photo-derived textures (license-clean
-   sources, see §5), procedural canvas textures with noise, grime and print imperfections.
+3. **Everything is textured and detailed — with REAL images from the internet.** (Client rule.)
+   Packaging, product labels (seasonings etc.), signs, posters, food, fabrics, facades, decals:
+   ALWAYS find real photos online (Google/Bing/DDG/Flickr/Commons/product sites) and crop /
+   flatten / rectify / colour-match them. NEVER hand-make or fake art (no self-designed parody
+   labels or signs). Procedural noise is only for shaders (smoke, clouds, wear masks).
 4. **Realistic shader for PC**: PBR materials, HDRI env lighting, soft shadows, SSAO, bloom,
    tone mapping, color grading, subtle film grain/vignette, haze/fog, wet/dirty surfaces.
 5. **Faces never move** — characters use static photo-textured faces (Chilla's Art style).
@@ -36,14 +39,17 @@ Look references (on disk, view them with the Read tool):
 7. **Almost no 2D UI.** Use floating 3D text clouds, speech bubbles, physical objects
    (signs, posters, a recipe book, a newspaper, a magazine, coins, banknotes), diegetic labels.
    Only tiny, elegant, necessary overlays (crosshair dot, a subtle interaction hint).
-8. **Thai fonts, detailed and polished** (see `public/assets/fonts/`). Thai text is primary;
-   a small English subtitle line under important text is welcome.
+8. **Looped Thai fonts only — ไทยมีหัว** (client rule): Sarabun, Noto Sans Thai Looped,
+   IBM Plex Sans Thai Looped, Noto Serif Thai, Taviraj, Trirong, Chonburi, Pattaya, Charmonman,
+   Charm, Srisakdi; handwriting: Itim, Mali, Sriracha. NEVER loopless fonts (Kanit, Mitr, Prompt,
+   Chakra Petch, Bai Jamjuree, Athiti…). Use `F.*` from `src/core/fonts.ts` (all looped).
+   Thai text is primary; a small English subtitle line under important text is welcome.
 9. **Polish**: eased transitions, juicy animations, squash/stretch, screen-shake used sparingly,
    satisfying sounds on everything (see §5 audio).
 10. 2D art assets (magazine, newspaper, posters, menus, labels, signs) are built from **real
-    photos / references edited together** — not flat vector "lazy UI". The recipe book is the
-    exception: its art is deliberately **lazy, ugly, scribbled — but clearly human-made**
-    (ballpoint doodles, crossed-out words, coffee stains, wobbly lines).
+    photos found on the internet, edited together** — not flat vector "lazy UI" and not
+    self-drawn. The recipe book is the only exception: its art is deliberately **lazy, ugly,
+    scribbled — but clearly human-made** (ballpoint doodles, crossed-out words, coffee stains).
 
 ## 2. The world
 
@@ -125,20 +131,20 @@ cool text transitions. Friends can see you thinking and **slap you**. The skill 
 ## 4. Culture & content guardrails
 - Funny and affectionate, never mean to Thai people. Thai text should read naturally.
 - **No royal-family references at all. No real politicians / political memes.**
-- **No real celebrities' likenesses or real brand logos.** Use parody brands
-  (e.g. a convenience store "8-Twelve", sauce "ภูเขาเงิน" instead of ภูเขาทอง, a tabloid
-  "ไทยรั่ว"). Parody labels must still look authentic (same colour language, layout, Thai copy).
+- Real Thai products, brands and shop signs are WELCOME (client wants real packaging found
+  online). Don't use real identifiable private people's faces for characters (use faces of
+  people who don't exist, chosen to look authentically Thai).
 - Monks, temples, spirit houses are treated respectfully (no slapping monks, no jokes about
   Buddha images). Ghost folklore is fine.
 
 ## 5. Assets, references, licences
-- `references/` = research notes + reference images **for agents to look at** (web-sourced
-  images live in `references/**/web/` which is git-ignored, they are not shipped).
-- `public/assets/` = **game-ready, licence-clean assets only**: CC0 / public domain / CC-BY /
-  CC-BY-SA / Unsplash / Mixkit-free licence etc. Every shipped third-party file gets a line in
-  `CREDITS.md` (file, source URL, author, licence).
-- Textures: prefer Poly Haven, ambientCG (CC0); photos from Wikimedia Commons, Unsplash,
-  Flickr CC. Keep web sizes small: 1K (some 2K) JPG/WebP, power-of-two where tiled.
+- `references/` = research notes + reference images **for agents to look at** (raw web
+  downloads live in `references/**/web/` / `_raw/`, git-ignored).
+- `public/assets/` = game-ready assets, **sourced from real images on the internet** (any
+  source the client is happy with; real brands OK). Record every shipped third-party file's
+  source URL in `references/credits/*.md` → `CREDITS.md`.
+- PBR materials: Poly Haven, ambientCG scans. Keep web sizes small: 1K (some 2K) JPG/WebP,
+  power-of-two where tiled.
 - Audio: CC0 / free-licence SFX (Kenney, Mixkit, OpenGameArt, Wikimedia Commons, BigSoundBank,
   archive.org public domain…). Ogg/MP3, normalized, trimmed, short.
 - Fonts: Google Fonts (OFL) Thai families in `public/assets/fonts/`.

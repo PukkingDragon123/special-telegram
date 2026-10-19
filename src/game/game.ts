@@ -293,14 +293,12 @@ export class Game {
   // ------------------------------------------------------------------ loop
 
   private fixed(dt: number) {
-    if (this.physics && this.scene && this.isHost) {
-      this.events.emit('physics:pre', dt);
-      this.physics.step();
-      this.events.emit('physics:post', dt);
-    } else if (this.physics && this.scene) {
-      // clients only need the query structures updated (static world + kinematic players)
-      this.physics.world.propagateModifiedBodyPositionsToColliders?.();
-    }
+    if (!this.physics || !this.scene) return;
+    // Clients have no dynamic bodies (only static world + kinematic players) but still need the
+    // step to refresh the query pipeline used by the character controller and raycasts.
+    if (this.isHost) this.events.emit('physics:pre', dt);
+    this.physics.step();
+    if (this.isHost) this.events.emit('physics:post', dt);
   }
 
   private frame(dt: number, rawDt: number) {
@@ -371,7 +369,7 @@ export class Game {
     if (v < 0 && (pl.wallet ?? 0) + v < 0) return false;
     pl.wallet = (pl.wallet ?? 0) + v;
     const at = popupAt ?? (pl.p ? [pl.p[0], pl.p[1] + 1.9, pl.p[2]] : null);
-    if (at && v !== 0) this.popup(at, `${v > 0 ? '+' : '−'}${Math.abs(v)} ฿`, { font: '"Kanit"', size: 60, weight: 800, color: v > 0 ? '#ffe27a' : '#ff8a6a', stroke: '#2a1a08', strokeWidth: 7 });
+    if (at && v !== 0) this.popup(at, `${v > 0 ? '+' : '−'}${Math.abs(v)} ฿`, { font: '"K2D"', size: 60, weight: 800, color: v > 0 ? '#ffe27a' : '#ff8a6a', stroke: '#2a1a08', strokeWidth: 7 });
     if (v !== 0) this.sfx(v > 0 ? 'coins_handful' : 'coin_clink', pl.p, { vol: 0.7 });
     this.events.emit('money', { player: playerId, delta: v, reason, wallet: pl.wallet });
     return true;
