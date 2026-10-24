@@ -537,6 +537,8 @@ export function installCartIntents(game: Game) {
     if (c.pusher != null && c.pusher !== pl.id) { game.say(pl.id, tl('มีคนเข็นอยู่!', 'someone is pushing'), { duration: 1.6 }); return; }
     if (!near(pl, c, 2.8)) return;
     if (game.items.isOverloaded(pl)) return;
+    // the old man's cart can't be pushed until the intro sells it to the players
+    if (c.owner && c.owner !== 'players') { game.events.emit('cart:pushDenied', { player: pl.id, cart: c.id }); return; }
     c.pusher = pl.id;
     pl.mode = 'push';
     pl.anim = 'push_cart'; pl.animT = game.g.time + Math.random(); pl.animLoop = true;
