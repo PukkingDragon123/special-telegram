@@ -456,6 +456,57 @@
     }
    ]
   },
+  "decal_asphalt_patches": {
+   "purpose": "Road damage atlas 2x2 (potholes / broken asphalt) (compat alias of decal_potholes_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "1024x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    3.0,
+    3.0
+   ],
+   "maps": [
+    "rgba",
+    "normal",
+    "rough"
+   ],
+   "alias_of": "decal_potholes_photo",
+   "files": [
+    "decal_asphalt_patches.png",
+    "decal_asphalt_patches_normal.jpg",
+    "decal_asphalt_patches_rough.jpg"
+   ],
+   "sources": [
+    {
+     "id": "e559b88f",
+     "url": "https://www.truthinaccounting.org/library/imglib/Pothole.png",
+     "image_url": "https://www.truthinaccounting.org/library/imglib/Pothole.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "22d7cbe6",
+     "url": "https://i2-prod.birminghammail.co.uk/article33378655.ece/ALTERNATES/s1200d/1_Pothole.jpg",
+     "image_url": "https://i2-prod.birminghammail.co.uk/article33378655.ece/ALTERNATES/s1200d/1_Pothole.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "42ce869c",
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Newport_Whitepit_Lane_pot_hole.JPG/1200px-Newport_Whitepit_Lane_pot_hole.JPG",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Newport_Whitepit_Lane_pot_hole.JPG/1200px-Newport_Whitepit_Lane_pot_hole.JPG",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "10f8ad40",
+     "url": "https://www.thesouthafrican.com/wp-content/uploads/2024/04/pothole.jpg.optimal.jpg",
+     "image_url": "https://www.thesouthafrican.com/wp-content/uploads/2024/04/pothole.jpg.optimal.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
   "decal_cigarette_butts_photo": {
    "purpose": "Cigarette butts cut from a real photo of a gutter (alpha = butts). Use along kerbs, under the win-motosai bench, around shop steps.",
    "size": "1024x284",
@@ -503,6 +554,32 @@
      "image_url": "https://live.staticflickr.com/1616/24261745700_6731253ff6_b.jpg",
      "author": "Jay Songpon Chandrananta",
      "licence": "All rights reserved (Flickr licence 0)"
+    }
+   ]
+  },
+  "decal_gum_spots": {
+   "purpose": "Gum spots on pavement (compat alias of decal_gum_spots_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "1024xN",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    3.0,
+    1.0
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "alias_of": "decal_gum_spots_photo",
+   "files": [
+    "decal_gum_spots.png"
+   ],
+   "sources": [
+    {
+     "id": "f7a2a5c7",
+     "url": "https://static.independent.co.uk/2021/08/29/20/newFile-1.jpg",
+     "image_url": "https://static.independent.co.uk/2021/08/29/20/newFile-1.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
     }
    ]
   },
@@ -840,6 +917,55 @@
     }
    ]
   },
+  "decal_oil_stains": {
+   "purpose": "Oil/grease stain atlas 2x2 (compat alias of decal_oil_stains_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "1024x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    2.4,
+    2.4
+   ],
+   "maps": [
+    "rgba",
+    "rough"
+   ],
+   "alias_of": "decal_oil_stains_photo",
+   "files": [
+    "decal_oil_stains.png",
+    "decal_oil_stains_rough.jpg"
+   ],
+   "sources": [
+    {
+     "id": "2c5d9f55",
+     "url": "https://live.staticflickr.com/2502/4155328836_40659b1f50_b.jpg",
+     "image_url": "https://live.staticflickr.com/2502/4155328836_40659b1f50_b.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "6d5a1a71",
+     "url": "https://www.craftsmanconcretefloors.com/wp-content/uploads/2023/05/oil-staned-concrete-driveway.jpeg",
+     "image_url": "https://www.craftsmanconcretefloors.com/wp-content/uploads/2023/05/oil-staned-concrete-driveway.jpeg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "a1f43e2a",
+     "url": "https://cdn.images.express.co.uk/img/dynamic/51/1200x630/5222461.jpg",
+     "image_url": "https://cdn.images.express.co.uk/img/dynamic/51/1200x630/5222461.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "80f00dbd",
+     "url": "https://oileater.com/wp-content/uploads/2019/08/oilss-e1564690303477.jpg",
+     "image_url": "https://oileater.com/wp-content/uploads/2019/08/oilss-e1564690303477.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
   "decal_oil_stains_photo": {
    "purpose": "Oil / grease stains extracted from real photos of stained concrete (alpha = darkening). 2x2 atlas; multiply-dark, lower roughness under the stain.",
    "size": "1024x1024",
@@ -989,6 +1115,34 @@
      "id": "10f8ad40",
      "url": "https://www.thesouthafrican.com/wp-content/uploads/2024/04/pothole.jpg.optimal.jpg",
      "image_url": "https://www.thesouthafrican.com/wp-content/uploads/2024/04/pothole.jpg.optimal.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_puddles": {
+   "purpose": "Puddle atlas 2x2: 4 real puddle shapes split from the photo decal (compat alias of decal_puddles_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "1024x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    3.0,
+    3.0
+   ],
+   "maps": [
+    "rgba",
+    "rough"
+   ],
+   "alias_of": "decal_puddles_photo",
+   "files": [
+    "decal_puddles.png",
+    "decal_puddles_rough.jpg"
+   ],
+   "sources": [
+    {
+     "id": "46e8d835",
+     "url": "https://i.pinimg.com/originals/2a/4f/bf/2a4fbf367f03ccc8eb246bfe29011ccb.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/2a/4f/bf/2a4fbf367f03ccc8eb246bfe29011ccb.jpg?nii=t",
      "author": "",
      "licence": "unknown (web image, found via yandex)"
     }
@@ -1173,6 +1327,36 @@
     }
    ]
   },
+  "drain_cover_concrete_holes": {
+   "purpose": "Square cast-iron footpath cover in concrete (real BMA photo), square crop (compat alias of manhole_square_bma, real-photo based; name kept because src/modules/world uses it)",
+   "size": "512x512",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    0.67,
+    0.67
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "alias_of": "manhole_square_bma",
+   "files": [
+    "drain_cover_concrete_holes_albedo.jpg",
+    "drain_cover_concrete_holes_normal.jpg",
+    "drain_cover_concrete_holes_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "32b70427",
+     "url": "https://commons.wikimedia.org/wiki/File%3APattaya%2C_manhole_cover_on_3rd_Road_%2853837262346%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Pattaya%2C_manhole_cover_on_3rd_Road_%2853837262346%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Turbo Kholodilnik",
+     "licence": "CC BY-SA 2.0"
+    }
+   ]
+  },
   "gate_folding_steel": {
    "purpose": "Folding steel security gate ('ประตูยืด', scissor lattice) closed across a shop front (real photo, rectified). _albedo = opaque version (gate over dark interior); gate_folding_steel_alpha.png = lattice keyed out (alpha-test, cutoff ~0.4).",
    "size": "1024x723",
@@ -1230,6 +1414,66 @@
      "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Pattaya%2C_manhole_cover_on_Thappraya_Road_%2853837262396%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
      "author": "Turbo Kholodilnik",
      "licence": "CC BY-SA 2.0"
+    }
+   ]
+  },
+  "manhole_round_drain": {
+   "purpose": "Round cast-iron manhole cover (real photo) (compat alias of manhole_round_iron, real-photo based; name kept because src/modules/world uses it)",
+   "size": "512x512",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    0.76,
+    0.76
+   ],
+   "maps": [
+    "rgba",
+    "normal",
+    "orm"
+   ],
+   "alias_of": "manhole_round_iron",
+   "files": [
+    "manhole_round_drain.png",
+    "manhole_round_drain_normal.jpg",
+    "manhole_round_drain_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "77e86905",
+     "url": "https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg",
+     "image_url": "https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "manhole_round_electric": {
+   "purpose": "Round cast-iron manhole cover (real photo) (compat alias of manhole_round_iron, real-photo based; name kept because src/modules/world uses it)",
+   "size": "512x512",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    0.76,
+    0.76
+   ],
+   "maps": [
+    "rgba",
+    "normal",
+    "orm"
+   ],
+   "alias_of": "manhole_round_iron",
+   "files": [
+    "manhole_round_electric.png",
+    "manhole_round_electric_normal.jpg",
+    "manhole_round_electric_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "77e86905",
+     "url": "https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg",
+     "image_url": "https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
     }
    ]
   },
@@ -1344,6 +1588,29 @@
     }
    ]
   },
+  "roadline_double_yellow_worn": {
+   "purpose": "Worn double yellow line, tiles along V (compat alias of roadline_double_yellow_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "see alias_of",
+   "alpha": true,
+   "tiling": "V only",
+   "real_world_m": null,
+   "maps": [
+    "rgba"
+   ],
+   "alias_of": "roadline_double_yellow_photo",
+   "files": [
+    "roadline_double_yellow_worn.png"
+   ],
+   "sources": [
+    {
+     "id": "316744e3",
+     "url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "image_url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
   "roadline_white_dashed_photo": {
    "purpose": "White dashed lane line from a real top-down photo (alpha = paint).",
    "size": "512x512",
@@ -1394,6 +1661,29 @@
     }
    ]
   },
+  "roadline_white_worn": {
+   "purpose": "Worn white line, tiles along V (compat alias of roadline_white_edge_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "see alias_of",
+   "alpha": true,
+   "tiling": "V only",
+   "real_world_m": null,
+   "maps": [
+    "rgba"
+   ],
+   "alias_of": "roadline_white_edge_photo",
+   "files": [
+    "roadline_white_worn.png"
+   ],
+   "sources": [
+    {
+     "id": "316744e3",
+     "url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "image_url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
   "roadline_yellow_single_photo": {
    "purpose": "Single solid yellow line (no-parking edge / centre line) cut from a real top-down road photo (alpha = paint). Tiles along V.",
    "size": "64x1024",
@@ -1414,6 +1704,52 @@
      "id": "316744e3",
      "url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
      "image_url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "roadline_yellow_worn": {
+   "purpose": "Worn single yellow line, tiles along V (compat alias of roadline_yellow_single_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "see alias_of",
+   "alpha": true,
+   "tiling": "V only",
+   "real_world_m": null,
+   "maps": [
+    "rgba"
+   ],
+   "alias_of": "roadline_yellow_single_photo",
+   "files": [
+    "roadline_yellow_worn.png"
+   ],
+   "sources": [
+    {
+     "id": "316744e3",
+     "url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "image_url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "roadmark_zebra_worn": {
+   "purpose": "Worn zebra crossing bars (compat alias of roadmark_zebra_worn_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "see alias_of",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": null,
+   "maps": [
+    "rgba"
+   ],
+   "alias_of": "roadmark_zebra_worn_photo",
+   "files": [
+    "roadmark_zebra_worn.png"
+   ],
+   "sources": [
+    {
+     "id": "9a883694",
+     "url": "https://preview.stockphotos.com/image/stylish-grunge-texture-3589852.jpg",
+     "image_url": "https://preview.stockphotos.com/image/stylish-grunge-texture-3589852.jpg",
      "author": "",
      "licence": "unknown (web image, found via yandex)"
     }
@@ -1780,6 +2116,36 @@
     "trench_grate_cast_iron_photo_albedo.jpg",
     "trench_grate_cast_iron_photo_normal.jpg",
     "trench_grate_cast_iron_photo_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "c2649936",
+     "url": "https://www.ironagegrates.com/wp-content/uploads/2016/09/Flower_Grid_9_x_20_7_E.jpg",
+     "image_url": "https://www.ironagegrates.com/wp-content/uploads/2016/09/Flower_Grid_9_x_20_7_E.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "trench_grate_steel": {
+   "purpose": "Cast-iron trench grate strip rotated to run along U (compat alias of trench_grate_cast_iron_photo, real-photo based; name kept because src/modules/world uses it)",
+   "size": "1024x320",
+   "alpha": false,
+   "tiling": "U only",
+   "real_world_m": [
+    1.6,
+    0.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "alias_of": "trench_grate_cast_iron_photo",
+   "files": [
+    "trench_grate_steel_albedo.jpg",
+    "trench_grate_steel_normal.jpg",
+    "trench_grate_steel_orm.jpg"
    ],
    "sources": [
     {

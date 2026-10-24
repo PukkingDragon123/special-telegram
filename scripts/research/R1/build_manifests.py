@@ -90,6 +90,8 @@ def main():
         if not m:
             missing.append(base)
         m["files"] = fs
+        if m.get("alias_of") and not m.get("source_ids"):
+            m["source_ids"] = parts.get(m["alias_of"], {}).get("source_ids", [])
         sids = m.pop("source_ids", None) or ([m.pop("source")] if isinstance(m.get("source"), str) and len(m.get("source", "")) == 8 else None)
         srcs = []
         if sids:

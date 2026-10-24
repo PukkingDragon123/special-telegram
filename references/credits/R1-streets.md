@@ -22,8 +22,13 @@ Third-party sources of every file R1-streets shipped. Client rule change (2026-1
 | public/assets/textures/world/curb_red_white_* | https://polyhaven.com/a/brushed_concrete | Poly Haven | CC0 |
 | public/assets/textures/world/curb_white_yellow_* | https://polyhaven.com/a/brushed_concrete | Poly Haven | CC0 |
 | public/assets/textures/world/curb_yellow_black_* | https://polyhaven.com/a/brushed_concrete | Poly Haven | CC0 |
+| public/assets/textures/world/decal_asphalt_patches_* | https://www.truthinaccounting.org/library/imglib/Pothole.png |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/decal_asphalt_patches_* | https://i2-prod.birminghammail.co.uk/article33378655.ece/ALTERNATES/s1200d/1_Pothole.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/decal_asphalt_patches_* | https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Newport_Whitepit_Lane_pot_hole.JPG/1200px-Newport_Whitepit_Lane_pot_hole.JPG |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/decal_asphalt_patches_* | https://www.thesouthafrican.com/wp-content/uploads/2024/04/pothole.jpg.optimal.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_cigarette_butts_photo_* | https://nypost.com/wp-content/uploads/sites/2/2020/01/cigarette-butt.jpg?quality=75&amp;strip=all&amp;w=1024 |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_flyers_loan_cluster_photo_* | https://www.flickr.com/photos/130414324@N05/24261745700/ | Jay Songpon Chandrananta | All rights reserved (Flickr licence 0) |
+| public/assets/textures/world/decal_gum_spots_* | https://static.independent.co.uk/2021/08/29/20/newFile-1.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_gum_spots_photo_* | https://static.independent.co.uk/2021/08/29/20/newFile-1.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_litter_atlas_* | https://banner2.cleanpng.com/20180401/are/avin1fcbz.webp |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_litter_atlas_* | https://image.pngaaa.com/388/473388-middle.png |  | unknown (web image, found via yandex) |
@@ -41,6 +46,10 @@ Third-party sources of every file R1-streets shipped. Client rule change (2026-1
 | public/assets/textures/world/decal_moss_photo_* | https://i.pinimg.com/736x/9a/f6/cb/9af6cb993124b9017c85a8044efa4d9d.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_moss_photo_* | https://i.pinimg.com/originals/26/f3/0e/26f30e0351ea05bd27dddb1eb1ebfce6.jpg?nii=t |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_moss_photo_* | https://i.pinimg.com/originals/9b/d1/18/9bd118c98193a9c9acd8066aae704de3.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/decal_oil_stains_* | https://live.staticflickr.com/2502/4155328836_40659b1f50_b.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/decal_oil_stains_* | https://www.craftsmanconcretefloors.com/wp-content/uploads/2023/05/oil-staned-concrete-driveway.jpeg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/decal_oil_stains_* | https://cdn.images.express.co.uk/img/dynamic/51/1200x630/5222461.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/decal_oil_stains_* | https://oileater.com/wp-content/uploads/2019/08/oilss-e1564690303477.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_oil_stains_photo_* | https://live.staticflickr.com/2502/4155328836_40659b1f50_b.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_oil_stains_photo_* | https://www.craftsmanconcretefloors.com/wp-content/uploads/2023/05/oil-staned-concrete-driveway.jpeg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_oil_stains_photo_* | https://cdn.images.express.co.uk/img/dynamic/51/1200x630/5222461.jpg |  | unknown (web image, found via yandex) |
@@ -49,6 +58,7 @@ Third-party sources of every file R1-streets shipped. Client rule change (2026-1
 | public/assets/textures/world/decal_potholes_photo_* | https://i2-prod.birminghammail.co.uk/article33378655.ece/ALTERNATES/s1200d/1_Pothole.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_potholes_photo_* | https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Newport_Whitepit_Lane_pot_hole.JPG/1200px-Newport_Whitepit_Lane_pot_hole.JPG |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_potholes_photo_* | https://www.thesouthafrican.com/wp-content/uploads/2024/04/pothole.jpg.optimal.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/decal_puddles_* | https://i.pinimg.com/originals/2a/4f/bf/2a4fbf367f03ccc8eb246bfe29011ccb.jpg?nii=t |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_puddles_photo_* | https://i.pinimg.com/originals/2a/4f/bf/2a4fbf367f03ccc8eb246bfe29011ccb.jpg?nii=t |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_torn_posters_photo_* | https://i.pinimg.com/474x/c7/fe/88/c7fe88fbf970818c84918e6096aee4fc.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_torn_posters_photo_* | https://i.pinimg.com/originals/b5/12/19/b51219d4f3a2e0b536579b5d802934d3.jpg?nii=t |  | unknown (web image, found via yandex) |
@@ -56,15 +66,22 @@ Third-party sources of every file R1-streets shipped. Client rule change (2026-1
 | public/assets/textures/world/decal_wall_grime_streaks_photo_* | https://i.pinimg.com/originals/2a/a1/33/2aa1333152cc07bf1d9f146443c33268.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_wall_grime_streaks_photo_* | https://fencefixation.com/wp-content/uploads/2022/05/CONCRE1-1200x800.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/decal_wall_grime_streaks_photo_* | https://i.pinimg.com/736x/ec/a9/4c/eca94cbe23a1736d4c82af5315c95cc5.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/drain_cover_concrete_holes_* | https://commons.wikimedia.org/wiki/File%3APattaya%2C_manhole_cover_on_3rd_Road_%2853837262346%29.jpg | Turbo Kholodilnik | CC BY-SA 2.0 |
 | public/assets/textures/world/gate_folding_steel_* | https://i.pinimg.com/originals/3f/33/86/3f3386d253f55625c0ee8250907be45c.png |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/manhole_double_drain_cover_* | https://commons.wikimedia.org/wiki/File%3APattaya%2C_manhole_cover_on_Thappraya_Road_%2853837262396%29.jpg | Turbo Kholodilnik | CC BY-SA 2.0 |
+| public/assets/textures/world/manhole_round_drain_* | https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/manhole_round_electric_* | https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/manhole_round_iron_* | https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/manhole_square_bma_* | https://commons.wikimedia.org/wiki/File%3APattaya%2C_manhole_cover_on_3rd_Road_%2853837262346%29.jpg | Turbo Kholodilnik | CC BY-SA 2.0 |
 | public/assets/textures/world/paver_interlock_I_* | https://polyhaven.com/a/concrete_pavers | Poly Haven | CC0 |
 | public/assets/textures/world/roadline_double_yellow_photo_* | https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/roadline_double_yellow_worn_* | https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/roadline_white_dashed_photo_* | https://i.pinimg.com/736x/ef/fe/21/effe21fa3237b6b7d1814585e8e20caf.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/roadline_white_edge_photo_* | https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/roadline_white_worn_* | https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/roadline_yellow_single_photo_* | https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/roadline_yellow_worn_* | https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/roadmark_zebra_worn_* | https://preview.stockphotos.com/image/stylish-grunge-texture-3589852.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/roadmark_zebra_worn_photo_* | https://preview.stockphotos.com/image/stylish-grunge-texture-3589852.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/shutter_closed_graffiti_* | https://i.pinimg.com/originals/98/dc/e4/98dce4598ee96c7abb5f082615a78dfd.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/shutter_closed_rusty_white_* | https://i.pinimg.com/originals/ba/6b/90/ba6b90b754ca10062a373d89703800c8.jpg |  | unknown (web image, found via yandex) |
@@ -78,6 +95,7 @@ Third-party sources of every file R1-streets shipped. Client rule change (2026-1
 | public/assets/textures/world/tactile_strip_yellow_* | https://polyhaven.com/a/brushed_concrete | Poly Haven | CC0 |
 | public/assets/textures/world/tarp_blue_photo_* | https://cdnb.artstation.com/p/assets/images/images/053/547/101/medium/texturecan-plastic-0019-plane-1200.jpg?1662474144 |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/trench_grate_cast_iron_photo_* | https://www.ironagegrates.com/wp-content/uploads/2016/09/Flower_Grid_9_x_20_7_E.jpg |  | unknown (web image, found via yandex) |
+| public/assets/textures/world/trench_grate_steel_* | https://www.ironagegrates.com/wp-content/uploads/2016/09/Flower_Grid_9_x_20_7_E.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/wall_concrete_black_streaks_* | https://i.pinimg.com/originals/59/82/58/598258603cdd7af27157c7aae16cb45a.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/wall_concrete_mould_stained_* | https://i.pinimg.com/originals/2a/a1/33/2aa1333152cc07bf1d9f146443c33268.jpg |  | unknown (web image, found via yandex) |
 | public/assets/textures/world/wall_concrete_plain_dirty_* | https://www.flickr.com/photos/coun2rparts/3508864133/ | Rick | CC BY 2.0 |
