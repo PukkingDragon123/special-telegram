@@ -192,7 +192,7 @@ export class MenuCloseup {
     this.note.position.set(0.18, -this.H / 2 - 0.035, 0.01);
     this.note.rotation.z = 0.03;
     this.group.add(this.board, this.hi, this.dot, this.note);
-    this.group.position.set(0, -0.02, -0.62);
+    this.group.position.set(0, -0.015, -0.53);
     cam.add(this.group);
     Sound.play('paper_rustle', { vol: 0.7 });
     game.player?.setMode('frozen');
