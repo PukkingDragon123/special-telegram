@@ -67,7 +67,12 @@ elif sys.argv[1] == "get":
         if src: break
     if not src:
         src = sizes[-1]["source"]
-    r = requests.get(src, headers=UA, timeout=60); r.raise_for_status()
+    for attempt in range(6):
+        r = requests.get(src, headers=UA, timeout=60)
+        if r.status_code == 429:
+            time.sleep(8 * (attempt + 1)); continue
+        break
+    r.raise_for_status()
     im = Image.open(io.BytesIO(r.content)); im.load(); im = im.convert("RGB")
     fn = (name or f"flickr_{pid}") + ".jpg"
     im.save(os.path.join(out, fn), quality=92)

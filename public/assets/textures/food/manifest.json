@@ -1,0 +1,604 @@
+{
+ "note": "Food textures from real food photos. Tiles are seamless; PNGs are alpha cut-outs (top views unless noted). Sizes in px.",
+ "textures": [
+  {
+   "name": "basil_bunch_cooked",
+   "files": [
+    "basil_bunch_cooked.png"
+   ],
+   "purpose": "wilted basil mass (overcooked / soggy basil)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Derived from basil_bunch_fresh like basil_sprig_cooked.",
+   "sources": [
+    {
+     "file": "basil_leaf/basil_leaf_01.jpg",
+     "image_url": "https://sooktookkum.com/wp-content/uploads/2021/03/E0B983E0B89AE0B881E0B8B0E0B980E0B89EE0B8A3E0B8B2.webp",
+     "page_url": "https://sooktookkum.com/product/%E0%B9%83%E0%B8%9A%E0%B8%81%E0%B8%B0%E0%B9%80%E0%B8%9E%E0%B8%A3%E0%B8%B2-100-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "basil_bunch_fresh",
+   "files": [
+    "basil_bunch_fresh.png"
+   ],
+   "purpose": "fresh holy basil bunch (market กำ)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "White background removed.",
+   "sources": [
+    {
+     "file": "basil_leaf/basil_leaf_01.jpg",
+     "image_url": "https://sooktookkum.com/wp-content/uploads/2021/03/E0B983E0B89AE0B881E0B8B0E0B980E0B89EE0B8A3E0B8B2.webp",
+     "page_url": "https://sooktookkum.com/product/%E0%B9%83%E0%B8%9A%E0%B8%81%E0%B8%B0%E0%B9%80%E0%B8%9E%E0%B8%A3%E0%B8%B2-100-%E0%B8%81%E0%B8%A3%E0%B8%B1%E0%B8%A1/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "basil_sprig_cooked",
+   "files": [
+    "basil_sprig_cooked.png"
+   ],
+   "purpose": "wilted / stir-fried holy basil sprig (dark, glossy, limp)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Derived from basil_sprig_fresh: darkened olive, oil sheen, sauce-stained edges, droop warp.",
+   "sources": [
+    {
+     "file": "basil_leaf/basil_leaf_02.jpg",
+     "image_url": "https://spfresh.co.th/wp-content/uploads/2022/12/%E0%B9%83%E0%B8%9A%E0%B8%81%E0%B8%B0%E0%B9%80%E0%B8%9E%E0%B8%A3%E0%B8%B2-1.jpg",
+     "page_url": "https://spfresh.co.th/en/product/holy-basil-2/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "basil_sprig_fresh",
+   "files": [
+    "basil_sprig_fresh.png"
+   ],
+   "purpose": "fresh holy basil sprig with flower spike",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "White background removed.",
+   "sources": [
+    {
+     "file": "basil_leaf/basil_leaf_02.jpg",
+     "image_url": "https://spfresh.co.th/wp-content/uploads/2022/12/%E0%B9%83%E0%B8%9A%E0%B8%81%E0%B8%B0%E0%B9%80%E0%B8%9E%E0%B8%A3%E0%B8%B2-1.jpg",
+     "page_url": "https://spfresh.co.th/en/product/holy-basil-2/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "burnt_residue_tile",
+   "files": [
+    "burnt_residue_tile.jpg",
+    "burnt_residue_tile_n.jpg"
+   ],
+   "purpose": "burnt / charred food residue (wok bottom, overcooked garlic or rice)",
+   "alpha": false,
+   "size": [
+    512,
+    512
+   ],
+   "notes": "Real scorched pan residue; multiply over food when burnt-ness is high. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "char_wok/char_wok_03.jpg",
+     "image_url": "https://ptkss.com/wp-content/uploads/2025/09/%E0%B8%82%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%84%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%97%E0%B8%B0%E0%B9%84%E0%B8%AB%E0%B8%A1%E0%B9%89.png",
+     "page_url": "https://ptkss.com/how-to-remove-burnt-stains-from-a-pan-easy-housewife-tips-stain-removal-in-no-time/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "chili_green_pile",
+   "files": [
+    "chili_green_pile.png"
+   ],
+   "purpose": "green bird's-eye chilies pile",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "White background removed.",
+   "sources": [
+    {
+     "file": "chili_green_white/chili_green_white_01.jpg",
+     "image_url": "https://res.cloudinary.com/freshketimage001/image/upload/v1584420163/pbjtaw3f2pox68o6i2ja.png",
+     "page_url": "https://cleverlearn-hocthongminh.edu.vn/%E0%B8%9E%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%AA%E0%B8%B5%E0%B9%80%E0%B8%82%E0%B8%B5%E0%B8%A2%E0%B8%A7-1690214502923343/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "chili_red_bunch",
+   "files": [
+    "chili_red_bunch.png"
+   ],
+   "purpose": "red bird's-eye chilies (handful, with stems)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "White background removed (advert caption area excluded).",
+   "sources": [
+    {
+     "file": "chili_red/chili_red_04.jpg",
+     "image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/92/20/2000000412092/2000000412092_2-20260324154908-.jpg",
+     "page_url": "https://www.bigc.co.th/en/product/red-bird-s-eye-chili-no-stem-40-g.83739"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "egg_fried_burnt",
+   "files": [
+    "egg_fried_burnt.png"
+   ],
+   "purpose": "burnt ไข่ดาว (overcooked: charred black lace, hard pale yolk)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Derived from egg_fried_crispy by charring the browned regions and drying the yolk.",
+   "sources": [
+    {
+     "file": "egg_crispy/egg_crispy_03.jpg",
+     "image_url": "https://us-fbcloud.net/wb/data/1684/1684472-img.xuhogw.q61w.webp",
+     "page_url": "https://board.postjung.com/1684472"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "egg_fried_crispy",
+   "files": [
+    "egg_fried_crispy.png"
+   ],
+   "purpose": "ไข่ดาวกรอบ: crispy lacy brown edge, runny yolk",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Street-style deep-fried egg; GrabCut from plate.",
+   "sources": [
+    {
+     "file": "egg_crispy/egg_crispy_03.jpg",
+     "image_url": "https://us-fbcloud.net/wb/data/1684/1684472-img.xuhogw.q61w.webp",
+     "page_url": "https://board.postjung.com/1684472"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "egg_fried_runny",
+   "files": [
+    "egg_fried_runny.png"
+   ],
+   "purpose": "ไข่ดาว sunny-side-up, runny glossy yolk, light golden edge",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Top view, white background removed.",
+   "sources": [
+    {
+     "file": "egg_top/egg_top_01.jpg",
+     "image_url": "https://www.nittayakaiyang.com/wp-content/uploads/2023/04/%E0%B9%84%E0%B8%82%E0%B9%88%E0%B8%94%E0%B8%B2%E0%B8%A7-07.jpg",
+     "page_url": "https://www.nittayakaiyang.com/th/menus_categories/%E0%B9%84%E0%B8%82%E0%B9%88/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "fried_rice_tile",
+   "files": [
+    "fried_rice_tile.jpg",
+    "fried_rice_tile_n.jpg"
+   ],
+   "purpose": "khao phat (fried rice with egg, kale bits)",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Plated fried rice close-up. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "friedrice_close/friedrice_close_01.jpg",
+     "image_url": "https://img.wongnai.com/p/1968x0/2018/12/21/9e7a1f12969844c0a1f537c5d95662ac.jpg",
+     "page_url": "https://www.wongnai.com/recipes/ugc/b3a02584ebb1444884f31530e0856d23"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "garlic_crushed",
+   "files": [
+    "garlic_crushed.png"
+   ],
+   "purpose": "crushed (smashed) peeled garlic cloves",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "GrabCut from a plate.",
+   "sources": [
+    {
+     "file": "garlic_crushed/garlic_crushed_05.jpg",
+     "image_url": "https://cms.dmpcdn.com/ugcarticle/2025/09/21/e3d76c90-96d2-11f0-abe9-5915688a62ba_webp_original.webp",
+     "page_url": "https://food.trueid.net/detail/KWJ9OaDEmryB"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "garlic_minced_pile",
+   "files": [
+    "garlic_minced_pile.png"
+   ],
+   "purpose": "minced garlic heap (กระเทียมสับ)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "White background removed.",
+   "sources": [
+    {
+     "file": "garlic_chopped/garlic_chopped_05.jpg",
+     "image_url": "https://res.cloudinary.com/freshketimage001/image/upload/c_fit,w_800,h_800,q_auto,f_auto/hczii6xuv3co5rurvfob",
+     "page_url": "https://freshket.co/product/detail/%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%AA%E0%B8%B1%E0%B8%9A/24423fdc-3bc4-435b-8d66-a8588041831d"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "kale_leaf",
+   "files": [
+    "kale_leaf.png"
+   ],
+   "purpose": "Chinese kale leaf (คะน้า) for phat si-io / rat na",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "White background removed.",
+   "sources": [
+    {
+     "file": "kale_leaf/kale_leaf_02.jpg",
+     "image_url": "https://spfresh.co.th/wp-content/uploads/2022/12/%E0%B8%9C%E0%B8%B1%E0%B8%81%E0%B8%84%E0%B8%B0%E0%B8%99%E0%B9%89%E0%B8%B2-1.jpg",
+     "page_url": "https://cleverlearn-hocthongminh.edu.vn/%E0%B8%A3%E0%B8%B9%E0%B8%9B-%E0%B8%9C%E0%B8%B1%E0%B8%81-%E0%B8%84%E0%B8%B0%E0%B8%99%E0%B9%89%E0%B8%B2-1690113916268369/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "kaphrao_full_tile",
+   "files": [
+    "kaphrao_full_tile.jpg",
+    "kaphrao_full_tile_n.jpg"
+   ],
+   "purpose": "finished kaphrao surface with whole holy-basil leaves and long red chilies",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Top-down wok photo; brighter/greener than kaphrao_pork_tile (fresh basil just tossed in). Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "kaphrao_close/kaphrao_close_03.jpg",
+     "image_url": "https://f.ptcdn.info/723/063/000/pqpr3v7hxvg3tXFw9hj-o.jpg",
+     "page_url": "https://pantip.com/topic/38814854"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "kaphrao_pork_tile",
+   "files": [
+    "kaphrao_pork_tile.jpg",
+    "kaphrao_pork_tile_n.jpg"
+   ],
+   "purpose": "cooked minced pork in kaphrao sauce (glossy brown, chili bits, dark basil)",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Street-style dry kaphrao close-up; use on the stir-fry mass in the wok and on the plate. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "pork_mince_tex/pork_mince_tex_01.jpg",
+     "image_url": "https://img.wongnai.com/p/1920x0/2021/09/07/cec0fe71533d43ec8c1c6e184d1df313.jpg",
+     "page_url": "https://www.wongnai.com/restaurants/487945Ys-%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%9B%E0%B8%87%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%9B%E0%B8%B1%E0%B9%88%E0%B8%99-%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%8A%E0%B8%87%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%82%E0%B8%99%E0%B8%A1%E0%B8%9B%E0%B8%B1%E0%B8%87%E0%B8%9B%E0%B8%B4%E0%B9%89%E0%B8%87-%E0%B8%95%E0%B8%A3%E0%B8%87%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B8%B6%E0%B8%81%E0%B9%80%E0%B8%82%E0%B8%B5%E0%B8%A2%E0%B8%A7%E0%B9%83%E0%B8%81%E0%B8%A5%E0%B9%89%E0%B9%81%E0%B8%A2%E0%B8%81-4/photos/cec0fe71533d43ec8c1c6e184d1df313"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "long_beans_bundle",
+   "files": [
+    "long_beans_bundle.png"
+   ],
+   "purpose": "raw yard-long beans bundle (ถั่วฝักยาว)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "White background removed.",
+   "sources": [
+    {
+     "file": "longbean_cut/longbean_cut_04.jpg",
+     "image_url": "https://res.cloudinary.com/freshketimage001/image/upload/v1658201063/urcoxs8k2jpf0oi1a01u.jpg",
+     "page_url": "https://freshket.co/product/detail/%E0%B8%96%E0%B8%B1%E0%B9%88%E0%B8%A7%E0%B8%9D%E0%B8%B1%E0%B8%81%E0%B8%A2%E0%B8%B2%E0%B8%A7-%E0%B8%A3%E0%B8%B2%E0%B8%84%E0%B8%B2%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%AB%E0%B8%A2%E0%B8%B1%E0%B8%94/95a873ac-ed96-41be-8bde-93e99c05e9fd"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "long_beans_cut_tile",
+   "files": [
+    "long_beans_cut_tile.jpg",
+    "long_beans_cut_tile_n.jpg"
+   ],
+   "purpose": "raw yard-long beans cut into short pieces (prep tray / pad prik kaeng)",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Fills frame. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "longbean_cut/longbean_cut_01.jpg",
+     "image_url": "https://image.makewebeasy.net/makeweb/m_1920x0/WlOJvchTH/DefaultData/timeline_20201115_141920.jpg?v=202405291424",
+     "page_url": "https://www.freshlyfoods-thailand.com/product/31119-31141/%E0%B8%96%E0%B8%B1%E0%B9%88%E0%B8%A7%E0%B8%9D%E0%B8%B1%E0%B8%81%E0%B8%A2%E0%B8%B2%E0%B8%A7%E0%B8%AB%E0%B8%B1%E0%B9%88%E0%B8%99%E0%B8%97%E0%B9%88%E0%B8%AD%E0%B8%99"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "noodles_phat_si_io_tile",
+   "files": [
+    "noodles_phat_si_io_tile.jpg",
+    "noodles_phat_si_io_tile_n.jpg"
+   ],
+   "purpose": "wide rice noodles stir-fried with dark soy (ผัดซีอิ๊ว), also usable under rad na gravy",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Glossy brown sen yai with kale and egg. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "noodles_wide/noodles_wide_05.jpg",
+     "image_url": "https://img.wongnai.com/p/1920x0/2017/11/02/3aae80b2df9446dc9cbc7c2d0028a484.jpg",
+     "page_url": "https://www.wongnai.com/restaurants/71856VD-%E0%B8%A3%E0%B8%B2%E0%B8%94%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%A2%E0%B8%AD%E0%B8%94%E0%B8%9C%E0%B8%B1%E0%B8%81%E0%B8%99%E0%B8%B2%E0%B8%A2%E0%B9%80%E0%B8%84%E0%B8%B5%E0%B9%89%E0%B8%A2%E0%B8%87%E0%B9%80%E0%B8%AD%E0%B9%87%E0%B8%A1%E0%B9%84%E0%B8%9E%E0%B8%A3%E0%B9%8C-%E0%B8%9E%E0%B8%8D%E0%B8%B2%E0%B9%84%E0%B8%97-3/photos/3aae80b2df9446dc9cbc7c2d0028a484"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "oil_frying_tile",
+   "files": [
+    "oil_frying_tile.jpg",
+    "oil_frying_tile_n.jpg"
+   ],
+   "purpose": "hot frying oil with bubbles in a black wok (deep-frying eggs / garlic)",
+   "alpha": false,
+   "size": [
+    512,
+    512
+   ],
+   "notes": "Use with additive blending/emissive tweak for sizzling oil. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "oil_pan/oil_pan_05.jpg",
+     "image_url": "https://f.ptcdn.info/253/037/000/nxkxzggl7wm6gjgU09H-o.jpg",
+     "page_url": "https://pantip.com/topic/34424421"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "omelette_tile",
+   "files": [
+    "omelette_tile.jpg",
+    "omelette_tile_n.jpg"
+   ],
+   "purpose": "Thai omelette (ไข่เจียว) fluffy surface with browned spots",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Omelette frying in a pan; for kai jiao top surface. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "omelette/omelette_06.jpg",
+     "image_url": "https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oEFqVAenLEHsBNvAE9AMBtlCU5ZfQEtA9cEgID~tplv-tej9nj120t-origin.webp",
+     "page_url": "https://www.lemon8-app.com/tamaengaroijang/7434539407744565767?region=th"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "omelette_whole",
+   "files": [
+    "omelette_whole.png"
+   ],
+   "purpose": "whole crispy Thai omelette (ไข่เจียว) disc, top view",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "GrabCut from a floral plate.",
+   "sources": [
+    {
+     "file": "omelette/omelette_01.jpg",
+     "image_url": "https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/51e6239898f645b7a518b82fa612c96d~tplv-tej9nj120t-origin.webp",
+     "page_url": "https://www.lemon8-app.com/tomang_tangmo/7146199501559136770?region=th"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "onion_slices",
+   "files": [
+    "onion_slices.png"
+   ],
+   "purpose": "sliced onion rounds (raw)",
+   "alpha": true,
+   "size": [
+    768,
+    768
+   ],
+   "notes": "GrabCut from wooden board.",
+   "sources": [
+    {
+     "file": "onion_rings/onion_rings_01.jpg",
+     "image_url": "https://kindeeyuudee.baanlaesuan.com/app/uploads/2023/08/MG_2314-768x768.jpg",
+     "page_url": "https://kindeeyuudee.baanlaesuan.com/food-tips/chop-an-onion/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "phak_bung_tile",
+   "files": [
+    "phak_bung_tile.jpg",
+    "phak_bung_tile_n.jpg"
+   ],
+   "purpose": "stir-fried morning glory (ผัดผักบุ้งไฟแดง)",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Plated pad pak boong close-up. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "morning_glory/morning_glory_01.jpg",
+     "image_url": "https://img.wongnai.com/p/1920x0/2021/09/12/1864420db23b4624a5eb9f1cd86fa2fc.jpg",
+     "page_url": "https://www.wongnai.com/restaurants/193055iK-%E0%B8%A3%E0%B8%B2%E0%B8%8A%E0%B8%B2%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B8%95%E0%B9%89%E0%B8%A1-%E0%B8%9C%E0%B8%B1%E0%B8%81%E0%B8%9A%E0%B8%B8%E0%B9%89%E0%B8%87%E0%B8%A5%E0%B8%AD%E0%B8%A2%E0%B8%9F%E0%B9%89%E0%B8%B2-%E0%B8%A7%E0%B8%87%E0%B9%80%E0%B8%A7%E0%B8%B5%E0%B8%A2%E0%B8%99%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%A3%E0%B8%B2%E0%B8%A1%E0%B8%AB%E0%B9%89%E0%B8%B2/photos/1864420db23b4624a5eb9f1cd86fa2fc"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "pork_minced_raw_tile",
+   "files": [
+    "pork_minced_raw_tile.jpg",
+    "pork_minced_raw_tile_n.jpg"
+   ],
+   "purpose": "raw minced pork (market bag / tray / before cooking)",
+   "alpha": false,
+   "size": [
+    512,
+    512
+   ],
+   "notes": "Raw ground pork with fat flecks (from a butcher's ad photo, text-free region). Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "pork_raw/pork_raw_03.jpg",
+     "image_url": "https://www.pitchameat.com/wp-content/uploads/2021/06/198324614_3777548172350149_2064358771097563302_n.jpg",
+     "page_url": "https://www.pitchameat.com/%E0%B8%AB%E0%B8%A1%E0%B8%B9%E0%B8%9A%E0%B8%94%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B8%A1%E0%B8%B1%E0%B8%99-20/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "rice_cooked_tile",
+   "files": [
+    "rice_cooked_tile.jpg",
+    "rice_cooked_tile_n.jpg"
+   ],
+   "purpose": "cooked jasmine rice surface (plated rice, rice in pot / rice cooker)",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Real steamed Thai jasmine rice close-up, light flattened. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "rice_mound/rice_mound_04.jpg",
+     "image_url": "https://img.wongnai.com/p/1920x0/2020/01/16/908e63eda67f400da1f94c9bb9068ac3.jpg",
+     "page_url": "https://www.wongnai.com/restaurants/103795WP-%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%A5%E0%B8%B8%E0%B8%87%E0%B8%8A%E0%B8%A7%E0%B8%99-%E0%B8%AA%E0%B8%A7%E0%B8%99%E0%B8%9B%E0%B9%89%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B9%8B%E0%B8%A7-%E0%B8%81%E0%B8%B2%E0%B8%8D%E0%B8%88%E0%B8%99%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5/photos/908e63eda67f400da1f94c9bb9068ac3"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "rice_mound_top",
+   "files": [
+    "rice_mound_top.png"
+   ],
+   "purpose": "top view of a scooped rice dome on a plate (alpha)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Built from rice_cooked_tile with spherical warp, dome lighting and rim AO; irregular outline.",
+   "sources": [
+    {
+     "file": "rice_mound/rice_mound_04.jpg",
+     "image_url": "https://img.wongnai.com/p/1920x0/2020/01/16/908e63eda67f400da1f94c9bb9068ac3.jpg",
+     "page_url": "https://www.wongnai.com/restaurants/103795WP-%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%A5%E0%B8%B8%E0%B8%87%E0%B8%8A%E0%B8%A7%E0%B8%99-%E0%B8%AA%E0%B8%A7%E0%B8%99%E0%B8%9B%E0%B9%89%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B9%8B%E0%B8%A7-%E0%B8%81%E0%B8%B2%E0%B8%8D%E0%B8%88%E0%B8%99%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5/photos/908e63eda67f400da1f94c9bb9068ac3"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "shallots_sliced",
+   "files": [
+    "shallots_sliced.png"
+   ],
+   "purpose": "sliced shallots (หอมแดงซอย)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "GrabCut from wooden board.",
+   "sources": [
+    {
+     "file": "shallot_sliced/shallot_sliced_03.jpg",
+     "image_url": "https://www.gangbeauty.com/uppic/2017-10/17/93de46496.jpg",
+     "page_url": "https://www.gangbeauty.com/13ukxzdoyvS"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  }
+ ]
+}
