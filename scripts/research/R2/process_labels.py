@@ -208,6 +208,25 @@ job("soybean_oil_angoon_1l", "angoon_oil/angoon_oil_04.jpg", "cyl", "น้ำ�
     worn_kw={"base_col": (170, 130, 40)})
 
 
+job("red_curry_paste_mae_ploy", "curry_paste/curry_paste_07.jpg", "frustum_x", "น้ำพริกแกงเผ็ด (red curry paste) พริกแกง",
+    "แม่พลอย Mae Ploy", "PP tub 400 g-1 kg, tapered; printed body unwrapped", {"tub_h": 11.0, "tub_d_top": 11.5,
+                                                                                    "tub_d_bottom": 10.0},
+    cap="white snap lid", y0=0.14, y1=0.955, l0=0.025, r0=0.955, l1=0.065, r1=0.915, max_deg=62, deshade=0.4)
+
+job("chili_paste_mae_pranom", "chili_paste/chili_paste_07.jpg", "cyl", "น้ำพริกเผา (roasted chili paste in oil)",
+    "แม่ประนอม Maepranom", "glass jar 228 g; label unwrapped", {"jar_h": 10.5, "jar_d": 7.0, "label_h": 4.5},
+    cap="blue metal lid", y0=0.335, y1=0.745, max_deg=66, deshade=0.4)
+
+job("tapioca_starch_fish_brand", "tapioca/tapioca_05.jpg", "crop", "แป้งท้าว / แป้งมัน (tapioca flour / starch for gravy thickening)",
+    "ปลาไทย Fish brand", "PE bag 400-500 g, front face", {"bag_w": 13.0, "bag_h": 20.0}, cap="heat-sealed",
+    box=(0.30, 0.17, 0.735, 0.83), deshade=0)
+
+job("noodle_sen_yai_pack", "../foodtex/noodle_raw_wide/noodle_raw_wide_02.jpg", "crop",
+    "ก๋วยเตี๋ยวเส้นใหญ่ชนิดแผ่น (sen yai, fresh wide rice noodle pack 1 kg)", "เส้นสด (local brand)",
+    "clear PE pack with orange print, noodles visible", {"pack_w": 20.0, "pack_h": 28.0}, cap="heat-sealed",
+    box=(0.185, 0.055, 0.81, 0.94), deshade=0, wb=False)
+
+
 def run(j):
     img = FL.load(os.path.join(RAW, j["src"]))
     H, W = img.shape[:2]
@@ -219,6 +238,21 @@ def run(j):
                             xr=xr * W if xr is not None else None, max_deg=j.get("max_deg", 68),
                             top_curve=j.get("top_curve", 0.0), thresh=j.get("thresh", 238),
                             cx=j["cx_n"] * W if "cx_n" in j else None, radius=j["r_n"] * W if "r_n" in j else None)
+    elif m == "frustum_x":  # cone with explicit edges (normalised) at y0 / y1
+        import cv2
+        y0, y1 = j["y0"] * H, j["y1"] * H
+        l0, r0, l1, r1 = j["l0"] * W, j["r0"] * W, j["l1"] * W, j["r1"] * W
+        lim = np.radians(j.get("max_deg", 64))
+        rmean = ((r0 - l0) + (r1 - l1)) / 4
+        ow, oh = int(rmean * 2 * lim), int(y1 - y0)
+        th = np.linspace(-lim, lim, ow)
+        ys = np.linspace(y0, y1, oh)
+        t = (ys - y0) / (y1 - y0)
+        rad = (r0 - l0) / 2 + ((r1 - l1) / 2 - (r0 - l0) / 2) * t
+        cxs = (l0 + r0) / 2 + ((l1 + r1) / 2 - (l0 + r0) / 2) * t
+        mx = (cxs[:, None] + rad[:, None] * np.sin(th)[None, :]).astype(np.float32)
+        my = np.tile(ys[:, None], (1, ow)).astype(np.float32)
+        out = cv2.remap(img.astype(np.float32), mx, my, cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
     elif m == "frustum":
         out = FL.frustum_unwrap(img, j["y0"] * H, j["y1"] * H, max_deg=j.get("max_deg", 66),
                                 thresh=j.get("thresh", 238))
@@ -259,12 +293,12 @@ def worn_variant(name, strength=0.75, base_col=(92, 52, 18)):
 
 def write_manifest():
     logs = {}
-    for lf in ("_log.jsonl",):
-        p = os.path.join(RAW, lf)
+    for p, prefix in ((os.path.join(RAW, "_log.jsonl"), ""),
+                      (os.path.join(os.path.dirname(RAW), "foodtex", "_log.jsonl"), "../foodtex/")):
         if os.path.exists(p):
             for line in open(p, encoding="utf-8"):
                 d = json.loads(line)
-                logs[d["file"]] = d
+                logs[prefix + d["file"]] = d
     entries = []
     for n, j in JOBS.items():
         f = os.path.join(OUT, n + ".png")
@@ -279,16 +313,18 @@ def write_manifest():
             "product": j["product"], "brand_real": j["brand"], "package": j["package"],
             "real_dims_cm": j["real_dims_cm"], "cap": j["cap"],
             "method": {"cyl": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
-                       "frustum": "conical (cup) unwrap", "persp": "4-point perspective flatten",
+                       "frustum": "conical (cup) unwrap", "frustum_x": "conical (tub) unwrap",
+                       "persp": "4-point perspective flatten",
                        "crop": "straight crop"}[j["method"]],
             "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, "
                        "map it to the front of the container and tint the back with the edge colour"
-            if j["method"] in ("cyl", "frustum") else "flat face",
+            if j["method"] in ("cyl", "frustum", "frustum_x") else "flat face",
             "source_image_url": src.get("image", ""), "source_page_url": src.get("page", ""),
             "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)",
         })
     data = {"note": "Real Thai product label textures, flattened from web product photos (client rule 2026-10-19: "
-                    "use real products, any licence). *_worn.png = greasy/worn variant.",
+                    "use real products, any licence). *_worn.png = greasy/worn variant. PNG kept because src/modules/shops "
+                    "references these file names.",
             "labels": entries}
     json.dump(data, open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     return len(entries)

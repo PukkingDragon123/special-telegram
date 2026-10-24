@@ -98,8 +98,8 @@ export function kitchenLab(game: Game) {
   else { cart.p = [p[0], gy, p[2]]; cart.yaw = -Math.PI / 2; cart.owner = 'players'; }
   const has = game.state.all('item').some((e) => e.in === cart.id);
   if (!has) { spawnCartTools(game, cart.id); spawnStarterKit(game, cart.id); }
-  // the rest of the pantry on the ground north of the cart
-  LAB_EXTRA.forEach((k, i) => {
+  // the rest of the pantry on the ground north of the cart (?kitchenlab=lite skips it)
+  if (new URLSearchParams(location.search).get('kitchenlab') !== 'lite') LAB_EXTRA.forEach((k, i) => {
     const x = sp.p[0] + 1.2 + (i % 8) * 0.42, z = sp.p[2] - 3.2 - Math.floor(i / 8) * 0.5;
     game.items.spawn(k, [x, (game.physics?.groundY(x, z) ?? 0) + 0.05, z], { yaw: Math.PI / 2 });
   });

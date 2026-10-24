@@ -181,7 +181,8 @@ def canopy(man, cid, keys, n_leaves, leaf_px, seed, base="bottom", tint_col=None
     rng = np.random.default_rng(seed)
     pool = []
     for k in keys:
-        pool += sprites(k, min_area=3000, base=base, max_aspect=4.5, min_fill=0.3)
+        region = {"ph:tree_small_02": (0.0, 0.0, 0.6, 1.0)}.get(k)   # right side of that atlas = branch textures
+        pool += sprites(k, min_area=3000, base=base, max_aspect=4.5, min_fill=0.3, max_fill=0.86, region=region)
     if tint_col:
         pool = [recolor(s, tint_col, 0.35) for s in pool]
     S = 2048
@@ -340,7 +341,7 @@ def moss_patch(man, cid, ph_id, region, keep_pct=45):
     finish(cid, cv, dict(type="decal", widthMeters=0.8, heightMeters=0.8, pivot=[0.5, 0.5], alphaTest=0.3,
                          tags=["moss", "patch", "decal", "wall-base", "canal", "damp", "shade"],
                          **src_meta(["ph:" + ph_id]), author="Poly Haven (see credits)",
-                         note="Moss patches cut from a real scan by their own green coverage (decal / polygon-offset quad)."),
+                         note="Moss / mould patches cut from a real scan by their own green coverage (decal / polygon-offset quad)."),
            man, (1024, 1024))
 
 
@@ -353,8 +354,6 @@ CARDS = {
     "rice_clump_ripe": lambda m: rice_clump(m, True),
     "canopy_broadleaf": lambda m: canopy(m, "canopy_broadleaf", ["ph:island_tree_01", "ph:island_tree_02"], 520, 150, 21,
                                          tags=["broadleaf", "street-tree"], note="Glossy broadleaf street tree canopy cluster."),
-    "canopy_smallleaf": lambda m: canopy(m, "canopy_smallleaf", ["ph:tree_small_02"], 260, 330, 22, base="bottom",
-                                         tags=["small-leaf", "shrub-tree"], note="Small-leaved tree / hedge-tree canopy cluster."),
     "canopy_feathery": lambda m: canopy(m, "canopy_feathery", ["ph:jacaranda_tree"], 150, 700, 23, base="left",
                                         tint_col=(110, 140, 60), tags=["feathery", "bipinnate", "rain-tree", "flame-tree", "tamarind"],
                                         note="Bipinnate foliage (reads as rain tree / flame tree / tamarind)."),
@@ -363,7 +362,7 @@ CARDS = {
     "periwinkle_bush": periwinkle_bush,
     "fern_rosette": fern_rosette,
     "moss_patch_a": lambda m: moss_patch(m, "moss_patch_a", "concrete_moss", (0.0, 0.0, 0.5, 0.5), 45),
-    "moss_patch_b": lambda m: moss_patch(m, "moss_patch_b", "mossy_brick", (0.0, 0.0, 0.5, 0.5), 40),
+    "moss_patch_b": lambda m: moss_patch(m, "moss_patch_b", "worn_mossy_plasterwall", (0.0, 0.0, 0.5, 0.5), 40),
 }
 
 

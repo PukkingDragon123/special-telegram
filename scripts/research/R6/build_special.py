@@ -216,6 +216,15 @@ def galvanized_steel():
                        note="Real photo of zinc spangle: flat-fielded, made seamless; brighter crystals = smoother.")
 
 
+def aluminium_scratched():
+    m = ov_meta("ov_metal", 29)   # real photo of a weathered metal sheet (public domain mark)
+    alb, nrm, orm = _metal_from_photo(m["file"], (0.45, 0.5, 0.9), 70, (212, 214, 216), 0.38, 0.62, 1.2, hp=5.0)
+    files = L.write_material("aluminium_scratched", dict(albedo=alb, normal=nrm, orm=orm), N)
+    return files, dict(tileMeters=0.5, tint=False, tags=["metal", "aluminium", "pot", "dull", "scratched", "kitchen", "street-food"],
+                       source=f"photo: '{m['title']}' (Flickr via Openverse)", sourceUrl=m["url"], author=m["author"], license=m["license"],
+                       note="Real photo of a dull weathered sheet: flat-fielded, made seamless; aluminium reflectance with photo-derived roughness/normal.")
+
+
 def chrome():
     s5 = img(acg("Smear005")["Opacity"], "L", N).astype(np.float32) / 255.0
     s8 = img(acg("SurfaceImperfections008")["Opacity"], "L", N).astype(np.float32) / 255.0
@@ -398,6 +407,7 @@ SPECIALS = {
     "stainless_brushed": stainless_brushed,
     "stainless_dented_greasy": stainless_dented_greasy,
     "galvanized_steel": galvanized_steel,
+    "aluminium_scratched": aluminium_scratched,
     "chrome": chrome,
     "brass_gold": brass_gold,
     "plastic_rough": plastic_rough,

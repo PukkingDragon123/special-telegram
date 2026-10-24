@@ -19,7 +19,7 @@ except ImportError:  # pragma: no cover
 
 # ----------------------------------------------------------------------------- colour
 def srgb_to_lin(c):
-    c = np.asarray(c, dtype=np.float32)
+    c = np.clip(np.nan_to_num(np.asarray(c, dtype=np.float32)), 0, None)
     return np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4).astype(np.float32)
 
 

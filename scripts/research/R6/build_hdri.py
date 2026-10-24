@@ -114,6 +114,8 @@ def main():
         preview(img, info["recommendedExposure"], os.path.join(OUT, f"{key}_preview.jpg"))
         c = cat.get(pid, {})
         entry.update(dict(
+            file=f"{key}_1k.hdr",
+            fileNote="file = 1K (enough for PMREM env lighting); use file2k when the HDRI is visible as background.",
             preview=f"{key}_preview.jpg",
             recommendedExposure=info.pop("recommendedExposure"),
             envMapIntensity=1.0,

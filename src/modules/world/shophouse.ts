@@ -24,6 +24,7 @@ export interface SignSource {
   interior(cat: string, rng: RNG): AtlasRect | null;
   poster(rng: RNG): AtlasRect | null;
   graffiti(rng: RNG): AtlasRect | null;
+  any(cat: string, rng: RNG): AtlasRect | null;
 }
 
 export interface ShopCtx {

@@ -86,12 +86,12 @@
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
   },
   {
-   "name": "burnt_char_tile",
+   "name": "burnt_residue_tile",
    "files": [
-    "burnt_char_tile.jpg",
-    "burnt_char_tile_n.jpg"
+    "burnt_residue_tile.jpg",
+    "burnt_residue_tile_n.jpg"
    ],
-   "purpose": "charred / burnt stir-fry surface (blend over any food as burnt-ness rises)",
+   "purpose": "charred / burnt stir-fry residue (blend over any food as burnt-ness rises)",
    "alpha": false,
    "size": [
     1024,
@@ -280,6 +280,27 @@
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
   },
   {
+   "name": "garlic_bulbs_bunch",
+   "files": [
+    "garlic_bulbs_bunch.png"
+   ],
+   "purpose": "Thai garlic bulbs tied in a bunch (กระเทียมจุก, market)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Purple-skinned Thai garlic heads with bamboo tie; white background removed.",
+   "sources": [
+    {
+     "file": "garlic_white/garlic_white_01.jpg",
+     "image_url": "https://filebroker-cdn.lazada.co.th/kf/Se5c6b92fa1f342c08e3b104d7be3939eF.jpg",
+     "page_url": "https://thaipick.com/product/lazada/3354396"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
    "name": "garlic_cloves_tile",
    "files": [
     "garlic_cloves_tile.jpg",
@@ -297,6 +318,27 @@
      "file": "garlic_clove_iso/garlic_clove_iso_01.jpg",
      "image_url": "https://down-th.img.susercontent.com/file/th-11134207-7r991-lvsl4xzmyoje29",
      "page_url": "https://shopee.co.th/%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%81%E0%B8%97%E0%B9%89-%E0%B9%81%E0%B8%81%E0%B8%B0%E0%B9%80%E0%B8%9B%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81%E0%B8%81%E0%B8%A5%E0%B8%B5%E0%B8%9A%E0%B8%AA%E0%B8%A7%E0%B8%A2-1%E0%B8%81%E0%B8%B4%E0%B9%82%E0%B8%A5-250-%E0%B8%9A%E0%B8%B2%E0%B8%97-i.321227210.25681318581"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "garlic_crushed",
+   "files": [
+    "garlic_crushed.png"
+   ],
+   "purpose": "smashed / crushed peeled garlic cloves (กระเทียมทุบ)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Real smashed cloves, colour-keyed from a grey plate (warm cream cloves kept).",
+   "sources": [
+    {
+     "file": "garlic_crushed/garlic_crushed_05.jpg",
+     "image_url": "https://cms.dmpcdn.com/ugcarticle/2025/09/21/e3d76c90-96d2-11f0-abe9-5915688a62ba_webp_original.webp",
+     "page_url": "https://food.trueid.net/detail/KWJ9OaDEmryB"
     }
    ],
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
@@ -561,6 +603,28 @@
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
   },
   {
+   "name": "phat_phrik_kaeng_tile",
+   "files": [
+    "phat_phrik_kaeng_tile.jpg",
+    "phat_phrik_kaeng_tile_n.jpg"
+   ],
+   "purpose": "red curry stir-fry ผัดพริกแกงหมู (pork, long beans, red chili, glossy red-brown paste)",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Real plated pad prik kaeng close-up. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "../cand/dish_phatphrikkaeng/dish_phatphrikkaeng_02.jpg",
+     "image_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhB-Lr_7ECroH_wj0OoCUsGjGWDv70s30Gc7wLPVBr1bG0dnhyphenhyphenwsvjmSGTey66GozEWUrZUw-Zz0EZ-W6W2WRxJC337LQhLv0efQ9Nc-u1ghShMjCvOC1bxQwNGBkVM-Vikxiv4arZCBXVU/s1600/20141128_080748.jpg",
+     "page_url": "https://thaifoodrecipesmake.blogspot.com/2014/11/blog-post_64.html"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
    "name": "pork_minced_raw_tile",
    "files": [
     "pork_minced_raw_tile.jpg",
@@ -664,6 +728,27 @@
      "file": "shallot_sliced/shallot_sliced_03.jpg",
      "image_url": "https://www.gangbeauty.com/uppic/2017-10/17/93de46496.jpg",
      "page_url": "https://www.gangbeauty.com/13ukxzdoyvS"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "shrimp_raw_pile",
+   "files": [
+    "shrimp_raw_pile.png"
+   ],
+   "purpose": "raw peeled shrimp (กุ้งขาว) pile, for tom yum / stir-fries",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "White background removed (caption area excluded).",
+   "sources": [
+    {
+     "file": "shrimp_raw/shrimp_raw_01.jpg",
+     "image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/36/88/8859312604336/8859312604336_2-20260409100751-.jpg",
+     "page_url": "https://www.bigc.co.th/product/ptn-gourmet-frozen-raw-peeled-deveined-tail-off-vannamei-white-shrimp-250-g.12842533"
     }
    ],
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"

@@ -1154,6 +1154,16 @@
   "pitchVar": 0.0,
   "desc": "Parody of the roving junk-buyer pickup loudspeaker chant (synthesized Thai voice, megaphone, echo)."
  },
+ "crowd_chatter_loop": {
+  "files": [
+   "amb/crowd_chatter_loop.mp3"
+  ],
+  "vol": 0.6,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Restaurant / street-food crowd chatter with Thai voices (busy shop, market tables)."
+ },
  "female_scream_comedic": {
   "files": [
    "sfx/people/female_scream_comedic_1.mp3",
@@ -1226,6 +1236,37 @@
   "cat": "sfx",
   "pitchVar": 0.06,
   "desc": "Angry muttering (mad shopkeeper / customer) - gibberish from reversed Thai speech."
+ },
+ "babble": {
+  "files": [
+   "voice/babble/babble_1.mp3",
+   "voice/babble/babble_2.mp3",
+   "voice/babble/babble_3.mp3",
+   "voice/babble/babble_4.mp3",
+   "voice/babble/babble_5.mp3",
+   "voice/babble/babble_6.mp3",
+   "voice/babble/babble_7.mp3",
+   "voice/babble/babble_8.mp3",
+   "voice/babble/babble_9.mp3",
+   "voice/babble/babble_10.mp3",
+   "voice/babble/babble_11.mp3",
+   "voice/babble/babble_12.mp3"
+  ],
+  "vol": 0.45,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.15,
+  "desc": "Speech-bubble blips: 12 sped-up real Thai syllables (Animal-Crossing style). Play a random one per character with pitchVar."
+ },
+ "casino_ambience_loop": {
+  "files": [
+   "amb/casino_ambience_loop.mp3"
+  ],
+  "vol": 0.6,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Casino floor: crowd, slot machine jingles, chips (intro cutscene)."
  },
  "slot_machine_spin": {
   "files": [
@@ -1358,6 +1399,16 @@
   "cat": "sfx",
   "pitchVar": 0.05,
   "desc": "Losing sting (lost everything at the casino)."
+ },
+ "eerie_drone_loop": {
+  "files": [
+   "amb/eerie_drone_loop.mp3"
+  ],
+  "vol": 0.55,
+  "loop": true,
+  "cat": "amb",
+  "pitchVar": 0.0,
+  "desc": "Eerie night drone for ghost encounters (low drone, ghostly air, far bells)."
  },
  "whisper": {
   "files": [

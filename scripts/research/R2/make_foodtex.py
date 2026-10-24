@@ -156,227 +156,36 @@ def _wood(img):
 
 
 def _garlic_mask(img):
-    hsv = cv2.cvtColor(np.clip(img, 0, 255).astype(np.uint8), cv2.COLOR_RGB2HSV)
-    m = ((hsv[..., 0] >= 8) & (hsv[..., 0] <= 45) & (hsv[..., 1] >= 14) & (hsv[..., 2] >= 100)).astype(np.uint8)
-    m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15)))
-    m = cv2.morphologyEx(m, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
-    return m
-
-# ------------------------------------------------------------------ cutouts (alpha)
-cut_job("egg_fried_runny", "egg_top/egg_top_01.jpg", "ไข่ดาว sunny-side-up, runny glossy yolk, light golden edge",
-        "Top view; background removed with GrabCut.", method="grabcut", rect=(0.01, 0.14, 0.995, 0.895))
-cut_job("egg_fried_crispy", "egg_crispy/egg_crispy_03.jpg", "ไข่ดาวกรอบ: crispy lacy brown edge, runny yolk",
-        "Street-style deep-fried egg; GrabCut from plate.", method="grabcut", rect=(0.11, 0.08, 0.89, 0.985))
-
-
-def _burn(rgba):
-    """Overcooked egg: soft masks only (no thresholds) -> char the browned lace, singe the white, dull the yolk."""
-    f = rgba.astype(np.float32)
-    rgb = f[..., :3] / 255.0
-    a = f[..., 3:4]
-    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    mx = rgb.max(axis=2)
-    mn = rgb.min(axis=2)
-    sat = (mx - mn) / np.maximum(mx, 1e-3)
-    # browned = warm & saturated & not too bright (lace); yolk = very saturated orange-yellow & bright
-    warm = np.clip((r - b) * 2.2, 0, 1)
-    brown = np.clip(warm * np.clip((sat - 0.25) * 2.5, 0, 1) * np.clip((0.95 - mx) * 3.0, 0, 1), 0, 1)
-    yolk = np.clip((sat - 0.55) * 3, 0, 1) * np.clip((mx - 0.75) * 4, 0, 1) * np.clip((g - b) * 2, 0, 1)
-    brown = np.clip(brown - yolk, 0, 1)
-    brown = cv2.GaussianBlur(brown, (0, 0), 1.5)[..., None]
-    yolk = cv2.GaussianBlur(yolk, (0, 0), 2.0)[..., None]
-    S = rgb.shape[0]
-    rng = np.random.default_rng(3)
-    n = cv2.GaussianBlur(rng.random((S, S)).astype(np.float32), (0, 0), 2.5)
-    n = (n - n.min()) / (n.max() - n.min() + 1e-6)
-    char_amt = np.clip(brown * (0.75 + 0.6 * (n[..., None] - 0.5)), 0, 1)
-    char_col = np.array([0.10, 0.065, 0.04], np.float32)
-    out = rgb * (1 - char_amt) + char_col * char_amt
-    # singe the whole white a little (tan) + darker towards the rim
-    yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
-    rim = np.clip((np.sqrt((xx - S / 2) ** 2 + (yy - S / 2) ** 2) / (S * 0.5) - 0.35) / 0.6, 0, 1)[..., None]
-    tan = np.array([0.86, 0.74, 0.58], np.float32)
-    out = out * (1 - 0.35 * rim) + out * tan * 0.35 * rim
-    # yolk: matte, set (less specular, flatter, slightly paler)
-    yl = out.mean(axis=2, keepdims=True)
-    flat_yolk = np.clip(out * 0.88 + 0.06, 0, 1)
-    flat_yolk = np.minimum(flat_yolk, yl * 0 + 0.86)
-    out = out * (1 - yolk * 0.8) + flat_yolk * yolk * 0.8
-    return np.dstack([np.clip(out * 255, 0, 255), a]).astype(np.uint8)
-
-
-job("egg_fried_burnt", lambda: _derive("egg_fried_crispy", "egg_fried_burnt", _burn),
-    "burnt ไข่ดาว (overcooked: charred black lace, hard pale yolk)", True,
-    "Derived from egg_fried_crispy by charring the browned regions and drying the yolk.",
-    ["egg_crispy/egg_crispy_03.jpg"])
-
-
-def _derive(src_name, name, fn):
-    from PIL import Image
-    im = np.asarray(Image.open(os.path.join(OUT, src_name + ".png")).convert("RGBA"))
-    out = fn(im)
-    T.save_rgba(out, os.path.join(OUT, name + ".png"))
-    return [name + ".png"], out.shape[1], out.shape[0]
-
-
-cut_job("omelette_whole", "omelette/omelette_01.jpg", "whole crispy Thai omelette (ไข่เจียว) disc, top view",
-        "GrabCut from a floral plate.", method="grabcut", rect=(0.04, 0.17, 0.985, 0.955))
-cut_job("basil_sprig_fresh", "basil_leaf/basil_leaf_02.jpg", "fresh holy basil sprig with flower spike",
-        "White background removed.", thresh=228)
-cut_job("basil_bunch_fresh", "basil_leaf/basil_leaf_01.jpg", "fresh holy basil bunch (market กำ)",
-        "White background removed (incl. gaps between leaves).", thresh=228, kill_white=True)
-
-
-def _wilt(rgba):
-    f = rgba.astype(np.float32)
-    rgb = f[..., :3]
-    a = f[..., 3]
-    hsv = cv2.cvtColor(np.clip(rgb, 0, 255).astype(np.uint8), cv2.COLOR_RGB2HSV).astype(np.float32)
-    hsv[..., 0] = np.clip(hsv[..., 0] * 0.92 + 2, 0, 179)  # slightly olive
-    hsv[..., 1] = np.clip(hsv[..., 1] * 0.95, 0, 255)
-    hsv[..., 2] = np.clip(hsv[..., 2] * 0.50, 0, 255)  # cooked basil goes dark
-    rgb2 = cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2RGB).astype(np.float32)
-    # oily sheen + brown sauce stain at edges
-    S = rgb.shape[0]
-    rng = np.random.default_rng(7)
-    sheen = cv2.GaussianBlur(rng.random((S, S)).astype(np.float32), (0, 0), 6)
-    sheen = np.clip((sheen - 0.55) * 6, 0, 1)[..., None] * 60
-    edge = cv2.GaussianBlur((a > 128).astype(np.float32), (0, 0), 6)
-    stain = np.clip(1 - edge, 0, 1)[..., None] * (a[..., None] > 0)
-    rgb2 = rgb2 + sheen
-    rgb2 = rgb2 * (1 - 0.6 * stain) + np.array([90, 50, 20]) * 0.6 * stain
-    # limp: shrink & droop with a gentle warp
-    yy, xx = np.mgrid[0:S, 0:S].astype(np.float32)
-    mapx = xx + 6 * np.sin(yy / S * 6.0)
-    mapy = yy - 10 * np.sin(xx / S * 3.0) - 0.04 * (yy - S / 2)
-    out = np.dstack([np.clip(rgb2, 0, 255), a]).astype(np.float32)
-    out = cv2.remap(out, mapx.astype(np.float32), mapy.astype(np.float32), cv2.INTER_LINEAR,
-                    borderMode=cv2.BORDER_CONSTANT, borderValue=0)
-    return np.clip(out, 0, 255).astype(np.uint8)
-
-
-job("basil_sprig_cooked", lambda: _derive("basil_sprig_fresh", "basil_sprig_cooked", _wilt),
-    "wilted / stir-fried holy basil sprig (dark, glossy, limp)", True,
-    "Derived from basil_sprig_fresh: darkened olive, oil sheen, sauce-stained edges, droop warp.",
-    ["basil_leaf/basil_leaf_02.jpg"])
-job("basil_bunch_cooked", lambda: _derive("basil_bunch_fresh", "basil_bunch_cooked", _wilt),
-    "wilted basil mass (overcooked / soggy basil)", True, "Derived from basil_bunch_fresh like basil_sprig_cooked.",
-    ["basil_leaf/basil_leaf_01.jpg"])
-cut_job("chili_red_bunch", "chili_red/chili_red_04.jpg", "red bird's-eye chilies (handful, with stems)",
-        "White background removed (advert caption area excluded).", crop_first=(0.0, 0.0, 1.0, 0.80), thresh=226)
-cut_job("chili_green_pile", "chili_green_white/chili_green_white_01.jpg", "green bird's-eye chilies pile",
-        "White background removed.", thresh=226)
-cut_job("garlic_minced_pile", "garlic_chopped/garlic_chopped_05.jpg", "minced garlic heap (กระเทียมสับ)",
-        "White background removed.", thresh=226, n_keep=1)
-cut_job("long_beans_bundle", "longbean_cut/longbean_cut_04.jpg", "raw yard-long beans bundle (ถั่วฝักยาว)",
-        "White background removed.", thresh=226)
-cut_job("onion_slices", "onion_rings/onion_rings_01.jpg", "sliced onion rounds (raw)", "GrabCut from wooden board.",
-        method="grabcut", rect=(0.08, 0.17, 0.93, 0.80), size=768, kill_fn=_wood, n_keep=3)
-cut_job("shallots_sliced", "shallot_sliced/shallot_sliced_03.jpg", "sliced shallots (หอมแดงซอย)",
-        "GrabCut from wooden board.", method="grabcut", rect=(0.06, 0.40, 0.84, 0.92))
-cut_job("kale_leaf", "kale_leaf/kale_leaf_02.jpg", "Chinese kale leaf (คะน้า) for phat si-io / rat na",
-        "White background removed.", thresh=226)
-
-
-def _chili_singles():
-    """Separate single chilies from a row photo (light background) -> red & green singles + 2x2 atlas."""
-    img = T.load(P("chili_green_white/chili_green_white_02.jpg"))
-    img = T.crop_n(img, (0.0, 0.19, 1.0, 0.975))
     u8 = np.clip(img, 0, 255).astype(np.uint8)
     hsv = cv2.cvtColor(u8, cv2.COLOR_RGB2HSV)
-    fg = ((hsv[..., 1] > 70) & (hsv[..., 2] > 40)).astype(np.uint8)
-    fg = cv2.morphologyEx(fg, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
-    # split touching chilies: markers from strongly eroded bodies, then watershed on the mask
-    dist = cv2.distanceTransform(fg, cv2.DIST_L2, 5)
-    markers_m = (dist > 0.45 * dist.max()).astype(np.uint8)
-    nm, markers = cv2.connectedComponents(markers_m)
-    markers = markers + 1  # background -> 1 (sure background), chili cores -> 2..n
-    markers[(fg == 1) & (markers_m == 0)] = 0  # unknown band, flooded by watershed
-    ws = cv2.watershed(u8.copy(), markers.astype(np.int32))
-    lab = np.where(ws > 1, ws - 1, 0).astype(np.int32)
-    n = int(lab.max()) + 1
-    stats = np.zeros((n, 5), np.int64)
+    lab = cv2.cvtColor(u8, cv2.COLOR_RGB2LAB).astype(np.int32)
+    m0 = ((lab[..., 2] > 136) & (hsv[..., 2] > 95)).astype(np.uint8)  # warm cream cloves vs cool grey plate
+    m0 = cv2.morphologyEx(m0, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+    m0 = cv2.morphologyEx(m0, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)))
+    H, W = m0.shape
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (13, 13))
+    core = cv2.erode(m0, k)  # break thin bridges to slivers / shadows
+    n, labl, stats, cents = cv2.connectedComponentsWithStats(core)
+    keep = np.zeros_like(m0)
     for i in range(1, n):
-        ys, xs = np.nonzero(lab == i)
-        if len(xs):
-            stats[i] = [xs.min(), ys.min(), xs.max() - xs.min() + 1, ys.max() - ys.min() + 1, len(xs)]
-    H, W = fg.shape
-    cands = []
-    for i in range(1, n):
-        x, y, w, h, area = stats[i]
-        if area < H * W * 0.004 or x <= 1 or x + w >= W - 1 or h < H * 0.30:
+        comp = labl == i
+        if stats[i, cv2.CC_STAT_AREA] < m0.size * 0.0012 or cents[i][0] < W * 0.36 or hsv[..., 2][comp].mean() < 140:
             continue
-        m = (lab == i).astype(np.uint8)
-        hue = np.median(hsv[..., 0][m > 0])
-        col = "red" if (hue < 12 or hue > 165) else "green"
-        cands.append((col, area, x, y, w, h, m))
-    out_files = []
-    picks = {"red": [], "green": []}
-    for col in ("red", "green"):
-        cs = sorted([c for c in cands if c[0] == col], key=lambda c: c[4] / max(1, c[5]))[:2]  # narrowest first
-        for k, (_, area, x, y, w, h, m) in enumerate(cs):
-            rgba = T.rgba_from(img, m, feather=1.0, erode=0)
-            rgba = rgba[max(0, y - 6):y + h + 6, max(0, x - 6):x + w + 6]
-            rgba = T.trim_square(rgba, size=512, pad=0.04, square=True)
-            picks[col].append(rgba)
-    for col in ("red", "green"):
-        if picks[col]:
-            T.save_rgba(picks[col][0], os.path.join(OUT, f"chili_{col}_single.png"))
-            out_files.append(f"chili_{col}_single.png")
-    cells = picks["red"][:2] + picks["green"][:2]
-    if len(cells) == 4:
-        atlas = np.zeros((1024, 1024, 4), np.uint8)
-        for i, c in enumerate(cells):
-            atlas[(i // 2) * 512:(i // 2) * 512 + 512, (i % 2) * 512:(i % 2) * 512 + 512] = c
-        T.save_rgba(atlas, os.path.join(OUT, "chili_singles_atlas.png"))
-        out_files.append("chili_singles_atlas.png")
-    return out_files, 512, 512
+        keep[comp] = 1
+    keep = cv2.dilate(keep, k) & m0  # reconstruct clove outlines inside the original mask
+    return T.fill_holes(keep)
 
 
-job("chili_singles", _chili_singles, "single bird's-eye chilies (red + green) and a 2x2 atlas (R,R / G,G)", True,
-    "Individually separated from a row photo of fresh Thai chilies (stem up).",
-    ["chili_green_white/chili_green_white_02.jpg"])
-
-
-def _tomyum_top():
-    img = T.load(P("tomyum_surface/tomyum_surface_02.jpg"))
-    H, W = img.shape[:2]
-    cx, cy, rx, ry = 0.555 * W, 0.565 * H, 0.300 * W, 0.262 * H
-    m = np.zeros((H, W), np.uint8)
-    cv2.ellipse(m, (int(cx), int(cy)), (int(rx), int(ry)), 0, 0, 360, 1, -1)
-    rgba = T.rgba_from(img, m, feather=3.0, erode=2, decontam=False)
-    crop = rgba[int(cy - ry):int(cy + ry), int(cx - rx):int(cx + rx)]
-    from PIL import Image
-    im = Image.fromarray(crop, "RGBA").resize((1024, 1024), Image.LANCZOS)
-    arr = np.asarray(im)
-    T.save_rgba(arr, os.path.join(OUT, "tomyum_bowl_top.png"))
-    return ["tomyum_bowl_top.png"], 1024, 1024
-
-
-job("tomyum_bowl_top", _tomyum_top, "tom yum (น้ำข้น-style, orange-red) soup surface with ingredients, circular (alpha)",
-    True, "Inner circle of a real bowl photo, rescaled to a circle; place on the soup plane inside a bowl.",
-    ["tomyum_surface/tomyum_surface_02.jpg"])
-
-
-def _burnt_char():
-    tile = T.load(os.path.join(OUT, "kaphrao_pork_tile.jpg"))
-    g = tile.mean(axis=2, keepdims=True) / 255
-    rng = np.random.default_rng(11)
-    n = cv2.GaussianBlur(rng.random(tile.shape[:2]).astype(np.float32), (0, 0), 6)
-    n = ((n - n.min()) / (n.max() - n.min()))[..., None]
-    char = np.array([22, 14, 9], np.float32)
-    ember = np.array([110, 52, 20], np.float32)
-    out = char * (1 - g) + ember * g * 0.9
-    out = out * (0.75 + 0.5 * n) + (g ** 3) * 60
-    T.save_rgb(out, os.path.join(OUT, "burnt_char_tile.jpg"))
-    nm = T.normal_from(out, strength=3.0)
-    T.save_rgb(nm, os.path.join(OUT, "burnt_char_tile_n.jpg"))
-    return ["burnt_char_tile.jpg", "burnt_char_tile_n.jpg"], tile.shape[1], tile.shape[0]
-
-
-job("burnt_char_tile", _burnt_char, "charred / burnt stir-fry surface (blend over any food as burnt-ness rises)", False,
-    "Derived from the real kaphrao_pork_tile (same grain structure) charred to black-brown with ember tones. Seamless.",
-    ["pork_mince_tex/pork_mince_tex_01.jpg"])
+cut_job("garlic_crushed", "garlic_crushed/garlic_crushed_05.jpg", "smashed / crushed peeled garlic cloves (กระเทียมทุบ)",
+        "Real smashed cloves, colour-keyed from a grey plate (warm cream cloves kept).", mask_fn=_garlic_mask,
+        n_keep=30, fill=False, erode=1, feather=1.0)
+cut_job("garlic_bulbs_bunch", "garlic_white/garlic_white_01.jpg", "Thai garlic bulbs tied in a bunch (กระเทียมจุก, market)",
+        "Purple-skinned Thai garlic heads with bamboo tie; white background removed.", thresh=228, erode=3)
+cut_job("shrimp_raw_pile", "shrimp_raw/shrimp_raw_01.jpg", "raw peeled shrimp (กุ้งขาว) pile, for tom yum / stir-fries",
+        "White background removed (caption area excluded).", crop_first=(0.0, 0.0, 1.0, 0.80), thresh=226, erode=2)
+tile_job("phat_phrik_kaeng_tile", "../cand/dish_phatphrikkaeng/dish_phatphrikkaeng_02.jpg", (0.12, 0.12, 0.88, 0.80),
+         "red curry stir-fry ผัดพริกแกงหมู (pork, long beans, red chili, glossy red-brown paste)",
+         "Real plated pad prik kaeng close-up.")
 
 
 def main():
@@ -387,11 +196,12 @@ def main():
     if os.path.exists(man_path):
         man = {e["name"]: e for e in json.load(open(man_path, encoding="utf-8"))["textures"]}
     logs = {}
-    for lp in [os.path.join(SRC, "_log.jsonl")]:
+    for lp, prefix in [(os.path.join(SRC, "_log.jsonl"), ""),
+                       (os.path.join(os.path.dirname(SRC), "cand", "_log.jsonl"), "../cand/")]:
         if os.path.exists(lp):
             for line in open(lp, encoding="utf-8"):
                 d = json.loads(line)
-                logs[d["file"]] = d
+                logs[prefix + d["file"]] = d
     for n in names:
         j = JOBS[n]
         files, w, h = j["fn"]()

@@ -20,7 +20,7 @@ import { loadSigns, SignSys } from './signs';
 import { buildSpecial } from './buildings';
 import { buildPoles } from './wires';
 import { buildMarket } from './market';
-import { buildCanal } from './canal';
+import { buildCanal, pendingWater } from './canal';
 import { buildRural } from './rural';
 import { buildStreetLife } from './dressing';
 import { loadFoliage, FoliageSys } from './foliage';
@@ -147,6 +147,7 @@ async function buildWorld(game: Game) {
     tris += (m.mesh.geometry.index?.count ?? 0) / 3;
   }
 
+  for (const o of pendingWater.splice(0)) root.add(o);
   // ---------------------------------------------------------------- atmosphere & lights
   tf = performance.now();
   const atmo = new Atmosphere(game);

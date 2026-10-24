@@ -125,7 +125,7 @@ class Sprite:
 
 
 def extract_sprites(key, min_area=1500, base="bottom", pad=6, max_sprites=200, normalise=True, res_key="2k",
-                    region=None, max_aspect=None, min_fill=None):
+                    region=None, max_aspect=None, min_fill=None, max_fill=None):
     """Connected components of the atlas alpha -> list[Sprite] normalised base-down/tip-up.
     base: 'bottom'|'top'|'left'|'right'|'auto' (auto = thinner end is the base, e.g. a petiole).
     region: optional (x0,y0,x1,y1) fractions of the atlas to restrict the search."""
@@ -148,6 +148,8 @@ def extract_sprites(key, min_area=1500, base="bottom", pad=6, max_sprites=200, n
         if max_aspect and max(w, h) / max(1, min(w, h)) > max_aspect:
             continue
         if min_fill and area / float(w * h) < min_fill:
+            continue
+        if max_fill and area / float(w * h) > max_fill:
             continue
         x0, y0 = max(0, x - pad), max(0, y - pad)
         x1, y1 = min(W, x + w + pad), min(H, y + h + pad)

@@ -19,7 +19,8 @@ export const QB = {
   sh_l: 11, el_l: 12, wr_l: 13, sh_r: 14, el_r: 15, wr_r: 16,
   hip_l: 17, kn_l: 18, ho_l: 19, hip_r: 20, kn_r: 21, ho_r: 22,
 } as const;
-const NB = 23;
+export const QNB = 23;
+const NB = QNB;
 const PARENT = [-1, 0, 1, 2, 3, 4, 4, 4, 0, 8, 9, 2, 11, 12, 2, 14, 15, 0, 17, 18, 0, 20, 21];
 
 export type Species = 'dog' | 'cat';
@@ -693,8 +694,28 @@ function poseTargets(pose: QuadPose, sp: Species, out: EulerArr, root: { y: numb
 
 const _m = new THREE.Matrix4(), _v = new THREE.Vector3(), _e = new THREE.Euler();
 
+/** What the animator drives: the procedural QuadRig, or a loaded creature (creature.ts) via apply(). */
+export interface QuadRigLike {
+  species: Species;
+  root: THREE.Object3D;
+  inner: THREE.Object3D;
+  dims: { J: V3[] };
+  bones?: THREE.Bone[];
+  eyes?: THREE.Mesh[];
+  tongue?: THREE.Mesh;
+  /** custom application of the computed per-bone Euler deltas (YXZ, creature space) */
+  apply?(eul: Float32Array, rootY: number, pitch: number): void;
+  /** poses rendered by authored clips instead of procedural targets */
+  clipPoses?: Set<QuadPose>;
+}
+
 export class QuadAnimator {
+  /** live facial / layer state for drivers (0..1) */
+  readonly face = { blink: 0, pant: 0, eat: 0, bark: 0, sniff: 0, alert: 0, wag: 0, squint: 0, sleep: 0 };
+  /** smoothed pose weights (normalised) */
+  readonly poseW: Record<QuadPose, number> = { stand: 1, sit: 0, lie: 0, sleep: 0, beg: 0 };
   private cur = new Float32Array(NB * 3);
+  private out = new Float32Array(NB * 3);
   private tgt = new Float32Array(NB * 3);
   private tmp = new Float32Array(NB * 3);
   private w: Record<QuadPose, number> = { stand: 1, sit: 0, lie: 0, sleep: 0, beg: 0 };
@@ -712,7 +733,7 @@ export class QuadAnimator {
   private swatK = 0;
   private sitBlend = 0;
 
-  constructor(private rig: QuadRig) {}
+  constructor(private rig: QuadRigLike) {}
 
   /** trigger a bark (or meow for cats): head jerk + jaw */
   bark(n = 1) { this.barkT = 0; this.barkN = n; }
@@ -734,8 +755,10 @@ export class QuadAnimator {
     const rootTmp = { y: 0, pitch: 0 };
     for (const p of POSES) {
       const wt = this.w[p] / tot;
+      this.poseW[p] = wt;
       if (wt < 0.001) continue;
-      poseTargets(p, sp, this.tmp, rootTmp);
+      if (rig.clipPoses?.has(p)) { poseTargets('stand', sp, this.tmp, rootTmp); rootTmp.y = 0; }
+      else poseTargets(p, sp, this.tmp, rootTmp);
       for (let i = 0; i < NB * 3; i++) this.tgt[i] += this.tmp[i] * wt;
       ry += rootTmp.y * wt; rp += rootTmp.pitch * wt;
     }
@@ -790,7 +813,8 @@ export class QuadAnimator {
     }
     // pant (mouth open, tongue)
     addB(QB.jaw, this.pantK * (0.2 + Math.sin(this.t * 9) * 0.04));
-    rig.tongue.visible = this.pantK > 0.35 || this.eatK > 0.6;
+    if (rig.tongue) rig.tongue.visible = this.pantK > 0.35 || this.eatK > 0.6;
+    this.face.pant = this.pantK; this.face.eat = this.eatK; this.face.sniff = this.sniffK; this.face.alert = this.alertK; this.face.wag = this.wagK;
     // scratch: hind right leg up to the ear, fast
     if (this.scratchK > 0.01) {
       const s = Math.sin(this.t * 22);
@@ -815,6 +839,7 @@ export class QuadAnimator {
 
     // bark: head jerk + jaw snap (repeats barkN times)
     this.barkT += dt;
+    this.face.bark = 0;
     const bdur = cat ? 0.55 : 0.28;
     if (this.barkT < bdur * this.barkN) {
       const lt = (this.barkT % bdur) / bdur;
@@ -822,6 +847,7 @@ export class QuadAnimator {
       addB(QB.neck, -0.22 * env);
       addB(QB.head, -0.18 * env);
       addB(QB.jaw, (cat ? 0.32 : 0.55) * env);
+      this.face.bark = env;
       addB(QB.chest, 0.06 * env);
       ry -= 0.01 * env;
     }
@@ -859,7 +885,8 @@ export class QuadAnimator {
     const sleeping = (this.w.sleep / tot) > 0.6;
     const blink = this.blinkT < 0.12 && this.blinkT > 0;
     if (this.blinkT < 0) this.blinkT = 2 + Math.random() * 4;
-    for (const e of rig.eyes) e.scale.y = sleeping || blink ? 0.12 : 0.85;
+    if (rig.eyes) for (const e of rig.eyes) e.scale.y = sleeping || blink ? 0.12 : 0.85;
+    this.face.blink = sleeping || blink ? 1 : 0; this.face.sleep = sleeping ? 1 : 0;
 
     // ---- smooth pose layer
     const rate = 9;
@@ -932,7 +959,13 @@ export class QuadAnimator {
     }
 
     // ---- apply
-    const B = rig.bones;
+    if (rig.apply) {
+      const out = this.out;
+      for (let i = 0; i < NB * 3; i++) out[i] = this.cur[i] + G[i];
+      rig.apply(out, this.rootY + gy, this.rootPitch + gp);
+      return;
+    }
+    const B = rig.bones!;
     for (let i = 0; i < NB; i++) {
       _e.set(this.cur[i * 3] + G[i * 3], this.cur[i * 3 + 1] + G[i * 3 + 1], this.cur[i * 3 + 2] + G[i * 3 + 2], 'YXZ');
       B[i].quaternion.setFromEuler(_e);

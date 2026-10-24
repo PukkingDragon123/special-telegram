@@ -324,5 +324,27 @@
   "license": "CC0",
   "note": "Neutral light grey glossy plastic with real smudges; tint per object.",
   "resolution": 1024
+ },
+ "aluminium_scratched": {
+  "albedo": "aluminium_scratched/albedo.jpg",
+  "normal": "aluminium_scratched/normal.jpg",
+  "orm": "aluminium_scratched/orm.jpg",
+  "tileMeters": 0.5,
+  "tint": false,
+  "tags": [
+   "metal",
+   "aluminium",
+   "pot",
+   "dull",
+   "scratched",
+   "kitchen",
+   "street-food"
+  ],
+  "source": "photo: 'Galvanized sheet' (Flickr via Openverse)",
+  "sourceUrl": "https://www.flickr.com/photos/30924550@N04/35399953944",
+  "author": "walmarc04",
+  "license": "Public Domain Mark",
+  "note": "Real photo of a dull weathered sheet: flat-fielded, made seamless; aluminium reflectance with photo-derived roughness/normal.",
+  "resolution": 1024
  }
 }

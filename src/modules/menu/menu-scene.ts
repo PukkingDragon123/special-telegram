@@ -8,7 +8,7 @@ import { Sound } from '../../core/audio';
 import { Input } from '../../core/input';
 import { params, disposeObject, damp, asset } from '../../core/util';
 import { F } from '../../core/fonts';
-import { ALBUM_CAM, SLOTS, buildBackdrop, buildRug, buildSofa, buildTable, buildJenga, buildPanton, buildShellChair, buildLights, JENGA_COLORS, Jenga } from './album';
+import { ALBUM_CAM, ALBUM_GRADE, SLOTS, buildBackdrop, buildRug, buildSofa, buildTable, buildJenga, buildPanton, buildShellChair, buildLights, JENGA_COLORS, Jenga } from './album';
 import { StickerUI, Sticker, plateCanvas, preloadUi } from './ui';
 import { COVER, DANGER, GOLD, DISABLED, HOVER, LetterStyle, albumText, loadImg, mulberry } from './lettering';
 import { sfx, musicKey } from './sfx';
@@ -128,14 +128,14 @@ export class MenuScene implements SceneDef {
     game.engine.setView(this.scene, this.camera);
     game.ui.setScene(this.scene, this.camera);
     const post = game.engine.post;
-    post.setLook('album', 1);
+    post.setLook(ALBUM_GRADE, 1);
     post.setDOF(false);
     post.fade = 0;
-    post.bloom.intensity = 0.6;
+    post.bloom.intensity = 0.4;
     Input.setWantLock(false);
     // ---- static stickers
     this.stickers.title = this.ui.add({ img: 'title_hiaphat', imgVariants: false, anchor: 'b', x: 0, y: 178, width: 500, passive: true, delay: 0.25, z: 2 });
-    this.stickers.tagline = this.ui.add({ img: 'tagline_roi_baht_sang_tua', imgVariants: false, anchor: 'b', x: 0, y: 62, width: 250, passive: true, delay: 0.55, tilt: -1.5, z: 2 });
+    this.stickers.tagline = this.ui.add({ img: 'tagline_roi_baht_sang_tua', imgVariants: false, anchor: 'b', x: 0, y: 44, width: 215, passive: true, delay: 0.55, tilt: -1.5, z: 2 });
     // ---- input
     const cv = game.engine.canvas;
     const onMove = () => this.pick();
@@ -158,7 +158,6 @@ export class MenuScene implements SceneDef {
       this.toLocal();
     }));
     this.offs.push(game.on('menu:start', () => this.playStart()));
-    this.offs.push(game.on('player:joined', () => sfx.join()));
     Sound.music(musicKey('menu'));
     this.devParams();
     if (this.customizeOnEnter) setTimeout(() => this.openCustomize(true), 50);
@@ -216,7 +215,8 @@ export class MenuScene implements SceneDef {
       this.ui.update(rdt);
       return;
     }
-    // ---- camera: slow sway + breath + push-in
+    // ---- camera: slow sway + breath + push-in (host/join/settings lean in a little, like the breakdown asks)
+    if (!this.starting && this.mode === 'album' && this.pushTarget < 0.6) this.pushTarget = this.sub === 'settings' ? 0.35 : this.sub === 'host' || this.sub === 'join' || this.busy ? 0.22 : 0;
     this.push += (this.pushTarget - this.push) * damp(this.pushTarget > this.push ? 5 : 3, rdt);
     const c = this.camera;
     const sway = Math.sin(this.t * (Math.PI * 2 / 7.5)) * THREE.MathUtils.degToRad(0.6);
@@ -260,6 +260,7 @@ export class MenuScene implements SceneDef {
     this.offs = [];
     for (const s of this.slots) s.rig?.dispose();
     this.ui.dispose();
+    this.scene.remove(this.game.ui.root);
     disposeObject(this.scene);
     this.envTex?.dispose();
     const post = this.game.engine.post;
@@ -287,9 +288,9 @@ export class MenuScene implements SceneDef {
           if (s.rig) s.root.remove(s.rig.root);
           s.rig = game.chars.create(look, { lod: 'high', castShadow: true });
           s.root.add(s.rig.root);
-          s.rig.root.position.y = SLOTS[s.i].pose === 'sit' || s.i === 2 || s.i === 3 ? 0 : 0;
           const pose = SLOTS[s.i].pose;
           s.rig.play(pose as any, { loop: true, fade: 0 });
+          if (SLOTS[s.i].seat) (s.rig as any).seat = SLOTS[s.i].seat;
           s.rig.setMove(0);
           if (s.i === 0) {
             // G1 holds a blue block
@@ -318,7 +319,7 @@ export class MenuScene implements SceneDef {
         } else {
           const lines: any[] = [{ text: this.nameEdit && isMe ? (this.nameDraft || ' ') + '|' : p.name, size: 34, font: F.looped, weight: 900 }];
           if (p.peer === hostPeer && online) lines.push({ text: 'หัวห้อง', size: 18, font: F.looped, weight: 800, gap: -6, band: 0.8, style: GOLD });
-          else if (isMe && !this.nameEdit) lines.push({ text: 'แก้ชื่อ ✎', size: 15, font: F.looped, weight: 800, gap: -6, band: 0.7 });
+          else if (isMe && !this.nameEdit) lines.push({ text: 'คลิกแก้ชื่อ', size: 15, font: F.looped, weight: 800, gap: -6, band: 0.7 });
           s.tag = this.ui.add({ lines, follow, passive: !isMe, tilt: (s.i % 2 ? 2 : -2), onClick: isMe ? () => this.editName() : undefined, delay: this.firstSync ? 0.6 + s.i * 0.08 : 0 });
         }
       }
@@ -355,7 +356,7 @@ export class MenuScene implements SceneDef {
     const head = new THREE.Vector3(SLOTS[s.i].pos.x, s.i === 1 ? 1.5 : 1.0, SLOTS[s.i].pos.z);
     this.burst(head, joined ? 60 : 24);
     sfx.pop();
-    if (joined) this.backdrop.uniforms.uPulse.value = 1;
+    if (joined) { this.backdrop.uniforms.uPulse.value = 1; sfx.join(); }
   }
 
   private burst(at: THREE.Vector3, n: number) {
@@ -394,13 +395,14 @@ export class MenuScene implements SceneDef {
     return me ? this.slots[me.slot] ?? null : null;
   }
 
-  private arrowPos(i: number): THREE.Vector3 {
+  /** where the "you" arrow floats + which way it points (z-rotation: 0 = down, +π/2 = right, −π/2 = left) */
+  private arrowPos(i: number): { p: THREE.Vector3; rot: number } {
     const P = SLOTS[i].pos;
     switch (i) {
-      case 0: return new THREE.Vector3(P.x + 0.05, 1.5, P.z + 0.05);
-      case 1: return new THREE.Vector3(P.x - 0.42, 1.62, P.z + 0.1);
-      case 2: return new THREE.Vector3(P.x + 0.02, 1.45, P.z);
-      default: return new THREE.Vector3(P.x + 0.1, 1.55, P.z);
+      case 0: return { p: new THREE.Vector3(P.x - 0.42, 1.08, P.z + 0.05), rot: Math.PI / 2 };
+      case 1: return { p: new THREE.Vector3(P.x - 0.45, 1.5, P.z + 0.1), rot: Math.PI / 2 };
+      case 2: return { p: new THREE.Vector3(P.x + 0.02, 1.42, P.z), rot: 0 };
+      default: return { p: new THREE.Vector3(P.x + 0.45, 1.12, P.z + 0.05), rot: -Math.PI / 2 };
     }
   }
 
@@ -410,16 +412,18 @@ export class MenuScene implements SceneDef {
     a.visible = !!s && !this.starting;
     if (!s) { if (this.arrowTag) { this.ui.remove(this.arrowTag); this.arrowTag = null; } return; }
     this.hoverMe += ((this.hovering ? 1 : 0) - this.hoverMe) * damp(10, dt);
-    const base = this.arrowPos(s.i);
+    const { p: base, rot } = this.arrowPos(s.i);
     const ph = this.t * (3.0 + this.hoverMe * 3);
     const bob = Math.sin(ph);
-    a.position.copy(base).add(new THREE.Vector3(0, bob * 0.035, 0));
-    // squash at the bottom of the bob, stretch going up
+    // bob along the pointing direction (toward the guy and back)
+    const dir = new THREE.Vector3(Math.sin(rot), -Math.cos(rot), 0);
+    a.position.copy(base).addScaledVector(dir, bob * 0.035);
+    // squash at the end of the bob, stretch on the way out
     const sq = 1 + Math.cos(ph) * 0.08;
     a.scale.set((1 + this.hoverMe * 0.2) / Math.sqrt(sq), (1 + this.hoverMe * 0.2) * sq, 1 + this.hoverMe * 0.2);
-    a.rotation.set(0, Math.sin(this.t * 1.3) * 0.5 + this.t * this.hoverMe * 4, Math.sin(this.t * 2.1) * 0.08);
+    a.rotation.set(0, Math.sin(this.t * 1.3) * 0.45 + this.t * this.hoverMe * 4, rot + Math.sin(this.t * 2.1) * 0.08, 'YXZ');
     if (!this.arrowTag) {
-      this.arrowTag = this.ui.add({ lines: [{ text: 'คุณ', size: 30, font: F.looped, weight: 900 }], follow: () => { const p = this.project(this.arrow.position.clone().add(new THREE.Vector3(0, 0.15, 0))); return p; }, onClick: () => this.openCustomize(), bob: 0, tilt: -4, delay: 0.9 });
+      this.arrowTag = this.ui.add({ lines: [{ text: 'คุณ', size: 30, font: F.looped, weight: 900 }], follow: () => { const p = this.project(this.arrow.position.clone().add(new THREE.Vector3(0, 0.13, 0))); return p; }, onClick: () => this.openCustomize(), bob: 0, tilt: -4, delay: 0.9 });
     }
     s.rig?.root.scale.multiplyScalar(1 + this.hoverMe * 0.025);
   }
@@ -476,11 +480,12 @@ export class MenuScene implements SceneDef {
       this.mode = 'album';
       this.game.engine.setView(this.scene, this.camera);
       this.game.ui.setScene(this.scene, this.camera);
-      post.setLook('album', 1);
+      post.setLook(ALBUM_GRADE, 1);
       post.setDOF(false);
+      post.bloom.intensity = 0.4;
       Sound.music(musicKey('menu'));
       this.stickers.title = this.ui.add({ img: 'title_hiaphat', imgVariants: false, anchor: 'b', x: 0, y: 178, width: 500, passive: true, delay: 0.15, z: 2 });
-      this.stickers.tagline = this.ui.add({ img: 'tagline_roi_baht_sang_tua', imgVariants: false, anchor: 'b', x: 0, y: 62, width: 250, passive: true, delay: 0.3, tilt: -1.5, z: 2 });
+      this.stickers.tagline = this.ui.add({ img: 'tagline_roi_baht_sang_tua', imgVariants: false, anchor: 'b', x: 0, y: 44, width: 215, passive: true, delay: 0.3, tilt: -1.5, z: 2 });
       this.uiKey = '';
       for (const s of this.slots) s.lookKey = '';
       const ms = this.mySlot();

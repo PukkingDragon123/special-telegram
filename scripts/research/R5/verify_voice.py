@@ -14,7 +14,9 @@ for f in sys.argv[1:]:
     a = np.concatenate([np.zeros(8000, np.float32), a, np.zeros(8000, np.float32)])
     segs, info = model.transcribe(a, language=None, beam_size=5, condition_on_previous_text=False)
     txt = " ".join(s.text.strip() for s in segs)
-    segs_th, _ = model.transcribe(a, language="th", beam_size=5, condition_on_previous_text=False)
-    txt_th = " ".join(s.text.strip() for s in segs_th)
+    txt_th = ""
+    if os.environ.get("BOTH"):
+        segs_th, _ = model.transcribe(a, language="th", beam_size=5, condition_on_previous_text=False)
+        txt_th = " ".join(s.text.strip() for s in segs_th)
     print(f"{os.path.basename(f):28s} lang={info.language}({info.language_probability:.2f}) auto='{txt}' th='{txt_th}'",
           flush=True)

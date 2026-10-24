@@ -1,5 +1,5 @@
 {
- "note": "Real Thai product label textures, flattened from web product photos (client rule 2026-10-19: use real products, any licence). *_worn.png = greasy/worn variant.",
+ "note": "Real Thai product label textures, flattened from web product photos (client rule 2026-10-19: use real products, any licence). *_worn.png = greasy/worn variant. PNG kept because src/modules/shops references these file names.",
  "labels": [
   {
    "name": "seasoning_sauce_golden_mountain",
@@ -1013,6 +1013,104 @@
    "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
    "source_image_url": "https://www.domrey.com/uploads/catalogs/8850210000039.jpg",
    "source_page_url": "https://www.domrey.com/single/6415034e45bed",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "red_curry_paste_mae_ploy",
+   "files": [
+    "red_curry_paste_mae_ploy.png"
+   ],
+   "size_px": [
+    1024,
+    945
+   ],
+   "aspect_w_over_h": 1.084,
+   "product": "น้ำพริกแกงเผ็ด (red curry paste) พริกแกง",
+   "brand_real": "แม่พลอย Mae Ploy",
+   "package": "PP tub 400 g-1 kg, tapered; printed body unwrapped",
+   "real_dims_cm": {
+    "tub_h": 11.0,
+    "tub_d_top": 11.5,
+    "tub_d_bottom": 10.0
+   },
+   "cap": "white snap lid",
+   "method": "conical (tub) unwrap",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://m.media-amazon.com/images/I/81lzwHgTo9L._AC_.jpg",
+   "source_page_url": "https://www.amazon.com/Mae-Ploy-Curry-Paste-Large/dp/B0044PYPVC",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "chili_paste_mae_pranom",
+   "files": [
+    "chili_paste_mae_pranom.png"
+   ],
+   "size_px": [
+    622,
+    492
+   ],
+   "aspect_w_over_h": 1.264,
+   "product": "น้ำพริกเผา (roasted chili paste in oil)",
+   "brand_real": "แม่ประนอม Maepranom",
+   "package": "glass jar 228 g; label unwrapped",
+   "real_dims_cm": {
+    "jar_h": 10.5,
+    "jar_d": 7.0,
+    "label_h": 4.5
+   },
+   "cap": "blue metal lid",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/28/88/8850487001128/8850487001128_1-20260604140102-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/mae-pranom-thai-chilli-paste-228-g.31304",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "tapioca_starch_fish_brand",
+   "files": [
+    "tapioca_starch_fish_brand.png"
+   ],
+   "size_px": [
+    675,
+    1024
+   ],
+   "aspect_w_over_h": 0.659,
+   "product": "แป้งท้าว / แป้งมัน (tapioca flour / starch for gravy thickening)",
+   "brand_real": "ปลาไทย Fish brand",
+   "package": "PE bag 400-500 g, front face",
+   "real_dims_cm": {
+    "bag_w": 13.0,
+    "bag_h": 20.0
+   },
+   "cap": "heat-sealed",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://talardthai.com/wp-content/uploads/2024/02/FL025.jpg",
+   "source_page_url": "https://talardthai.com/product/tapioca-flake-fish-brand-rough-flour-500/",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "noodle_sen_yai_pack",
+   "files": [
+    "noodle_sen_yai_pack.png"
+   ],
+   "size_px": [
+    723,
+    1024
+   ],
+   "aspect_w_over_h": 0.706,
+   "product": "ก๋วยเตี๋ยวเส้นใหญ่ชนิดแผ่น (sen yai, fresh wide rice noodle pack 1 kg)",
+   "brand_real": "เส้นสด (local brand)",
+   "package": "clear PE pack with orange print, noodles visible",
+   "real_dims_cm": {
+    "pack_w": 20.0,
+    "pack_h": 28.0
+   },
+   "cap": "heat-sealed",
+   "method": "straight crop",
+   "uv_note": "flat face",
+   "source_image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/46/88/8859582200146/8859582200146_1-20251110174727-.jpg",
+   "source_page_url": "https://www.bigc.co.th/product/wide-rice-noodles-sheet-1-kg.85442",
    "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
   }
  ]

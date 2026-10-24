@@ -360,6 +360,30 @@ def ing_line(i):
     return f"- {th} {amt} ({g:g} {unit})" if unit else f"- {th} {amt}"
 
 
+ABBR = [("ช้อนโต๊ะ", "ชต."), ("ช้อนชา", "ชช.")]
+
+
+def ing_short(i):
+    """Compact form for two-column lists, the way Thai cooks really scribble (ชต. / ชช.)."""
+    th, en, amt, g, unit = i
+    name = th.split(" (")[0]
+    a = amt
+    for x, y_ in ABBR:
+        a = a.replace(x, y_)
+    if "กรัม" in a or "มล." in a:
+        return f"- {name} {g:g} {unit}"
+    return f"- {name} {a} ({g:g}{unit})"
+
+
+def wrap_hand(text, size, width):
+    lines = wrap_thai(text, F(HAND, size), width)
+    for i in range(len(lines) - 1):
+        if lines[i].rstrip().endswith("("):
+            lines[i] = lines[i].rstrip()[:-1].rstrip()
+            lines[i + 1] = "(" + lines[i + 1].lstrip()
+    return [l for l in lines if l.strip()]
+
+
 def write_title(wr, th, sub, pg_label):
     x1, box = wr.write(MARGIN_X + 30, RULE0 - 2, th, 70, BLACK, angle=-1.2)
     wr.underline(MARGIN_X + 24, RULE0 + 12, x1 + 10, RED, twice=True)
@@ -406,7 +430,7 @@ def page_kaprao_2(wr, R):
     y = RULE0 + RULE * 2
     widths = 540
     for k, (th, en, heat, secs) in enumerate(R["steps"]):
-        lines = wrap_thai(th, F(HAND, 38), widths)
+        lines = wrap_hand(th, 38, widths)
         for j, ln in enumerate(lines):
             pre = f"{k + 1}. " if j == 0 else "    "
             xe, box = wr.write(MARGIN_X + 30, y, pre + ln, 38, BLUE)
@@ -446,11 +470,21 @@ def page_generic(wr, R, pg, doodles, extras=None):
     fs = 34 if two_col else 38
     if two_col:
         half = (len(ings) + 1) // 2
-        for k, ing in enumerate(ings):
+        texts = [ing_short(i) for i in ings]
+        avail = W - 36 - (MARGIN_X + 26)
+        fs = 34
+        while fs > 24:
+            fnt = F(HAND, fs)
+            lw = max(fnt.getlength(t) for t in texts[:half]) * 1.07
+            rw = max(fnt.getlength(t) for t in texts[half:]) * 1.07
+            if lw + 36 + rw <= avail:
+                break
+            fs -= 1
+        rx = MARGIN_X + 26 + lw + 36
+        for k, t in enumerate(texts):
             col = 0 if k < half else 1
             row = k if k < half else k - half
-            t = ing_line(ing)
-            wr.write(MARGIN_X + 26 + col * 420, y + row * RULE, t, fs, BLUE)
+            wr.write(MARGIN_X + 26 if col == 0 else rx, y + row * RULE, t, fs, BLUE)
         y += half * RULE
     else:
         for ing in ings:
@@ -463,7 +497,7 @@ def page_generic(wr, R, pg, doodles, extras=None):
     for k, (th, en, heat, secs) in enumerate(R["steps"]):
         has_t = ("วิ" in th) or ("นาที" in th)
         txt = th + ("" if has_t else (f" ({secs // 60} นาที)" if secs >= 120 else (f" (~{secs} วิ)" if secs else "")))
-        lines = wrap_thai(txt, F(HAND, 36), 600)
+        lines = wrap_hand(txt, 36, 600)
         for j, ln in enumerate(lines):
             wr.segs(MARGIN_X + 30, y, (f"{k + 1}. " if j == 0 else "    ") + ln, 36, BLUE)
             y += RULE
@@ -489,13 +523,23 @@ CLUTTER = [
     ("หมาน้ำตาล ชอบมาขอ ให้กระดูกได้", BLUE, HAND),
     ("(ผัดเร็วขึ้น = รวยขึ้น? ~ เบิ้ม)", PENCIL, HAND2),
     ("(ไข่ 2 ฟอง ขึ้นราคา 10 บาท ดีไหม ~ ต้น)", PENCIL, HAND2),
+    ("ป้าแดง ค้าง 40 บาท (อย่าลืมทวง)", RED, HAND),
+    ("ร้านเจ๊ ตลาดเช้า กะเพราสดสุด", BLUE, HAND),
+    ("ไฟแรง ≠ ไฟไหม้ !!!", RED, HAND),
+    ("ข้าวสาร 1 กระสอบ = 25 โล", BLUE, HAND),
+    ("อย่าให้หมาเห็นหมู!!", RED, HAND),
+    ("(พี่วินว่าเค็ม ~ แจ็ค)", PENCIL, HAND2),
+    ("งวดหน้า 2 ตัวล่าง 07 ชัวร์!", BLUE, HAND),
+    ("น้ำปลาหมด ซื้อ 2 ขวด", BLUE, HAND),
+    ("(ลุงเขียนลายมือไม่ออกเลย ~ บอส)", PENCIL, HAND2),
 ]
 
 
 def clutter(wr, pg):
     """Little human mess on empty bottom rows: shopping lists, debts, lottery guesses, friends' notes."""
     rng = np.random.default_rng(pg * 31)
-    picks = rng.choice(len(CLUTTER), size=2, replace=False)
+    base_i = ((pg - 3) * 2) % len(CLUTTER)
+    picks = [base_i, (base_i + 1) % len(CLUTTER)]
     row = 19
     for k in picks:
         t, col, font = CLUTTER[k]
@@ -613,17 +657,22 @@ def build_cover(seed=900):
     return img.convert("RGB")
 
 
+def small_png(img, path):
+    """256-colour octree palette + Floyd-Steinberg dither: visually identical, ~5x smaller."""
+    img.convert("RGB").quantize(colors=256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.FLOYDSTEINBERG).save(path, optimize=True)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     manifest = {"page_size": [W, H], "style": "lazy, ugly, human-made notebook (ballpoint, pencil, red pen, marker); real paper scans",
                 "fonts": "handwriting: Sriracha (old man), Itim (friends' pencil notes); printed cover: Taviraj/Sarabun",
                 "cover": "cover.png", "pages": []}
-    build_cover().save(OUT + "cover.png", optimize=True)
+    small_png(build_cover(), OUT + "cover.png")
     print("cover")
     R = {r["id"]: r for r in RECIPES}
     for k, (fn, rid, pg, fnc, opts) in enumerate(build_pages()):
         img = render_page(fn, pg, fnc, opts, seed=1000 + pg * 17)
-        to_img(img).save(OUT + fn, optimize=True)
+        small_png(to_img(img), OUT + fn)
         r = R[rid]
         entry = dict(page=pg, file=fn, dish_id=rid, dish=r["th"], dish_en=r["en"], unlock_day=r["unlock_day"],
                      part=(f"{1 if fn.endswith('_1.png') else 2}/2" if r["pages"] == 2 else "1/1"))

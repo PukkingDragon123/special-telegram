@@ -231,6 +231,10 @@ def build(rec, report):
     entry.update(dict(tileMeters=tile, tint=rec["tint"], tags=rec["tags"],
                       source=rec["src"].replace("ph:", "polyhaven:").replace("acg:", "ambientcg:"),
                       sourceUrl=info["url"], author=info["author"], license="CC0", resolution=rec["size"]))
+    if any(op[0] == "wet" for op in rec["ops"]):   # puddle layout uses displacement of three more real scans
+        extra = ["concrete_floor_damaged_01", "brown_mud_02", "dirt_floor"]
+        entry["source"] += " + puddle layout from displacement of " + ", ".join("polyhaven:" + x for x in extra)
+        entry["sourceUrl"] += "".join(" ; https://polyhaven.com/a/" + x for x in extra)
     if rec["note"]:
         entry["note"] = rec["note"]
     report[rec["id"]] = dict(gl_check=gl, src=rec["src"])

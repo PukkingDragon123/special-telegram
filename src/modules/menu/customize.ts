@@ -378,6 +378,7 @@ export class CustomizeView {
     this.rig?.dispose();
     this.mag?.dispose();
     this.envTex?.dispose();
+    this.scene.remove(this.game.ui.root);
     this.scene.traverse((o: any) => { if (o.geometry) o.geometry.dispose(); });
   }
 }

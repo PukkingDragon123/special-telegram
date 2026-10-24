@@ -246,14 +246,13 @@ function wholesale(c: SpecialCtx) {
   const doorX0 = Wh.doorX - 2.6, doorX1 = Wh.doorX + 2.6;
   // walls (corrugated, painted) with the entrance gap
   w.mat('corr_paint', { tint: 0x2a4a9a, ov: 'steel_rust', ovAmt: 0.3, uv: 'world' });
-  w.quad(x1, 0, z0, x0, 0, z0, x0, H, z0, x1, H, z0, null, true); // placeholder (overwritten below)
   // north facade pieces (faces -z)
   const north = (a: number, b: number, ya: number, yb: number) => w.quad(b, ya, z0, a, ya, z0, a, yb, z0, b, yb, z0);
   north(x0, doorX0, 0, H); north(doorX1, x1, 0, H); north(doorX0, doorX1, 4.2, H);
   w.mat('corr_paint', { tint: 0xd8d4c8, ov: 'steel_rust', ovAmt: 0.4 });
   w.quad(x0, 0, z0, x0, 0, z1, x0, H, z1, x0, H, z0);   // west (faces -x)
   w.quad(x1, 0, z1, x1, 0, z0, x1, H, z0, x1, H, z1);   // east (faces +x)
-  w.quad(x0, 0, z1, x1, 0, z1, x1, H, z1, x0, H, z1, null, true);
+  w.quad(x0, 0, z1, x1, 0, z1, x1, H, z1, x0, H, z1);
   w.mat('roof_galv', { tint: 0xb8b8b4 });
   w.quad(x0 - 0.5, H, z1 + 0.5, x1 + 0.5, H, z1 + 0.5, x1 + 0.5, H + 1.6, (z0 + z1) / 2, x0 - 0.5, H + 1.6, (z0 + z1) / 2);
   w.quad(x1 + 0.5, H, z0 - 0.5, x0 - 0.5, H, z0 - 0.5, x0 - 0.5, H + 1.6, (z0 + z1) / 2, x1 + 0.5, H + 1.6, (z0 + z1) / 2);
@@ -276,10 +275,10 @@ function wholesale(c: SpecialCtx) {
   flat(w, x0 + 0.2, z0 + 0.1, x1 - 0.2, zi, SW_H + 0.003, 10);
   c.phys.box([(x0 + x1) / 2, SW_H / 2, (z0 + zi) / 2], [x1 - x0, SW_H, zi - z0]);
   w.mat('corr_paint', { tint: 0xe0dcd0, ao: 0.8 });
-  w.quad(x0, 0, z0 + 0.1, x1, 0, z0 + 0.1, x1, H, z0 + 0.1, x0, H, z0 + 0.1, null, false);
+  w.quad(x0, 0, z0 + 0.1, x1, 0, z0 + 0.1, x1, H, z0 + 0.1, x0, H, z0 + 0.1);
   w.quad(x1, SW_H, zi, x0, SW_H, zi, x0, H, zi, x1, H, zi);
   w.mat('galv', { tint: 0x8a8a88, ao: 0.6 });
-  w.quad(x0, H - 0.5, z0, x1, H - 0.5, z0, x1, H - 0.5, zi, x0, H - 0.5, zi, null, true);
+  w.quad(x0, H - 0.5, z0, x1, H - 0.5, z0, x1, H - 0.5, zi, x0, H - 0.5, zi);
   for (let x = x0 + 4; x < x1; x += 8) for (let z = z0 + 4; z < zi; z += 7) {
     w.mat('plastic', { tint: 0xffffff, emis: EMIS.store.i, emisK: 0.6 });
     w.cyl(x, H - 1.3, z, 0.35, 0.25, 0.3, 8, 3);
@@ -466,8 +465,8 @@ function vacantLot(c: SpecialCtx) {
     c.phys.box([-6.15, SW_H + h / 2, (z0 + z1) / 2], [0.2, h, Math.abs(z1 - z0)]);
   }
   w.mat('corr_rust', { uv: 'world' });
-  w.quad(L.x0 + 0.05, 0, L.z0, L.x0 + 0.05, 0, L.z1, L.x0 + 0.05, 2.6, L.z1, L.x0 + 0.05, 2.6, L.z0, null, false);
-  w.quad(L.x0, 0, L.z1, L.x0, 0, L.z0, L.x0, 2.6, L.z0, L.x0, 2.6, L.z1);
+  w.quad(L.x0, 0, L.z0, L.x0, 0, L.z1, L.x0, 2.6, L.z1, L.x0, 2.6, L.z0);
+  w.quad(L.x0 + 0.05, 0, L.z1, L.x0 + 0.05, 0, L.z0, L.x0 + 0.05, 2.6, L.z0, L.x0 + 0.05, 2.6, L.z1);
   c.phys.box([L.x0, 1.3, (L.z0 + L.z1) / 2], [0.2, 2.6, L.z1 - L.z0]);
   // junk: tyres, old mattress, plywood, sacks, a wrecked pickup
   w.setGroup('detail');

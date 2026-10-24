@@ -395,6 +395,7 @@ def plastic():
     H, W = img.shape[:2]
     band = FL.cyl_unwrap(img, 0.185 * H, 0.292 * H, cx=0.50 * W, radius=0.43 * W, max_deg=62)
     band = FL.deshade(band, strength=0.6)
+    band = cv2.resize(band, (1024, int(round(band.shape[0] * 1024 / band.shape[1]))), interpolation=cv2.INTER_AREA)
     files.append(save(band, "stool_band_floral_blue.jpg"))
     hsv = cv2.cvtColor(np.clip(band, 0, 255).astype(np.uint8), cv2.COLOR_RGB2HSV)
     hsv[..., 0] = ((hsv[..., 0].astype(np.int32) + 75) % 180).astype(np.uint8)  # blue (~108) -> red (~3)

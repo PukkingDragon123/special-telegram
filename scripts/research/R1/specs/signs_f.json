@@ -1,0 +1,16 @@
+[
+ {"out": "shop_noodle_paord_night.png", "src": "f2f03caa", "quad": [[255,50],[740,50],[740,205],[255,205]], "w_m": 3.4, "h_m": 1.1, "px": 1024, "mask": "rect", "wb": 0.1,
+  "th": "ก๋วยเตี๋ยว ป้าอ๊อด PA-ORD NOODLE", "en": "Noodle shop sign at night (blue bowl 'ก๋วยเตี๋ยว' logo + orange letters), emissive", "mount": "wall above shopfront", "kind": "shop sign (noodle)"},
+ {"out": "shop_noodle_neon_logo.png", "src": "46fee306", "quad": [[233,315],[535,315],[535,636],[233,636]], "w_m": 0.8, "h_m": 0.85, "px": 768, "mask": "rect", "wb": 0.05,
+  "th": "(นีออนรูปตัวอักษรไทย) SOOTHR", "en": "Red neon-tube Thai-letter logo sign on black board (noodle bar), emissive at night", "mount": "wall / window", "kind": "neon sign"},
+ {"out": "shop_massage_bosque_band.png", "src": "a21fc15f", "quad": [[109,104],[800,43],[800,120],[109,163]], "w_m": 4.5, "h_m": 0.6, "px": 1024, "mask": "rect", "wb": 0.25,
+  "th": "BOSQUE THAI MASSAGE", "en": "Thai massage shop sign band (green, serif lettering)", "mount": "wall above glass front", "kind": "shop sign (massage)"},
+ {"out": "sign_laundry_service_price.png", "src": "3a91b009", "quad": [[309,3],[408,3],[408,171],[309,171]], "w_m": 0.5, "h_m": 0.85, "px": 384, "mask": "rect", "wb": 0.3, "sharp": 0.3,
+  "th": "LAUNDRY SERVICE 1 KG = 30 B / IRON SERVICE 1 piece = 20 B", "en": "Hand-made laundry price sign (low-res source; use small)", "mount": "hanging at shop entrance", "kind": "shop sign (laundry)"},
+ {"out": "banner_laundry_open_vinyl.png", "src": "3a91b009", "quad": [[18,0],[225,0],[225,96],[18,96]], "w_m": 1.8, "h_m": 0.8, "px": 512, "mask": "rect", "wb": 0.3, "sharp": 0.3,
+  "th": "Laundry Open 09.00 AM - 09.00 PM", "en": "Red vinyl 'Laundry' banner with arrow (low-res source)", "mount": "tied above shop / to pole", "kind": "vinyl banner (laundry)"},
+ {"out": "shop_pharmacy_world_lightbox.png", "src": "dfa9202c", "quad": [[126,187],[367,187],[367,319],[126,319]], "w_m": 1.6, "h_m": 0.9, "px": 768, "mask": "rect", "wb": 0.25,
+  "th": "Pharmacy 药店 ฟาร์มาซีเวิลด์", "en": "Trilingual pharmacy light box (Thai/English/Chinese)", "mount": "projecting from facade", "kind": "shop sign (pharmacy)"},
+ {"out": "flyer_loan_ngern_duan_bw.png", "src": "5edb6400", "quad": [[309,323],[594,323],[594,543],[309,543]], "w_m": 0.30, "h_m": 0.23, "px": 512, "mask": "rect", "wb": 0.4,
+  "th": "เงินด่วน อนุมัติง่าย โทร..คุณ.. 087-0020068", "en": "Photocopied loan-shark flyer 'เงินด่วน' (quick cash) taped to a pole (B&W photo)", "mount": "taped on utility pole / wall", "kind": "flyer"}
+]

@@ -47,13 +47,16 @@ def tps_warp(img, lm, moves, free_radius=0.0, step=8, smoothing=0.5):
     src_m = lm[idx]
     dst_m = src_m + d
     pinned = []
+    iod = float(np.linalg.norm(lm[263] - lm[33]))
     for i in range(len(lm)):
         if i in moves:
             continue
-        if free_radius > 0:
-            if np.min(np.linalg.norm(src_m - lm[i], axis=1)) < free_radius:
-                continue
-        pinned.append(i)
+        dmin = float(np.min(np.linalg.norm(src_m - lm[i], axis=1)))
+        if free_radius > 0 and dmin < free_radius:
+            continue
+        # keep all pins near the moved region, a sparse subset elsewhere (speed)
+        if dmin < iod * 0.9 or i % 6 == 0:
+            pinned.append(i)
     pins = lm[pinned]
     # border pins
     b = np.linspace(0, w - 1, 9)

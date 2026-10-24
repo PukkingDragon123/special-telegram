@@ -331,9 +331,7 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     root.add(c); cards.set(stk.id, c);
   });
   // roller shutter (animated) + roll box + closed sign
-  const shTex = Assets.texture('textures/pbr/shutter_roller_painted/albedo.jpg', { srgb: true, repeat: [sw.w / 2, sw.h / 2] }).clone();
-  shTex.needsUpdate = true;
-  const shMat = new THREE.MeshStandardMaterial({ map: shTex, roughness: 0.55, metalness: 0.45, side: THREE.DoubleSide, color: 0xdedcd6 });
+  const shMat = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.45, side: THREE.DoubleSide, color: 0xb9b7b0 });
   const shGeo = new THREE.PlaneGeometry(sw.w, sw.h, 1, 1).translate(0, -sw.h / 2, 0); // origin at the top
   const shMesh = new THREE.Mesh(shGeo, shMat);
   shMesh.castShadow = true; shMesh.receiveShadow = true;
@@ -345,6 +343,11 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.8), canvasMat(signTex('closed:' + s.id, [{ text: s.closedNote?.th ?? 'ปิด', size: 76, color: '#b11414' }], 'card_board', 640, 400)));
   sign.position.set(0, -sw.h * 0.55, 0.03); shMesh.add(sign);
   root.add(shObj);
+  const shut: NonNullable<ShopFix['shutter']> = { obj: shObj, mesh: shMesh, h: sw.h, tex: null, k: 0, collider: null, box: { c: fr.arr(sw.off, sw.h / 2, zFront + 0.05), s: [sw.w, sw.h, 0.12], yaw: fr.yaw } };
+  Assets.loadTexture('textures/pbr/shutter_roller_painted/albedo.jpg', { srgb: true, repeat: [sw.w / 2, sw.h / 2] }).then((t) => {
+    shMat.map = t; shMat.color.set(0xdedcd6); shMat.needsUpdate = true; shut.tex = t;
+    t.repeat.y = Math.max(0.001, (sw.h * shut.k) / 2); t.offset.y = 1 - t.repeat.y;
+  }).catch(() => {});
   const colliders = [
     game.physics.addBox(fr.arr(steps[0].x, 0.47, steps[0].z), [steps[0].w, 0.94, steps[0].d], fr.yaw),
     game.physics.addBox(fr.arr(steps[1].x, 0.47, steps[1].z), [steps[1].w, 0.94, steps[1].d], fr.yaw),
@@ -355,7 +358,7 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     counter: [],
     keeper: { p: fr.arr(cx - 0.05, 0, cz + 0.62), yaw: fr.back, sit: !!s.keeper.sit },
     center: fr.arr(sw.off, 0, zFront + 1.4), radius: s.radius,
-    shutter: { obj: shObj, mesh: shMesh, h: sw.h, tex: shTex, k: 0, collider: null, box: { c: fr.arr(sw.off, sw.h / 2, zFront + 0.05), s: [sw.w, sw.h, 0.12], yaw: fr.yaw } },
+    shutter: shut,
     closedSign: sign, colliders,
   };
 }

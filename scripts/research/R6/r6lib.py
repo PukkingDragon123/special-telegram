@@ -330,7 +330,7 @@ def load_material(src, size, need_height=True):
     return load_acg_material(aid, size)
 
 
-def write_material(mid, mat, size, write_height=False, extra=None, normal_q=85, data_size=None):
+def write_material(mid, mat, size, write_height=False, extra=None, normal_q=82, data_size=None, orm_q=80):
     data_size = data_size or size
     d = os.path.join(PBR_OUT, mid)
     os.makedirs(d, exist_ok=True)
@@ -339,7 +339,7 @@ def write_material(mid, mat, size, write_height=False, extra=None, normal_q=85, 
     out["albedo"] = f"{mid}/albedo.jpg"
     save_jpg(resize_arr(mat["normal"], size), os.path.join(d, "normal.jpg"), normal_q, 0)
     out["normal"] = f"{mid}/normal.jpg"
-    save_jpg(resize_arr(np.clip(mat["orm"], 0, 255).astype(np.uint8), data_size), os.path.join(d, "orm.jpg"), 85, 0)
+    save_jpg(resize_arr(np.clip(mat["orm"], 0, 255).astype(np.uint8), data_size), os.path.join(d, "orm.jpg"), orm_q, 0)
     out["orm"] = f"{mid}/orm.jpg"
     if write_height and mat.get("height") is not None:
         h = mat["height"]

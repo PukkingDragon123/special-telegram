@@ -116,3 +116,59 @@ def colorize(img, target_rgb, keep_detail=1.0):
     d = (Y / max(Ym, 1e-4)) ** keep_detail
     tl = T.srgb_to_lin(np.float32(target_rgb))
     return T.lin_to_srgb(d[..., None] * tl[None, None, :])
+
+
+def _profile(img, axis):
+    Y = img.mean(axis=2) if img.ndim == 3 else img
+    p = Y.mean(axis=0 if axis == 1 else 1).astype(np.float64)
+    return p - p.mean()
+
+
+def best_lag(img, axis, target, window=None):
+    """Lag L near `target` (pixels) where the pattern along `axis` repeats best (2-D correlation)."""
+    Y = img.mean(axis=2) if img.ndim == 3 else img
+    Y = Y - Y.mean()
+    n = Y.shape[1] if axis == 1 else Y.shape[0]
+    window = window or max(4, int(target * 0.08))
+    best, bl = -1e9, int(target)
+    for L in range(max(4, int(target - window)), min(n - 4, int(target + window)) + 1):
+        if axis == 1:
+            a, b = Y[:, :n - L], Y[:, L:]
+        else:
+            a, b = Y[:n - L, :], Y[L:, :]
+        c = float(np.mean(a * b) / (np.std(a) * np.std(b) + 1e-9))
+        if c > best:
+            best, bl = c, L
+    return bl, best
+
+
+def aligned_crop(img, box, frac=0.98):
+    """Crop inside box whose width/height are lags at which the pattern repeats (tiles in phase)."""
+    x0, y0, x1, y1 = [int(v) for v in box]
+    reg = img[y0:y1, x0:x1]
+    W, H = reg.shape[1], reg.shape[0]
+    Lx, cx = best_lag(reg, 1, W * frac * 0.5, window=int(W * 0.25))
+    Ly, cy = best_lag(reg, 0, H * frac * 0.5, window=int(H * 0.25))
+    return reg[:Ly, :Lx].copy(), (Lx, Ly, round(cx, 3), round(cy, 3))
+
+
+def deskew(img, max_deg=20):
+    """Rotate so the strongest periodic structure is axis aligned (FFT peak angle)."""
+    Y = img.mean(axis=2) if img.ndim == 3 else img
+    h, w = Y.shape
+    win = np.outer(np.hanning(h), np.hanning(w))
+    F = np.abs(np.fft.fftshift(np.fft.fft2((Y - Y.mean()) * win)))
+    cy, cx = h // 2, w // 2
+    yy, xx = np.mgrid[0:h, 0:w]
+    r = np.hypot(yy - cy, xx - cx)
+    F[r < 4] = 0
+    F[r > min(h, w) * 0.35] = 0
+    iy, ix = np.unravel_index(np.argmax(F), F.shape)
+    ang = math.degrees(math.atan2(iy - cy, ix - cx))
+    # bring to the nearest axis
+    a = ((ang + 45) % 90) - 45
+    if abs(a) > max_deg or abs(a) < 0.3:
+        return img, 0.0
+    M = cv2.getRotationMatrix2D((w / 2, h / 2), a, 1.0)
+    out = cv2.warpAffine(img, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
+    return out, a

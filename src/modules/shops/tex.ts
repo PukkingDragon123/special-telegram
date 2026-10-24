@@ -119,7 +119,8 @@ export function priceCardTex(style: CardStyle, name: string, unit: string, price
     // printed shelf-edge label (8-Twelve / wholesale)
     return composed(key, 512, 192, style === 'yellow' ? 'shelf_label_yellow' : 'shelf_label', (ctx, w, h, img) => {
       if (img) drawImg(ctx, img, 0, 0, w, h, 'cover');
-      else { ctx.fillStyle = style === 'yellow' ? '#ffe14a' : '#f7f7f2'; ctx.fillRect(0, 0, w, h); }
+      else { ctx.fillStyle = '#f7f7f2'; ctx.fillRect(0, 0, w, h); }
+      if (style === 'yellow') { ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = '#ffd814'; ctx.fillRect(0, 0, w, h); ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#d8231a'; ctx.fillRect(0, 0, w, 14); }
       ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
       fitText(ctx, name, 22, 64, w * 0.62, 48, F.ui, 600, '#1d1d1d');
       ctx.textAlign = 'right';

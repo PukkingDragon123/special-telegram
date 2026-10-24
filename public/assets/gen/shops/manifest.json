@@ -328,6 +328,19 @@
    "h": 512,
    "desc": "20 L drinking water bottle",
    "alpha": true
+  },
+  "card_board": {
+   "file": "textures/pbr/cardboard_worn/albedo.jpg",
+   "desc": "cardboard (ambientCG Cardboard003, CC0) for hand-written signs"
+  },
+  "shelf_label": {
+   "file": "textures/pbr/paper_creased/albedo.jpg",
+   "desc": "paper (ambientCG Paper003, CC0) for printed shelf labels"
+  },
+  "shelf_label_yellow": {
+   "file": "textures/pbr/paper_creased/albedo.jpg",
+   "desc": "paper (tinted yellow at runtime) for 8-Twelve shelf labels"
   }
- }
+ },
+ "note": "shops module photos (real web images, see references/credits/shops.md). Keys used by src/modules/shops/tex.ts."
 }

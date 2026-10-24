@@ -1,7 +1,7 @@
 {
  "aluminium_scratched": {
-  "source": "ambientcg:Metal050C",
-  "license": "CC0",
+  "source": "photo: 'Galvanized sheet' (Flickr via Openverse)",
+  "license": "Public Domain Mark",
   "albedo": "aluminium_scratched/albedo.jpg",
   "normal": "aluminium_scratched/normal.jpg",
   "orm": "aluminium_scratched/orm.jpg",
@@ -11,12 +11,15 @@
    "metal",
    "aluminium",
    "pot",
+   "dull",
    "scratched",
-   "kitchen"
+   "kitchen",
+   "street-food"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Metal050C",
-  "author": "ambientCG (Lennart Demes)"
+  "note": "Real photo of a dull weathered sheet: flat-fielded, made seamless; aluminium reflectance with photo-derived roughness/normal.",
+  "sourceUrl": "https://www.flickr.com/photos/30924550@N04/35399953944",
+  "author": "walmarc04"
  },
  "asphalt_cracked": {
   "source": "polyhaven:asphalt_02",
@@ -39,11 +42,12 @@
   "author": "Rob Tuytel"
  },
  "asphalt_patched": {
-  "source": "ambientcg:Road015B",
+  "source": "polyhaven:asphalt_04 + ambientcg:AsphaltDamage001, AsphaltDamageSet001, AsphaltDamageSet002 (photogrammetry decals)",
   "license": "CC0",
   "albedo": "asphalt_patched/albedo.jpg",
   "normal": "asphalt_patched/normal.jpg",
   "orm": "asphalt_patched/orm.jpg",
+  "height": "asphalt_patched/height.jpg",
   "tileMeters": 5.0,
   "tint": false,
   "tags": [
@@ -52,11 +56,13 @@
    "asphalt",
    "patched",
    "repairs",
+   "potholes",
    "outdoor"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Road015B",
-  "author": "ambientCG (Lennart Demes)"
+  "note": "Real scanned patches/worn strips/potholes composited (wrap-around) onto the main road asphalt.",
+  "sourceUrl": "https://polyhaven.com/a/asphalt_04 ; https://ambientcg.com/a/AsphaltDamage001 ; https://ambientcg.com/a/AsphaltDamageSet001 ; https://ambientcg.com/a/AsphaltDamageSet002",
+  "author": "Poly Haven (Jenelle van Heerden, Sergej Majboroda) + ambientCG (Lennart Demes)"
  },
  "asphalt_road_sunbleached": {
   "source": "polyhaven:asphalt_04",
@@ -82,7 +88,7 @@
   "author": "Jenelle van Heerden, Sergej Majboroda"
  },
  "asphalt_wet": {
-  "source": "polyhaven:asphalt_04",
+  "source": "polyhaven:asphalt_04 + puddle layout from displacement of polyhaven:concrete_floor_damaged_01, polyhaven:brown_mud_02, polyhaven:dirt_floor",
   "license": "CC0",
   "albedo": "asphalt_wet/albedo.jpg",
   "normal": "asphalt_wet/normal.jpg",
@@ -102,7 +108,7 @@
   ],
   "resolution": 1024,
   "note": "Same base as asphalt_road_sunbleached with puddles in low areas (roughness ~0.05) and damp darkening.",
-  "sourceUrl": "https://polyhaven.com/a/asphalt_04",
+  "sourceUrl": "https://polyhaven.com/a/asphalt_04 ; https://polyhaven.com/a/concrete_floor_damaged_01 ; https://polyhaven.com/a/brown_mud_02 ; https://polyhaven.com/a/dirt_floor",
   "author": "Jenelle van Heerden, Sergej Majboroda"
  },
  "bamboo_poles": {
@@ -146,22 +152,23 @@
   "author": "Amal Kumar"
  },
  "brass_gold": {
-  "source": "ambientcg:Metal048B",
+  "source": "ambientcg:Smear002, Smear004 (photo fingerprints) + ambientcg:SurfaceImperfections017 (photo dirt) over brass reflectance",
   "license": "CC0",
   "albedo": "brass_gold/albedo.jpg",
   "normal": "brass_gold/normal.jpg",
   "orm": "brass_gold/orm.jpg",
-  "tileMeters": 0.5,
+  "tileMeters": 0.4,
   "tint": false,
   "tags": [
    "metal",
    "brass",
    "gold",
    "casino",
-   "fingerprints"
+   "fingerprints",
+   "tarnish"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Metal048B",
+  "sourceUrl": "https://ambientcg.com/a/Smear002 ; https://ambientcg.com/a/Smear004 ; https://ambientcg.com/a/SurfaceImperfections017",
   "author": "ambientCG (Lennart Demes)"
  },
  "brick_exposed_red": {
@@ -184,12 +191,13 @@
   "author": "ambientCG (Lennart Demes)"
  },
  "canvas_tarp": {
-  "source": "ambientcg:Fabric061",
+  "source": "ambientcg:Fabric044",
   "license": "CC0",
   "albedo": "canvas_tarp/albedo.jpg",
   "normal": "canvas_tarp/normal.jpg",
   "orm": "canvas_tarp/orm.jpg",
-  "tileMeters": 0.4,
+  "opacity": "canvas_tarp/opacity.jpg",
+  "tileMeters": 0.5,
   "tint": true,
   "tags": [
    "fabric",
@@ -199,11 +207,11 @@
    "umbrella"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Fabric061",
+  "sourceUrl": "https://ambientcg.com/a/Fabric044",
   "author": "ambientCG (Lennart Demes)"
  },
  "cardboard_worn": {
-  "source": "ambientcg:Cardboard003",
+  "source": "ambientcg:Paper005",
   "license": "CC0",
   "albedo": "cardboard_worn/albedo.jpg",
   "normal": "cardboard_worn/normal.jpg",
@@ -218,16 +226,16 @@
    "box"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Cardboard003",
+  "sourceUrl": "https://ambientcg.com/a/Paper005",
   "author": "ambientCG (Lennart Demes)"
  },
  "carpet_casino": {
-  "source": "procedural ornament (R6) printed over ambientcg:Carpet015 pile (colour detail, normal, roughness, AO)",
-  "license": "CC0",
+  "source": "photo 'gawdy casino carpet' (Flickr via Openverse) + ambientcg:Carpet015 pile maps",
+  "license": "CC BY-SA 2.0 (albedo) + CC0 (pile maps)",
   "albedo": "carpet_casino/albedo.jpg",
   "normal": "carpet_casino/normal.jpg",
   "orm": "carpet_casino/orm.jpg",
-  "tileMeters": 0.8,
+  "tileMeters": 1.2,
   "tint": false,
   "tags": [
    "fabric",
@@ -235,15 +243,16 @@
    "casino",
    "patterned",
    "red",
-   "gold",
+   "floral",
    "interior"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Carpet015",
-  "author": "R6-pbr (pattern, CC0) + ambientCG (Lennart Demes)"
+  "note": "Real casino carpet photo: keystone-corrected, flat-fielded and mirror-tiled into a seamless symmetric repeat.",
+  "sourceUrl": "https://www.flickr.com/photos/65646978@N05/6312775155 ; https://ambientcg.com/a/Carpet015",
+  "author": "gonzo_vision + ambientCG (Lennart Demes)"
  },
  "cast_iron_wok": {
-  "source": "ambientcg:Metal046B",
+  "source": "ambientcg:Metal063",
   "license": "CC0",
   "albedo": "cast_iron_wok/albedo.jpg",
   "normal": "cast_iron_wok/normal.jpg",
@@ -259,7 +268,7 @@
    "dark"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Metal046B",
+  "sourceUrl": "https://ambientcg.com/a/Metal063",
   "author": "ambientCG (Lennart Demes)"
  },
  "cement_block_wall": {
@@ -304,7 +313,7 @@
   "author": "ambientCG (Lennart Demes)"
  },
  "chrome": {
-  "source": "ambientcg:Metal049A",
+  "source": "ambientcg:Smear005 + ambientcg:SurfaceImperfections008 (photo-based smudge scans) over chrome reflectance",
   "license": "CC0",
   "albedo": "chrome/albedo.jpg",
   "normal": "chrome/normal.jpg",
@@ -315,10 +324,12 @@
    "metal",
    "chrome",
    "polished",
-   "mirror"
+   "mirror",
+   "smudged"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Metal049A",
+  "note": "Chrome is a near-uniform mirror; its detail is the real scanned smudges in roughness.",
+  "sourceUrl": "https://ambientcg.com/a/Smear005 ; https://ambientcg.com/a/SurfaceImperfections008",
   "author": "ambientCG (Lennart Demes)"
  },
  "concrete_mossy": {
@@ -381,29 +392,29 @@
   "author": "Dario Barresi, Dimitrios Savva"
  },
  "concrete_streaked": {
-  "source": "polyhaven:concrete_wall_008 + ambientcg:Leaking004,Leaking001,Leaking008",
+  "source": "polyhaven:concrete_wall_008 + streak/stain luminance from polyhaven:red_plaster_weathered and polyhaven:worn_mossy_plasterwall",
   "license": "CC0",
   "albedo": "concrete_streaked/albedo.jpg",
   "normal": "concrete_streaked/normal.jpg",
   "orm": "concrete_streaked/orm.jpg",
-  "tileMeters": 3.0,
+  "tileMeters": 2.7,
   "tint": false,
   "tags": [
    "wall",
    "concrete",
    "water-streaks",
+   "stained",
    "algae",
-   "rising-damp",
-   "storey-height",
+   "humid",
    "shophouse-side"
   ],
   "resolution": 1024,
-  "note": "One tile = one storey (3 m): dark algae streaks hang from the top edge, rain-splash band at the bottom. Tile horizontally; align V to the storey.",
-  "sourceUrl": "https://polyhaven.com/a/concrete_wall_008 ; https://ambientcg.com/a/Leaking004 ; https://ambientcg.com/a/Leaking001 ; https://ambientcg.com/a/Leaking008",
-  "author": "Poly Haven (see credits) + ambientCG (Lennart Demes)"
+  "note": "Concrete scan multiplied by the real weathering streaks and mould stains of two other scans.",
+  "sourceUrl": "https://polyhaven.com/a/concrete_wall_008 ; https://polyhaven.com/a/red_plaster_weathered ; https://polyhaven.com/a/worn_mossy_plasterwall",
+  "author": "Dario Barresi, Charlotte Baglioni; Amal Kumar"
  },
  "concrete_wet_puddles": {
-  "source": "polyhaven:garage_floor",
+  "source": "polyhaven:garage_floor + puddle layout from displacement of polyhaven:concrete_floor_damaged_01, polyhaven:brown_mud_02, polyhaven:dirt_floor",
   "license": "CC0",
   "albedo": "concrete_wet_puddles/albedo.jpg",
   "normal": "concrete_wet_puddles/normal.jpg",
@@ -421,11 +432,11 @@
   ],
   "resolution": 1024,
   "note": "Puddle-friendly concrete: height.jpg marks low spots; roughness already varies (wet patches).",
-  "sourceUrl": "https://polyhaven.com/a/garage_floor",
+  "sourceUrl": "https://polyhaven.com/a/garage_floor ; https://polyhaven.com/a/concrete_floor_damaged_01 ; https://polyhaven.com/a/brown_mud_02 ; https://polyhaven.com/a/dirt_floor",
   "author": "Jenelle van Heerden"
  },
  "corrugated_painted": {
-  "source": "ambientcg:CorrugatedSteel003",
+  "source": "polyhaven:box_profile_metal_sheet",
   "license": "CC0",
   "albedo": "corrugated_painted/albedo.jpg",
   "normal": "corrugated_painted/normal.jpg",
@@ -441,8 +452,8 @@
    "fence"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/CorrugatedSteel003",
-  "author": "ambientCG (Lennart Demes)"
+  "sourceUrl": "https://polyhaven.com/a/box_profile_metal_sheet",
+  "author": "Amal Kumar"
  },
  "corrugated_rusty": {
   "source": "polyhaven:rusty_corrugated_iron",
@@ -520,7 +531,7 @@
   "author": "eye-candy.xyz"
  },
  "felt_casino_green": {
-  "source": "ambientcg:Fabric034 (re-coloured casino green)",
+  "source": "ambientcg:Fabric034 (photo-based felt, re-coloured casino green)",
   "license": "CC0",
   "albedo": "felt_casino_green/albedo.jpg",
   "normal": "felt_casino_green/normal.jpg",
@@ -541,26 +552,29 @@
   "author": "ambientCG (Lennart Demes)"
  },
  "galvanized_steel": {
-  "source": "ambientcg:Metal014",
-  "license": "CC0",
+  "source": "photo: 'Texture - Galvanized metal' (Flickr via Openverse)",
+  "license": "CC BY 2.0",
   "albedo": "galvanized_steel/albedo.jpg",
   "normal": "galvanized_steel/normal.jpg",
   "orm": "galvanized_steel/orm.jpg",
-  "tileMeters": 1.0,
+  "tileMeters": 0.7,
   "tint": false,
   "tags": [
    "metal",
    "galvanized",
    "zinc",
+   "spangle",
    "sheet",
-   "pipe"
+   "pipe",
+   "bucket"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Metal014",
-  "author": "ambientCG (Lennart Demes)"
+  "note": "Real photo of zinc spangle: flat-fielded, made seamless; brighter crystals = smoother.",
+  "sourceUrl": "https://www.flickr.com/photos/94018078@N00/6846270808",
+  "author": "Andrew Beeston"
  },
  "glass_dirty": {
-  "source": "ambientcg:SurfaceImperfections014 + ambientcg:Fingerprints008 + ambientcg:Smear005",
+  "source": "ambientcg:SurfaceImperfections017, SurfaceImperfections009, Smear005, Smear004 (photo-based imperfection scans)",
   "license": "CC0",
   "albedo": "glass_dirty/albedo.jpg",
   "normal": "glass_dirty/normal.jpg",
@@ -574,13 +588,14 @@
    "dust",
    "smudges",
    "fingerprints",
+   "water-spots",
    "window",
    "display-case",
    "overlay"
   ],
   "resolution": 1024,
-  "note": "Dirt layer for glass. mask.jpg = dirt amount (use as alphaMap on an overlay mesh, or to mix roughness/transmission). Clean glass roughness ~0.04 in orm.G.",
-  "sourceUrl": "https://ambientcg.com/a/SurfaceImperfections014 ; https://ambientcg.com/a/Fingerprints008 ; https://ambientcg.com/a/Smear005",
+  "note": "Dirt layer for glass. mask.jpg = dirt amount (alphaMap on an overlay, or drive roughness/transmission). Clean glass roughness ~0.04.",
+  "sourceUrl": "https://ambientcg.com/a/SurfaceImperfections017 ; https://ambientcg.com/a/SurfaceImperfections009 ; https://ambientcg.com/a/Smear005 ; https://ambientcg.com/a/Smear004",
   "author": "ambientCG (Lennart Demes)"
  },
  "grass_dry": {
@@ -604,12 +619,12 @@
   "author": "Charlotte Baglioni"
  },
  "grass_lush": {
-  "source": "ambientcg:Grass004",
+  "source": "polyhaven:leafy_grass",
   "license": "CC0",
   "albedo": "grass_lush/albedo.jpg",
   "normal": "grass_lush/normal.jpg",
   "orm": "grass_lush/orm.jpg",
-  "tileMeters": 1.4,
+  "tileMeters": 2.0,
   "tint": false,
   "tags": [
    "ground",
@@ -620,8 +635,8 @@
    "rural"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Grass004",
-  "author": "ambientCG (Lennart Demes)"
+  "sourceUrl": "https://polyhaven.com/a/leafy_grass",
+  "author": "Charlotte Baglioni"
  },
  "gravel_crushed": {
   "source": "ambientcg:Gravel033",
@@ -681,7 +696,7 @@
   "author": "Amal Kumar"
  },
  "leather_black": {
-  "source": "ambientcg:Leather026",
+  "source": "ambientcg:Leather037",
   "license": "CC0",
   "albedo": "leather_black/albedo.jpg",
   "normal": "leather_black/normal.jpg",
@@ -696,26 +711,48 @@
    "sofa"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Leather026",
+  "sourceUrl": "https://ambientcg.com/a/Leather037",
   "author": "ambientCG (Lennart Demes)"
  },
- "leather_red_quilted": {
-  "source": "ambientcg:Leather011",
+ "leather_red": {
+  "source": "ambientcg:Leather038",
   "license": "CC0",
-  "albedo": "leather_red_quilted/albedo.jpg",
-  "normal": "leather_red_quilted/normal.jpg",
-  "orm": "leather_red_quilted/orm.jpg",
+  "albedo": "leather_red/albedo.jpg",
+  "normal": "leather_red/normal.jpg",
+  "orm": "leather_red/orm.jpg",
   "tileMeters": 0.5,
   "tint": false,
   "tags": [
    "leather",
    "red",
-   "quilted",
    "casino",
-   "sofa"
+   "sofa",
+   "booth"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Leather011",
+  "note": "Multi-angle photo leather re-coloured to casino red.",
+  "sourceUrl": "https://ambientcg.com/a/Leather038",
+  "author": "ambientCG (Lennart Demes)"
+ },
+ "marble_beige_polished": {
+  "source": "ambientcg:Marble026",
+  "license": "CC0",
+  "albedo": "marble_beige_polished/albedo.jpg",
+  "normal": "marble_beige_polished/normal.jpg",
+  "orm": "marble_beige_polished/orm.jpg",
+  "tileMeters": 1.5,
+  "tint": false,
+  "tags": [
+   "stone",
+   "marble",
+   "beige",
+   "polished",
+   "casino",
+   "counter",
+   "lobby"
+  ],
+  "resolution": 1024,
+  "sourceUrl": "https://ambientcg.com/a/Marble026",
   "author": "ambientCG (Lennart Demes)"
  },
  "marble_checker_floor": {
@@ -737,27 +774,8 @@
   "sourceUrl": "https://polyhaven.com/a/floor_tiles_06",
   "author": "Rob Tuytel"
  },
- "marble_white": {
-  "source": "ambientcg:Marble021",
-  "license": "CC0",
-  "albedo": "marble_white/albedo.jpg",
-  "normal": "marble_white/normal.jpg",
-  "orm": "marble_white/orm.jpg",
-  "tileMeters": 1.5,
-  "tint": false,
-  "tags": [
-   "stone",
-   "marble",
-   "white",
-   "casino",
-   "counter"
-  ],
-  "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Marble021",
-  "author": "ambientCG (Lennart Demes)"
- },
  "metal_painted_chipped": {
-  "source": "ambientcg:PaintedMetal012",
+  "source": "polyhaven:green_metal_rust",
   "license": "CC0",
   "albedo": "metal_painted_chipped/albedo.jpg",
   "normal": "metal_painted_chipped/normal.jpg",
@@ -773,8 +791,9 @@
    "cart"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/PaintedMetal012",
-  "author": "ambientCG (Lennart Demes)"
+  "note": "Real scan; green paint neutralised to grey so it can be tinted, rust spots keep their colour.",
+  "sourceUrl": "https://polyhaven.com/a/green_metal_rust",
+  "author": "Rob Tuytel"
  },
  "mud_wet_rural": {
   "source": "polyhaven:brown_mud_02",
@@ -816,12 +835,12 @@
   "author": "ambientCG (Lennart Demes)"
  },
  "plaster_broken_brick": {
-  "source": "ambientcg:PaintedPlaster014",
+  "source": "polyhaven:damaged_plaster",
   "license": "CC0",
   "albedo": "plaster_broken_brick/albedo.jpg",
   "normal": "plaster_broken_brick/normal.jpg",
   "orm": "plaster_broken_brick/orm.jpg",
-  "tileMeters": 2.0,
+  "tileMeters": 1.85,
   "tint": false,
   "tags": [
    "wall",
@@ -831,8 +850,8 @@
    "old"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/PaintedPlaster014",
-  "author": "ambientCG (Lennart Demes)"
+  "sourceUrl": "https://polyhaven.com/a/damaged_plaster",
+  "author": "Amal Kumar"
  },
  "plaster_moldy_stained": {
   "source": "polyhaven:concrete_wall_003",
@@ -934,7 +953,7 @@
   "author": "Dimitrios Savva"
  },
  "plastic_glossy": {
-  "source": "ambientcg:Plastic010",
+  "source": "ambientcg:Plastic001 (photo-based) neutralised for tinting + ambientcg:Smear004",
   "license": "CC0",
   "albedo": "plastic_glossy/albedo.jpg",
   "normal": "plastic_glossy/normal.jpg",
@@ -946,14 +965,16 @@
    "glossy",
    "bottle",
    "bucket",
-   "sign"
+   "sign",
+   "cooler"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Plastic010",
+  "note": "Neutral light grey glossy plastic with real smudges; tint per object.",
+  "sourceUrl": "https://ambientcg.com/a/Plastic001 ; https://ambientcg.com/a/Smear004",
   "author": "ambientCG (Lennart Demes)"
  },
  "plastic_rough": {
-  "source": "ambientcg:Plastic013B",
+  "source": "ambientcg:Plastic001 (photo-based) neutralised for tinting",
   "license": "CC0",
   "albedo": "plastic_rough/albedo.jpg",
   "normal": "plastic_rough/normal.jpg",
@@ -969,7 +990,8 @@
    "crate"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Plastic013B",
+  "note": "Neutral light grey: multiply by the object colour (Thai red/blue plastic chairs, basins).",
+  "sourceUrl": "https://ambientcg.com/a/Plastic001",
   "author": "ambientCG (Lennart Demes)"
  },
  "plywood": {
@@ -1066,12 +1088,12 @@
   "author": "Amal Kumar"
  },
  "rubber_black": {
-  "source": "ambientcg:Rubber004",
+  "source": "polyhaven:rubber_tiles",
   "license": "CC0",
   "albedo": "rubber_black/albedo.jpg",
   "normal": "rubber_black/normal.jpg",
   "orm": "rubber_black/orm.jpg",
-  "tileMeters": 0.75,
+  "tileMeters": 2.0,
   "tint": false,
   "tags": [
    "rubber",
@@ -1080,8 +1102,8 @@
    "tyre"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Rubber004",
-  "author": "ambientCG (Lennart Demes)"
+  "sourceUrl": "https://polyhaven.com/a/rubber_tiles",
+  "author": "Amal Kumar"
  },
  "shutter_roller_painted": {
   "source": "polyhaven:painted_metal_shutter",
@@ -1120,12 +1142,12 @@
   "author": "Charlotte Baglioni"
  },
  "sidewalk_pavers_interlocking": {
-  "source": "ambientcg:PavingStones072",
+  "source": "polyhaven:concrete_pavers",
   "license": "CC0",
   "albedo": "sidewalk_pavers_interlocking/albedo.jpg",
   "normal": "sidewalk_pavers_interlocking/normal.jpg",
   "orm": "sidewalk_pavers_interlocking/orm.jpg",
-  "tileMeters": 1.0,
+  "tileMeters": 1.92,
   "tint": false,
   "tags": [
    "ground",
@@ -1136,8 +1158,8 @@
    "outdoor"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/PavingStones072",
-  "author": "ambientCG (Lennart Demes)"
+  "sourceUrl": "https://polyhaven.com/a/concrete_pavers",
+  "author": "Amal Kumar"
  },
  "sidewalk_pavers_square": {
   "source": "ambientcg:PavingStones112",
@@ -1162,12 +1184,12 @@
   "author": "ambientCG (Lennart Demes)"
  },
  "sidewalk_tactile_yellow": {
-  "source": "ambientcg:TactilePaving003",
+  "source": "ambientcg:TactilePaving006",
   "license": "CC0",
   "albedo": "sidewalk_tactile_yellow/albedo.jpg",
   "normal": "sidewalk_tactile_yellow/normal.jpg",
   "orm": "sidewalk_tactile_yellow/orm.jpg",
-  "tileMeters": 1.2,
+  "tileMeters": 0.9,
   "tint": false,
   "tags": [
    "ground",
@@ -1177,12 +1199,13 @@
    "outdoor"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/TactilePaving003",
+  "note": "Photogrammetry tactile tiles re-coloured to Thai safety yellow.",
+  "sourceUrl": "https://ambientcg.com/a/TactilePaving006",
   "author": "ambientCG (Lennart Demes)"
  },
  "stainless_brushed": {
-  "source": "ambientcg:Metal009",
-  "license": "CC0",
+  "source": "photo: 'Brushed Metal Surface' (Flickr via Openverse)",
+  "license": "CC BY 2.0",
   "albedo": "stainless_brushed/albedo.jpg",
   "normal": "stainless_brushed/normal.jpg",
   "orm": "stainless_brushed/orm.jpg",
@@ -1192,21 +1215,23 @@
    "metal",
    "stainless",
    "brushed",
+   "scratched",
    "kitchen",
    "cart",
    "counter"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Metal009",
-  "author": "ambientCG (Lennart Demes)"
+  "note": "Real photo of scratched/brushed steel: flat-fielded, made seamless; normal/roughness derived from the photo.",
+  "sourceUrl": "https://www.flickr.com/photos/9822107@N08/7501404862",
+  "author": "shaire productions"
  },
  "stainless_dented_greasy": {
-  "source": "ambientcg:Metal049C (dents/normal) + ambientcg:Metal049B (smears) + ambientcg:SurfaceImperfections008 (grease)",
-  "license": "CC0",
+  "source": "photo 'Brushed Metal Surface' (Flickr via Openverse) + polyhaven:rusty_metal_03 (low-frequency dent relief) + ambientcg:SurfaceImperfections008 (grease)",
+  "license": "CC BY 2.0 + CC0",
   "albedo": "stainless_dented_greasy/albedo.jpg",
   "normal": "stainless_dented_greasy/normal.jpg",
   "orm": "stainless_dented_greasy/orm.jpg",
-  "tileMeters": 0.5,
+  "tileMeters": 0.6,
   "tint": false,
   "tags": [
    "metal",
@@ -1219,8 +1244,8 @@
    "counter"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Metal049C ; https://ambientcg.com/a/Metal049B ; https://ambientcg.com/a/SurfaceImperfections008",
-  "author": "ambientCG (Lennart Demes)"
+  "sourceUrl": "https://www.flickr.com/photos/9822107@N08/7501404862 ; https://polyhaven.com/a/rusty_metal_03 ; https://ambientcg.com/a/SurfaceImperfections008",
+  "author": "shaire productions + Poly Haven + ambientCG"
  },
  "steel_rusty": {
   "source": "polyhaven:rusty_metal_02",
@@ -1242,7 +1267,7 @@
   "author": "Rob Tuytel"
  },
  "temple_white_wall": {
-  "source": "ambientcg:Plaster003",
+  "source": "ambientcg:PaintedPlaster017",
   "license": "CC0",
   "albedo": "temple_white_wall/albedo.jpg",
   "normal": "temple_white_wall/normal.jpg",
@@ -1257,16 +1282,16 @@
    "whitewash"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Plaster003",
+  "sourceUrl": "https://ambientcg.com/a/PaintedPlaster017",
   "author": "ambientCG (Lennart Demes)"
  },
  "terrazzo_floor": {
-  "source": "ambientcg:Tiles043",
+  "source": "ambientcg:Terrazzo019M",
   "license": "CC0",
   "albedo": "terrazzo_floor/albedo.jpg",
   "normal": "terrazzo_floor/normal.jpg",
   "orm": "terrazzo_floor/orm.jpg",
-  "tileMeters": 1.2,
+  "tileMeters": 0.65,
   "tint": false,
   "tags": [
    "floor",
@@ -1275,7 +1300,7 @@
    "interior"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Tiles043",
+  "sourceUrl": "https://ambientcg.com/a/Terrazzo019M",
   "author": "ambientCG (Lennart Demes)"
  },
  "tiles_floor_ceramic": {
@@ -1318,12 +1343,12 @@
   "author": "Dimitrios Savva"
  },
  "tiles_wall_white_dirty": {
-  "source": "ambientcg:Tiles133B",
+  "source": "ambientcg:Tiles039",
   "license": "CC0",
   "albedo": "tiles_wall_white_dirty/albedo.jpg",
   "normal": "tiles_wall_white_dirty/normal.jpg",
   "orm": "tiles_wall_white_dirty/orm.jpg",
-  "tileMeters": 1.0,
+  "tileMeters": 1.6,
   "tint": false,
   "tags": [
    "wall",
@@ -1335,7 +1360,7 @@
    "shophouse"
   ],
   "resolution": 1024,
-  "sourceUrl": "https://ambientcg.com/a/Tiles133B",
+  "sourceUrl": "https://ambientcg.com/a/Tiles039",
   "author": "ambientCG (Lennart Demes)"
  },
  "velvet_red": {
@@ -1359,70 +1384,72 @@
   "author": "colormass, Rico Cilliers"
  },
  "water_canal_calm": {
-  "source": "procedural (R6-pbr, FFT ocean/ripple spectrum)",
-  "license": "CC0",
+  "source": "photo 'water ripples texture 1 of 3' (Flickr via Openverse)",
+  "license": "CC BY 2.0",
   "albedo": "water_canal_calm/albedo.jpg",
   "normal": "water_canal_calm/normal.jpg",
   "orm": "water_canal_calm/orm.jpg",
   "height": "water_canal_calm/height.jpg",
-  "tileMeters": 6.0,
+  "tileMeters": 3.0,
   "tint": false,
   "tags": [
    "water",
    "normal-only",
-   "calm",
    "canal",
-   "klong"
+   "klong",
+   "calm",
+   "ripples"
   ],
   "resolution": 1024,
   "normalOnly": true,
-  "note": "Gentle wind-swell for a still canal (klong). Scroll slowly along the wind direction (~34 deg). albedo/orm are tiny constant helpers (murky water colour, roughness).",
-  "sourceUrl": "",
-  "author": "R6-pbr (generated)"
+  "note": "Fine wind ripples on still water; scroll slowly, blend two scales. Normal derived from the photo's luminance (made seamless). albedo/orm are tiny constant helpers (murky water colour, roughness).",
+  "sourceUrl": "https://www.flickr.com/photos/17333088@N00/2937691081",
+  "author": "JunCTionS"
  },
  "water_ripples_puddle": {
-  "source": "procedural (R6-pbr, FFT ocean/ripple spectrum)",
-  "license": "CC0",
+  "source": "photo 'Ripples.' (Flickr via Openverse)",
+  "license": "CC BY 2.0",
   "albedo": "water_ripples_puddle/albedo.jpg",
   "normal": "water_ripples_puddle/normal.jpg",
   "orm": "water_ripples_puddle/orm.jpg",
   "height": "water_ripples_puddle/height.jpg",
-  "tileMeters": 0.5,
+  "tileMeters": 0.6,
   "tint": false,
   "tags": [
    "water",
    "normal-only",
-   "ripples",
    "puddle",
-   "rain"
+   "rain",
+   "ripples"
   ],
   "resolution": 1024,
   "normalOnly": true,
-  "note": "Tileable capillary ripples for puddles; scroll two copies in opposite directions for motion. albedo/orm are tiny constant helpers (murky water colour, roughness).",
-  "sourceUrl": "",
-  "author": "R6-pbr (generated)"
+  "note": "Raindrop rings on a puddle; scroll/flip two copies for animated rain. Normal derived from the photo's luminance (made seamless). albedo/orm are tiny constant helpers (murky water colour, roughness).",
+  "sourceUrl": "https://www.flickr.com/photos/35213476@N08/4298848358",
+  "author": "danisabella"
  },
  "water_wind_chop": {
-  "source": "procedural (R6-pbr, FFT ocean/ripple spectrum)",
-  "license": "CC0",
+  "source": "photo 'Wave reflections' (Flickr via Openverse)",
+  "license": "CC BY 2.0",
   "albedo": "water_wind_chop/albedo.jpg",
   "normal": "water_wind_chop/normal.jpg",
   "orm": "water_wind_chop/orm.jpg",
   "height": "water_wind_chop/height.jpg",
-  "tileMeters": 2.5,
+  "tileMeters": 4.0,
   "tint": false,
   "tags": [
    "water",
    "normal-only",
-   "chop",
    "canal",
-   "klong"
+   "river",
+   "waves",
+   "chop"
   ],
   "resolution": 1024,
   "normalOnly": true,
-  "note": "Choppier wind waves / boat wake chop. Blend with water_canal_calm at a different scale. albedo/orm are tiny constant helpers (murky water colour, roughness).",
-  "sourceUrl": "",
-  "author": "R6-pbr (generated)"
+  "note": "Larger wave undulation; blend under water_canal_calm at a different scale. Normal derived from the photo's luminance (made seamless). albedo/orm are tiny constant helpers (murky water colour, roughness).",
+  "sourceUrl": "https://www.flickr.com/photos/11121568@N06/4141145006",
+  "author": "Alan Cleaver"
  },
  "wood_painted_weathered": {
   "source": "polyhaven:distressed_painted_planks",

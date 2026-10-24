@@ -39,8 +39,8 @@
    "puddles",
    "night"
   ],
-  "source": "polyhaven:asphalt_04",
-  "sourceUrl": "https://polyhaven.com/a/asphalt_04",
+  "source": "polyhaven:asphalt_04 + puddle layout from displacement of polyhaven:concrete_floor_damaged_01, polyhaven:brown_mud_02, polyhaven:dirt_floor",
+  "sourceUrl": "https://polyhaven.com/a/asphalt_04 ; https://polyhaven.com/a/concrete_floor_damaged_01 ; https://polyhaven.com/a/brown_mud_02 ; https://polyhaven.com/a/dirt_floor",
   "author": "Jenelle van Heerden, Sergej Majboroda",
   "license": "CC0",
   "resolution": 1024,
@@ -142,8 +142,8 @@
    "puddles",
    "market-floor"
   ],
-  "source": "polyhaven:garage_floor",
-  "sourceUrl": "https://polyhaven.com/a/garage_floor",
+  "source": "polyhaven:garage_floor + puddle layout from displacement of polyhaven:concrete_floor_damaged_01, polyhaven:brown_mud_02, polyhaven:dirt_floor",
+  "sourceUrl": "https://polyhaven.com/a/garage_floor ; https://polyhaven.com/a/concrete_floor_damaged_01 ; https://polyhaven.com/a/brown_mud_02 ; https://polyhaven.com/a/dirt_floor",
   "author": "Jenelle van Heerden",
   "license": "CC0",
   "resolution": 1024,

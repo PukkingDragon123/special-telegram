@@ -129,6 +129,8 @@ export class WB {
   /** force chunk position (e.g. whole building in one chunk) */
   pinChunk: [number, number] | null = null;
   tris = 0;
+  /** bucket that received the last quad (for uv patching) */
+  lastBuf: Buf | null = null;
 
   constructor(public lookup: LayerLookup) {}
 
@@ -255,6 +257,7 @@ export class WB {
     }
     const cxw = (wp[0] + wp[6]) * 0.5, czw = (wp[2] + wp[8]) * 0.5;
     const B = this.bucketAt(cxw, czw);
+    this.lastBuf = B;
     B.reserve(4, 6);
     const o = B.nv;
     // uv

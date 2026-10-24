@@ -619,8 +619,15 @@ function simWok(game: Game, e: Ent, s: any, dt: number, heat: number) {
   for (const v of Object.values<any>(s.it)) solidsG += v?.g ?? 0;
   solidsG += (s.egg?.n ?? 0) * 50 + (s.om?.n ?? 0) * 55;
   const C = wokHeatCap(s);
-  const Pin = heat * 9.0;
-  const Ploss = (T - 25) * 0.025 + (solidsG / 1000) * Math.max(0, T - 100) * 0.035;
+  const Pin = heat * 10.0;
+  // raw food releases moisture: it steams (keeps the wok ~110-160 °C) until it is cooked through
+  let moist = 0;
+  for (const [k, v] of Object.entries<any>(s.it)) {
+    if (!v || v.g <= 0) continue;
+    const wet = k === 'garlic' || k === 'chili' || k === 'curry_paste' ? 0.3 : (ING[k]?.tags?.includes('meat') || ING[k]?.tags?.includes('veg')) ? 1 : 0.5;
+    moist += (v.g / 1000) * wet * Math.max(0, 1 - Math.min(1, v.c)) * 55;
+  }
+  const Ploss = (T - 25) * 0.025 + (solidsG / 1000) * Math.max(0, T - 100) * 0.035 + (T > 100 ? moist * Math.min(1, (T - 100) / 40) : 0);
   const w = s.w ?? 0;
   if (w > 0.5 && T >= 99.5) {
     const excess = Pin - Ploss;
@@ -643,8 +650,10 @@ function simWok(game: Game, e: Ent, s: any, dt: number, heat: number) {
     v.c += f / cp.t * (stirring ? 1.15 : 0.82) * dt;
     if (!soup && (v.c > 0.8 || T > 235)) {
       const burnBase = Math.max(0, T - 188) / 80;
+      // small aromatics are protected when buried in plenty of other food
+      const crowd = v.g < 40 ? 1 / (1 + Math.max(0, solidsG - v.g) / 90) : 1;
       const before = v.b;
-      v.b += burnBase * (stirring ? 0.14 : 1) * (dryOil ? 2.1 : 1) / cp.b * dt;
+      v.b += burnBase * crowd * (stirring ? 0.14 : 1) * (dryOil ? 2.1 : 1) / cp.b * dt;
       if (before < 0.6 && v.b >= 0.6) sfx(game, ['burnt_smoke_hiss'], entPos(game, e), { vol: 0.9 });
     }
     if (v.b > 0.5) burning = Math.max(burning, v.b);

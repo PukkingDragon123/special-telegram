@@ -29,9 +29,17 @@ function wobble(g: THREE.BufferGeometry, amt: number, seed = 1) {
   return g;
 }
 
-/** Cylinder whose side UV wraps 0..1 (label), caps separate group. */
+/** Real label photos cover only the photographed front arc (~140°): squeeze u around the front (u = 0.5). */
+function frontArc(g: THREE.BufferGeometry, deg = 140) {
+  const uv = g.getAttribute('uv') as THREE.BufferAttribute;
+  const k = 360 / deg;
+  for (let i = 0; i < uv.count; i++) uv.setX(i, (uv.getX(i) - 0.5) * k + 0.5);
+  return g;
+}
+
+/** Cylinder whose side UV wraps 0..1 (label centred at the front), caps separate group. */
 function cyl(r: number, h: number, seg = 14, rTop = r) {
-  const g = new THREE.CylinderGeometry(rTop, r, h, seg, 1, false);
+  const g = new THREE.CylinderGeometry(rTop, r, h, seg, 1, false, Math.PI);
   g.translate(0, h / 2, 0);
   return g;
 }
@@ -73,7 +81,7 @@ const labelMat = (file: string, o: { alpha?: boolean } = {}) => mat('label:' + f
 
 type Shape = 'tray' | 'bag' | 'bunch' | 'egg' | 'bottle' | 'jar' | 'can' | 'cup' | 'box' | 'sack' | 'tank' | 'jug' | 'pillow' | 'stool' | 'chair' | 'table' | 'umbrella' | 'tub' | 'rack' | 'bin' | 'wok' | 'utensil' | 'board' | 'mortar' | 'plate' | 'bowl' | 'cooker' | 'burner' | 'basket' | 'eggtray' | 'heap';
 
-interface FbSpec { name: TL; shape: Shape; tex?: string; tex2?: string; size: [number, number, number]; color?: number; weight: number; slots?: number; carry?: CarryStyle; tags?: string[]; data?: () => any }
+interface FbSpec { name: TL; shape: Shape; tex?: string; tex2?: string; size: [number, number, number]; color?: number; body?: number; weight: number; slots?: number; carry?: CarryStyle; tags?: string[]; data?: () => any }
 
 function build(spec: FbSpec): THREE.Object3D {
   const [w, h, d] = spec.size;
@@ -118,17 +126,23 @@ function build(spec: FbSpec): THREE.Object3D {
       const prof: [number, number][] = neck
         ? [[0, 0], [w / 2, 0.004], [w / 2, h * 0.62], [w * 0.38, h * 0.74], [w * 0.15, h * 0.86], [w * 0.15, h], [0, h]]
         : [[0, 0], [w / 2, 0.004], [w / 2, h * 0.86], [w * 0.42, h * 0.9], [w * 0.42, h], [0, h]];
-      const body = mesh(lathe(prof, 14), spec.tex ? labelMat(spec.tex) : flat(c, 0.3));
-      const cap = mesh(cyl(neck ? w * 0.17 : w * 0.44, h * 0.08).translate(0, h * 0.97, 0), flat(spec.color ?? 0xc4161c, 0.4));
-      return group(body, cap);
+      const body = mesh(lathe(prof, 14), mat('bottlebody:' + (spec.body ?? 0x3a2412), () => new THREE.MeshStandardMaterial({ color: spec.body ?? 0x3a2412, roughness: 0.18, metalness: 0.05, transparent: (spec.body ?? 0) > 0x808080, opacity: (spec.body ?? 0) > 0x808080 ? 0.75 : 1 })));
+      const parts: THREE.Object3D[] = [body];
+      if (spec.tex) {
+        const y0 = neck ? 0.16 : 0.12, y1 = neck ? 0.6 : 0.84;
+        const band = frontArc(cyl(w * 0.512, h * (y1 - y0), 18)).translate(0, h * y0, 0);
+        parts.push(mesh(band, labelMat(spec.tex)));
+      }
+      parts.push(mesh(cyl(neck ? w * 0.17 : w * 0.44, h * 0.08).translate(0, h * 0.97, 0), flat(spec.color ?? 0xc4161c, 0.4)));
+      return group(...parts);
     }
     case 'can': {
-      const body = mesh(cyl(w / 2, h, 16), spec.tex ? labelMat(spec.tex) : flat(c, 0.3, 0.6));
+      const body = mesh(spec.tex ? frontArc(cyl(w / 2, h, 18), 160) : cyl(w / 2, h, 16), spec.tex ? labelMat(spec.tex) : flat(c, 0.3, 0.6));
       const top = mesh(cyl(w * 0.46, 0.006).translate(0, h, 0), steel());
       return group(body, top);
     }
     case 'cup': {
-      const body = mesh(lathe([[0, 0], [w * 0.36, 0.004], [w / 2, h], [0, h]], 14), spec.tex ? labelMat(spec.tex) : flat(c, 0.6));
+      const body = mesh(spec.tex ? frontArc(lathe([[0, 0], [w * 0.36, 0.004], [w / 2, h], [0, h]], 18), 180) : lathe([[0, 0], [w * 0.36, 0.004], [w / 2, h], [0, h]], 14), spec.tex ? labelMat(spec.tex) : flat(c, 0.6));
       return group(body);
     }
     case 'box': case 'pillow': case 'sack': {
@@ -149,7 +163,7 @@ function build(spec: FbSpec): THREE.Object3D {
       return group(mesh(g, [side, side, side, side, front, front]));
     }
     case 'tank': { // LPG cylinder with real label
-      const body = mesh(lathe([[0, 0], [w * 0.46, 0.01], [w / 2, h * 0.08], [w / 2, h * 0.78], [w * 0.38, h * 0.88], [w * 0.12, h * 0.9], [0, h * 0.9]], 16), spec.tex ? labelMat(spec.tex) : flat(c, 0.5, 0.2));
+      const body = mesh(frontArc(lathe([[0, 0], [w * 0.46, 0.01], [w / 2, h * 0.08], [w / 2, h * 0.78], [w * 0.38, h * 0.88], [w * 0.12, h * 0.9], [0, h * 0.9]], 18), 170), spec.tex ? labelMat(spec.tex) : flat(c, 0.5, 0.2));
       const ring = mesh(new THREE.TorusGeometry(w * 0.25, w * 0.04, 5, 12).rotateX(Math.PI / 2).translate(0, h * 0.97, 0), flat(spec.color ?? 0x2f6fb5, 0.5, 0.3));
       const valve = mesh(cyl(w * 0.05, h * 0.08).translate(0, h * 0.88, 0), flat(0xb08d3a, 0.35, 0.8));
       return group(body, ring, valve);
@@ -264,10 +278,10 @@ export const FALLBACKS: Record<string, FbSpec> = {
   sfb_mushroom: { name: L('เห็ดฟาง', 'straw mushrooms'), shape: 'bag', tex: 'heap_garlic', color: 0xb89a7a, size: [0.13, 0.07, 0.11], weight: 0.21, tags: ['ingredient', 'veg'] },
   sfb_fish_sauce: { name: L('น้ำปลา', 'fish sauce'), shape: 'bottle', tex: 'fish_sauce_tiparos.png', size: [0.075, 0.27, 0.075], color: 0xc4161c, weight: 0.85, tags: ['ingredient', 'sauce'] },
   sfb_oyster_sauce: { name: L('ซอสหอยนางรม', 'oyster sauce'), shape: 'bottle', tex: 'oyster_sauce_maekrua.png', size: [0.08, 0.26, 0.08], color: 0xc4161c, weight: 1.05, tags: ['ingredient', 'sauce'] },
-  sfb_soy_light: { name: L('ซีอิ๊วขาว', 'light soy sauce'), shape: 'bottle', tex: 'light_soy_healthy_boy.png', size: [0.075, 0.27, 0.075], color: 0xf2c21e, weight: 0.95, tags: ['ingredient', 'sauce'] },
+  sfb_soy_light: { name: L('ซีอิ๊วขาว', 'light soy sauce'), shape: 'bottle', tex: 'light_soy_healthy_boy.png', size: [0.075, 0.27, 0.075], color: 0xf2c21e, body: 0x5a3010, weight: 0.95, tags: ['ingredient', 'sauce'] },
   sfb_soy_dark: { name: L('ซีอิ๊วดำหวาน', 'sweet dark soy'), shape: 'bottle', tex: 'dark_soy_healthy_boy.png', size: [0.075, 0.27, 0.075], color: 0x6a1a12, weight: 1.2, tags: ['ingredient', 'sauce'] },
   sfb_seasoning_sauce: { name: L('ซอสปรุงรส', 'seasoning sauce'), shape: 'bottle', tex: 'seasoning_sauce_golden_mountain.png', size: [0.07, 0.25, 0.07], color: 0x1f8a3c, weight: 0.8, tags: ['ingredient', 'sauce'] },
-  sfb_cooking_oil: { name: L('น้ำมันพืช 1 ลิตร', 'cooking oil 1 L'), shape: 'bottle', tex: 'palm_oil_morakot_1l.png', size: [0.085, 0.29, 0.085], color: 0xe0b01a, weight: 0.95, tags: ['ingredient', 'oil'] },
+  sfb_cooking_oil: { name: L('น้ำมันพืช 1 ลิตร', 'cooking oil 1 L'), shape: 'bottle', tex: 'palm_oil_morakot_1l.png', size: [0.085, 0.29, 0.085], color: 0xe0b01a, body: 0xe8c040, weight: 0.95, tags: ['ingredient', 'oil'] },
   sfb_white_pepper: { name: L('พริกไทยป่น', 'ground white pepper'), shape: 'jar', tex: 'white_pepper_hand_brand_jar.png', size: [0.06, 0.1, 0.06], color: 0xb02a1a, weight: 0.15, tags: ['ingredient', 'seasoning'] },
   sfb_chili_flakes: { name: L('พริกป่น', 'chili flakes'), shape: 'jar', tex: 'chili_powder_hand_brand.png', size: [0.06, 0.1, 0.06], color: 0xb02a1a, weight: 0.15, tags: ['ingredient', 'seasoning'] },
   sfb_sugar: { name: L('น้ำตาลทราย 1 กก.', 'sugar 1 kg'), shape: 'pillow', tex: 'sugar_mitr_phol_1kg.png', size: [0.13, 0.2, 0.06], weight: 1.02, tags: ['ingredient', 'seasoning'] },
@@ -277,15 +291,15 @@ export const FALLBACKS: Record<string, FbSpec> = {
   sfb_curry_paste: { name: L('พริกแกงเผ็ด', 'red curry paste'), shape: 'bag', tex: 'heap_chili', color: 0xb03a1a, size: [0.11, 0.06, 0.09], weight: 0.27, tags: ['ingredient'] },
   sfb_tomyum_paste: { name: L('น้ำพริกเผา', 'roasted chili paste'), shape: 'jar', tex: 'chili_powder_hand_brand.png', size: [0.07, 0.09, 0.07], weight: 0.33, tags: ['ingredient'] },
   sfb_gravy_starch: { name: L('แป้งมันสำปะหลัง', 'tapioca starch'), shape: 'pillow', tex: 'sugar_mitr_phol_1kg.png', color: 0xdde8ff, size: [0.13, 0.18, 0.05], weight: 0.52, tags: ['ingredient'] },
-  sfb_water_jug: { name: L('น้ำดื่ม 1.5 ลิตร', 'drinking water 1.5 L'), shape: 'bottle', tex: 'water_crystal_600ml.png', size: [0.09, 0.32, 0.09], color: 0x2a6ad8, weight: 1.6, tags: ['ingredient', 'water'] },
-  sfb_water_bottle: { name: L('น้ำดื่มคริสตัล 600 มล.', 'Crystal water 600 ml'), shape: 'bottle', tex: 'water_crystal_600ml.png', size: [0.065, 0.22, 0.065], color: 0x2a6ad8, weight: 0.62, tags: ['drink'] },
+  sfb_water_jug: { name: L('น้ำดื่ม 1.5 ลิตร', 'drinking water 1.5 L'), shape: 'bottle', tex: 'water_crystal_600ml.png', size: [0.09, 0.32, 0.09], color: 0x2a6ad8, body: 0xd8eef8, weight: 1.6, tags: ['ingredient', 'water'] },
+  sfb_water_bottle: { name: L('น้ำดื่มคริสตัล 600 มล.', 'Crystal water 600 ml'), shape: 'bottle', tex: 'water_crystal_600ml.png', size: [0.065, 0.22, 0.065], color: 0x2a6ad8, body: 0xd8eef8, weight: 0.62, tags: ['drink'] },
   sfb_water20: { name: L('น้ำดื่ม 20 ลิตร', 'drinking water 20 L'), shape: 'jug', tex: 'water20', size: [0.28, 0.5, 0.28], weight: 20, slots: 3, carry: 'twohand', tags: ['drink', 'water'] },
   sfb_ice_bag: { name: L('น้ำแข็งหลอด', 'tube ice bag'), shape: 'pillow', tex: 'ice_bag_siri_mit_tube_ice.png', size: [0.24, 0.32, 0.1], weight: 2.5, carry: 'twohand', tags: ['ice', 'drink'] },
   sfb_gas_tank: { name: L('ถังแก๊ส 15 กก.', '15 kg LPG tank'), shape: 'tank', tex: 'lpg_cylinder_world_gas.png', size: [0.32, 0.62, 0.32], color: 0x2f6fb5, weight: 18, slots: 4, carry: 'twohand', tags: ['gas'], data: () => ({ gas: 15 }) },
   sfb_mama_cup: { name: L('มาม่าคัพ', 'MAMA cup noodles'), shape: 'cup', tex: 'instant_noodle_mama_cup.png', size: [0.095, 0.1, 0.095], weight: 0.08, tags: ['snack'] },
   sfb_cola: { name: L('โค้ก 325 มล.', 'Coke can'), shape: 'can', tex: 'cola_coke_can_325.png', size: [0.066, 0.12, 0.066], weight: 0.35, tags: ['drink', 'soda'] },
   sfb_fanta: { name: L('แฟนต้าน้ำส้ม', 'Fanta orange'), shape: 'can', tex: 'soda_fanta_orange_can.png', size: [0.066, 0.12, 0.066], weight: 0.35, tags: ['drink', 'soda'] },
-  sfb_m150: { name: L('เครื่องดื่มชูกำลัง', 'energy drink'), shape: 'bottle', tex: 'energy_m150.png', size: [0.05, 0.13, 0.05], color: 0xd4b22a, weight: 0.2, tags: ['drink'] },
+  sfb_m150: { name: L('เครื่องดื่มชูกำลัง', 'energy drink'), shape: 'bottle', tex: 'energy_m150.png', size: [0.05, 0.13, 0.05], color: 0xd4b22a, body: 0x6a3a0a, weight: 0.2, tags: ['drink'] },
   sfb_beer: { name: L('เบียร์ช้าง', 'Chang beer'), shape: 'can', tex: 'beer_chang_can.png', size: [0.066, 0.122, 0.066], weight: 0.36, tags: ['drink', 'alcohol'] },
   instant_rice: { name: L('ข้าวสวยพร้อมทาน', 'ready-to-eat jasmine rice'), shape: 'box', tex: 'gen/shops/rice_tray.png', size: [0.15, 0.045, 0.11], weight: 0.22, tags: ['ingredient', 'rice'], data: () => ({ g: 200 }) },
   // furniture & tools

@@ -51,7 +51,7 @@ export const QUOTE: Record<string, Pool> = {
 /** Player reply options, {c} = how to call the keeper (ป้า/ลุง/เจ๊/เฮีย/น้อง). */
 export const REPLIES: Record<ReplyCat, Pool> = {
   polite: [L('ลดหน่อยได้ไหมครับ{k}', 'Could you lower it a bit?'), L('ปัดเศษให้หน่อยได้ไหมครับ', 'Round it down for me?'), L('ซื้อหลายอย่างเลย ลดนิดนึงนะครับ', "I'm buying a lot, small discount?"), L('รบกวนลดให้หน่อยนะครับ{k}', 'Please, a little discount')],
-  sweet: [L('{k}สวย/หล่อที่สุดในตลาดเลย ลดให้หน่อยน้า', 'Best-looking in the market, discount?'), L('ของ{k}สดที่สุดในโลก!', 'Freshest stuff in the world!'), L('เดี๋ยวมาอุดหนุนทุกวันเลยครับ', "I'll come every single day"), L('ใจดีที่สุดในซอยเลย{k}', 'Kindest in the whole soi')],
+  sweet: [L('{k}{s}ที่สุดในตลาดเลย ลดให้หน่อยน้า', 'Best-looking in the market, discount?'), L('ของ{k}สดที่สุดในโลก!', 'Freshest stuff in the world!'), L('เดี๋ยวมาอุดหนุนทุกวันเลยครับ', "I'll come every single day"), L('ใจดีที่สุดในซอยเลย{k}', 'Kindest in the whole soi')],
   funny: [L('ผมจนกว่าหมาข้างทางอีกครับ', "I'm poorer than the street dog"), L('เพิ่งหมดตัวที่บ่อนมาครับ ลดหน่อย', 'Just lost it all at the casino…'), L('ลดให้ เดี๋ยวผมเต้นให้ดูเลย', "Discount and I'll dance for you"), L('ถ้าลด ผมจะเรียก{k}ว่าแม่!', "Discount and I'll call you Mom!")],
   rude: [L('แพงชิบ! ปล้นกันเหรอ', 'So expensive! Is this a robbery?'), L('ราคานี้ ไปแม็กโคร่งดีกว่า', "At this price I'd go to Makrong"), L('ของแค่นี้ ขายแพงจัง', 'This little for that much?'), L('โกงชัวร์ๆ', "You're totally ripping me off")],
 };
@@ -95,7 +95,7 @@ export const REACT: Record<string, { good: Pool; bad: Pool; sweetFail?: Pool }> 
   _: { good: [L('{p} ก็ได้', '{p} then')], bad: [L('ไม่ลด {p}', 'No. {p}')] },
 };
 
-export const ROBOT_NO_BARGAIN: Pool = [L('ราคาตามระบบค่ะ', 'The price is set by the system.'), L('ราคาตามระบบค่ะ 😊', 'The price is set by the system :)'), L('…ราคาตามระบบค่ะ', '…the price is set by the system.')];
+export const ROBOT_NO_BARGAIN: Pool = [L('ราคาตามระบบค่ะ', 'The price is set by the system.'), L('ราคาตามระบบค่ะ (ยิ้ม)', 'The price is set by the system (smiles)'), L('…ราคาตามระบบค่ะ', '…the price is set by the system.')];
 export const FINAL: Pool = [L('ขาดตัว {p} บาท! ห้ามต่อแล้ว', 'Final: {p}. No more haggling!'), L('เอา {p} นะ จบ!', '{p}. Done!')];
 export const TIMEOUT: Pool = [L('ว่าไง? จะเอาไม่เอา', 'Well? Buying or not?'), L('เงียบทำไม?', 'Why so quiet?')];
 export const AGAIN: Pool = [L('ต่อไปแล้วไง! จะเอาไม่เอา', 'You already haggled! Take it or leave it')];

@@ -636,8 +636,8 @@
     "leafBase": "bottom-centre of cell"
    },
    {
-    "name": "anthurium",
-    "source": "ph:anthurium_botany_01",
+    "name": "syngonium",
+    "source": "ph:potted_plant_02",
     "uv": [
      0.75,
      0.6667,
@@ -669,8 +669,8 @@
     "leafBase": "bottom-centre of cell"
    },
    {
-    "name": "calathea",
-    "source": "ph:calathea_orbifolia_01",
+    "name": "anthurium",
+    "source": "ph:anthurium_botany_01",
     "uv": [
      0.5,
      0.3333,
@@ -691,8 +691,8 @@
     "leafBase": "bottom-centre of cell"
    },
    {
-    "name": "pachira",
-    "source": "ph:pachira_aquatica_01",
+    "name": "calathea",
+    "source": "ph:calathea_orbifolia_01",
     "uv": [
      0.0,
      0.0,
@@ -708,6 +708,17 @@
      0.25,
      0.0,
      0.5,
+     0.3333
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "pachira",
+    "source": "ph:pachira_aquatica_01",
+    "uv": [
+     0.5,
+     0.0,
+     0.75,
      0.3333
     ],
     "leafBase": "bottom-centre of cell"
@@ -716,9 +727,9 @@
     "name": "heart-leaf",
     "source": "acg:LeafSet004",
     "uv": [
-     0.5,
-     0.0,
      0.75,
+     0.0,
+     1.0,
      0.3333
     ],
     "leafBase": "bottom-centre of cell"

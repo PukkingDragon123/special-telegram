@@ -57,10 +57,9 @@ export class Thumbnailer {
   private rt: THREE.WebGLRenderTarget;
   private scene = new THREE.Scene();
   private cam = new THREE.PerspectiveCamera(28, 220 / 300, 0.05, 20);
-  private queue: { look: Look; framing: Framing; cb: (c: HTMLCanvasElement) => void }[] = [];
+  private queue: { look: Look; framing: Framing; cb: (c: HTMLCanvasElement) => void; tag?: number }[] = [];
   private buf: Float32Array;
   readonly W = 220; readonly H = 300;
-  private float = true;
   constructor(private game: Game) {
     this.rt = new THREE.WebGLRenderTarget(this.W, this.H, { type: THREE.FloatType, depthBuffer: true });
     this.buf = new Float32Array(this.W * this.H * 4);
@@ -70,50 +69,75 @@ export class Thumbnailer {
     rim.position.set(2, 2, -2);
     this.scene.add(key, rim, new THREE.HemisphereLight(0xffffff, 0x8a7a6a, 1.4));
   }
-  request(look: Look, framing: Framing, cb: (c: HTMLCanvasElement) => void) { this.queue.push({ look, framing, cb }); }
+  request(look: Look, framing: Framing, cb: (c: HTMLCanvasElement) => void, tag?: number) { this.queue.push({ look, framing, cb, tag }); }
+  /** move the jobs of one page to the front of the queue */
+  front(tag: number) { const a = this.queue.filter((j) => j.tag === tag), b = this.queue.filter((j) => j.tag !== tag); this.queue = [...a, ...b]; }
   get pending() { return this.queue.length; }
   clear() { this.queue.length = 0; }
 
-  /** render up to n queued thumbnails (call once per frame) */
-  step(n = 1) {
-    const r = this.game.engine.renderer;
-    for (let k = 0; k < n && this.queue.length; k++) {
-      const job = this.queue.shift()!;
-      let rig: any = null;
+  private cur: { job: { look: Look; framing: Framing; cb: (c: HTMLCanvasElement) => void }; rig: any; frames: number; ready: number } | null = null;
+
+  /** true when every mesh's atlas texture of the rig has been painted (characters paint them async) */
+  private painted(rig: any) {
+    let ok = true;
+    rig.root.traverse((o: any) => {
+      if (!o.isMesh || !o.visible) return;
+      const ms = Array.isArray(o.material) ? o.material : [o.material];
+      for (const m of ms) { const im = m?.map?.image; if (im && (im.width ?? 0) <= 8) ok = false; }
+    });
+    return ok;
+  }
+
+  /** advance the thumbnail pipeline (call once per frame): create rig → wait for its atlas → render */
+  step() {
+    if (!this.cur) {
+      const job = this.queue.shift();
+      if (!job) return;
       try {
-        rig = this.game.chars.create(job.look, { lod: 'high', castShadow: false });
+        const rig: any = this.game.chars.create(job.look, { lod: 'high', castShadow: false });
         rig.play('idle', { loop: true, fade: 0 });
         rig.setMove(0);
-        for (let i = 0; i < 12; i++) rig.update(0.08);
-        rig.root.rotation.y = Math.PI + 0.42; // 3/4 view, facing the camera
+        rig.root.rotation.y = Math.PI + 0.42; // 3/4 view toward the camera
         this.scene.add(rig.root);
-        rig.root.updateMatrixWorld(true);
-        const h = rig.height || job.look.height || 1.72;
-        const f = job.framing;
-        const [cy, dist, ty] = f === 'torso' ? [h * 0.74, 1.35, h * 0.72] : f === 'legs' ? [h * 0.32, 1.85, h * 0.3] : f === 'feet' ? [0.22, 0.8, 0.07] : f === 'head' ? [h * 0.93, 0.62, h * 0.92] : f === 'bust' ? [h * 0.86, 0.95, h * 0.84] : [h * 0.55, 3.6, h * 0.5];
-        this.cam.position.set(0.05, cy, dist);
-        this.cam.lookAt(0, ty, 0);
-        this.cam.updateMatrixWorld(true);
-        const prevRT = r.getRenderTarget();
-        const prevClear = r.getClearColor(new THREE.Color());
-        const prevAlpha = r.getClearAlpha();
-        r.setRenderTarget(this.rt);
-        r.setClearColor(0x000000, 0);
-        r.clear(true, true, true);
-        r.render(this.scene, this.cam);
-        let ok = true;
-        try {
-          if (this.float) r.readRenderTargetPixels(this.rt, 0, 0, this.W, this.H, this.buf);
-        } catch { ok = false; }
-        r.setRenderTarget(prevRT);
-        r.setClearColor(prevClear, prevAlpha);
-        if (!ok) { this.float = false; continue; }
-        job.cb(this.toCanvas());
-      } catch (e) {
-        console.warn('[menu] thumbnail failed', e);
-      } finally {
-        if (rig) { this.scene.remove(rig.root); rig.dispose(); }
-      }
+        this.cur = { job, rig, frames: 0, ready: -1 };
+      } catch (e) { console.warn('[menu] thumbnail rig failed', e); }
+      return;
+    }
+    const c = this.cur;
+    c.frames++;
+    c.rig.update(0.1);
+    if (c.ready < 0) {
+      if (this.painted(c.rig) || c.frames > 240) c.ready = c.frames;
+      return;
+    }
+    if (c.frames - c.ready < 6) return; // let the face photo land
+    const r = this.game.engine.renderer;
+    try {
+      c.rig.root.updateMatrixWorld(true);
+      const h = c.rig.height || c.job.look.height || 1.72;
+      const f = c.job.framing;
+      const [cy, dist, ty] = f === 'torso' ? [h * 0.74, 1.35, h * 0.72] : f === 'legs' ? [h * 0.32, 1.85, h * 0.3] : f === 'feet' ? [0.22, 0.8, 0.07] : f === 'head' ? [h * 0.93, 0.62, h * 0.92] : f === 'bust' ? [h * 0.86, 0.95, h * 0.84] : [h * 0.55, 3.6, h * 0.5];
+      this.cam.position.set(0.05, cy, dist);
+      this.cam.lookAt(0, ty, 0);
+      this.cam.updateMatrixWorld(true);
+      const prevRT = r.getRenderTarget();
+      const prevClear = r.getClearColor(new THREE.Color());
+      const prevAlpha = r.getClearAlpha();
+      r.setRenderTarget(this.rt);
+      r.setClearColor(0x000000, 0);
+      r.clear(true, true, true);
+      r.render(this.scene, this.cam);
+      let ok = true;
+      try { r.readRenderTargetPixels(this.rt, 0, 0, this.W, this.H, this.buf); } catch { ok = false; }
+      r.setRenderTarget(prevRT);
+      r.setClearColor(prevClear, prevAlpha);
+      if (ok) c.job.cb(this.toCanvas());
+    } catch (e) {
+      console.warn('[menu] thumbnail failed', e);
+    } finally {
+      this.scene.remove(c.rig.root);
+      c.rig.dispose();
+      this.cur = null;
     }
   }
 
@@ -141,7 +165,7 @@ export class Thumbnailer {
     return cv;
   }
 
-  dispose() { this.rt.dispose(); this.queue.length = 0; }
+  dispose() { if (this.cur) { this.scene.remove(this.cur.rig.root); this.cur.rig.dispose(); this.cur = null; } this.rt.dispose(); this.queue.length = 0; }
 }
 
 // ------------------------------------------------------------------ the magazine
@@ -282,7 +306,7 @@ export class Magazine {
       const look = this.lookWith(it);
       if (!look) continue;
       const fr: Framing = p.sec === 'tops' ? 'torso' : p.sec === 'bottoms' ? 'legs' : p.sec === 'shoes' ? 'feet' : p.sec === 'acc' ? (/watch/.test(it.id) ? 'torso' : /apron|backpack|sash/.test(it.id) ? 'full' : /chain|towel|lanyard/.test(it.id) ? 'bust' : 'head') : p.sec === 'skins' ? 'bust' : 'head';
-      this.thumbs.request(look, fr, (cv) => { p.thumbs.set(it.id, cv); this.drawCellThumb(p, it.id); });
+      this.thumbs.request(look, fr, (cv) => { p.thumbs.set(it.id, cv); this.drawCellThumb(p, it.id); }, this.pages.indexOf(p));
     }
   }
 
@@ -538,6 +562,7 @@ export class Magazine {
     if (i === this.cur || this.turn.active) return;
     const dir = i > this.cur ? 1 : -1;
     this.ensure(i);
+    this.thumbs.front(i);
     this.ensure(i + 1);
     const from = this.cur;
     this.cur = i;
@@ -582,7 +607,7 @@ export class Magazine {
 
   update(dt: number) {
     this.t += dt;
-    this.thumbs.step(1);
+    this.thumbs.step();
     if (this.turn.active) {
       this.turn.t += dt / 0.55;
       const k = Math.min(1, this.turn.t);

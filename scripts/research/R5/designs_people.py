@@ -107,7 +107,9 @@ def angry_grumble(i=0):
     cand = [p for p in pool if 0.7 < len(p[0]) / SR < 1.8]
     a = cand[(i * 7 + 3) % len(cand)][0].astype(np.float64)
     b = cand[(i * 11 + 5) % len(cand)][0].astype(np.float64)
-    seq = np.concatenate([a[::-1], np.zeros(int(0.05 * SR)), b[::-1][: int(0.5 * SR)]])
+    ra = A.fade(A.trim(a[::-1], -35, -45), 0.01, 0.06)
+    rb = A.fade(A.trim(b[::-1], -35, -45)[: int(0.55 * SR)], 0.01, 0.12)
+    seq = np.concatenate([ra, np.zeros(int(0.06 * SR)), rb])
     seq = A.resample_ratio(seq, 0.86 if i == 0 else 0.8)
     seq = A.ffilter(seq, "atempo=1.25")
     seq = S.peaking(seq, 350, 4, 0.8)
@@ -162,11 +164,13 @@ def ghost_laugh(i=0):
     pre = np.pad(x[::-1], (0, 0))
     ir = S.make_ir(3.5, 3.0, 6000, stereo=False, seed_=71 + i)
     wet = A.mono(S.reverb(np.pad(x, (0, n - len(x))), ir, wet=0.6, dry=1.0))[:n]
-    rv = A.mono(S.reverb(np.pad(pre, (0, int(1.0 * SR))), ir, wet=1.0, dry=0.0))
-    rv = rv[: len(pre) + int(0.6 * SR)][::-1] * 0.25  # reverse-reverb swell into the laugh
-    out = np.zeros(n + len(rv))
+    head = x[: int(0.6 * SR)]
+    r_ = A.mono(S.reverb(np.pad(head[::-1], (0, int(1.2 * SR))), ir, wet=1.0, dry=0.0))[: len(head) + int(1.2 * SR)]
+    rv = A.fade(r_[::-1] * 0.35, 0.4, 0.005)  # reverse-reverb swell; laugh onset sits at len(rv) - len(head)
+    onset = (len(rv) - len(head)) / SR
+    out = np.zeros(int(onset * SR) + n)
     S.place(out, rv, 0)
-    S.place(out, wet, len(rv) / SR - 0.6)
+    S.place(out, wet, onset)
     return out, used
 
 

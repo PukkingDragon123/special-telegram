@@ -299,7 +299,7 @@ add("champagne_pop", CA, "sfx", "Champagne cork pop + fizz + foam.", [V(D.champa
 add("beer_can_open", CA, "sfx", "Beer can cracked open.", [V(P(D.can_open, 11))], vol=0.6, pitchVar=0.05)
 add("pour_beer", CA, "sfx", "Pouring foamy beer into a glass.", [V(mk(3181), ss=0.3, t=5.0, fout=0.5)], vol=0.55)
 add("pour_wine", CA, "sfx", "Pouring wine into a glass.", [V(mk(2826), ss=0.3, t=3.5, rate=0.92, fout=0.5)], vol=0.55)
-add("slowmo_whoosh", CA, "sfx", "Deep pitched-down slow-motion whoosh (slow-mo celebration).", [V(DP.slowmo_whoosh)], vol=0.7)
+add("slowmo_whoosh", CA, "sfx", "Deep pitched-down slow-motion whoosh (slow-mo celebration).", [V(DP.slowmo_whoosh, maxlen=4.5, fout=1.2)], vol=0.7)
 add("heartbeat_slow", CA, "sfx", "Slow heartbeat (all-in bet, tension). Loopable-ish one-shot of ~9 s.",
     [V(D.heartbeat_slow, fout=0.3)], vol=0.6)
 add("lose_sting", CA, "sfx", "Losing sting (lost everything at the casino).", [V(mk(2032), fout=0.5)], vol=0.6)
@@ -427,3 +427,20 @@ add("tamruat", VO, "voice", "ตำรวจ! - police! " + VD,
 add("nii_arai", VO, "voice", "นี่อะไรครับ - what is this? (customer looking at the menu). " + VD,
     [V(_u(10, "นี่อะไรครับ", 0))], vol=0.85, pitchVar=0.04)
 add("sabai_dee_mai", VO, "voice", "สบายดีไหม - how are you? " + VD, [V(_u(3, "สบายดีไหม"))], vol=0.85, pitchVar=0.04)
+
+# Lesson 9 lines (only when its transcript exists): vendor 'what would you like?' + customer 'how much in total?'
+if "TH_Thai_Lesson_9.mp3" in PX.transcripts():
+    def _try(n, pat, occ=0, **kw):
+        try:
+            PX.find(n, pat, occ)
+            return V(_u(n, pat, occ, **kw))
+        except Exception:
+            return None
+    _ao = [v for v in (_try(9, "เอาอะไรคะ", 0), _try(9, "อะไรคะ", 0)) if v][:1]
+    _tr = [v for v in (_try(9, "เท่าไรคะ", 0), _try(9, "เท่าไรครับ", 0), _try(9, "เท่าไหร่คะ", 0),
+                       _try(9, "เท่าไหร่ครับ", 0)) if v][:2]
+    if _ao:
+        add("ao_arai", VO, "voice", "เอาอะไรคะ - what would you like? (vendor/auntie). " + VD, _ao, vol=0.85, pitchVar=0.04)
+    if _tr:
+        add("thao_rai", VO, "voice", "(ทั้งหมด)เท่าไรคะ/ครับ - how much (in total)? (customer). " + VD, _tr,
+            vol=0.85, pitchVar=0.04)

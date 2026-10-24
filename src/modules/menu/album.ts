@@ -14,6 +14,9 @@ import { mulberry } from './lettering';
 const G = 'gen/menu/';
 const noise = new Noise(4242);
 
+/** 2000s scanned-print grade (breakdown §6): warm, S-curve, +saturation. Passed to post.setLook(). */
+export const ALBUM_GRADE = { lift: [-0.012, -0.012, -0.02] as [number, number, number], gamma: [1.02, 1.0, 0.92] as [number, number, number], gain: [1.12, 1.05, 0.84] as [number, number, number], saturation: 1.32, contrast: 1.14, tint: [1, 0.99, 0.93] as [number, number, number] };
+
 export const ALBUM_CAM = { pos: new THREE.Vector3(0, 0.43, 0), look: new THREE.Vector3(0, 0.72, -3.0), fov: 41 };
 
 /** Where the four guys go (slot 0..3 = G1..G4, left → right, matches characters.playerLook(slot)). */
@@ -21,7 +24,7 @@ export interface SlotDef { pos: THREE.Vector3; yaw: number; pose: 'sit' | 'stand
 const yawOf = (dx: number, dz: number) => Math.atan2(-dx, -dz);
 export const SLOTS: SlotDef[] = [
   // G1: blue Panton chair, leans forward, holds a block, faces right (toward the tower)
-  { pos: new THREE.Vector3(-0.74, 0, -2.2), yaw: yawOf(1, 0.32), pose: 'sit', seat: 0.43, lean: 0.5 },
+  { pos: new THREE.Vector3(-0.74, 0, -2.2), yaw: yawOf(1, 0.32), pose: 'jenga_pull', seat: 0.43, lean: 0.5 },
   // G2: standing behind, faces the camera, slight turn to his left
   { pos: new THREE.Vector3(-0.36, 0, -3.28), yaw: yawOf(0.18, 1), pose: 'stand_cool', seat: 0 },
   // G3: on the sofa's front edge, reaching for the tower
@@ -67,7 +70,7 @@ export function buildBackdrop(refCam: THREE.PerspectiveCamera) {
   }
   for (let j = 0; j < prof.length - 1; j++) for (let i = 0; i < NX; i++) {
     const a = j * (NX + 1) + i, b = a + 1, c = a + NX + 1, d = c + 1;
-    idx.push(a, c, b, b, c, d);
+    idx.push(a, b, c, b, d, c);
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
@@ -123,7 +126,7 @@ export function buildBackdrop(refCam: THREE.PerspectiveCamera) {
           float paperL = dot(diffuseColor.rgb, vec3(0.3333)) / 0.86;
           float wall = smoothstep(0.08, 0.95, vWPos.y);
           float puls = 1.0 + uPulse * 0.25 * exp(-pow(distance(cuv, vec2(0.5, 0.45)) / 0.5, 2.0));
-          totalEmissiveRadiance += s2l(g) * (0.85 + 0.15 * paperL) * wall * uGlow * 1.55 * puls;
+          totalEmissiveRadiance += s2l(g) * (0.85 + 0.15 * paperL) * wall * uGlow * 1.25 * puls;
           diffuseColor.rgb *= mix(1.0, 0.25, wall);
         }`);
   };
@@ -149,13 +152,13 @@ export function buildRug() {
     const y = 0.012 + noise.fbm2(x * 0.8, z * 0.8, 3) * 0.008 * (1 - edge) - Math.max(0, edge - 0.97) * 0.3;
     p.setY(i, y);
     // texture stripes are diagonal in the scan → rotate 45° so they run parallel to the front edge
-    const u = (x * ca - z * sa) / 0.62, v = (x * sa + z * ca) / 0.62;
+    const u = (x * ca + z * sa) / 0.62, v = (-x * sa + z * ca) / 0.62;
     uv.setXY(i, u, v);
   }
   geo.computeVertexNormals();
   const mat = new THREE.MeshStandardMaterial({
     map: tex('rug_albedo.jpg', 1), normalMap: tex('rug_normal.jpg', 1, false),
-    roughnessMap: tex('rug_orm.jpg', 1, false), aoMap: tex('rug_orm.jpg', 1, false), roughness: 1, color: 0xd8dccb,
+    roughnessMap: tex('rug_orm.jpg', 1, false), aoMap: tex('rug_orm.jpg', 1, false), roughness: 1, color: 0x767a5e,
   });
   mat.normalScale.set(1.2, 1.2);
   // ORM: R = AO, G = roughness
@@ -200,7 +203,7 @@ export function buildSofa() {
   g.name = 'album_sofa';
   const leather = new THREE.MeshPhysicalMaterial({
     map: tex('sofa_leather_albedo.jpg', [2, 2]), normalMap: tex('sofa_leather_normal.jpg', [2, 2], false),
-    roughnessMap: tex('sofa_leather_rough.jpg', [2, 2], false), roughness: 0.75, clearcoat: 0.25, clearcoatRoughness: 0.45, sheen: 0.2, sheenColor: new THREE.Color(0xf8c48a),
+    roughnessMap: tex('sofa_leather_rough.jpg', [2, 2], false), roughness: 0.75, color: 0xc9a080, clearcoat: 0.25, clearcoatRoughness: 0.45, sheen: 0.2, sheenColor: new THREE.Color(0xf8c48a),
   });
   const add = (geo: THREE.BufferGeometry, x: number, y: number, z: number, rx = 0) => {
     const m = new THREE.Mesh(geo, leather);
@@ -431,7 +434,7 @@ function shellSweep(path: [number, number][], width: (t: number) => number, dish
 const smoothstep = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
 /** Panton-style S cantilever chair (cobalt blue glossy plastic). Faces +Z locally (rotated by caller). */
-export function buildPanton(color = '#0d2fb8') {
+export function buildPanton(color = '#1f4cff') {
   const path: [number, number][] = [
     [-0.27, 0.86], [-0.24, 0.66], [-0.2, 0.5], [-0.12, 0.44], [0.06, 0.435], [0.2, 0.43], [0.25, 0.38],
     [0.2, 0.26], [0.08, 0.12], [-0.06, 0.03], [-0.2, 0.005], [-0.33, 0.0],
@@ -445,7 +448,7 @@ export function buildPanton(color = '#0d2fb8') {
   };
   const dish = (t: number) => (t < 0.55 ? 0.035 : t < 0.75 ? 0.02 : 0.012);
   const geo = shellSweep(path, width, dish, 0.014, 16, 5);
-  const mat = Assets.pbr('plastic_glossy', { color, repeat: 2, roughness: 0.55 });
+  const mat = Assets.pbr('plastic_glossy', { color, repeat: 2, roughness: 0.4 });
   const m = new THREE.Mesh(geo, mat);
   m.castShadow = m.receiveShadow = true;
   const g = new THREE.Group();
