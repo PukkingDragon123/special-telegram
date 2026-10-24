@@ -1,0 +1,238 @@
+{
+ "items": [
+  {
+   "id": "gold_songheng",
+   "file": "signs/gold_songheng.jpg",
+   "cat": "gold,shop",
+   "glow": 0,
+   "aspect": 1.418,
+   "w": 675,
+   "h": 476
+  },
+  {
+   "id": "gold_huasengheng",
+   "file": "signs/gold_huasengheng.jpg",
+   "cat": "gold",
+   "glow": 0.3,
+   "aspect": 1.974,
+   "w": 768,
+   "h": 389
+  },
+  {
+   "id": "coffee_khaothalu",
+   "file": "signs/coffee_khaothalu.jpg",
+   "cat": "coffee,food,shop",
+   "glow": 0.2,
+   "aspect": 1.693,
+   "w": 325,
+   "h": 192
+  },
+  {
+   "id": "market_yodpiman_neon",
+   "file": "signs/market_yodpiman_neon.jpg",
+   "cat": "market,old",
+   "glow": 1,
+   "aspect": 2.442,
+   "w": 696,
+   "h": 285
+  },
+  {
+   "id": "clinic_sign",
+   "file": "signs/clinic_sign.jpg",
+   "cat": "clinic,pharmacy",
+   "glow": 0.4,
+   "aspect": 1.903,
+   "w": 512,
+   "h": 269
+  },
+  {
+   "id": "hardware_paint",
+   "file": "signs/hardware_paint.jpg",
+   "cat": "hardware,repair,shop",
+   "glow": 0,
+   "aspect": 1.913,
+   "w": 727,
+   "h": 380
+  },
+  {
+   "id": "old_blue_board",
+   "file": "signs/old_blue_board.jpg",
+   "cat": "old,shop",
+   "glow": 0,
+   "aspect": 2.755,
+   "w": 697,
+   "h": 253
+  },
+  {
+   "id": "food_golden_neon",
+   "file": "signs/food_golden_neon.jpg",
+   "cat": "food,noodle",
+   "glow": 1,
+   "aspect": 1.778,
+   "w": 768,
+   "h": 432
+  },
+  {
+   "id": "street_soi_ornate",
+   "file": "signs/street_soi_ornate.jpg",
+   "cat": "street,soi",
+   "glow": 0,
+   "aspect": 1.794,
+   "w": 768,
+   "h": 428
+  },
+  {
+   "id": "massage_neon_box",
+   "file": "signs/massage_neon_box.jpg",
+   "cat": "massage",
+   "glow": 1,
+   "aspect": 1.44,
+   "w": 471,
+   "h": 327
+  },
+  {
+   "id": "food_birdnest",
+   "file": "signs/food_birdnest.jpg",
+   "cat": "food,shop,eatery",
+   "glow": 0,
+   "aspect": 2.965,
+   "w": 768,
+   "h": 259
+  },
+  {
+   "id": "banner_muaythai",
+   "file": "signs/banner_muaythai.jpg",
+   "cat": "banner,old",
+   "glow": 0,
+   "aspect": 1.757,
+   "w": 768,
+   "h": 437
+  },
+  {
+   "id": "neon_coffee_bar",
+   "file": "signs/neon_coffee_bar.jpg",
+   "cat": "coffee",
+   "glow": 1,
+   "aspect": 1.869,
+   "w": 768,
+   "h": 411
+  },
+  {
+   "id": "old_roof_billboard",
+   "file": "signs/old_roof_billboard.jpg",
+   "cat": "old",
+   "glow": 0,
+   "aspect": 2.743,
+   "w": 768,
+   "h": 280
+  },
+  {
+   "id": "street_dir_pier",
+   "file": "signs/street_dir_pier.jpg",
+   "cat": "street_dir",
+   "glow": 0,
+   "aspect": 2.834,
+   "w": 768,
+   "h": 271
+  },
+  {
+   "id": "massage_may_neon",
+   "file": "signs/massage_may_neon.jpg",
+   "cat": "massage,salon",
+   "glow": 1,
+   "aspect": 6.095,
+   "w": 768,
+   "h": 126
+  },
+  {
+   "id": "int_conv_shelves",
+   "file": "signs/int_conv_shelves.jpg",
+   "cat": "interior:grocery,interior:shop",
+   "glow": 0,
+   "aspect": 1.5,
+   "w": 768,
+   "h": 512
+  },
+  {
+   "id": "int_drinks_front",
+   "file": "signs/int_drinks_front.jpg",
+   "cat": "interior:grocery",
+   "glow": 0,
+   "aspect": 1.404,
+   "w": 768,
+   "h": 547
+  },
+  {
+   "id": "int_products",
+   "file": "signs/int_products.jpg",
+   "cat": "interior:grocery,interior:phone",
+   "glow": 0,
+   "aspect": 1.333,
+   "w": 768,
+   "h": 576
+  },
+  {
+   "id": "int_bottles",
+   "file": "signs/int_bottles.jpg",
+   "cat": "interior:pharmacy,interior:salon",
+   "glow": 0,
+   "aspect": 1.333,
+   "w": 768,
+   "h": 576
+  },
+  {
+   "id": "int_shoes",
+   "file": "signs/int_shoes.jpg",
+   "cat": "interior:shop,interior:open",
+   "glow": 0,
+   "aspect": 1.2,
+   "w": 768,
+   "h": 640
+  },
+  {
+   "id": "int_seafood",
+   "file": "signs/int_seafood.jpg",
+   "cat": "interior:food",
+   "glow": 0,
+   "aspect": 1.333,
+   "w": 500,
+   "h": 375
+  },
+  {
+   "id": "int_tinsigns",
+   "file": "signs/int_tinsigns.jpg",
+   "cat": "interior:hardware,interior:shop",
+   "glow": 0,
+   "aspect": 1.42,
+   "w": 768,
+   "h": 541
+  },
+  {
+   "id": "produce_durian",
+   "file": "signs/produce_durian.jpg",
+   "cat": "produce:fruit,produce",
+   "glow": 0,
+   "aspect": 1.48,
+   "w": 768,
+   "h": 519
+  },
+  {
+   "id": "produce_durian2",
+   "file": "signs/produce_durian2.jpg",
+   "cat": "produce:fruit",
+   "glow": 0,
+   "aspect": 2.048,
+   "w": 768,
+   "h": 375
+  },
+  {
+   "id": "produce_dried",
+   "file": "signs/produce_dried.jpg",
+   "cat": "produce:dried,produce",
+   "glow": 0,
+   "aspect": 1.681,
+   "w": 768,
+   "h": 457
+  }
+ ]
+}

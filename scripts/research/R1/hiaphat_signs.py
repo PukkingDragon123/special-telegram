@@ -129,31 +129,25 @@ def tier1_cardboard():
 
 
 def tier2_painted_board():
-    b = load_any(RAW + "/full/ee008476.jpg")[0][..., :3]
-    q = np.array([[57, 97], [642, 97], [642, 418], [57, 418]], np.float32)
-    W, H = 1024, 562
+    b = load_any(RAW + "/full/5799351b.jpg")[0][..., :3]
+    q = np.array([[26, 30], [455, 52], [455, 293], [24, 268]], np.float32)
+    W, H = 1024, 600
     M = cv2.getPerspectiveTransform(q, np.array([[0, 0], [W - 1, 0], [W - 1, H - 1], [0, H - 1]], np.float32))
     c = cv2.warpPerspective(b, M, (W, H), flags=cv2.INTER_LANCZOS4)
-    # lighten the board so it reads as a repainted white sign, keep the rust edges
-    l = lum(c)
     rust = np.clip((c[..., 0] - c[..., 2]) * 3, 0, 1)
-    whitewash = np.clip(1 - rust * 1.3, 0, 1) * ellipse_mask(H, W, W / 2, H / 2, W * 0.47, H * 0.44, 0.15, 7, 0.25)
-    paint = np.array([0.92, 0.9, 0.84]) * (0.75 + 0.35 * (l / l.mean()))[..., None]
-    c = c * (1 - whitewash[..., None] * 0.85) + np.clip(paint, 0, 1) * whitewash[..., None] * 0.85
     red = (0.72, 0.08, 0.06)
     blue = (0.08, 0.18, 0.55)
-    lines = [("ร้านเฮียผัด", "Chonburi-Regular.ttf", 150, (0.5, 0.36), red, 0, red, 0),
-             ("อาหารตามสั่ง", "Sarabun-Bold.ttf", 96, (0.5, 0.66), blue, 0, blue, 0),
-             ("โทร. 08x-xxx-xxxx", "Sarabun-Bold.ttf", 44, (0.5, 0.85), (0.1, 0.1, 0.1), 0, blue, 0)]
+    lines = [("ร้านเฮียผัด", "Chonburi-Regular.ttf", 150, (0.5, 0.33), red, 0, red, 0),
+             ("อาหารตามสั่ง", "Sarabun-Bold.ttf", 100, (0.5, 0.63), blue, 0, blue, 0),
+             ("โทร. 08x-xxx-xxxx", "Sarabun-Bold.ttf", 46, (0.5, 0.84), (0.1, 0.1, 0.1), 0, blue, 0)]
     lay = text_layer(W, H, lines, wobble=1.2, seed=2)
-    wear = grain_wear(H, W, 9, 0.12, 0.3, 10) * np.clip(1 - rust * 1.5, 0, 1)
-    out = paint_on(c, lay, absorb=0.45, wear=wear)
-    mask = np.ones((H, W), np.float32)
-    save("hiaphat_tier2_painted_metal_board.png", out, mask)
+    wear = grain_wear(H, W, 9, 0.06, 0.2, 10) * np.clip(1 - rust * 1.6, 0, 1)
+    out = paint_on(c, lay, absorb=0.4, wear=wear)
+    save("hiaphat_tier2_painted_metal_board.png", out, np.ones((H, W), np.float32))
     man("hiaphat_tier2_painted_metal_board.png", "ร้านเฮียผัด / อาหารตามสั่ง / โทร. 08x-xxx-xxxx",
-        "Player shop tier 2: hand-painted lettering on a re-whitewashed rusty metal board (real photo)",
-        1.8, 1.0, "standing on 2 posts / wired to the cart canopy", "player shop sign", ["ee008476"],
-        "Chonburi + Sarabun (looped). Replace the phone line in-engine if a number is needed.")
+        "Player shop tier 2: hand-painted lettering on an old white enamel board with rust (real photo carrier)",
+        1.6, 0.95, "hung in a steel frame on a pole / wired to the cart canopy", "player shop sign", ["5799351b"],
+        "Chonburi + Sarabun (looped). Paint is worn off where the board is rusty.")
 
 
 def tier3_vinyl():
