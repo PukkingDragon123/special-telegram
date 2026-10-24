@@ -164,7 +164,13 @@ export async function renderFrontPage(s: Stats): Promise<HTMLCanvasElement> {
   // stats box (erase the dotted leader first)
   const stat = (r: any, text: string, color = INK) => {
     if (!r) return;
-    ctx.save(); ctx.fillStyle = r.bg ?? '#F1ECDF'; ctx.globalCompositeOperation = 'source-over'; ctx.fillRect(r.x + r.w * 0.25, r.y + 4, r.w * 0.75, r.h - 8); ctx.restore();
+    ctx.save();
+    ctx.font = fnt(900, 34);
+    const tw = Math.min(r.w, ctx.measureText(text).width * Math.max(0.62, Math.min(0.9, r.w / Math.max(1, ctx.measureText(text).width))));
+    ctx.fillStyle = r.bg ?? '#F1ECDF';
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillRect(r.x + r.w - tw - 14, r.y + 4, tw + 14, r.h - 8);
+    ctx.restore();
     fit(text, r, 34, 900, color, { align: 'right', maxSX: 0.9 });
   };
   stat(R.stat_money, s.money.toLocaleString('th-TH'), RED);
@@ -260,7 +266,7 @@ export class Newspaper {
     post.setDOF(true, 0.45, 3.5);
     sfx.whoosh();
     sfx.paper();
-    let t = 0, state: 'in' | 'read' | 'flip' | 'back' | 'out' = 'in', st = 0, flip = 0;
+    let t = 0, state: 'in' | 'read' | 'flip' | 'back' | 'out' = 'in', st = 0, flip = 0, zoom = 1, zoomT = 1, panX = 0, panY = 0;
     let resolve!: () => void;
     const done = new Promise<void>((r) => (resolve = r));
     const hint = { el: null as HTMLDivElement | null };
@@ -275,12 +281,23 @@ export class Newspaper {
       const inK = state === 'in' ? Math.min(1, st / 0.55) : 1;
       const outK = state === 'out' ? Math.min(1, st / 0.45) : 0;
       const e = 1 - Math.pow(1 - inK, 3);
-      const mx = Input.locked ? 0 : Input.ndc.x, my = Input.locked ? 0 : Input.ndc.y;
-      const dist = 0.42;
-      paper.position.set(Math.sin(t * 0.9) * 0.004 + mx * 0.01, -0.012 + (1 - e) * -0.55 + outK * -0.6 + Math.sin(t * 1.3) * 0.003, -dist - (1 - e) * 0.2);
-      paper.rotation.set(-0.08 + (1 - e) * -1.1 + outK * -0.9 + my * 0.05, (1 - e) * 0.5 + mx * 0.08 + flip * Math.PI, (1 - e) * 0.3 + Math.sin(t * 0.7) * 0.01 + outK * 0.4);
+      if (Input.locked) { panX = Math.max(-1, Math.min(1, panX + Input.mouseDX * 0.003)); panY = Math.max(-1, Math.min(1, panY - Input.mouseDY * 0.003)); }
+      else { panX = Input.ndc.x; panY = Input.ndc.y; }
+      if (Input.wheel) zoomT = Math.max(1, Math.min(2.2, zoomT - Input.wheel * 0.25));
+      if (Input.wasPressed('Equal') || Input.wasPressed('NumpadAdd')) zoomT = Math.min(2.2, zoomT + 0.4);
+      if (Input.wasPressed('Minus') || Input.wasPressed('NumpadSubtract')) zoomT = Math.max(1, zoomT - 0.4);
+      zoom += (zoomT - zoom) * Math.min(1, dt * 8);
+      const pc = cam as THREE.PerspectiveCamera;
+      const halfH = Math.tan(THREE.MathUtils.degToRad((pc.fov || 60) / 2));
+      // distance at which the whole page fills ~92% of the view height, divided by the zoom
+      const dist = (PH / (2 * halfH * 0.92)) / zoom;
+      const zk = (zoom - 1) / 1.2;
+      const visH = 2 * dist * halfH, visW = visH * (pc.aspect || 1.78);
+      const px = -panX * Math.max(0, PW - visW) * 0.5 * Math.min(1, zk * 2), py = -panY * Math.max(0, PH - visH) * 0.5;
+      paper.position.set(px + Math.sin(t * 0.9) * 0.004 * dist, py + (1 - e) * -0.55 * dist * 2 + outK * -0.6 * dist * 2 + Math.sin(t * 1.3) * 0.003 * dist, -dist - (1 - e) * 0.2);
+      paper.rotation.set(-0.04 + (1 - e) * -1.1 + outK * -0.9 + panY * 0.03 * (1 - zk), (1 - e) * 0.5 + panX * 0.05 * (1 - zk) + flip * Math.PI, (1 - e) * 0.3 + Math.sin(t * 0.7) * 0.01 + outK * 0.4);
       // advance
-      if (state === 'in' && st > 0.55) { state = 'read'; st = 0; showHint(hint, 'คลิกเพื่อพลิกหน้า · click to turn the page'); }
+      if (state === 'in' && st > 0.55) { state = 'read'; st = 0; showHint(hint, 'คลิกเพื่อพลิกหน้า · ลูกกลิ้งเมาส์ซูม — click to turn the page · wheel to zoom'); }
       const pressed = Input.mousePressed(0) || Input.wasPressed('Space') || Input.wasPressed('KeyE') || Input.wasPressed('Enter') || Input.wasPressed('KeyF');
       const esc = Input.wasPressed('Escape') || Input.wasPressed('KeyQ');
       if ((state === 'read' || state === 'back') && esc) { state = 'out'; st = 0; sfx.paper(); }

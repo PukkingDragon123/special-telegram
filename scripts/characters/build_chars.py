@@ -340,27 +340,37 @@ def build_body(src, sex):
     for o in shells: layout_uvs(o)
 
     # ---- measured tables for the JS generators (three.js frame: y up, z forward)
-    bvh0 = BVHTree.FromObject(hi, bpy.context.evaluated_depsgraph_get())
-    def radii_at(z, yc, angles, rmax=0.5):
+    HV = [hi.matrix_world @ v.co for v in hi.data.vertices]
+    HP = [part_y_arm(hi)[i][0] for i in range(len(HV))] if False else None
+    def radii_at(z, yc, angles, rmax=0.5, band=0.018, xlim=None):
         out = []
         for a in angles:
-            d = Vector((math.sin(math.radians(a)), -math.cos(math.radians(a)), 0.0))
-            hit = bvh0.ray_cast(Vector((0.0, yc, z)) + d * rmax, -d, rmax)
-            out.append(round(rmax - hit[3], 4) if hit[0] is not None else 0.0)
+            ar = math.radians(a)
+            best = 0.0
+            for p in HV:
+                if abs(p.z - z) > band: continue
+                if xlim is not None and abs(p.x) > xlim: continue
+                dx, dy = p.x, -(p.y - yc)
+                r = math.hypot(dx, dy)
+                if r > rmax or r < 1e-4: continue
+                ang = math.atan2(abs(dx), dy)
+                if abs(ang - ar) < math.radians(16): best = max(best, r)
+            out.append(round(best, 4))
         return out
     torso_tab = []
     for yr in [0.8, 0.84, 0.88, 0.92, 0.96, 1.0, 1.05, 1.1, 1.16, 1.22, 1.27, 1.31, 1.35, 1.39, 1.42, 1.445, 1.47, 1.49]:
         z = zof(yr)
-        # body centre (front/back midpoint) at this height
-        fr = radii_at(z, 0.0, [0, 180], 0.4)
-        yc = (( -fr[0]) + fr[1]) * 0.5 * -1 if fr[0] and fr[1] else 0.0
-        yc = (fr[1] - fr[0]) * 0.5
-        rr = radii_at(z, yc, [0, 45, 90, 135, 180], 0.4 if yr < 1.43 else 0.25)
+        xl = sh_x - 0.01 if yr > 1.3 else (0.3 if yr > 0.9 else 0.22)
+        fy = [p.y for p in HV if abs(p.z - z) < 0.018 and abs(p.x) < 0.05]
+        yc = (max(fy) + min(fy)) * 0.5 if fy else 0.0
+        rr = radii_at(z, yc, [0, 45, 90, 135, 180], 0.45, 0.018, xl)
         torso_tab.append([yr] + rr + [round(-yc, 4)])
     neck_tab = []
     for yr in [1.43, 1.46, 1.5, 1.54, 1.58]:
         z = zof(yr)
-        neck_tab.append([yr] + radii_at(z, 0.01, [0, 45, 90, 135, 180], 0.15))
+        fy = [p.y for p in HV if abs(p.z - z) < 0.012 and abs(p.x) < 0.03]
+        yc = (max(fy) + min(fy)) * 0.5 if fy else 0.0
+        neck_tab.append([yr] + radii_at(z, yc, [0, 45, 90, 135, 180], 0.12, 0.012, 0.12) + [round(-yc, 4)])
 
     # ---- skirts / wraps (cones with weights transferred from the body)
     def make_skirt(name, hem, flare, narrow=0.0):
@@ -425,21 +435,15 @@ def build_body(src, sex):
     skirts = [make_skirt('skirt_knee', 0.47, 0.05), make_skirt('skirt_wrap', 0.08, 0.0, 0.03), make_skirt('skirt_wrapknee', 0.45, 0.01)]
 
     # ---- head table (three.js frame relative to the Head bone): rows ry, cz, r(0..180 step 22.5)
-    bvh = BVHTree.FromObject(hi, bpy.context.evaluated_depsgraph_get())
     hb = W('Head')
     table = []
     for i in range(16):
         ry = -0.03 + i * (0.26 / 15)
-        z = hb.z + ry * (top_z - hb.z) / 0.229 if False else hb.z + ry
-        row = [round(ry, 4), 0.0]
-        rs = []
-        for k in range(9):
-            a = math.radians(k * 22.5)
-            d = Vector((math.sin(a), -math.cos(a), 0.0))
-            o0 = Vector((0.0, head_c.y, z))
-            hit = bvh.ray_cast(o0 + d * 0.3, -d, 0.3)
-            rs.append(round(0.3 - hit[3], 4) if hit[0] is not None else 0.0)
-        table.append(row + rs)
+        z = hb.z + ry
+        fy = [p.y for p in HV if abs(p.z - z) < 0.01 and abs(p.x) < 0.02]
+        yc = (max(fy) + min(fy)) * 0.5 if fy else head_c.y
+        rs = radii_at(z, yc, [k * 22.5 for k in range(9)], 0.16, 0.01, 0.13)
+        table.append([round(ry, 4), round(-yc - (-hb.y), 4)] + rs)
 
     # ---- export GLB
     for o in [hi, lo] + shells + skirts:

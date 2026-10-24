@@ -90,7 +90,7 @@ def babble(i):
     """Speech blip i (0..11): a real Thai syllable, sped up like Animal Crossing speech."""
     pool = syllable_pool()
     # pick 12 distinct syllables spread across the pool (deterministic)
-    pool = sorted(pool, key=lambda p: (len(p[0]), p[1]))
+    pool = sorted([p for p in pool if len(p[0]) >= 0.13 * SR], key=lambda p: (len(p[0]), p[1]))
     idx = np.linspace(0, len(pool) - 1, 12).astype(int)
     x, w = pool[idx[i]]
     rate = [1.32, 1.4, 1.28, 1.45, 1.35, 1.3, 1.42, 1.38, 1.26, 1.48, 1.33, 1.4][i]

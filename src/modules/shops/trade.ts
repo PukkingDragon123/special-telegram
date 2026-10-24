@@ -56,6 +56,7 @@ let token = 1;
 let G: Game;
 let hostAcc = { scan: 0, sec: 0, life: 0 };
 
+const realNow = () => performance.now() / 1000;
 const abs = (game: Game) => (game.g.day ?? 1) * 24 + (game.g.time ?? 7);
 const pkey = (pl: Ent) => (pl.name || 'P' + pl.slot) as string;
 
@@ -715,7 +716,7 @@ function openShop(rt: ShopRT, open: boolean) {
 
 export function hostTick(game: Game, dt: number, force = false) {
   G = game;
-  const now = game.engine.time;
+  const now = realNow();
   hostAcc.scan += dt; hostAcc.sec += dt; hostAcc.life += dt;
   for (const rt of RT.values()) {
     if (!rt.fix || rt.ent.id < 0) continue;
@@ -826,7 +827,7 @@ export function installIntents(game: Game) {
     const rt = RT.get(d?.sid);
     if (!rt?.fix || !rt.keeper) return;
     if (!near(rt, pl)) return;
-    rt.now = game.engine.time;
+    rt.now = realNow();
     fn(rt, pl, d);
   };
   game.onIntent('shop.pay', withShop((rt, pl) => {
@@ -866,7 +867,7 @@ export function installIntents(game: Game) {
     if (!e?.unpaid || !e.shop) return;
     const rt = RT.get(e.shop);
     if (!rt || carrierOf(e)?.id !== pl.id || !pl.p || !insideShop(rt, pl.p, 0.5)) return;
-    rt.now = game.engine.time;
+    rt.now = realNow();
     returnItem(rt, e, true);
     if (Math.random() < 0.5) rt.say(pickLine(Lines.PUT_BACK, Lines.PUT_BACK));
   });
@@ -877,7 +878,7 @@ export function installIntents(game: Game) {
     if (!e || !pl || !e.shop) return;
     const rt = RT.get(e.shop);
     if (!rt) return;
-    rt.now = game.engine.time;
+    rt.now = realNow();
     if (e.disp) {
       if (isBanned(rt, pl.id) || !rt.ent.open) { returnItem(rt, e, true); rt.say(pickLine(Lines.BANNED, Lines.BANNED), { style: 'shout' }); return; }
       e.disp = false; e.unpaid = true; e.buyer = pl.id;

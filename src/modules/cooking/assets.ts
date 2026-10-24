@@ -233,7 +233,7 @@ export const LABELS: Record<string, { keys: string[]; not?: string[]; th: string
   soy_dark: { keys: ['dark_soy_healthy_boy', 'dark soy'], th: 'ซีอิ๊วดำหวาน', bg: '#5a1a12' },
   fish_sauce: { keys: ['fish_sauce_tiparos', 'fish_sauce_squid', 'fish sauce'], th: 'น้ำปลา', bg: '#c22a1d' },
   seasoning_sauce: { keys: ['seasoning_sauce_golden_mountain', 'seasoning sauce', 'golden mountain'], th: 'ซอสปรุงรส', bg: '#1f8a3c' },
-  cooking_oil: { keys: ['palm_oil_morakot_1l', 'palm oil', 'cooking oil'], not: ['oyster'], th: 'น้ำมันพืช', bg: '#e0b01a' },
+  cooking_oil: { keys: ['palm_oil_morakot_1l', 'soybean_oil_angoon_1l', 'palm oil', 'cooking oil'], not: ['oyster'], th: 'น้ำมันพืช', bg: '#e0b01a' },
   white_pepper: { keys: ['white_pepper_hand_brand_jar', 'white pepper', 'white_pepper_hand_brand_tin'], th: 'พริกไทยป่น', bg: '#1d5a3a' },
   chili_flakes: { keys: ['chili_powder_hand_brand', 'ground chili', 'chili powder'], th: 'พริกป่น', bg: '#8a140e' },
   sugar: { keys: ['sugar_mitr_phol_1kg', 'sugar'], th: 'น้ำตาลทราย', bg: '#2a6ab8' },
@@ -246,10 +246,10 @@ export const LABELS: Record<string, { keys: string[]; not?: string[]; th: string
   pork_minced: { keys: ['pork_tray_cp_price_sticker', 'scale label'], th: 'หมูสับ', bg: '#f2f2f2' },
   pork_top: { keys: ['pork_tray_cp_top'], th: 'หมูสด', bg: '#f2f2f2' },
   holy_basil: { keys: ['basil_pack_sleeve'], th: 'ใบกะเพรา', bg: '#3a8a2a' },
-  curry_paste: { keys: ['curry paste', 'พริกแกง'], th: 'พริกแกงเผ็ด', bg: '#a8241a' },
-  tomyum_paste: { keys: ['chili paste', 'น้ำพริกเผา', 'tom yum paste'], th: 'น้ำพริกเผา', bg: '#b8361a' },
-  gravy_starch: { keys: ['tapioca', 'starch', 'แป้งมัน'], th: 'แป้งมันสำปะหลัง', bg: '#3a6ad8' },
-  noodles_wide: { keys: ['sen yai', 'wide rice noodle pack', 'เส้นใหญ่'], th: 'เส้นใหญ่', bg: '#f0f0f0' },
+  curry_paste: { keys: ['red_curry_paste_mae_ploy', 'red curry paste', 'พริกแกง'], th: 'พริกแกงเผ็ด', bg: '#a8241a' },
+  tomyum_paste: { keys: ['chili_paste_mae_pranom', 'chili paste', 'น้ำพริกเผา'], th: 'น้ำพริกเผา', bg: '#b8361a' },
+  gravy_starch: { keys: ['tapioca_starch_fish_brand', 'tapioca', 'starch'], th: 'แป้งมันสำปะหลัง', bg: '#3a6ad8' },
+  noodles_wide: { keys: ['noodle_sen_yai_pack', 'sen yai', 'เส้นใหญ่'], th: 'เส้นใหญ่', bg: '#f0f0f0' },
 };
 
 /** Label photo aspect (w/h) and real size hints, once the manifest is in. */

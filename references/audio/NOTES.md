@@ -142,10 +142,12 @@ detection, then QA'd by re-transcribing the cut clips.
 | `tamruat` | ตำรวจ | police! | 2 |
 | `nii_arai` | นี่อะไรครับ | what is this? | 1 |
 | `sabai_dee_mai` | สบายดีไหม | how are you? | 1 |
+| `ao_arai` | เอาอะไรคะ | what would you like? (vendor) | 1 |
+| `thao_rai` | (ทั้ง)หมดเท่าไรคะ / ครับ | how much (in total)? (customer) | 2 |
 
 The speakers are teacher-style (clear, polite), so barks sound friendly rather than street-rough —
-fine for customers/vendors. **Not found licence-clean:** แพง (expensive), ใช่ (yes), เฮ้ย / โอ้ย
-exclamations, เท่าไหร่ as a stand-alone bark (it is inside lesson 9 "ทั้งหมดเท่าไรคะ"; see §6).
+fine for customers/vendors. All clips were re-transcribed by Whisper as QA and matched the intended
+words. **Not found licence-clean:** แพง (expensive), ใช่ (yes), เฮ้ย / โอ้ย exclamations.
 Suggestion: record these with a Thai friend (2–3 voices, phone in a closet is fine) or commission a
 voice actor; drop them into `voice/` with the same naming and add manifest keys.
 
@@ -160,9 +162,12 @@ voice actor; drop them into `voice/` with the same naming and add manifest keys.
   loops / stove switch (CC0, TinyWorlds), cat purr & meow (CC0), cicadas (CC0), female screams (CC0),
   burps (CC-BY-SA 4.0 — attribution + share-alike apply to those 2 files), punch/slap hits (CC-BY 3.0),
   ghostly cackle (CC0), eerie loops (CC0).
-* **Wikimedia Commons**: Tokay gecko mating call (public domain, Richard Ling). The Commons API and
-  upload server were rate-limiting (HTTP 429) the shared IP for most of the session, so Lingua Libre /
-  `Th-*.ogg` Thai words and a Bangkok bird recording were queued but did not arrive in time.
+* **Wikimedia Commons**: Tokay gecko calls (public domain, Richard Ling; CC BY-SA 3.0, Israel Benjumeda),
+  a real Chiang Mai night recording of frogs/insects/rain (CC BY-SA 3.0, Takeaway) inside
+  `crickets_frogs_night_loop`, and "unidentified bird in Bangkok" (CC BY-SA 3.0, Amada44) inside
+  `birds_loop`. The Commons API/upload server rate-limited (HTTP 429) the shared IP most of the session,
+  so Lingua Libre / `Th-*.ogg` Thai word recordings were never fetched (not needed in the end).
+  CC BY-SA files: keep the attribution lines; share-alike applies to those audio files only.
 * **archive.org**: Peace Corps Thai lessons (public domain) → all Thai voices, crowd/TV/radio voices,
   babble syllables and the whispered ghost line.
 * **incompetech** (Kevin MacLeod, CC BY 4.0): "Local Forecast - Elevator" for `casino_lounge` —
@@ -189,13 +194,11 @@ first and swap if they feel off:
   `wow_crowd`, `cicadas_loop` (synth chorus + quiet CC0 recording), `burner_roar_loop`.
 * Music is original procedural synthesis (pleasant but not a band recording); `main_menu` could be
   replaced by a real 2000s Thai-indie style track if one with a clean licence is found.
-* Voice: the missing barks listed in §4; also lesson 9 ("เอาอะไรคะ" — what would you like?, and
-  "ทั้งหมดเท่าไรคะ" — how much in total?) and lesson 5 numbers/บาท were being transcribed for
-  extraction; if they are not in the manifest yet, rerun `transcribe.py` on lessons 5/9 and add them
-  with the `_u()` helper in `recipes.py`.
-* `birds_loop` is a tropical mix (not species-accurate myna/koel). Commons has xeno-canto style
-  recordings of Asian koel / common myna that would make it more Bangkok-specific once the rate limit
-  allows.
+* Voice: the missing barks listed in §4. Lessons 5/6/7 (numbers, บาท, food words) are already
+  transcribed in `scripts/_cache/audio_work/asr/peacecorps_medium.json`; more barks (e.g. counting change
+  "สิบบาท") can be added with the `_u()` helper in `recipes.py`.
+* `birds_loop` is a tropical mix (not species-accurate myna/koel); Asian koel / common myna recordings
+  from Commons would make it more Bangkok-specific.
 * Mixkit's licence forbids redistributing the raw files standalone: keep them inside the game build
   (fine) and do not publish the audio folder as a separate "sound pack".
 

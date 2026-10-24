@@ -177,10 +177,18 @@ def get_seg():
     return _SEG
 
 
-def remove_hair(rgb, lm, dbg=None):
+def skin_keep(rgb, lm):
+    """Soft mask of visible face skin (segmenter face_skin minus hair, inside the oval)."""
+    _, keep, _ = remove_hair(rgb, lm, None, mask_only=True)
+    return keep
+
+
+def remove_hair(rgb, lm, dbg=None, mask_only=False, keep_in=None):
     """Hair / non-face pixels inside the face oval are replaced by extrapolated skin.
     Masks come from MediaPipe's multiclass selfie segmenter (face_skin vs hair)."""
     h, w = rgb.shape[:2]
+    if keep_in is not None:
+        return _fill_from_keep(rgb, lm, keep_in, dbg)
     probs = get_seg()(rgb)
     hair = probs[..., 1]
     face = probs[..., 3]
@@ -201,6 +209,17 @@ def remove_hair(rgb, lm, dbg=None):
             kb = (cc == main).astype(np.uint8) * 255
     kb = cv2.erode(kb, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
     keep = gblur(kb.astype(np.float32) / 255.0, 5.0)
+    if dbg is not None:
+        dbg["hair"] = hair
+    if mask_only:
+        return rgb, keep, None
+    return _fill_from_keep(rgb, lm, keep, dbg)
+
+
+def _fill_from_keep(rgb, lm, keep, dbg=None):
+    h, w = rgb.shape[:2]
+    iod = float(np.linalg.norm(((lm[362] + lm[263]) - (lm[33] + lm[133])) / 2))
+    eyes, brows, lips, nose = feature_masks(lm, (h, w))
     lin = T.srgb_to_lin(rgb)
     sk_w = (keep > 0.97).astype(np.float32) * (1 - np.clip(eyes + brows + lips, 0, 1))
     sk_w = cv2.erode(sk_w, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)))
@@ -221,7 +240,6 @@ def remove_hair(rgb, lm, dbg=None):
     fill = fill * detail[..., None]
     out_lin = lin * keep[..., None] + fill * (1 - keep[..., None])
     if dbg is not None:
-        dbg["hair"] = hair
         dbg["keep"] = keep
     return T.lin_to_srgb(out_lin), keep, None
 
@@ -262,14 +280,14 @@ def relight(rgb, lm, keep, dbg=None, flatten=0.55):
     eyes, brows, lips, nose = feature_masks(lm, (h, w))
     oval_full = poly_mask(lm[FACE_OVAL], (h, w), 0)
     oval = poly_mask(lm[FACE_OVAL], (h, w), -int(0.012 * N))
-    W = oval * (1 - np.clip(eyes + brows + lips, 0, 1)) + 1e-4
+    W = oval * np.clip(keep, 0, 1) * (1 - np.clip(eyes + brows + lips, 0, 1)) + 1e-4
     sig = 0.05 * N
     L_low = norm_conv(Y, W, sig)
     L_mir = L_low[:, ::-1]
     W_mir = W[:, ::-1]
     # mirror about x = N/2 (faces are centred there after alignment)
     L_sym = (L_low * W_s(W, sig) + L_mir * W_s(W_mir, sig)) / (W_s(W, sig) + W_s(W_mir, sig) + 1e-5)
-    ref = float(np.median(L_low[(oval > 0.5)]))
+    ref = float(np.median(L_low[(oval > 0.5) & (keep > 0.5)]))
     # flatten more towards the oval edge so the rim melts into the flat surround
     din = cv2.distanceTransform((oval_full > 0.5).astype(np.uint8), cv2.DIST_L2, 5)
     din = din / max(float(din.max()), 1.0)
@@ -306,12 +324,12 @@ def exposure_wb(rgb, lm):
     a, b = float(sk[1]), float(sk[2])
     hue = math.degrees(math.atan2(b, a))
     chroma = math.hypot(a, b)
-    th = min(max(hue, 42.0), 68.0)
-    tc = min(max(chroma, 12.0), 30.0)
+    th = min(max(hue, 32.0), 72.0)
+    tc = min(max(chroma, 10.0), 32.0)
     if abs(th - hue) > 1 or abs(tc - chroma) > 1:
         na, nb = tc * math.cos(math.radians(th)), tc * math.sin(math.radians(th))
-        lab[..., 1] += (na - a) * 0.85
-        lab[..., 2] += (nb - b) * 0.85
+        lab[..., 1] += (na - a) * 0.5
+        lab[..., 2] += (nb - b) * 0.5
         rgb = from_lab(lab)
     return rgb
 
@@ -335,6 +353,27 @@ def deshine(rgb, lm, keep):
     lab[..., 1] += H * (a_loc - lab[..., 1]) * 0.6
     lab[..., 2] += H * (b_loc - lab[..., 2]) * 0.6
     return from_lab(lab)
+
+
+def limit_rim_highlights(rgb, lm, slack=1.04):
+    """Compress low-frequency luminance peaks outside the central feature area (temples,
+    forehead corners, jaw rim) down to the cheek reference level -> no bright arcs."""
+    h, w = rgb.shape[:2]
+    lin = T.srgb_to_lin(rgb)
+    Y = lum(lin)
+    iod = float(np.linalg.norm(lm[263] - lm[33]))
+    ref = float(np.median(Y[patch_mask(lm, CHEEKS, iod * 0.08, (h, w)) > 0.5]))
+    core_idx = EYE_R + EYE_L + LIPS_OUT + NOSE_LOW + [168, 6, 197, 195, 5, 4]
+    hull = cv2.convexHull(np.round(lm[core_idx]).astype(np.int32))
+    core = np.zeros((h, w), np.float32)
+    cv2.fillConvexPoly(core, hull, 1.0)
+    core = gblur(cv2.dilate(core, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (31, 31))), 0.03 * N)
+    Ylow = gblur(Y, 0.025 * N)
+    cap = ref * slack
+    g = np.where(Ylow > cap, cap / np.maximum(Ylow, 1e-4), 1.0).astype(np.float32)
+    g = 1 - (1 - g) * (1 - core)
+    g = gblur(g, 0.01 * N)
+    return T.lin_to_srgb(lin * g[..., None])
 
 
 def avg_skin(rgb, lm, keep=None):
@@ -411,9 +450,11 @@ def build_one(entry, rec, src_dir_root, out_dir, dbg_dir=None):
     al, lm2, aniso = align(rgb, lm)
     dbg = {} if dbg_dir else None
     exp = exposure_wb(al, lm2)
-    nh, keep, _ = remove_hair(exp, lm2, dbg)
-    rl = relight(nh, lm2, keep, dbg, flatten=entry.get("flatten", 0.55))
+    keep = skin_keep(exp, lm2)
+    rl0 = relight(exp, lm2, keep, dbg, flatten=entry.get("flatten", 0.55))
+    rl, keep, _ = remove_hair(rl0, lm2, dbg, keep_in=keep)
     ds = deshine(rl, lm2, keep)
+    ds = limit_rim_highlights(ds, lm2)
     avg = avg_skin(ds, lm2, keep)
     base, faceA = outer_feather(ds, lm2, avg, seed=zlib.crc32(entry["id"].encode()) % 1000, keep=keep)
     results = {"base": (base, None)}

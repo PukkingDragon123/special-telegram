@@ -127,7 +127,8 @@ const BOTTLES: Record<string, BottleSpec & { hold?: keyof typeof HOLD }> = {
   seasoning_sauce: { h: 0.245, r: 0.036, neck: 0.014, labelY: 0.36, liquid: 0x2a140a, glass: 0x3a2a1a, glassOpacity: 0.5, cap: 0x1f8a3c },
   white_pepper: { h: 0.13, r: 0.0275, shape: 'shaker', labelY: 0.42, liquid: 0xe8e2d2, glass: 0xffffff, glassOpacity: 0.3, cap: 0x1d5a3a, capH: 0.022, hold: 'jar' },
   chili_flakes: { h: 0.115, r: 0.0275, shape: 'shaker', labelY: 0.42, liquid: 0xa82a14, glass: 0xffffff, glassOpacity: 0.3, cap: 0xc8161d, capH: 0.022, hold: 'jar' },
-  tomyum_paste: { h: 0.1, r: 0.04, shape: 'jar', labelY: 0.45, labelH: 0.05, liquid: 0x8a240c, glass: 0xffffff, glassOpacity: 0.25, cap: 0xd8a020, hold: 'jar' },
+  tomyum_paste: { h: 0.105, r: 0.035, shape: 'jar', labelY: 0.45, labelH: 0.045, liquid: 0x8a240c, glass: 0xffffff, glassOpacity: 0.25, cap: 0x2a50a8, hold: 'jar' },
+  curry_paste: { h: 0.11, r: 0.054, shape: 'jar', labelY: 0.5, labelH: 0.09, liquid: 0xa8341c, glass: 0xffffff, glassOpacity: 0.2, cap: 0xf4f4f0, capH: 0.012, hold: 'jar' },
   water_jug: { h: 0.32, r: 0.045, neck: 0.015, shape: 'pet', labelY: 0.45, labelH: 0.07, liquid: 0xd8ecf2, glass: 0xe8f6ff, glassOpacity: 0.25, cap: 0x5ab0e8 },
 };
 
@@ -160,9 +161,9 @@ export function defineCookingItems(game: Game) {
     });
   }
   // ---- packets / bags (real packaging photo on the front)
-  def({ ...ingBase('sugar'), tags: ['ingredient', 'seasoning', 'bag'], build: () => buildPacket('sugar', 0.15, 0.24, 0.07, { clear: true, filling: M.plasticRough(0xfbfaf6) }), animate: anim(), hold: HOLD.packet });
+  def({ ...ingBase('sugar'), tags: ['ingredient', 'seasoning', 'bag'], build: () => buildPacket('sugar', 0.13, 0.26, 0.07, { clear: true, filling: M.plasticRough(0xfbfaf6) }), animate: anim(), hold: HOLD.packet });
   def({ ...ingBase('msg'), tags: ['ingredient', 'seasoning', 'bag'], build: () => buildPacket('msg', 0.16, 0.19, 0.05), animate: anim(), hold: HOLD.packet });
-  def({ ...ingBase('gravy_starch'), tags: ['ingredient', 'seasoning', 'bag'], build: () => buildPacket('gravy_starch', 0.15, 0.2, 0.06), animate: anim(), hold: HOLD.packet });
+  def({ ...ingBase('gravy_starch'), tags: ['ingredient', 'seasoning', 'bag'], build: () => buildPacket('gravy_starch', 0.13, 0.2, 0.05), animate: anim(), hold: HOLD.packet });
   def({ ...ingBase('rice_bag'), carry: 'underarm', tags: ['ingredient', 'starch', 'bag', 'heavy'], build: () => buildPacket('rice_bag', 0.3, 0.44, 0.12, { body: M.plasticRough(0xf6f2e2) }), animate: anim(), hold: HOLD.big });
   def({ ...ingBase('noodles_wide'), tags: ['ingredient', 'starch', 'bag'], build: () => buildNoodleBag(), refresh: refreshHeap(500), animate: anim(), hold: HOLD.tray });
   // ---- meat trays
@@ -185,7 +186,6 @@ export function defineCookingItems(game: Game) {
   def({ ...ingBase('kaffir_lime'), build: () => buildKaffir(), refresh: refreshHeap(30), animate: anim(), hold: HOLD.bunch });
   def({ ...ingBase('mushroom'), build: () => buildMushrooms(), refresh: refreshHeap(200), animate: anim(), hold: HOLD.bag });
   def({ ...ingBase('cucumber'), build: () => buildCucumbers(), refresh: refreshHeap(300), animate: anim(), hold: HOLD.bag });
-  def({ ...ingBase('curry_paste'), build: () => buildPasteBag(0xff9a80, T.curry()), refresh: refreshHeap(250), animate: anim(), hold: HOLD.bag });
   // ---- eggs
   def({ kind: 'egg', name: tl('ไข่ไก่', 'egg'), weight: 0.06, price: 5, carry: 'hand', tags: ['ingredient', 'egg'], pickRadius: 0.1, build: () => buildEgg(), animate: anim(), hold: HOLD.egg, data: () => ({}) });
   def({

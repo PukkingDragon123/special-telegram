@@ -345,7 +345,8 @@ function eggScore(e: EggState): { s: number; issues: string[] } {
   if (e.wh < 0.8) issues.push('raw_egg');
   if (e.b > 0.75) issues.push('burnt_egg');
   if (e.cr < 0.25 && e.wh >= 0.8) issues.push('soggy_egg');
-  return { s: white * 0.35 + crisp * 0.3 + yolk * 0.15 + burn * 0.2, issues };
+  const s = (white * 0.35 + crisp * 0.3 + yolk * 0.15 + burn * 0.2) * (1 - clamp01((e.b - 0.45) * 1.1) * 0.6) * (e.wh < 0.8 ? 0.6 : 1);
+  return { s, issues };
 }
 
 const dev = (v: number, t: number, k = 1.25) => Math.max(-1, Math.min(1, ((v - t) / Math.max(t, 0.25)) * k));
@@ -494,7 +495,7 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
     if (o.egg && o.egg.n > 0) {
       const es = eggScore(o.egg);
       for (const i of es.issues) issues.push(i);
-      taste = taste * 0.82 + es.s * 0.18 + 0.04; // ไข่ดาวช่วยชีวิต
+      taste = taste * 0.82 + es.s * 0.18 + (o.egg.b < 0.75 && o.egg.wh >= 0.8 ? 0.04 : -0.08); // ไข่ดาวช่วยชีวิต
       vis.yolk = o.egg.yk < 0.6 ? 'runny' : 'set';
     }
   }

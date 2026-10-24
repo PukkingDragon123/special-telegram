@@ -66,20 +66,16 @@ function startPreload(game: Game) {
 /** decal atlas from textures/world (+ our gen/world extras) */
 async function loadDecals(man: any): Promise<Atlas | null> {
   const base = 'textures/world/';
+  const D = (id: string, w: number, h: number) => ({ id, url: base + id + '.png', w, h });
   const items = [
-    { id: 'decal_puddles', url: base + 'decal_puddles.png', w: 1024, h: 1024 },
-    { id: 'decal_oil_stains', url: base + 'decal_oil_stains.png', w: 1024, h: 1024 },
-    { id: 'decal_asphalt_patches', url: base + 'decal_asphalt_patches.png', w: 1024, h: 1024 },
-    { id: 'decal_gum_spots', url: base + 'decal_gum_spots.png', w: 512, h: 512 },
-    { id: 'manhole_round_drain', url: base + 'manhole_round_drain.png', w: 512, h: 512 },
-    { id: 'manhole_round_electric', url: base + 'manhole_round_electric.png', w: 512, h: 512 },
-    { id: 'roadline_white_worn', url: base + 'roadline_white_worn.png', w: 64, h: 512 },
-    { id: 'roadline_yellow_worn', url: base + 'roadline_yellow_worn.png', w: 64, h: 512 },
-    { id: 'roadline_double_yellow_worn', url: base + 'roadline_double_yellow_worn.png', w: 128, h: 512 },
-    { id: 'roadmark_zebra_worn', url: base + 'roadmark_zebra_worn.png', w: 768, h: 768 },
-    { id: 'roadmark_text_chalong', url: base + 'roadmark_text_chalong.png', w: 384, h: 432 },
-    { id: 'roadmark_text_khet_rongrian', url: base + 'roadmark_text_khet_rongrian.png', w: 384, h: 336 },
-    { id: 'roadmark_text_yut', url: base + 'roadmark_text_yut.png', w: 384, h: 480 },
+    D('decal_puddles', 512, 512), D('decal_oil_stains', 512, 512), D('decal_asphalt_patches', 768, 768), D('decal_gum_spots', 256, 256),
+    D('decal_puddles_photo', 1024, 1024), D('decal_oil_stains_photo', 1024, 1024), D('decal_potholes_photo', 1024, 1024), D('decal_moss_photo', 768, 768),
+    D('decal_torn_posters_photo', 1024, 1024), D('decal_wall_grime_streaks_photo', 1024, 1024), D('decal_litter_atlas', 1024, 1024),
+    D('decal_cigarette_butts_photo', 512, 142), D('decal_gum_spots_photo', 512, 172), D('decal_flyers_loan_cluster_photo', 452, 512),
+    D('manhole_round_iron', 384, 384), D('manhole_round_drain', 384, 384), D('manhole_round_electric', 384, 384),
+    D('roadline_white_edge_photo', 48, 768), D('roadline_double_yellow_photo', 96, 768), D('roadline_white_worn', 48, 512),
+    D('roadline_yellow_worn', 48, 512), D('roadline_double_yellow_worn', 96, 512), D('roadline_white_dashed_photo', 256, 256),
+    D('roadmark_zebra_worn_photo', 1024, 768), D('roadmark_zebra_worn', 512, 512),
   ];
   // any extra decals listed in the world manifest (png with alpha)
   if (man) for (const [k, v] of Object.entries<any>(man)) {

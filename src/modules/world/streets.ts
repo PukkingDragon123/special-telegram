@@ -202,7 +202,7 @@ export function buildStreets(c: Ctx) {
 
   // ------------------------------------------------------------ road markings (decals)
   if (D) {
-    const white = D.get('roadline_white_worn'), yellow = D.get('roadline_yellow_worn'), dbl = D.get('roadline_double_yellow_worn');
+    const white = D.get('roadline_white_edge_photo') ?? D.get('roadline_white_worn'), yellow = D.get('roadline_yellow_worn'), dbl = D.get('roadline_double_yellow_photo') ?? D.get('roadline_double_yellow_worn');
     // main road: edge lines + lane dashes + yellow along the median
     for (let x = -VIS; x < VIS; x += 3) {
       groundDecal(w, white, x + 1.5, 0.006, MAIN.z0 + 0.45, 0.15, 3, Math.PI / 2, { alpha: 0.85 });
@@ -219,35 +219,55 @@ export function buildStreets(c: Ctx) {
     for (let z = -44; z > SOI.zN + 2; z -= 9) groundDecal(w, yellow, 0, 0.006, z, 0.13, 3, 0, { alpha: 0.55 });
     // canal road centre line
     for (let x = -VIS; x < VIS; x += 9) groundDecal(w, yellow, x, 0.006, (CROAD.z0 + CROAD.z1) / 2, 0.13, 3, Math.PI / 2, { alpha: 0.5 });
-    // zebra crossings
-    const zeb = D.get('roadmark_zebra_worn');
-    for (const zb of ZEBRAS) {
-      const span = zb.to - zb.from;
-      const n = Math.ceil(span / 5);
-      for (let i = 0; i < n; i++) {
-        const a0 = zb.from + i * 5, a1 = Math.min(zb.to, a0 + 5);
-        const frac = (a1 - a0) / 5;
-        if (!zeb) break;
-        const r = { ...zeb, u1: zeb.u0 + (zeb.u1 - zeb.u0) * frac };
-        if (zb.axis === 'x') groundDecal(w, r, zb.at, 0.007, (a0 + a1) / 2, zb.w, a1 - a0, Math.PI / 2, { alpha: 0.9 });
-        else groundDecal(w, r, (a0 + a1) / 2, 0.007, zb.at, a1 - a0, zb.w, 0, { alpha: 0.9 });
+    // zebra crossings (photo: stripes run along image u; ~4.5 m of stripes over the image height)
+    const zebP = D.get('roadmark_zebra_worn_photo');
+    if (zebP) for (const zb of ZEBRAS) {
+      const span = zb.to - zb.from, per = 4.5;
+      const fu = Math.min(1, zb.w / 6);
+      for (let a0 = zb.from; a0 < zb.to - 0.05; a0 += per) {
+        const a1 = Math.min(zb.to, a0 + per);
+        const fv = (a1 - a0) / per;
+        const r = { ...zebP, u1: zebP.u0 + (zebP.u1 - zebP.u0) * fu, v0: zebP.v1 - (zebP.v1 - zebP.v0) * fv };
+        if (zb.axis === 'x') groundDecal(w, r, zb.at, 0.007, (a0 + a1) / 2, zb.w, a1 - a0, 0, { alpha: 0.95 });
+        else groundDecal(w, r, (a0 + a1) / 2, 0.007, zb.at, zb.w, a1 - a0, Math.PI / 2, { alpha: 0.95 });
       }
+      void span;
     }
     // stop line + "slow" text on the soi approach to the main road
     groundDecal(w, white, -1.75, 0.006, MAIN.z0 - 0.8, 0.3, 3.5, Math.PI / 2, { alpha: 0.85 });
-    groundDecal(w, D.get('roadmark_text_yut'), -1.75, 0.007, MAIN.z0 - 3.2, 2.2, 2.75, Math.PI, { alpha: 0.75 });
-    groundDecal(w, D.get('roadmark_text_chalong'), 1.75, 0.007, -48, 2.2, 2.5, 0, { alpha: 0.6 });
-    groundDecal(w, D.get('roadmark_text_chalong'), -1.75, 0.007, -100, 2.2, 2.5, Math.PI, { alpha: 0.55 });
-    groundDecal(w, D.get('roadmark_text_khet_rongrian'), 4, 0.007, MAIN.z1 - 4, 5.5, 2.2, Math.PI, { alpha: 0.6 });
 
     // ---------------------------------------------------------- manholes, patches, potholes, puddles, oil, gum
-    const mh = D.get('manhole_round_drain'), me = D.get('manhole_round_electric');
+    const mh = D.get('manhole_round_iron') ?? D.get('manhole_round_drain'), me = D.get('manhole_round_electric') ?? mh;
     for (let z = -12; z > -156; z -= 22 + rng.range(-4, 4)) groundDecal(w, rng.chance(0.7) ? mh : me, rng.range(-1.6, 1.6), 0.008, z, 0.85, 0.85, rng.range(0, 6.28));
     for (let x = -124; x < 124; x += 26 + rng.range(-5, 5)) groundDecal(w, rng.chance(0.6) ? mh : me, x, 0.008, rng.pick([9, 11.5, 17, 19.5]), 0.85, 0.85, rng.range(0, 6.28));
     for (let i = 0; i < 26; i++) groundDecal(w, rng.chance(0.5) ? mh : me, rng.chance(0.5) ? rng.range(-5.6, -3.9) : rng.range(3.9, 5.6), SW_H + 0.006, rng.range(-150, -2), 0.7, 0.7, rng.range(0, 6.28));
     const patch = (cx: number, cy: number) => D.cell('decal_asphalt_patches', cx, cy, 2, 2);
-    const pud = (cx: number, cy: number) => D.cell('decal_puddles', cx, cy, 2, 2);
-    const oil = (cx: number, cy: number) => D.cell('decal_oil_stains', cx, cy, 2, 2);
+    const pud = (cx: number, cy: number) => (D.has('decal_puddles_photo') && (cx + cy) % 2 === 0 ? D.cell('decal_puddles_photo', cx, cy, 2, 2) : D.cell('decal_puddles', cx, cy, 2, 2));
+    const oil = (cx: number, cy: number) => (D.has('decal_oil_stains_photo') && cx === 0 ? D.cell('decal_oil_stains_photo', cx, cy, 2, 2) : D.cell('decal_oil_stains', cx, cy, 2, 2));
+    const hole = (cx: number, cy: number) => D.cell('decal_potholes_photo', cx, cy, 2, 2);
+    // potholes (photo) on the soi and main road, often with a puddle
+    for (let i = 0; i < 26; i++) {
+      const onSoi = i < 14;
+      const x = onSoi ? rng.range(-3, 3) : rng.range(-125, 125);
+      const z = onSoi ? rng.range(-156, 4) : rng.range(MAIN.z0 + 0.6, MAIN.z1 - 0.6);
+      const k = rng.int(0, 3), s = rng.range(0.7, 1.4);
+      groundDecal(w, hole(k % 2, k >> 1), x, 0.0095, z, s * 1.3, s, rng.range(0, 6.28), { alpha: 1 });
+    }
+    // litter: bags, bottles, cups, foam boxes along gutters & sidewalks (photo atlas 4x5)
+    const lit = (i: number) => D.cell('decal_litter_atlas', i % 4, Math.floor(i / 4) % 5, 4, 5);
+    for (let i = 0; i < 120; i++) {
+      const t = rng.int(0, 2);
+      let x: number, z: number, y = 0.0096;
+      if (t === 0) { x = rng.chance(0.5) ? rng.range(-3.45, -3.0) : rng.range(3.0, 3.45); z = rng.range(-156, 4); }
+      else if (t === 1) { x = rng.chance(0.5) ? rng.range(-5.9, -3.8) : rng.range(3.8, 5.9); z = rng.range(-156, 0); y = SW_H + 0.007; }
+      else { x = rng.range(-125, 125); z = rng.chance(0.5) ? rng.range(6.05, 6.6) : rng.range(21.4, 21.95); }
+      const s = rng.range(0.22, 0.4);
+      groundDecal(w, lit(rng.int(0, 19)), x, y, z, s, s, rng.range(0, 6.28), { alpha: 1 });
+    }
+    // cigarette butts near shops / bus stop
+    const cig = D.get('decal_cigarette_butts_photo');
+    for (let i = 0; i < 24; i++) groundDecal(w, cig, rng.chance(0.5) ? rng.range(-5.8, -4) : rng.range(4, 5.8), SW_H + 0.006, rng.range(-150, -1), 0.9, 0.25, rng.range(0, 6.28), { alpha: 0.9 });
+    for (let i = 0; i < 6; i++) groundDecal(w, cig, rng.range(-34, -26), SW_H + 0.006, rng.range(0.8, 4.5), 0.9, 0.25, rng.range(0, 6.28), { alpha: 0.9 });
     for (let i = 0; i < 70; i++) {
       const onSoi = i < 34;
       const x = onSoi ? rng.range(-3, 3) : rng.range(-125, 125);
@@ -280,13 +300,13 @@ export function buildStreets(c: Ctx) {
       const k = rng.int(0, 3);
       groundDecal(w, oil(k % 2, k >> 1), side * rng.range(4.2, 5.6), SW_H + 0.007, rng.range(-150, -2), rng.range(0.5, 1.1), rng.range(0.5, 1.1), rng.range(0, 6.28), { alpha: 0.6, rough: 0.4 });
     }
-    const gum = D.get('decal_gum_spots');
+    const gum = D.get('decal_gum_spots_photo') ?? D.get('decal_gum_spots');
     for (let i = 0; i < 40; i++) {
       const side = rng.chance(0.5) ? -1 : 1;
       const z = rng.range(-150, 2);
-      groundDecal(w, gum, side * rng.range(4, 5.8), SW_H + 0.006, z, 0.9, 0.9, rng.range(0, 6.28), { alpha: 0.8 });
+      groundDecal(w, gum, side * rng.range(4, 5.8), SW_H + 0.006, z, 1.2, 0.4, rng.range(0, 6.28), { alpha: 0.8 });
     }
-    for (let i = 0; i < 30; i++) groundDecal(w, gum, rng.range(-120, 120), SW_H + 0.006, rng.chance(0.5) ? rng.range(0.5, 5) : rng.range(22.5, 25.5), 0.9, 0.9, rng.range(0, 6.28), { alpha: 0.8 });
+    for (let i = 0; i < 30; i++) groundDecal(w, gum, rng.range(-120, 120), SW_H + 0.006, rng.chance(0.5) ? rng.range(0.5, 5) : rng.range(22.5, 25.5), 1.2, 0.4, rng.range(0, 6.28), { alpha: 0.8 });
   }
 }
 

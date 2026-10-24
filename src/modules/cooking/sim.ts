@@ -300,7 +300,8 @@ function sneeze(game: Game, wok: Ent) {
 
 function eggScoreLite(e: EggState) {
   const white = clamp01((e.wh - 0.3) / 0.7), crisp = clamp01(e.cr / 0.6), yolk = e.yk < 0.6 ? 1 : e.yk < 1.2 ? 0.75 : 0.55, burn = clamp01(1 - Math.max(0, e.b - 0.25) * 1.6);
-  return white * 0.35 + crisp * 0.3 + yolk * 0.15 + burn * 0.2;
+  const s = white * 0.35 + crisp * 0.3 + yolk * 0.15 + burn * 0.2;
+  return s * (1 - clamp01((e.b - 0.45) * 1.1) * 0.6) * (e.wh < 0.8 ? 0.6 : 1);
 }
 
 /** HOST: wok → vessel (plate / bowl / takeaway box / existing dish). */
@@ -323,7 +324,7 @@ export function plateFromWok(game: Game, pl: Ent, vessel: Ent, wok: Ent) {
       const dd = { ...vessel.data };
       dd.egg = classifyEgg(e);
       dd.eggSt = { wh: rd(e.wh, 2), cr: rd(e.cr, 2), yk: rd(e.yk, 2), b: rd(e.b, 2) };
-      dd.taste = rd(clamp01((dd.taste ?? 0.5) * 0.82 + eggScoreLite(e) * 0.18 + 0.04), 2);
+      dd.taste = rd(clamp01((dd.taste ?? 0.5) * 0.82 + eggScoreLite(e) * 0.18 + (e.b < 0.75 && e.wh >= 0.8 ? 0.04 : -0.08)), 2);
       if (e.wh < 0.8) dd.issues = [...new Set([...(dd.issues ?? []), 'raw_egg'])];
       if (e.b > 0.75) dd.issues = [...new Set([...(dd.issues ?? []), 'burnt_egg'])];
       dd.vis = { ...(dd.vis ?? {}), yolk: e.yk < 0.6 ? 'runny' : 'set' };
@@ -627,7 +628,7 @@ function simWok(game: Game, e: Ent, s: any, dt: number, heat: number) {
     const wet = k === 'garlic' || k === 'chili' || k === 'curry_paste' ? 0.3 : (ING[k]?.tags?.includes('meat') || ING[k]?.tags?.includes('veg')) ? 1 : 0.5;
     moist += (v.g / 1000) * wet * Math.max(0, 1 - Math.min(1, v.c)) * 55;
   }
-  const Ploss = (T - 25) * 0.025 + (solidsG / 1000) * Math.max(0, T - 100) * 0.035 + (T > 100 ? moist * Math.min(1, (T - 100) / 40) : 0);
+  const Ploss = (T - 25) * 0.032 + (solidsG / 1000) * Math.max(0, T - 100) * 0.035 + (T > 100 ? moist * Math.min(1, (T - 100) / 40) : 0);
   const w = s.w ?? 0;
   if (w > 0.5 && T >= 99.5) {
     const excess = Pin - Ploss;
@@ -665,7 +666,7 @@ function simWok(game: Game, e: Ent, s: any, dt: number, heat: number) {
     eg.wh += Math.max(0, Math.min(1.8, (T - 90) / 90)) / 22 * dt;
     eg.cr += Math.min(1, oil / 60) * Math.max(0, Math.min(1.5, (T - 160) / 60)) / 18 * dt;
     eg.yk += Math.max(0, Math.min(1.5, (T - 90) / 100)) / 75 * dt;
-    eg.b += (Math.max(0, Math.min(2, (T - 232) / 60)) / 10 + (oil < 12 ? Math.max(0, Math.min(2, (T - 150) / 80)) / 14 : 0) + (eg.cr > 1.1 ? 0.02 : 0)) * dt;
+    eg.b += (Math.max(0, Math.min(2, (T - 245) / 60)) / 12 + (oil < 12 ? Math.max(0, Math.min(2, (T - 150) / 80)) / 14 : 0) + (eg.cr > 1.1 ? 0.02 : 0)) * dt;
     if (eg.b > 0.6) burning = Math.max(burning, eg.b);
   }
   // ---- omelette: puffs in deep very hot oil, needs a flip

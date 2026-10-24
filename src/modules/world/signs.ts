@@ -78,9 +78,41 @@ export class SignSys implements SignSource {
   }
 }
 
+/** delivered real-photo sign cut-outs in img/signs (streets research agent) → categories, glow */
+const DELIVERED: [string, string, number][] = [
+  ['shop_gold_jinhuaheng_neon_white', 'gold', 1], ['shop_gold_yulongkimkee_horizontal', 'gold', 0.6],
+  ['shop_gold_vertical_green_white_cn', 'vertical,gold', 0.3], ['shop_gold_yulongkimkee_vertical_cn', 'vertical,gold', 0.3],
+  ['shop_pharmacy_ruamphesatchakon', 'pharmacy,shop', 0], ['shop_pharmacy_world_lightbox', 'pharmacy,clinic', 1],
+  ['shop_noodle_neon_logo', 'noodle', 1], ['shop_noodle_paord_night', 'noodle,food,shop', 1],
+  ['shop_chicken_rice_hoksuang', 'food,shop', 0], ['shop_chicken_rice_midnight_korat_lightbox', 'food,noodle', 1],
+  ['shop_coffee_boran_green_blue', 'coffee,food,shop', 0.4], ['shop_tamsang_pongpaeng_board', 'food,eatery,shop', 0],
+  ['banner_tamsang_paksaep_vinyl', 'food,eatery,banner', 0], ['shop_barber_noi_lightbox', 'barber,salon', 1],
+  ['shop_hardware_leevittaya', 'hardware,kitchen,repair,shop', 0], ['shop_massage_bosque_band', 'massage,salon', 0.5],
+  ['shop_makro_facade_sign', 'wholesale', 1], ['shop_7eleven_fascia_band', 'convenience', 1],
+  ['shop_7eleven_fascia_dusk', 'convenience2', 1], ['shop_7eleven_front_small', 'convenience3', 1],
+  ['banner_laundry_open_vinyl', 'laundry,banner,shop', 0], ['sign_laundry_service_price', 'laundry_small', 0],
+  ['sign_room_for_rent_lightbox', 'apartment,old,shop', 1], ['banner_private_land_no_dumping', 'lot', 0],
+  ['flyer_loan_ngern_duan_bw', 'poster,flyer', 0], ['poster_lottery_results_sheet', 'poster', 0], ['poster_phone_shop_film', 'poster,phone', 0.3],
+  ['menu_chicken_rice_photo_strip', 'menu', 0.3], ['menu_coffee_boran_handpainted', 'menu', 0],
+  ['market_arch_700rai_sattahip', 'market', 0.6], ['sign_winmoto_price_list', 'moto', 0], ['sign_no_dog_poop_no_litter', 'wallsign', 0],
+  ['street_sign_directional_rama1_green', 'street_dir', 0], ['street_sign_district_pathumwan_green', 'street_dir', 0],
+  ['street_sign_maharaj3_ornate', 'street', 0], ['street_sign_soi_ekkachai46_blue', 'street,soi', 0], ['street_sign_soi_gate_masjid_banglaung', 'soigate', 0],
+  ['street_sign_thaniya_blue', 'street', 0], ['street_sign_yaowarat_blue', 'street', 0],
+  ['traffic_no_parking_round', 'traffic', 0], ['traffic_no_parking_timeplate', 'traffic_plate', 0],
+  ['plate_car_private_kt1063_udonthani', 'plate', 0], ['plate_car_private_kt2058_chachoengsao', 'plate', 0], ['plate_car_private_red_sk234_nonthaburi', 'plate', 0],
+  ['plate_pickup_green_2tr1387_bangkok', 'plate', 0], ['plate_pickup_green_bt4772_nakhonsawan', 'plate', 0],
+  ['plate_moto_1kth2933_chumphon', 'plate_moto', 0], ['plate_moto_khns660_rayong', 'plate_moto', 0], ['plate_moto_phlkh772_bangkok', 'plate_moto', 0],
+];
+
 export async function loadSigns(): Promise<SignSys | null> {
   const items: AtlasItem[] = [];
   const list: { id: string; cat: string[]; glow: number }[] = [];
+  for (const [f, cat, glow] of DELIVERED) {
+    const id = 'd:' + f;
+    const big = cat.startsWith('poster') || cat.startsWith('menu') || cat.startsWith('street_dir') || cat.startsWith('moto');
+    items.push({ id, url: `img/signs/${f}.png`, w: big ? 512 : 768, h: big ? 512 : 256 });
+    list.push({ id, cat: cat.split(','), glow });
+  }
   const gen = await Assets.jsonSafe<any>('gen/world/signs.json', null);
   for (const it of gen?.items ?? []) {
     const id = 'g:' + it.id;

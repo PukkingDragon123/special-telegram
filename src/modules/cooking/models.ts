@@ -402,7 +402,7 @@ export function buildGalangal() {
 
 export function buildNoodleBag() {
   const sheets = tileMat('noodleSheets', T.noodles(), undefined, { color: 0xfff6ea, rough: 0.35, flat: false });
-  return buildPacket('noodles_wide', 0.24, 0.16, 0.05, { clear: true, filling: sheets, lying: true });
+  return buildPacket('noodles_wide', 0.2, 0.28, 0.045, { clear: true, filling: sheets, lying: true });
 }
 
 export { foodMat };
