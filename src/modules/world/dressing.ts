@@ -56,12 +56,26 @@ export function buildStreetLife(c: Ctx) {
     const n = rng.int(1, 4);
     for (let k = 0; k < n; k++) { const xx = x + k * 0.85; w.put(P.motorbike(rng.pick(BIKE_COLS)), xx, SW_H, z, (z < 10 ? 0 : Math.PI) + rng.range(-0.25, 0.25), 1, { rz: 0.08 }); c.phys.box([xx, 0.6, z], [0.4, 1.0, 1.4]); }
   }
+  // licence plates (real-photo cut-outs, img/signs/plate_*) — local z offset lz: + front / − back
+  const plate = (x: number, y: number, z: number, yaw: number, lz: number, cat: string, pw = 0.34, ph = 0.15) => {
+    const r = c.signs?.any(cat, rng); if (!r) return;
+    const n = Math.sign(lz) || 1, cs = Math.cos(yaw), sn = Math.sin(yaw), hw = (pw / 2) * n;
+    const W = (lx: number, ly: number) => [x + lx * cs + lz * sn, y + ly, z - lx * sn + lz * cs];
+    const a = W(-hw, 0), b = W(hw, 0), cc = W(hw, ph), d = W(-hw, ph);
+    w.atlas('sign', { e0: 0, ao: 0.85 });
+    w.quad(a[0], a[1], a[2], b[0], b[1], b[2], cc[0], cc[1], cc[2], d[0], d[1], d[2], [r.u0, r.v0, r.u1, r.v1]);
+  };
+  const pickupAt = (col: number, x: number, z: number, yaw: number) => {
+    w.put(P.pickup(col), x, 0, z, yaw);
+    plate(x, 0.6, z, yaw, -2.607, 'plate');
+    plate(x, 0.42, z, yaw, 2.585, 'plate');
+  };
   // a parked pickup in the soi (half on the curb) + one on the canal road
-  w.put(P.pickup(0xd8d8d4), 2.4, 0, -112, Math.PI + 0.02);
+  pickupAt(0xd8d8d4, 2.4, -112, Math.PI + 0.02);
   c.phys.box([2.4, 0.9, -112], [1.9, 1.8, 5]);
-  w.put(P.pickup(0x2a4a7a), -2.4, 0, -128, 0.03);
+  pickupAt(0x2a4a7a, -2.4, -128, 0.03);
   c.phys.box([-2.4, 0.9, -128], [1.9, 1.8, 5]);
-  w.put(P.pickup(0xa02020), 40, 0, (CROAD.z0 + CROAD.z1) / 2 - 1, Math.PI / 2);
+  pickupAt(0xa02020, 40, (CROAD.z0 + CROAD.z1) / 2 - 1, Math.PI / 2);
 
   // ---------------------------------------------------------------- trash bags at poles, bins, crates
   const allPoles = [...POLES_SOI, ...POLES_SOI_E, ...POLES_MAIN_N, ...POLES_MAIN_S];
@@ -211,7 +225,7 @@ export function buildStreetLife(c: Ctx) {
     const x = sx * 128.5;
     for (let z = MAIN.z0 + 0.6; z < MAIN.z1; z += 1.95) w.put(P.barrier(z % 3.9 < 1.95 ? 0xd02020 : 0xf0f0ec), x, 0, z, Math.PI / 2);
     for (let z = MAIN.z0 + 1; z < MAIN.z1; z += 3) w.put(P.cone(), x - sx * 1.6, 0, z, 0);
-    w.put(P.pickup(0xe8e4dc), x + sx * 3.5, 0, 10, sx > 0 ? 0 : Math.PI);
+    pickupAt(0xe8e4dc, x + sx * 3.5, 10, sx > 0 ? 0 : Math.PI);
     c.phys.box([x, 2, 14], [1.2, 4, 26]);
     c.phys.box([x, 2, (CROAD.z0 + CROAD.z1) / 2], [1.2, 4, 10]);
     for (let z = CROAD.z0 + 0.5; z < CROAD.sw1; z += 1.95) w.put(P.barrier(0xd02020), x, 0, z, Math.PI / 2);

@@ -102,16 +102,38 @@ const DELIVERED: [string, string, number][] = [
   ['plate_car_private_kt1063_udonthani', 'plate', 0], ['plate_car_private_kt2058_chachoengsao', 'plate', 0], ['plate_car_private_red_sk234_nonthaburi', 'plate', 0],
   ['plate_pickup_green_2tr1387_bangkok', 'plate', 0], ['plate_pickup_green_bt4772_nakhonsawan', 'plate', 0],
   ['plate_moto_1kth2933_chumphon', 'plate_moto', 0], ['plate_moto_khns660_rayong', 'plate_moto', 0], ['plate_moto_phlkh772_bangkok', 'plate_moto', 0],
+  ['plate_taxi_yellow_31-4304_bangkok', 'plate', 0], ['plate_public_yellow_70-2157_udonthani', 'plate', 0], ['plate_temporary_red_ph1301_bangkok', 'plate', 0],
+  ['shop_clinic_ent_skin_vd', 'clinic,pharmacy,shop', 0.8], ['shop_dental_clinic_tooth', 'clinic,shop', 0.8],
+  ['shop_massage_nuat_red', 'massage,salon,shop', 0.5], ['traffic_no_uturn_round', 'traffic,traffic_uturn', 0],
+];
+const KIND_CAT: [RegExp, string][] = [
+  [/gold/, 'gold'], [/pharmacy/, 'pharmacy,shop'], [/clinic/, 'clinic,shop'], [/noodle/, 'noodle,food'], [/khao man gai|tam sang|food/, 'food,shop'],
+  [/coffee/, 'coffee,food'], [/barber|salon/, 'barber,salon'], [/massage/, 'massage,salon'], [/hardware/, 'hardware,shop'], [/laundry/, 'laundry,shop'],
+  [/licen[cs]e plate/, 'plate'], [/traffic/, 'traffic'], [/poster|flyer/, 'poster'], [/menu/, 'menu'], [/street|soi|district|direction/, 'street'],
+  [/warning/, 'wallsign'], [/convenience/, 'convenience'], [/banner/, 'banner,shop'],
 ];
 
 export async function loadSigns(): Promise<SignSys | null> {
   const items: AtlasItem[] = [];
   const list: { id: string; cat: string[]; glow: number }[] = [];
+  // streets research agent's manifest: { signs: [{ file, kind, px:[w,h], real_size_m, mount }] }
+  const man = await Assets.jsonSafe<any>('img/signs/manifest.json', null);
+  const marr: any[] = Array.isArray(man) ? man : man?.signs ?? man?.items ?? [];
+  const px = new Map<string, [number, number]>();
+  for (const it of marr) if (it?.file && Array.isArray(it.px)) px.set(String(it.file).replace(/\.png$/, ''), it.px);
+  const fit = (f: string, mx: number, dw: number, dh: number) => {
+    const p = px.get(f); if (!p) return [dw, dh];
+    const a = p[0] / Math.max(1, p[1]);
+    return a >= 1 ? [mx, Math.max(48, Math.round(mx / a))] : [Math.max(48, Math.round(mx * a)), mx];
+  };
+  const known = new Set<string>();
   for (const [f, cat, glow] of DELIVERED) {
     const id = 'd:' + f;
-    const sq = cat.startsWith('poster') || cat.startsWith('menu') || cat.startsWith('street_dir') || cat.startsWith('moto') || cat.startsWith('traffic') || cat.startsWith('plate') || cat.startsWith('wallsign') || cat.startsWith('laundry_small') || cat.startsWith('vertical');
-    items.push({ id, url: `img/signs/${f}.png`, w: sq ? 320 : 640, h: sq ? 320 : 200 });
+    const sq = /^(poster|menu|street_dir|moto|traffic|plate|wallsign|laundry_small|vertical)/.test(cat);
+    const [w, h] = fit(f, cat.startsWith('plate') ? 256 : sq ? 360 : 640, sq ? 320 : 640, sq ? 320 : 200);
+    items.push({ id, url: `img/signs/${f}.png`, w, h });
     list.push({ id, cat: cat.split(','), glow });
+    known.add(f);
   }
   const gen = await Assets.jsonSafe<any>('gen/world/signs.json', null);
   for (const it of gen?.items ?? []) {
@@ -123,18 +145,16 @@ export async function loadSigns(): Promise<SignSys | null> {
     items.push({ id, url: 'gen/world/' + it.file, w, h });
     list.push({ id, cat: String(it.cat).split(','), glow: it.glow ?? 0 });
   }
-  // streets research agent's signs (if delivered)
-  const man = await Assets.jsonSafe<any>('img/signs/manifest.json', null);
-  if (man) {
-    const arr = Array.isArray(man) ? man : man.items ?? Object.entries(man).map(([k, v]: any) => ({ id: k, ...v }));
-    for (const it of arr) {
-      const f = it.file ?? it.src ?? it.path;
-      if (!f) continue;
-      const id = 's:' + (it.id ?? f);
-      const cat = it.cat ?? it.category ?? it.tags?.[0] ?? 'shop';
-      items.push({ id, url: f.startsWith('img/') ? f : 'img/signs/' + f, w: it.w ?? 512, h: it.h ?? 192 });
-      list.push({ id, cat: String(cat).split(','), glow: it.glow ?? (it.lightbox ? 1 : 0) });
-    }
+  // anything new in the manifest (player-shop hiaphat_*, blank carriers and emissive masks are not world dressing)
+  for (const it of marr) {
+    const f = String(it?.file ?? '').replace(/\.png$/, '');
+    if (!f || known.has(f) || /^hiaphat_|^blank_|emissive/.test(f)) continue;
+    const kind = String(it.kind ?? '');
+    const cat = KIND_CAT.find(([re]) => re.test(kind))?.[1] ?? 'shop';
+    const id = 's:' + f;
+    const [w, h] = fit(f, 512, 512, 192);
+    items.push({ id, url: 'img/signs/' + f + '.png', w, h });
+    list.push({ id, cat: cat.split(','), glow: /lightbox|neon/.test(kind + f) ? 1 : 0 });
   }
   if (!items.length) return null;
   const atlas = await Atlas.build(items, 4096, 3, '#202020');

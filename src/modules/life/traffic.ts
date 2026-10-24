@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { Game } from '../../game/game';
 import type { SoundHandle } from '../../core/audio';
 import { G, groups } from '../../sim/physics';
+import { Assets } from '../../core/assets';
 import { VDEFS, VDef, vehicleModel, wheelModel, riderGeometries } from './vehicles';
 import { h01, hashN, hweighted, bump, qmul } from './util';
 import { loop, play } from './sounds';
@@ -179,7 +180,38 @@ export class Traffic {
       }
     }
     for (let i = 0; i < 4; i++) this.loops.push({ v: null, h: null, key: '' });
+    this.loadRealMotos();
   }
+
+  /** Swap the photo cut-out motorbikes for the real sculpted scooter model (instanced) once loaded. */
+  private loadRealMotos() {
+    Assets.glb('gen/life/models/ghost_scooter.glb').then((gl: any) => {
+      if (!this.group) return;
+      gl.scene.updateMatrixWorld(true);
+      let mesh: THREE.Mesh | null = null;
+      gl.scene.traverse((o: any) => { if (o.isMesh && (!mesh || o.geometry.attributes.position.count > mesh.geometry.attributes.position.count)) mesh = o; });
+      if (!mesh) return;
+      const m = mesh as THREE.Mesh;
+      const geo = m.geometry.clone().applyMatrix4(m.matrixWorld).applyMatrix4(new THREE.Matrix4().makeRotationY(Math.PI));
+      const mat = (Array.isArray(m.material) ? m.material[0] : m.material) as THREE.MeshStandardMaterial;
+      for (const id of ['moto_red', 'moto_blue', 'icecream']) {
+        const it = this.inst.get(id);
+        if (!it) continue;
+        const im = new THREE.InstancedMesh(geo, mat.clone(), it.cap);
+        im.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(it.cap * 3).fill(1), 3);
+        const tints = id === 'moto_red' ? ['#ffffff', '#c8c8d0', '#ffd0c0'] : ['#7a90ff', '#9a9a9a', '#3a3a3a'];
+        for (let i = 0; i < it.cap; i++) im.setColorAt(i, new THREE.Color(tints[i % tints.length]));
+        im.frustumCulled = false; im.castShadow = true; im.count = 0;
+        this.group.add(im);
+        it.body.removeFromParent();
+        it.cut?.removeFromParent();
+        it.body = im;
+        it.cut = undefined;
+      }
+      this.realMotos = true;
+    }).catch(() => {});
+  }
+  private realMotos = false;
 
   dispose() {
     for (const l of this.loops) l.h?.stop(0.3);
@@ -365,7 +397,8 @@ export class Traffic {
       it.n++;
       // wheels
       const spin = vh.s;
-      for (const w of vh.def.wheels) {
+      const ownWheels = this.realMotos && (vh.def.kind === 'moto' || vh.def.kind === 'icecream');
+      if (!ownWheels) for (const w of vh.def.wheels) {
         const xs = w.x > 0 ? [w.x, -w.x] : [0];
         for (const x of xs) {
           if (nw >= 400) break;

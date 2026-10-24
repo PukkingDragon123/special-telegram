@@ -8,7 +8,7 @@ import { sfx } from './sfx';
 
 /* ============================================================================================
  * "ซอยสไตล์" – a realistic Thai street-fashion magazine as a 3D object in front of the camera.
- * Glossy paper (MeshPhysical + clearcoat), canvas pages composed from REAL photos (Flickr CC0/CC-BY,
+ * Glossy paper (low-roughness PBR), canvas pages composed from REAL photos (Flickr CC0/CC-BY,
  * see references/credits/menu.md) + live render-to-texture product shots of every catalogue item on
  * a model from game.chars. Sticky-note tabs jump to sections, pages curl when flipped.
  * ========================================================================================== */
@@ -182,6 +182,7 @@ export class Magazine {
   private turnBack: THREE.Mesh;
   private front: THREE.Mesh;
   private turnGeo: THREE.PlaneGeometry;
+  private backTex!: THREE.Texture;
   private turn = { active: false, t: 0, dir: 1, from: 0, to: 0 };
   private tabs: { mesh: THREE.Mesh; sec: Section; out: number; tgt: number }[] = [];
   private marker: THREE.Mesh;
@@ -232,8 +233,12 @@ export class Magazine {
     const block = new THREE.Mesh(new THREE.BoxGeometry(PW, PH, 0.006), new THREE.MeshStandardMaterial({ color: 0xf3efe6, roughness: 0.6, map: (() => { const t = new THREE.CanvasTexture(edgeCanvas()); t.colorSpace = THREE.SRGBColorSpace; return t; })() }));
     block.position.set(PW / 2 + 0.0015, -0.002, -0.0035);
     this.group.add(block);
-    const adTex: THREE.CanvasTexture = new THREE.CanvasTexture(adCanvas(() => { adTex.needsUpdate = true; }));
+    const adTex: THREE.CanvasTexture = new THREE.CanvasTexture(adCanvas(() => { adTex.needsUpdate = true; this.backTex.needsUpdate = true; }));
     adTex.colorSpace = THREE.SRGBColorSpace;
+    this.backTex = adTex.clone();
+    this.backTex.wrapS = THREE.RepeatWrapping;
+    this.backTex.repeat.x = -1;
+    this.backTex.offset.x = 1;
     const back = new THREE.Mesh(new THREE.PlaneGeometry(PW, PH), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, map: adTex }));
     back.rotation.y = Math.PI;
     back.position.set(PW / 2 + 0.0015, -0.002, -0.0068);
@@ -241,7 +246,8 @@ export class Magazine {
     this.turnGeo = new THREE.PlaneGeometry(PW, PH, 28, 1);
     this.turnGeo.translate(PW / 2, 0, 0);
     this.turnFront = new THREE.Mesh(this.turnGeo, this.pageMaterial(this.pages[0].tex));
-    this.turnBack = new THREE.Mesh(this.turnGeo, new THREE.MeshStandardMaterial({ side: THREE.BackSide, roughness: 0.35, map: this.pages[0].tex }));
+    (this.turnFront.material as THREE.MeshStandardMaterial).transparent = true;
+    this.turnBack = new THREE.Mesh(this.turnGeo, new THREE.MeshStandardMaterial({ side: THREE.BackSide, roughness: 0.35, map: this.backTex, transparent: true }));
     this.turnFront.visible = this.turnBack.visible = false;
     this.turnFront.position.z = this.turnBack.position.z = 0.0008;
     this.group.add(this.turnFront, this.turnBack);
@@ -573,9 +579,8 @@ export class Magazine {
     this.turn = { active: true, t: 0, dir, from, to: i };
     const tf = this.turnFront.material as THREE.MeshStandardMaterial;
     const tb = this.turnBack.material as THREE.MeshStandardMaterial;
-    if (dir > 0) { tf.map = this.pages[from].tex; this.frontMat.map = this.pages[i].tex; tb.map = this.pages[Math.min(this.pages.length - 1, i)].tex; }
-    else { tf.map = this.pages[i].tex; this.frontMat.map = this.pages[from].tex; tb.map = this.pages[from].tex; }
-    tf.needsUpdate = tb.needsUpdate = this.frontMat.needsUpdate = true;
+    if (dir > 0) { tf.map = this.pages[from].tex; this.frontMat.map = this.pages[i].tex; }
+    else { tf.map = this.pages[i].tex; this.frontMat.map = this.pages[from].tex; }
     this.turnFront.visible = this.turnBack.visible = true;
     this.marker.visible = false;
     sfx.page();
@@ -617,6 +622,10 @@ export class Magazine {
       const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
       const theta = (this.turn.dir > 0 ? e : 1 - e) * Math.PI;
       this.curl(theta);
+      // the turned page lands on the left and slips away (we only ever show the right-hand page)
+      const op = Math.min(1, Math.max(0, (Math.PI - theta) / (Math.PI * 0.35)));
+      (this.turnFront.material as THREE.MeshStandardMaterial).opacity = op;
+      (this.turnBack.material as THREE.MeshStandardMaterial).opacity = op;
       if (k >= 1) {
         this.turn.active = false;
         this.turnFront.visible = this.turnBack.visible = false;
@@ -746,9 +755,9 @@ function tabCanvas(label: string, color: string, i: number) {
   g.addColorStop(0, 'rgba(0,0,0,0.12)'); g.addColorStop(0.25, 'rgba(0,0,0,0)'); g.addColorStop(0.92, 'rgba(255,255,255,0.15)'); g.addColorStop(1, 'rgba(0,0,0,0.12)');
   ctx.fillStyle = g; ctx.fill();
   ctx.fillStyle = '#1b2b6b';
-  ctx.font = `400 ${label.length > 7 ? 46 : 58}px ${F.hand}`;
+  ctx.font = `400 ${label.length > 9 ? 38 : label.length > 6 ? 46 : 58}px ${F.hand}`;
   ctx.textBaseline = 'middle';
-  ctx.save(); ctx.translate(96, 62); ctx.rotate((rnd() - 0.5) * 0.06); ctx.fillText(label, 0, 0); ctx.restore();
+  ctx.save(); ctx.translate(114, 62); ctx.rotate((rnd() - 0.5) * 0.06); ctx.fillText(label, 0, 0); ctx.restore();
   return cv;
 }
 

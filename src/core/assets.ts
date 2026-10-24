@@ -84,7 +84,9 @@ class AssetSys {
     }
     t = entry.tex!.clone();
     this.applyOpts(t, opts);
+    // clone() bumps version; keep 0 until the shared image arrives (avoids 'no image data' warnings)
     if (entry.loaded) t.needsUpdate = true;
+    else t.version = 0;
     entry.variants.push(t);
     this.texCache.set(key, t);
     return t;

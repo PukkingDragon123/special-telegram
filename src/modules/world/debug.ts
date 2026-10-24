@@ -81,10 +81,18 @@ export function installDebug(game: Game, root: THREE.Group, anchors: Record<stri
     cam.rotation.set(pitch, yaw, 0, 'YXZ');
     cam.updateMatrixWorld();
   };
+  // hide the local player's own body while flying (it stays where it was standing)
+  let hidden: THREE.Object3D[] = [];
+  const hideSelf = (on: boolean) => {
+    if (!on) { for (const o of hidden) o.visible = true; hidden = []; return; }
+    const vs = (game as any).views?.of?.(game.localPlayerId) ?? [];
+    for (const v of vs) if (v?.object && v.object.visible) { v.object.visible = false; hidden.push(v.object); }
+  };
   return {
     update(dt: number) {
       if (!started && flying) { started = true; setFly(true); }
-      if (!flying) return;
+      if (!flying) { if (hidden.length) hideSelf(false); return; }
+      hideSelf(true);
       if (Input.locked) { yaw -= Input.mouseDX * Input.sensitivity; pitch = Math.max(-1.5, Math.min(1.5, pitch - Input.mouseDY * Input.sensitivity)); }
       const sp = (Input.isDown('ShiftLeft') ? 22 : 6) * dt;
       const f = new THREE.Vector3(-Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch));

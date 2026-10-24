@@ -373,7 +373,7 @@ export function cartView(game: Game, fx: CookFX) {
         m.flame.scale.setScalar(0.85 + u.uHeat.value * 0.35);
         flareK = Math.max(0, flareK - dt * 2.5);
         const flick = 0.75 + 0.25 * Math.sin(t * 31) * Math.sin(t * 17.3);
-        m.flameLight.intensity = (u.uOn.value * (0.6 + heat * 2.2) * flick + flareK * 9) * 1.0;
+        m.flameLight.intensity = (u.uOn.value * (0.25 + heat * 0.9) * flick + flareK * 6) * (0.45 + (game.clock?.nightFactor ?? 0) * 0.55);
         if (on && heat > 0.55 && wok) {
           const bp = root.localToWorld(tmp.set(CART.burner.x, CART.stand + 0.02, CART.burner.z));
           fx.rate('lick' + e.id, (heat - 0.5) * 30, dt, () => fx.lick(bp, heat));
@@ -611,6 +611,7 @@ export function snapCartPoint(local: THREE.Vector3, heldTags: string[] | undefin
 
 export function cartProvider(game: Game, heatState: { v: number; t: number }) {
   return (ctx: Ctx): Action[] | null => {
+    fixSelfHit(game, ctx);
     const me = ctx.me;
     const acts: Action[] = [];
     // while pushing: E releases (wins everything)
@@ -675,3 +676,37 @@ export function cartProvider(game: Game, heatState: { v: number; t: number }) {
 }
 
 export { tube, bar, pbr };
+
+// ------------------------------------------------------------------ self-hit workaround
+// The core look-at raycast can hit the LOCAL player's own (invisible, first-person) body when
+// looking steeply down at a counter. Re-cast against carts & items so cooking still targets them.
+const _ray = new THREE.Raycaster();
+const _c0 = new THREE.Vector2(0, 0);
+export function fixSelfHit(game: Game, ctx: Ctx) {
+  const h = ctx.hit;
+  if (!h || !(h.kind === 'player' && h.eid === game.localPlayerId)) return;
+  _ray.setFromCamera(_c0, ctx.camera);
+  _ray.far = 3.0;
+  const objs: THREE.Object3D[] = [];
+  const me = game.me;
+  const mp = me?.p ?? [0, 0, 0];
+  for (const c of game.state.all('cart')) { const o = game.views.objectOf(c.id); if (o?.parent && c.p && Math.hypot(c.p[0] - mp[0], c.p[2] - mp[2]) < 5) objs.push(o); }
+  for (const e of game.state.all('item')) {
+    if (e.holder != null || e.in != null || !e.p) continue;
+    if (Math.hypot(e.p[0] - mp[0], e.p[2] - mp[2]) > 3.5) continue;
+    const o = game.views.objectOf(e.id); if (o?.parent) objs.push(o);
+  }
+  const hits = _ray.intersectObjects(objs, true);
+  for (const x of hits) {
+    let o: THREE.Object3D | null = x.object, root: THREE.Object3D | null = null;
+    while (o) { if (o.userData?.interact) { root = o; break; } o = o.parent; }
+    if (!root) continue;
+    let vis = true; for (let p: THREE.Object3D | null = x.object; p; p = p.parent) if (!p.visible) { vis = false; break; }
+    if (!vis) continue;
+    const meta = root.userData.interact;
+    const n = x.face ? x.face.normal.clone().transformDirection(x.object.matrixWorld) : new THREE.Vector3(0, 1, 0);
+    ctx.hit = { object: root, mesh: x.object, point: x.point.clone(), normal: n, dist: x.distance, kind: meta.kind, eid: meta.eid, ent: meta.eid !== undefined ? game.state.get(meta.eid) : undefined, data: meta.data };
+    return;
+  }
+  ctx.hit = null;
+}

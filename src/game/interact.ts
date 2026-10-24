@@ -104,6 +104,7 @@ export class Interaction {
       if (!root) continue;
       const meta = root.userData.interact;
       if (meta.eid !== undefined && excludeHeld.has(meta.eid)) continue;
+      if (meta.kind === 'player' && meta.eid === this.game.localPlayerId) continue;
       if (h.distance > (meta.reach ?? this.reach)) continue;
       if (!isVisibleChain(h.object)) continue;
       const n = h.face ? h.face.normal.clone().transformDirection(h.object.matrixWorld) : new THREE.Vector3(0, 1, 0);

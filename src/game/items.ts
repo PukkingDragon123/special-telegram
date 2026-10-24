@@ -424,7 +424,7 @@ export class ItemSystem {
           const c = game.state.get(e.in);
           if (cobj && c) {
             parent = (cobj.getObjectByName('contents') as THREE.Object3D) ?? cobj; mode = 'in';
-            local = { pos: this.containerSpot(c, e), rot: new THREE.Euler(0, (e.id * 1.7) % 6.28, 0), scale: 1 };
+            local = { pos: this.containerSpot(c, e), rot: new THREE.Euler(0, e.at?.[3] ?? (e.id * 1.7) % 6.28, 0), scale: 1 };
           }
         }
         if (mode !== 'held') holder.visible = true;
