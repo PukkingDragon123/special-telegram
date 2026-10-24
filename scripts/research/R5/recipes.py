@@ -225,7 +225,7 @@ add("cicadas_loop", AM, "amb", "Hot-afternoon cicada chorus (trees, empty lot, t
 add("crickets_frogs_night_loop", AM, "amb", "Night insects + frogs near the canal / rice-field edge.",
     [V(W.crickets_frogs, xfade=2.0)], vol=0.6, loop=True, pitchVar=0.0)
 add("tokay_gecko", WO, "sfx", "Tokay gecko 'TOK-KAE, TOK-KAE' call (ตุ๊กแก) - iconic Thai night sound.",
-    [V(W.tokay_call, fout=0.3)],
+    [V(W.tokay_call, fout=0.3), V(W.cm("commons_tokay", "Gekko_gecko.wav"), ss=2.4, t=9.6, fout=0.4)],
     vol=0.6, pitchVar=0.03)
 add("temple_bell", WO, "sfx", "Temple bells: (1) big bronze bell struck, (2) small eave wind-bells tinkling.",
     [V(P(W.thai_temple_bell, 1, 6.0), fout=0.6), V(P(W.wind_bells, 2, 6.0, False), fout=0.6)], vol=0.55, pitchVar=0.02)

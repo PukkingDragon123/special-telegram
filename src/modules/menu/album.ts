@@ -113,7 +113,7 @@ export function buildBackdrop(refCam: THREE.PerspectiveCamera) {
           vec3 edge = vec3(0.937, 0.804, 0.463);
           inside = mix(edge, inside, smoothstep(1.02, 0.80, d));
           float vig = smoothstep(0.35, 0.95, distance(uv * vec2(0.8, 1.0), vec2(0.4, 0.55)));
-          vec3 outside = mix(vec3(0.533, 0.471, 0.329), vec3(0.278, 0.243, 0.157), vig);
+          vec3 outside = mix(vec3(0.46, 0.405, 0.28), vec3(0.2, 0.172, 0.11), vig);
           return mix(outside, inside, disc);
         }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
@@ -126,7 +126,7 @@ export function buildBackdrop(refCam: THREE.PerspectiveCamera) {
           float paperL = dot(diffuseColor.rgb, vec3(0.3333)) / 0.86;
           float wall = smoothstep(0.08, 0.95, vWPos.y);
           float puls = 1.0 + uPulse * 0.25 * exp(-pow(distance(cuv, vec2(0.5, 0.45)) / 0.5, 2.0));
-          totalEmissiveRadiance += s2l(g) * (0.85 + 0.15 * paperL) * wall * uGlow * 1.25 * puls;
+          totalEmissiveRadiance += s2l(g) * (0.85 + 0.15 * paperL) * wall * uGlow * 2.3 * puls;
           diffuseColor.rgb *= mix(1.0, 0.25, wall);
         }`);
   };
@@ -158,7 +158,7 @@ export function buildRug() {
   geo.computeVertexNormals();
   const mat = new THREE.MeshStandardMaterial({
     map: tex('rug_albedo.jpg', 1), normalMap: tex('rug_normal.jpg', 1, false),
-    roughnessMap: tex('rug_orm.jpg', 1, false), aoMap: tex('rug_orm.jpg', 1, false), roughness: 1, color: 0x767a5e,
+    roughnessMap: tex('rug_orm.jpg', 1, false), aoMap: tex('rug_orm.jpg', 1, false), roughness: 1, color: 0x6c7d4c,
   });
   mat.normalScale.set(1.2, 1.2);
   // ORM: R = AO, G = roughness
@@ -203,7 +203,7 @@ export function buildSofa() {
   g.name = 'album_sofa';
   const leather = new THREE.MeshPhysicalMaterial({
     map: tex('sofa_leather_albedo.jpg', [2, 2]), normalMap: tex('sofa_leather_normal.jpg', [2, 2], false),
-    roughnessMap: tex('sofa_leather_rough.jpg', [2, 2], false), roughness: 0.75, color: 0xc9a080, clearcoat: 0.25, clearcoatRoughness: 0.45, sheen: 0.2, sheenColor: new THREE.Color(0xf8c48a),
+    roughnessMap: tex('sofa_leather_rough.jpg', [2, 2], false), roughness: 0.75, color: 0xa8927e, clearcoat: 0.25, clearcoatRoughness: 0.45, sheen: 0.2, sheenColor: new THREE.Color(0xf8c48a),
   });
   const add = (geo: THREE.BufferGeometry, x: number, y: number, z: number, rx = 0) => {
     const m = new THREE.Mesh(geo, leather);

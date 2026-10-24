@@ -153,14 +153,29 @@ def oil():
          True, False, [2.4, 2.4], [u[0] for u in uvs], ["rgba"], atlas_uv=uvs)
 
 
+def blob_filter(al, min_area, max_elong, min_fill):
+    b = (al > 0.35).astype(np.uint8)
+    n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
+    keep = np.zeros(n, bool)
+    for i in range(1, n):
+        w, h, area = st[i, cv2.CC_STAT_WIDTH], st[i, cv2.CC_STAT_HEIGHT], st[i, cv2.CC_STAT_AREA]
+        el = max(w, h) / max(1, min(w, h))
+        fill = area / max(1, w * h)
+        keep[i] = area >= min_area and el <= max_elong and fill >= min_fill and area < 6000
+    m = keep[lab].astype(np.float32)
+    m = cv2.dilate(m, np.ones((3, 3), np.uint8))
+    return al * m
+
+
 def gum():
     a = src("f7a2a5c7")
     h, w = a.shape[:2]
     c = crop(a, 0, int(h * 0.55), w, h)
     al = alpha_from_dark(c, 120, 0.12, 0.45)
     # remove thin joint lines: opening with a disc keeps blobs only
-    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
     al = cv2.morphologyEx(al, cv2.MORPH_OPEN, k)
+    al = blob_filter(al, 30, 2.6, 0.35)
     al = feather(al, 1.0)
     rgb = np.clip(c * 0.7, 0, 1)
     out = np.dstack([rgb, al])
@@ -194,22 +209,28 @@ def butts():
 
 # ------------------------------------------------------------------ puddles & potholes
 def puddles():
-    a = src("46e8d835")
-    l = lum(a)
-    bg = local_bg(l, 200)
-    al = smoothstep(0.04, 0.16, l - bg)
-    al = cv2.morphologyEx(al, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)))
-    al = feather(al, 2.0)
-    h, w = al.shape
-    al *= ellipse_mask(h, w, w / 2, h / 2, w * 0.55, h * 0.55, noise=0.05, soft=0.2)
-    rgb = np.clip(a * 0.45 + np.array([0.08, 0.075, 0.07]) * 0.55, 0, 1)
-    out = np.dstack([rgb, al])
-    save_rgba(decontaminate(out), f"{OUT}/decal_puddles_photo.png", size=(1024, 1024))
-    rough = np.clip(1 - al * 0.95, 0.04, 1)
-    save_rgb(np.dstack([rough] * 3), f"{OUT}/decal_puddles_photo_rough.jpg", 90, size=(1024, 1024))
-    meta("decal_puddles_photo", "Puddle shapes extracted from a real top-down photo of wet asphalt (alpha = "
-         "standing water). Pair with decal_puddles_photo_rough (water ~0.04) so env/neon reflections come "
-         "from the renderer.", "1024x1024", True, False, [2.5, 2.5], ["46e8d835"], ["rgba", "rough"])
+    a = src("bb1e10c6")                       # real puddle reflecting clouds, top-down
+    c = crop(a, 140, 0, a.shape[1], a.shape[0])
+    l = lum(c)
+    al = smoothstep(0.36, 0.48, l)
+    al = cv2.morphologyEx(al, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (31, 31)))
+    al = cv2.morphologyEx(al, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11)))
+    b = (al > 0.5).astype(np.uint8)
+    n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
+    if n > 1:
+        big = 1 + int(np.argmax(st[1:, cv2.CC_STAT_AREA]))
+        al = al * (lab == big)
+    al = feather(al, 3.0)
+    rgb = np.clip(c * 0.35 + np.array([0.07, 0.065, 0.06]) * 0.65, 0, 1)
+    out = trim(np.dstack([rgb, al]), 8, 0.02)
+    out = rs(out, 1024, int(1024 * out.shape[0] / out.shape[1]) // 4 * 4)
+    save_rgba(decontaminate(out), f"{OUT}/decal_puddles_photo.png")
+    rough = np.clip(1 - out[..., 3] * 0.96, 0.04, 1)
+    save_rgb(np.dstack([rough] * 3), f"{OUT}/decal_puddles_photo_rough.jpg", 90)
+    meta("decal_puddles_photo", "Puddle shape extracted from a real top-down photo of a street puddle "
+         "(alpha = standing water, RGB = dark muddy water so the renderer's env map / neon supplies the "
+         "reflection). Pair with decal_puddles_photo_rough (water ~0.04).", f"1024x{out.shape[0]}", True,
+         False, [2.2, round(2.2 * out.shape[0] / 1024, 2)], ["bb1e10c6"], ["rgba", "rough"])
 
 
 def potholes():
@@ -274,11 +295,13 @@ def moss():
 
 def posters():
     items = []
-    for cid in ("8927c0fd", "a83167f6", "9962382a", "edf111d0"):
+    for cid in ("8927c0fd", "a83167f6", "9962382a", "8927c0fd#b"):
         try:
-            a = src(cid)
+            a = src(cid.split("#")[0])
         except Exception:
             continue
+        if cid.endswith("#b"):
+            a = a[a.shape[0] // 2:, :]
         h, w = a.shape[:2]
         m = np.ones((h, w), np.float32)
         rng = np.random.default_rng(len(items))
@@ -296,18 +319,18 @@ def posters():
 
 def flyers():
     a = src("5edb6400")
-    c = crop(a, 120, 130, 900, 1010)
-    al = alpha_from_bright(c, 220, 0.10, 0.32)
-    al = cv2.morphologyEx(al, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)))
-    al = cv2.morphologyEx(al, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)))
+    c = crop(a, 180, 280, 880, 1000)
+    al = smoothstep(0.31, 0.40, lum(c))
+    al = cv2.morphologyEx(al, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (17, 17)))
+    al = cv2.morphologyEx(al, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)))
     al = feather(al, 1.0)
     rgb = np.clip((c - 0.08) * 1.35, 0, 1)
     rgb = rgb * np.array([1.0, 0.985, 0.95])           # photocopy paper warmth
     out = np.dstack([rgb, al])
-    save_rgba(decontaminate(out), f"{OUT}/decal_flyers_loan_cluster_photo.png", size=(904, 1024))
+    save_rgba(decontaminate(out), f"{OUT}/decal_flyers_loan_cluster_photo.png", size=(1000, 1024))
     meta("decal_flyers_loan_cluster_photo", "Cluster of photocopied 'เงินด่วน' loan flyers cut from a real B&W "
          "photo of a utility pole (alpha = paper). Wrap around concrete poles / walls at 1.2-2.0 m.",
-         "904x1024", True, False, [0.75, 0.85], ["5edb6400"], ["rgba"])
+         "1000x1024", True, False, [0.7, 0.72], ["5edb6400"], ["rgba"])
 
 
 # ------------------------------------------------------------------ wires & cable
@@ -363,4 +386,4 @@ if __name__ == "__main__":
     for nm in (sys.argv[1:] or list(JOBS)):
         print("==", nm, flush=True)
         JOBS[nm]()
-    save_manifest_part()
+        save_manifest_part()

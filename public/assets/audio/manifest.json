@@ -1014,7 +1014,8 @@
  },
  "tokay_gecko": {
   "files": [
-   "sfx/world/tokay_gecko.mp3"
+   "sfx/world/tokay_gecko_1.mp3",
+   "sfx/world/tokay_gecko_2.mp3"
   ],
   "vol": 0.6,
   "loop": false,
@@ -2015,5 +2016,26 @@
   "cat": "voice",
   "pitchVar": 0.04,
   "desc": "สบายดีไหม - how are you? Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "ao_arai": {
+  "files": [
+   "voice/ao_arai.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "เอาอะไรคะ - what would you like? (vendor/auntie). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "thao_rai": {
+  "files": [
+   "voice/thao_rai_1.mp3",
+   "voice/thao_rai_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "(ทั้งหมด)เท่าไรคะ/ครับ - how much (in total)? (customer). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
  }
 }

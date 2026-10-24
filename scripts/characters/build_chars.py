@@ -325,7 +325,7 @@ def build_body(src, sex):
 
     shells = []
     z_neck = zof(1.452)
-    sh_edge = sh_x + 0.012
+    sh_edge = sh_x + 0.05
     TOPS = {'u': (0.86, 0.010), 't': (0.975, 0.008), 'l': (0.82, 0.022), 'j': (0.78, 0.03)}
     for key, (hem, off) in TOPS.items():
         shells.append(make_shell('shell_top_' + key, hi, zof(hem), z_neck, None, sh_edge, off))

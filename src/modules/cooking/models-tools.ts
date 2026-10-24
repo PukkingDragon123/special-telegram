@@ -404,9 +404,9 @@ export function buildRicePot() {
 export function buildGasTank() {
   const g = G();
   const R = 0.15;
-  g.add(mesh(gc('lpgFoot', () => lathe([[R * 0.9, 0], [R * 0.95, 0], [R * 0.95, 0.05], [R * 0.9, 0.05]], 18)), M.paint(0xb4141a)));
-  g.add(mesh(gc('lpgBody', () => dent(lathe([[0.0001, 0.04], [R * 0.7, 0.045], [R, 0.09], [R, 0.42], [R * 0.75, 0.5], [0.04, 0.53], [0.0001, 0.535]], 20, { wobble: 0.01, seed: 8 }), 0.003, 6, 2)), M.paint(0xc4161c)));
-  g.add(mesh(gc('lpgCollar', () => lathe([[0.075, 0.5], [0.08, 0.5], [0.08, 0.6], [0.075, 0.6]], 14)), M.paint(0xc4161c)));
+  g.add(mesh(gc('lpgFoot', () => lathe([[R * 0.9, 0], [R * 0.95, 0], [R * 0.95, 0.05], [R * 0.9, 0.05]], 18)), M.paint(0x1d58a8)));
+  g.add(mesh(gc('lpgBody', () => dent(lathe([[0.0001, 0.04], [R * 0.7, 0.045], [R, 0.09], [R, 0.42], [R * 0.75, 0.5], [0.04, 0.53], [0.0001, 0.535]], 20, { wobble: 0.01, seed: 8 }), 0.003, 6, 2)), M.paint(0x2266b8)));
+  g.add(mesh(gc('lpgCollar', () => lathe([[0.075, 0.5], [0.08, 0.5], [0.08, 0.6], [0.075, 0.6]], 14)), M.paint(0x2266b8)));
   g.add(mesh(gc('lpgValve', () => merge([new THREE.CylinderGeometry(0.014, 0.016, 0.05, 8).translate(0, 0.555, 0), new THREE.CylinderGeometry(0.008, 0.008, 0.03, 6).rotateZ(Math.PI / 2).translate(0.02, 0.565, 0)])), cachedMat('brass', () => new THREE.MeshStandardMaterial({ color: 0xc8a050, metalness: 0.9, roughness: 0.35 }))));
   g.add(mesh(gc('lpgLabel', () => lathe([[R * 1.008, 0.2], [R * 1.008, 0.36]], 24)), M.label('gas_tank')));
   return g;

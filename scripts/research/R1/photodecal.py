@@ -240,7 +240,7 @@ def seamless_y(a, border=0.15):
 
 
 def height_from_lum(rgb, sigma=4):
-    l = lum(rgb)
+    l = lum(np.ascontiguousarray(rgb, np.float32)).astype(np.float32)
     h = l - cv2.GaussianBlur(l, (0, 0), sigma * 4)
     h = cv2.GaussianBlur(h, (0, 0), 0.8)
     h = (h - h.min()) / max(h.max() - h.min(), 1e-6)
@@ -248,6 +248,7 @@ def height_from_lum(rgb, sigma=4):
 
 
 def normal_from_height(h, strength=3.0, wrap=True):
+    h = np.ascontiguousarray(h, np.float32)
     if wrap:
         hp = np.pad(h, 2, mode="wrap")
     else:

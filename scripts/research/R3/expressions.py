@@ -6,10 +6,13 @@ Variants: dumb_thinking, drunk, sleep, shock, scream.
 Each returns (rgb_float, zero_tint_mask, new_landmarks).
 """
 import math
+import os
 
-import cv2
-import numpy as np
-from scipy.interpolate import RBFInterpolator
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+
+import cv2  # noqa: E402
+import numpy as np  # noqa: E402
 
 import texlib as T
 
@@ -37,6 +40,38 @@ LIPS_IN_ALL = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308, 324, 318, 402, 
 
 
 # ----------------------------------------------------------------------------- warp core
+class RBFInterpolator:
+    """Minimal thin-plate-spline interpolator (2-D -> 2-D), drop-in for the scipy call used here."""
+
+    def __init__(self, pts, vals, kernel="thin_plate_spline", smoothing=0.0):
+        P = np.asarray(pts, np.float64)
+        V = np.asarray(vals, np.float64)
+        self.c = P.mean(0)
+        self.s = float(np.abs(P - self.c).max() + 1e-9)
+        Pn = (P - self.c) / self.s
+        n = len(Pn)
+        d = np.sqrt(((Pn[:, None, :] - Pn[None, :, :]) ** 2).sum(-1))
+        K = np.where(d > 0, d * d * np.log(d + 1e-300), 0.0) + smoothing * 1e-3 * np.eye(n)
+        A = np.hstack([np.ones((n, 1)), Pn])
+        M = np.zeros((n + 3, n + 3))
+        M[:n, :n] = K
+        M[:n, n:] = A
+        M[n:, :n] = A.T
+        rhs = np.vstack([V, np.zeros((3, V.shape[1]))])
+        sol = np.linalg.solve(M, rhs)
+        self.w, self.a, self.P = sol[:n], sol[n:], Pn
+
+    def __call__(self, q):
+        Q = (np.asarray(q, np.float64) - self.c) / self.s
+        out = np.empty((len(Q), self.w.shape[1]))
+        for i in range(0, len(Q), 4096):
+            qq = Q[i:i + 4096]
+            d = np.sqrt(((qq[:, None, :] - self.P[None, :, :]) ** 2).sum(-1))
+            U = np.where(d > 0, d * d * np.log(d + 1e-300), 0.0)
+            out[i:i + 4096] = U @ self.w + np.hstack([np.ones((len(qq), 1)), qq]) @ self.a
+        return out
+
+
 def tps_warp(img, lm, moves, free_radius=0.0, step=8, smoothing=0.5):
     """moves: dict idx -> (dx, dy) displacement of that landmark (dest = src + d).
     Every other landmark further than free_radius from a moved one is pinned.

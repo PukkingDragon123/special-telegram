@@ -7,7 +7,7 @@ import { SHOPS, SHOP_BY_ID, basePrice, inHours } from './data';
 import { defineOwnItems, defineFallbacks } from './items';
 import { loadShopManifest } from './tex';
 import { registerFallbackKeeperView, clearKeeperProxies } from './keepers';
-import { RT, buildShops, hostTick, clientFrame, newDay, installIntents, installClient, resolveKind, billOf, isBanned, insideShop, unpaidOf, startMad } from './trade';
+import { RT, buildShops, hostTick, clientFrame, newDay, installIntents, installClient, resolveKind, billOf, isBanned, insideShop, unpaidOf, startMad, clearClient } from './trade';
 
 /**
  * SHOPS module — เฮียผัด!'s market stalls, shophouses, 8-Twelve and แม็กโคร่ง: shopkeepers with idle
@@ -110,7 +110,7 @@ export default defineModule({
     game.events.on('world:ready', () => {
       try { buildShops(game); shoplab(game); } catch (e) { console.error('[shops] build', e); }
     });
-    game.events.on('world:exit', () => { clearKeeperProxies(game); RT.clear(); });
+    game.events.on('world:exit', () => { clearKeeperProxies(game); clearClient(); RT.clear(); });
   },
   buildWorld(game) {
     // fallback item kinds for stock nobody else defines (all module inits are done by now)

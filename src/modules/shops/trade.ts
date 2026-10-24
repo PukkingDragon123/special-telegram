@@ -10,7 +10,8 @@ import * as Lines from './lines';
 import { fill, pickLine } from './lines';
 import { buildFixture, setShutter, updateCard, ShopFix } from './fixtures';
 import { spawnKeeper, keeperLife, wakeKeeper, setAnim, keeperCall, keeperSex, keeperFrame } from './keepers';
-import { calcTex, canvasMat, hangTagTex } from './tex';
+import { calcTex, canvasMat, hangTagTex, signTex } from './tex';
+import { F } from '../../core/fonts';
 import { dist2D, roundPrice, shuffle, sndKey, tl } from './util';
 
 /* =============================================================================================
@@ -460,7 +461,7 @@ function startBargain(rt: ShopRT, pl: Ent) {
     setAnim(G, k, 'shrug');
     return;
   }
-  if (rt.session) { rt.say(pickLine(Lines.BUSY, Lines.BUSY)); return; }
+  if (rt.session || (rt.ent.bar && rt.ent.bar.pid !== pl.id)) { rt.say(pickLine(Lines.BUSY, Lines.BUSY)); return; }
   if (rt.ent.dealt?.[pl.id]) { rt.say(pickLine(Lines.AGAIN, Lines.AGAIN)); rt.ent.mood = (rt.ent.mood ?? 0) - 0.5; return; }
   k.kst = 'bargain'; k.hold = 'shop_calculator'; k.lookAt = pl.id; k.face = 'think';
   setAnim(G, k, 'think');
@@ -528,7 +529,8 @@ export function startMad(rt: ShopRT, pl: Ent, reason: 'leave' | 'rude' | 'debt')
   const k = rt.keeper;
   if (!k) return;
   if (rt.session?.kind === 'mad') return;
-  rt.session = null;
+  // placeholder session right away (the choice pops up after the shout) so scans don't re-trigger
+  rt.session = { kind: 'mad', pid: pl.id, token: -1, reason, right: -1, funny: -1, deadline: rt.now + 6 };
   k.kst = 'mad'; k.face = 'scream'; k.lookAt = pl.id; k.hold = null;
   setAnim(G, k, 'angry', true);
   rt.ent.mood = Math.min(rt.ent.mood ?? 0, -2);
@@ -968,6 +970,15 @@ let visAcc = 0;
 const tagViews = new Map<number, { g: THREE.Group; price: number; ang: number; vel: number; last: THREE.Vector3 | null }>();
 const calcs = new Map<string, { mesh: THREE.Mesh; text: string }>();
 
+/** World scene left: drop local caches (meshes lived in the old scene). */
+export function clearClient() {
+  for (const t of tagViews.values()) t.g.removeFromParent();
+  tagViews.clear();
+  for (const c of calcs.values()) c.mesh.removeFromParent();
+  calcs.clear();
+  for (const rt of RT.values()) rt.fix?.root.removeFromParent();
+}
+
 export function clientFrame(game: Game, dt: number) {
   G = game;
   keeperFrame(game, dt);
@@ -979,6 +990,17 @@ export function clientFrame(game: Game, dt: number) {
     const closed = rt.ent.id >= 0 && !rt.ent.open;
     if (rt.fix.shutter) { const sh = rt.fix.shutter; const want = closed ? 1 : 0; const k = sh.k + Math.sign(want - sh.k) * Math.min(Math.abs(want - sh.k), dt * 0.55); setShutter(game, rt.fix, k); }
     if (rt.fix.tarp) rt.fix.tarp.visible = closed;
+    // closed sign: "not open yet today" vs. "locked until day N" (funny reasons)
+    const sign = rt.fix.closedSign;
+    if (sign && rt.ent.id >= 0) {
+      const mode = rt.ent.unlocked === false && rt.def.lockedNote ? 'locked' : 'closed';
+      if (sign.userData.mode !== mode) {
+        sign.userData.mode = mode;
+        const note = mode === 'locked' ? rt.def.lockedNote! : (rt.def.closedNote ?? tl('ปิด', 'closed'));
+        (sign.material as THREE.MeshStandardMaterial).map = signTex('closed:' + note.th, [{ text: note.th, size: 72, color: '#b11414' }, ...(note.en ? [{ text: note.en, size: 30, color: '#333', font: F.hand }] : [])], 'card_board', 640, 400);
+        (sign.material as THREE.MeshStandardMaterial).needsUpdate = true;
+      }
+    }
     // bargaining calculator (diegetic price display in front of the keeper)
     calcFrame(game, rt);
   }

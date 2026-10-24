@@ -204,8 +204,8 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
   calc.position.copy(fr.at(-W / 2 + 0.22, H + 0.012, zc + 0.36)); calc.rotation.y = fr.back + 0.25;
   root.add(calc);
   // shop name sign hanging from the canopy (hand-painted on cardboard)
-  const sign = new THREE.Mesh(plane(1.1, 0.42), canvasMat(signTex('stall:' + s.id, [{ text: st.sign, size: 120, color: '#8c1414' }], 'card_kraft', 640, 240)));
-  sign.position.copy(fr.at(0, ph - 0.62, zc - D / 2 - 0.1)); sign.rotation.y = fr.yaw;
+  const sign = new THREE.Mesh(plane(0.86, 0.32), canvasMat(signTex('stall:' + s.id, [{ text: st.sign, size: 120, color: '#8c1414' }], 'card_kraft', 640, 240)));
+  sign.position.copy(fr.at(0, ph - 0.36, zc - D / 2 - 0.12)); sign.rotation.y = fr.yaw;
   root.add(sign);
   // display slots: 2 rows (front on the sheet, back on the tier)
   const slots: Slot[] = [];
@@ -330,24 +330,7 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     c.position.copy(fr.at(xc, L.y + 0.02, L.z - 0.2)); c.rotation.set(0, fr.yaw, 0, 'YXZ'); c.rotateX(-0.9);
     root.add(c); cards.set(stk.id, c);
   });
-  // roller shutter (animated) + roll box + closed sign
-  const shMat = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.45, side: THREE.DoubleSide, color: 0xb9b7b0 });
-  const shGeo = new THREE.PlaneGeometry(sw.w, sw.h, 1, 1).translate(0, -sw.h / 2, 0); // origin at the top
-  const shMesh = new THREE.Mesh(shGeo, shMat);
-  shMesh.castShadow = true; shMesh.receiveShadow = true;
-  const shObj = new THREE.Group();
-  shObj.position.copy(fr.at(sw.off, sw.h, zFront - 0.02)); shObj.rotation.y = fr.yaw;
-  shObj.add(shMesh);
-  const rollBox = new THREE.Mesh(new THREE.BoxGeometry(sw.w + 0.1, 0.26, 0.3).translate(0, 0.13, 0), flat(0x8a8a86, 0.5, 0.4));
-  rollBox.position.set(0, -0.02, -0.12); shObj.add(rollBox);
-  const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.8), canvasMat(signTex('closed:' + s.id, [{ text: s.closedNote?.th ?? 'ปิด', size: 76, color: '#b11414' }], 'card_board', 640, 400)));
-  sign.position.set(0, -sw.h * 0.55, 0.03); shMesh.add(sign);
-  root.add(shObj);
-  const shut: NonNullable<ShopFix['shutter']> = { obj: shObj, mesh: shMesh, h: sw.h, tex: null, k: 0, collider: null, box: { c: fr.arr(sw.off, sw.h / 2, zFront + 0.05), s: [sw.w, sw.h, 0.12], yaw: fr.yaw } };
-  Assets.loadTexture('textures/pbr/shutter_roller_painted/albedo.jpg', { srgb: true, repeat: [sw.w / 2, sw.h / 2] }).then((t) => {
-    shMat.map = t; shMat.color.set(0xdedcd6); shMat.needsUpdate = true; shut.tex = t;
-    t.repeat.y = Math.max(0.001, (sw.h * shut.k) / 2); t.offset.y = 1 - t.repeat.y;
-  }).catch(() => {});
+  const { shut, sign } = makeShutter(game, root, fr, sw.off, sw.w, sw.h, zFront, s.closedNote?.th ?? 'ปิด');
   const colliders = [
     game.physics.addBox(fr.arr(steps[0].x, 0.47, steps[0].z), [steps[0].w, 0.94, steps[0].d], fr.yaw),
     game.physics.addBox(fr.arr(steps[1].x, 0.47, steps[1].z), [steps[1].w, 0.94, steps[1].d], fr.yaw),
@@ -361,6 +344,28 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     shutter: shut,
     closedSign: sign, colliders,
   };
+}
+
+
+/** Animated roller shutter across an opening (local frame), with a hand-written closed sign. */
+function makeShutter(game: Game, root: THREE.Object3D, fr: Frame, off: number, w: number, h: number, zFront: number, note: string) {
+  const shMat = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.45, side: THREE.DoubleSide, color: 0xb9b7b0 });
+  const shMesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1).translate(0, -h / 2, 0), shMat); // origin at the top
+  shMesh.castShadow = true; shMesh.receiveShadow = true;
+  const shObj = new THREE.Group();
+  shObj.position.copy(fr.at(off, h, zFront - 0.02)); shObj.rotation.y = fr.yaw;
+  shObj.add(shMesh);
+  const rollBox = new THREE.Mesh(new THREE.BoxGeometry(w + 0.1, 0.26, 0.3).translate(0, 0.13, 0), flat(0x8a8a86, 0.5, 0.4));
+  rollBox.position.set(0, -0.02, -0.12); shObj.add(rollBox);
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.8), canvasMat(signTex('closed:' + note, [{ text: note, size: 76, color: '#b11414' }], 'card_board', 640, 400)));
+  sign.position.set(0, -h * 0.55, 0.03); shMesh.add(sign);
+  root.add(shObj);
+  const shut: NonNullable<ShopFix['shutter']> = { obj: shObj, mesh: shMesh, h, tex: null, k: 0, collider: null, box: { c: fr.arr(off, h / 2, zFront + 0.05), s: [w, h, 0.12], yaw: fr.yaw } };
+  Assets.loadTexture('textures/pbr/shutter_roller_painted/albedo.jpg', { srgb: true, repeat: [w / 2, h / 2] }).then((t) => {
+    shMat.map = t; shMat.color.set(0xdedcd6); shMat.needsUpdate = true; shut.tex = t;
+    t.repeat.y = Math.max(0.001, (h * shut.k) / 2); t.offset.y = 1 - t.repeat.y;
+  }).catch(() => {});
+  return { shut, sign };
 }
 
 // ------------------------------------------------------------------ 8-TWELVE
@@ -502,7 +507,9 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
   for (let lane = 0; lane < 3; lane++) colliders.push(game.physics.addBox(ctr.arr(lane * 3.2, 0.45, 0.75), [2.6, 0.9, 0.8], ctr.yaw));
   for (const rz of rackRows) for (let i = 0; i <= 4; i++) colliders.push(game.physics.addBox(door.arr(-1 + i * (rackLen / 4), 1.8, rz), [0.1, 3.6, 1.1], door.yaw));
   const c1 = door.at(-10, 0, -0.5), c2 = door.at(16, 0, 22);
+  const { shut, sign } = makeShutter(game, root, door, 0, 5.2, 3.2, -0.2, (game.g.day ?? 1) < s.day ? (s.lockedNote?.th ?? 'ปิด') : (s.closedNote?.th ?? 'ปิด'));
   return {
+    shutter: shut, closedSign: sign,
     sid: s.id, root, slots, cards, cardStyle: style, counter: [root.children[0]],
     keeper: { p: ctr.arr(0, 0, 1.45), yaw: ctr.back, sit: false },
     center: door.arr(3, 0, 9), radius: s.radius,
@@ -541,7 +548,7 @@ export function setShutter(game: Game, fix: ShopFix, k: number) {
   if (fix.closedSign) fix.closedSign.visible = k > 0.95;
   const want = k > 0.9;
   if (want && !sh.collider && game.physics) sh.collider = game.physics.addBox(sh.box.c, sh.box.s, sh.box.yaw);
-  else if (!want && sh.collider && game.physics) { try { game.physics.world.removeCollider(sh.collider, true); } catch {} sh.collider = null; }
+  else if (!want && sh.collider && game.physics) { try { game.physics.removeBody(sh.collider.parent()); } catch {} sh.collider = null; }
 }
 
 /** Re-render a product's price card (price change / sold out). */

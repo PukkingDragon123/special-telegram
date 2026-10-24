@@ -306,7 +306,7 @@ export class CustomizeView {
       if (g.t > 0.65) { g.state = 'run'; g.t = 0; }
     } else if (g.state === 'run') {
       const sp = 4.6;
-      g.yaw = Math.PI / 2 + 0.25;
+      g.yaw = Math.PI / 2 - 0.25;
       g.pos.x -= sp * dt;
       g.pos.z -= sp * 0.25 * dt;
       g.rig.setMove(sp);

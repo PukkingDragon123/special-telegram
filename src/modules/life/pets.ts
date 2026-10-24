@@ -5,8 +5,9 @@ import type { Ctx } from '../../game/interact';
 import { tl, round, angleDiff, damp } from '../../core/util';
 import { yawTo } from '../../game/mapplan';
 import { buildQuad, QuadAnimator, QuadInput, QuadPose, QuadRig } from './quad';
+import { Creature, loadCreature, SPECS } from './creature';
 import { lifeTex } from './tex';
-import { anchorP, dist2, isFoodItem, itemName, playerNear, proxyMaterial, h01 } from './util';
+import { anchorP, dist2, isFoodItem, itemName, playerNear, proxyMaterial, h01, qmul } from './util';
 import { line } from './lines';
 import { sfx, play } from './sounds';
 import { hearts } from './fx';
@@ -26,7 +27,7 @@ const DOG_ADOPT_FEEDS = 4;
 const CAT_ADOPT_FEEDS = 3;
 const CAT_DAY = 5;
 export const DOG_NAME = 'ไอ้หมูสับ';
-export const CAT_NAME = 'น้องไข่ตุ๋น';
+export const CAT_NAME = 'น้องนิล';
 
 interface Brain {
   next: number;            // next decision time (ambient seconds)
@@ -221,6 +222,12 @@ export class Pets {
     if (gh) {
       const d = dist2(gh.p, p);
       e.look = gh.id;
+      if (!e.adopted && d < 3.5 && Math.random() < 0.08 && e.st !== 'dead') {
+        // too scared to run: plays dead (authored clip on the sculpted dog)
+        this.stop(e); e.st = 'dead'; e.scared = true; this.act(e, 'dead');
+        b.next = now + 6;
+        return;
+      }
       if (!e.adopted && d < 6) {
         e.st = 'flee'; e.scared = true;
         const away = new THREE.Vector3(p[0] - gh.p[0], 0, p[2] - gh.p[2]).normalize().multiplyScalar(10).add(new THREE.Vector3(p[0], p[1], p[2]));
@@ -544,7 +551,8 @@ export class Pets {
     this.face(e, pl.p);
     if (e.t === 'dog') {
       e.st = 'wag';
-      this.act(e, (e.aff ?? 0) > 30 ? 'hearts' : 'wag');
+      const r = Math.random();
+      this.act(e, e.adopted ? (r < 0.4 ? 'shake' : r < 0.65 ? 'roll' : 'hearts') : (e.aff ?? 0) > 30 ? 'hearts' : 'wag');
       sfx(game, 'pant', e.p, { vol: 0.7 });
       if (e.adopted || (e.aff ?? 0) > 40) { e.follow = pl.id; b.followUntil = this.now + 90; }
     } else {
@@ -618,39 +626,87 @@ export class Pets {
 
   private makeView(e: Ent, sp: 'dog' | 'cat') {
     const game = this.game;
-    const colors = sp === 'dog'
-      ? { base: '#c08a55', light: '#ead2b0', dark: '#6b4524', nose: '#1a1412', eye: '#2a1608', inner: '#b0646a', mask: '#3b2416', socks: null, tailTip: null }
-      : { base: '#e09a4c', light: '#f6dfc0', dark: '#9c5420', nose: '#c46a6a', eye: '#6a7a1a', inner: '#d08a8a', socks: '#f2e6d4', stripes: true, tailTip: null };
-    const fur = lifeTex(sp === 'dog' ? 'fur_dog.jpg' : 'fur_cat.jpg', { fallback: sp === 'dog' ? '#c8a27a' : '#e8c09a', kind: 'fabric' });
-    const rig: QuadRig = buildQuad({ species: sp, fur, colors, build: sp === 'dog' ? 0.35 : 0.5 });
-    const anim = new QuadAnimator(rig);
-    const root = rig.root;
+    // holder: positioned by the entity; contains the interaction proxy + the visual (procedural
+    // placeholder first, swapped for the sculpted creature as soon as the GLB is ready)
+    const root = new THREE.Group();
     root.name = sp + ':' + e.id;
-    // raycast proxy (invisible material, still hittable)
-    const D = rig.dims;
-    const len = Math.abs(D.body[D.body.length - 1].z - D.body[0].z) + 0.25;
-    const h = D.J[4][1];
-    const proxy = new THREE.Mesh(new THREE.BoxGeometry(0.3 * (sp === 'cat' ? 0.6 : 1), h * 1.1, len), proxyMaterial());
-    proxy.position.set(0, h * 0.55, 0.0);
+    const H = sp === 'dog' ? 0.62 : 0.3, L = sp === 'dog' ? 0.85 : 0.5;
+    const proxy = new THREE.Mesh(new THREE.BoxGeometry(sp === 'dog' ? 0.3 : 0.18, H, L), proxyMaterial());
+    proxy.position.set(0, H * 0.5, 0);
     root.add(proxy);
     const nameOf = () => (e.adopted ? tl(`${e.name || (sp === 'dog' ? DOG_NAME : CAT_NAME)} ♥`, sp === 'dog' ? 'your dog' : 'your cat') : tl(sp === 'dog' ? 'หมาจร' : 'แมวจร', sp === 'dog' ? 'stray dog' : 'stray cat'));
     game.interact.register(root, { kind: sp, eid: e.id, data: { name: nameOf() } });
-    root.userData.headHeight = rig.root.userData.headHeight;
+    root.userData.headHeight = H + 0.2;
     if (e.p) root.position.set(e.p[0], e.p[1], e.p[2]);
     root.rotation.y = e.yaw ?? 0;
+
+    // ---- visual adapters
+    interface Vis { obj: THREE.Object3D; anim: QuadAnimator; update(dt: number, inp: QuadInput): void; setCollar(on: boolean): void; once(k: 'shake' | 'roll' | 'dead'): boolean; setHappy(v: number): void; dispose(): void }
+    const procVis = (): Vis => {
+      const colors = sp === 'dog'
+        ? { base: '#c08a55', light: '#ead2b0', dark: '#6b4524', nose: '#1a1412', eye: '#2a1608', inner: '#b0646a', mask: '#3b2416', socks: null, tailTip: null }
+        : { base: '#2a2726', light: '#4a4644', dark: '#151313', nose: '#3a2a2a', eye: '#a8a020', inner: '#b07a7a', socks: null, tailTip: null };
+      const fur = lifeTex(sp === 'dog' ? 'fur_dog.jpg' : 'fur_cat.jpg', { fallback: sp === 'dog' ? '#c8a27a' : '#2a2726', kind: 'fabric' });
+      const rig: QuadRig = buildQuad({ species: sp, fur, colors, build: sp === 'dog' ? 0.35 : 0.5 });
+      const anim = new QuadAnimator(rig);
+      return {
+        obj: rig.root, anim,
+        update: (dt, inp) => anim.update(dt, inp),
+        setCollar: (on) => { rig.collar.visible = on; },
+        once: () => false,
+        setHappy: () => {},
+        dispose: () => rig.dispose(),
+      };
+    };
+    const creatureVis = (c: Creature): Vis => {
+      const collar = new THREE.Group();
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(1, 0.17, 6, 16), new THREE.MeshStandardMaterial({ color: '#b3202a', roughness: 0.6 }));
+      collar.add(ring);
+      const tag = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.05, 12), new THREE.MeshStandardMaterial({ color: '#e0b440', roughness: 0.25, metalness: 0.9 }));
+      tag.rotation.x = Math.PI / 2;
+      tag.position.set(0, -1.12, 0.1);
+      collar.add(tag);
+      let collarOn = false;
+      return {
+        obj: c.root, anim: c.anim,
+        update: (dt, inp) => c.update(dt, inp, game.camera?.getWorldPosition(camV) ?? null),
+        setCollar: (on) => {
+          if (on && !collarOn) collarOn = c.attachCollar(collar, sp === 'dog' ? 0.072 : 0.04);
+          collar.visible = on;
+        },
+        once: (k) => c.playOnce(k),
+        setHappy: (v) => { c.happy = v; },
+        dispose: () => { c.dispose(); ring.geometry.dispose(); tag.geometry.dispose(); },
+      };
+    };
+    const camV = new THREE.Vector3();
+    let vis: Vis = procVis();
+    root.add(vis.obj);
+    let disposed = false;
+    loadCreature(sp).then((gltf) => {
+      if (disposed) return;
+      try {
+        const c = new Creature(gltf, SPECS[sp], this.life.lab || qmul() >= 1 ? 1 : 0.6);
+        root.remove(vis.obj);
+        vis.dispose();
+        vis = creatureVis(c);
+        root.add(vis.obj);
+        vis.setCollar(!!e.adopted);
+      } catch (err) { console.warn('[life] creature failed, keeping procedural', err); }
+    }).catch((err) => console.warn('[life] creature load failed', sp, err));
+
     let lastAct = -1;
     let adopted = !!e.adopted;
-    rig.collar.visible = adopted;
+    vis.setCollar(adopted);
     const prev = root.position.clone();
     let speed = 0, turn = 0, prevYaw = root.rotation.y;
     const lookV = new THREE.Vector3();
     const inp: QuadInput = { speed: 0, turn: 0, pose: 'stand', wag: 0, eat: false, scratch: false, sniff: false, pant: false, alert: 0, tail: 0.2, look: null };
-    let wagT = 0;
+    let wagT = 0, happyT = 0, happyK = 0;
     return {
       object: root,
       update: (e: Ent, dt: number) => {
         if (!e.p) return;
-        // follow replicated transform
         const k = 1 - Math.exp(-14 * dt);
         const tgt = new THREE.Vector3(e.p[0], e.p[1], e.p[2]);
         if (root.position.distanceToSquared(tgt) > 16) root.position.copy(tgt); else root.position.lerp(tgt, k);
@@ -661,42 +717,45 @@ export class Pets {
         turn += (angleDiff(prevYaw, root.rotation.y) / Math.max(dt, 1e-4) - turn) * damp(6, dt);
         prev.copy(root.position);
         prevYaw = root.rotation.y;
-        // state → animator input
         const st = e.st as string;
-        const pose: QuadPose = st === 'sit' || st === 'scratch' || st === 'swat' ? 'sit' : st === 'lie' || st === 'guard' ? 'lie' : st === 'sleep' ? 'sleep' : st === 'beg' ? (sp === 'cat' ? 'sit' : 'beg') : 'stand';
+        const pose: QuadPose = st === 'sit' || st === 'scratch' || st === 'swat' ? 'sit' : st === 'lie' || st === 'guard' || st === 'dead' ? 'lie' : st === 'sleep' ? 'sleep' : st === 'beg' ? (sp === 'cat' ? 'sit' : 'beg') : 'stand';
         if (e.actT !== lastAct) {
           lastAct = e.actT;
           if (lastAct > 0 || e.act) {
-            if (e.act === 'bark') anim.bark(sp === 'dog' ? 2 : 1);
-            else if (e.act === 'meow' || e.act === 'hiss') anim.bark(1);
-            else if (e.act === 'hearts') { hearts(game, root, 6); wagT = 3; }
-            else if (e.act === 'wag') wagT = 2.5;
+            if (e.act === 'bark') vis.anim.bark(sp === 'dog' ? 2 : 1);
+            else if (e.act === 'meow' || e.act === 'hiss') vis.anim.bark(1);
+            else if (e.act === 'hearts') { hearts(game, root, 6); wagT = 3; happyT = 4; }
+            else if (e.act === 'wag') { wagT = 2.5; happyT = 2; }
+            else if (e.act === 'shake' || e.act === 'roll' || e.act === 'dead') { if (!vis.once(e.act)) wagT = 2.5; happyT = e.act === 'dead' ? 0 : 3; }
           }
         }
-        wagT -= dt;
+        wagT -= dt; happyT -= dt;
         const happy = e.adopted || st === 'wag' || st === 'beg' || wagT > 0 || (e.follow != null);
+        happyK += ((happyT > 0 || st === 'eat' ? 1 : e.adopted ? 0.35 : 0) - happyK) * damp(4, dt);
+        vis.setHappy(happyK);
         inp.speed = speed; inp.turn = turn; inp.pose = pose;
-        inp.wag = st === 'flee' ? 0 : sp === 'cat' ? (st === 'swat' || st === 'beg' ? 0.8 : 0.25) : happy ? 1 : st === 'sleep' ? 0 : 0.2;
+        inp.wag = st === 'flee' || st === 'dead' ? 0 : sp === 'cat' ? (st === 'swat' || st === 'beg' ? 0.8 : 0.25) : happy ? 1 : st === 'sleep' ? 0 : 0.2;
         inp.eat = st === 'eat';
         inp.scratch = st === 'scratch';
         inp.sniff = st === 'sniff' && speed < 1.6;
         inp.pant = sp === 'dog' && (speed > 2.5 || (happy && st !== 'sleep' && st !== 'eat'));
-        inp.alert = st === 'bark' || st === 'guard' ? 1 : st === 'flee' ? -1 : st === 'beg' ? 0.5 : 0;
+        inp.alert = st === 'bark' || st === 'guard' ? 1 : st === 'flee' || st === 'dead' ? -1 : st === 'beg' ? 0.5 : 0;
         inp.tail = st === 'flee' || e.scared ? -1 : st === 'bark' ? 1 : happy ? 0.6 : 0.1;
         inp.swat = st === 'swat';
         const lt = e.look != null ? game.state.get(e.look) : null;
         if (lt?.p) { lookV.set(lt.p[0], lt.p[1] + (lt.t === 'player' ? 1.5 : 0.8), lt.p[2]); inp.look = lookV; } else inp.look = null;
-        anim.update(dt, inp);
+        vis.update(dt, inp);
         if (adopted !== !!e.adopted) {
           adopted = !!e.adopted;
-          rig.collar.visible = adopted;
+          vis.setCollar(adopted);
           root.userData.interact.data = { name: nameOf() };
         }
       },
       dispose: () => {
+        disposed = true;
         game.interact.unregister(root);
         proxy.geometry.dispose();
-        rig.dispose();
+        vis.dispose();
       },
     };
   }

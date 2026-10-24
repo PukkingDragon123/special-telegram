@@ -14,7 +14,7 @@ export const L: Record<string, TL[]> = {
   dog_beg: [tl('งื้ดดด…', 'whimper…'), tl('(ทำตาปริบๆ)', '(puppy eyes)'), tl('หงิงๆ', 'whine')],
   cat_meow: [tl('เมี้ยววว', 'meow'), tl('แง้ว!', 'mrrow!'), tl('เมี้ยว~ ♥', 'meow ♥')],
   cat_knock: [tl('(มองหน้า แล้วปัดตก)', '(stares… swats it off)'), tl('เมี้ยว (ไม่ได้ตั้งใจ)', 'meow (not sorry)')],
-  cat_adopted: [tl('ได้ทาสแมวเพิ่ม! น้องไข่ตุ๋น ♥', 'the cat adopted YOU')],
+  cat_adopted: [tl('ได้ทาสแมวเพิ่ม! น้องนิล ♥', 'the cat adopted YOU')],
   shoo: [tl('ชิ่วๆ', 'shoo shoo'), tl('ไปๆ ลงไป!', 'get down!')],
 
   homeless_ask: [tl('หลานๆ ขอตังค์ลุงซื้อข้าวหน่อยได้ไหม…', 'spare some coins for rice?'), tl('ลุงหิวข้าว… มีเศษเหรียญไหมหลาน', 'any spare coins?'), tl('ทำบุญกับลุงหน่อยนะ ได้บุญนะหลาน', 'make merit with me?')],

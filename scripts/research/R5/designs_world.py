@@ -365,15 +365,18 @@ def street_night(dur=40.0, seed=13):
     return out, used
 
 
-def crickets_frogs(dur=30.0):
+def crickets_frogs(dur=34.0):
+    """Thai night: real Chiang Mai night recording (frogs/insects, CC BY-SA 3.0) + cricket beds."""
     n = int(dur * SR)
     out = np.zeros((n, 2))
-    a = _bed(mk(40), 0.0, 22.0)
+    cmf = cm("commons_amb", "2013-07-24_00-19-04hrs_Chiang_Mai_Chang_Khien_rain_animal_sounds_night_time.ogg")
+    c = _bed(cmf, 4.0, dur + 1)
+    S.place(out, c[:n] * 1.0, 0)
     b = _bed(mk(1789), 0.0, 42.0)
-    S.place(out, b[:n] * 0.8, 0)
-    for t0 in (0.0, 15.0):
-        S.place(out, a[: int(16 * SR)] * np.hanning(int(16 * SR))[:, None] ** 0.5 * 0.9, t0)
-    return out, [mk(40), mk(1789)]
+    S.place(out, b[:n] * 0.35, 0)
+    a = _bed(mk(40), 2.0, 20.0)
+    S.place(out, a * np.hanning(len(a))[:, None] ** 0.5 * 0.5, 8.0)
+    return out, [cmf, mk(1789), mk(40)]
 
 
 def market_crowd(dur=40.0, seed=21, voices=None):
@@ -394,9 +397,20 @@ def market_crowd(dur=40.0, seed=21, voices=None):
         for j, s in enumerate(segs[:4]):
             S.place(out, S.pan(S.butter(s, "lowpass", 5000, 2) * 0.12, -0.6), t0 + j * 0.33)
     used += [SY("plastic_bag"), og("household", "kitchencuttingboard01.wav")]
-    if voices:
-        for (x, t0, g, p) in voices:
-            S.place(out, S.pan(x * g, p), t0)
+    try:  # Thai voices of vendors/shoppers (Peace Corps PD recordings), re-pitched into different people
+        import designs_people as DP
+        pool = DP.pc_pool()
+        ir = S.make_ir(1.2, 0.8, 4000, stereo=True, seed_=seed + 1)
+        t = 0.3
+        while t < dur - 1:
+            y = pool[r.integers(0, len(pool))][0].astype(np.float64)
+            y = A.resample_ratio(y, r.uniform(0.88, 1.15))
+            y = S.butter(y, "lowpass", r.uniform(3000, 6500), 2)
+            S.place(out, S.reverb(S.pan(y * r.uniform(0.05, 0.13), r.uniform(-1, 1)), ir, wet=0.3)[:n], t)
+            t += r.exponential(0.9)
+        used += DP.pc_used()
+    except Exception as ex:
+        print("market voices skipped:", ex)
     return out, used
 
 
