@@ -110,10 +110,10 @@ export function posterMaterial(game: Game) {
 
 /** Call every frame: redraws the poster texture when the menu/unlocks change. */
 export function refreshPosters(game: Game) {
+  if (signDirty && chalkImg && signMats) drawSigns();
   if (!posterMat) return;
   const sig = menuSig(game) + (posterImg ? 1 : 0) + slots.length;
   if (sig !== lastSig) { lastSig = sig; drawPoster(game); }
-  if (signDirty && chalkImg) drawSigns();
 }
 
 // ------------------------------------------------------------------ chalkboard open/closed sign

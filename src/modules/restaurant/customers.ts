@@ -245,7 +245,7 @@ function tick(c: Ent, dt: number, q: Ent[]) {
     case 'queue': {
       patienceTick(c, dt, 0.5);
       if (!G.g.shopOpen) { leave(c, pickL(X.closing)); return; }
-      if (q[0] === c && !G.npcs.isMoving(c)) { setCS(c, 'menu'); anim(c, 'think', true); c.lookAt = null; }
+      if (q[0] === c && !G.npcs.isMoving(c)) { setCS(c, 'menu'); anim(c, 'think', true); const mp = G.state.all('item').filter((e) => e.k === 'menu_poster' && e.p && dist2D(e.p, c.p!) < 4)[0]; c.lookAt = mp?.id ?? null; }
       else if (t > 6 && Math.random() < dt * 0.05) say(c, pickL(X.waitThink), { style: 'thought', duration: 2.5 });
       if (c._waited > c._pat * 0.7) { leave(c, pickL(L.bad.wait)); return; }
       break;
@@ -274,10 +274,12 @@ function tick(c: Ent, dt: number, q: Ent[]) {
         if (!G.nearestPlayer(cf.p, 7)) {
           patienceTick(c, dt, 0.6);
           if (now() - (c._lastSay ?? 0) > 6.5) { say(c, pickL(X.call), { duration: 3 }); anim(c, 'wave'); }
+          if (c._waited > c._pat * 0.8) leave(c, pickL(L.bad.wait), true);
           return;
         }
         const o: Order = c._order;
         setCS(c, 'order');
+        c.lookAt = G.nearestPlayer(cf.p, 7)?.id ?? null;
         c.ord = o;
         anim(c, 'point');
         say(c, orderSpeech(G, c, o), { duration: 5.5 });
@@ -287,7 +289,7 @@ function tick(c: Ent, dt: number, q: Ent[]) {
     }
     case 'order': {
       patienceTick(c, dt, 0.6);
-      if (t > 2.4) toSeatOrWait(c);
+      if (t > 2.4) { c.lookAt = null; toSeatOrWait(c); }
       break;
     }
     case 'toseat': {
