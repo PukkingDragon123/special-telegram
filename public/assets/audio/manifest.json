@@ -1124,6 +1124,36 @@
   "pitchVar": 0.02,
   "desc": "Ice-cream cart hand-bell rung in bursts (ไอติมกะทิ seller passing by)."
  },
+ "tv_muffled_loop": {
+  "files": [
+   "sfx/world/tv_muffled_loop.mp3"
+  ],
+  "vol": 0.4,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "TV playing inside a shophouse, muffled through the wall (Thai voices, music, canned laughs)."
+ },
+ "radio_distant_loop": {
+  "files": [
+   "sfx/world/radio_distant_loop.mp3"
+  ],
+  "vol": 0.4,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "A neighbour's radio down the soi playing a Thai-flavoured song + DJ chatter (far away)."
+ },
+ "junk_buyer_loudspeaker": {
+  "files": [
+   "sfx/world/junk_buyer_loudspeaker.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Parody of the roving junk-buyer pickup loudspeaker chant (synthesized Thai voice, megaphone, echo)."
+ },
  "female_scream_comedic": {
   "files": [
    "sfx/people/female_scream_comedic_1.mp3",
