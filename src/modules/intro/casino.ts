@@ -451,11 +451,12 @@ export class CasinoScene implements SceneDef {
           this.chips.clearRain();
           P.forEach((a, i) => { this.holdProp(a, i % 2 ? makeGlass('beer') : makeBottle(['singha', 'leo', 'chang', 'sangsom'][a.slot! % 4]), i % 2 ? [0, 0, 0] : [-0.3, 0, 0]); anim(a, 'drink'); });
           this.dof = 1;
+          P.forEach((a) => face(a, 'drunk')); // swap face atlases while the camera is on the bottles
           this.sub(CASINO.drink, 3.2);
           play('cheers_glass_clink', { vol: 0.5 });
         },
         tick: (k) => {
-          if (k > 0.4) once('drunk', () => P.forEach((a) => { anim(a, 'drunk'); face(a, 'drunk'); }));
+          if (k > 0.4) once('drunk', () => P.forEach((a) => anim(a, 'drunk')));
           for (const id of ['h1', 'h2', 'h3']) {
             const at = { h1: 0.45, h2: 0.62, h3: 0.8 }[id]!;
             if (k > at) once(id, () => { play('hiccup', { vol: 0.8, pitch: 0.9 + Math.random() * 0.3 }); const a = P[Math.floor(Math.random() * n)]; if (a && Math.random() < 0.6) this.bubble(a, CASINO_SHOUTS[3]); });
@@ -491,6 +492,7 @@ export class CasinoScene implements SceneDef {
           if (k > 0.08) once('push', () => { play('chips_clatter', { vol: 0.9 }); P.forEach((a) => anim(a, 'point', false)); });
           if (k > 0.3) once('spin', () => { play('roulette_spin', { vol: 1 }); this.loops.push(play('heartbeat_slow', { vol: 0.7 })); });
           if (k > 0.45) once('s6', () => this.sub(CASINO.spin, 3));
+          if (k > 0.36) once('preshock', () => P.forEach((a) => face(a, 'shock'))); // camera is on the wheel
           if (k > 0.78) this.slowTarget = 0.4;
         },
         cam: (k) => {

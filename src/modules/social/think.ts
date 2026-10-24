@@ -103,19 +103,19 @@ function normalize(o: THREE.Object3D, size: number) {
 
 // ------------------------------------------------------------------ tree layout (cloud-local)
 
-const BR_ANG: Record<Exclude<Branch, 'life'>, number> = { cook: -0.92, clean: 0.92, prep: -2.02, serve: 2.02 };
+const BR_ANG: Record<Exclude<Branch, 'life'>, number> = { cook: -1.12, clean: 1.12, prep: -2.08, serve: 2.08 };
 const TRUNK_TOP = new THREE.Vector3(0, -0.12, 0.12);
 
 function nodePos(s: SkillDef): THREE.Vector3 {
   if (s.branch === 'life') {
-    if (s.id === 'iron_cheek') return new THREE.Vector3(-0.34, -0.6, 0.2);
-    if (s.id === 'tug_strong') return new THREE.Vector3(0.34, -0.6, 0.2);
-    return new THREE.Vector3(0, 0.4, 0.05);
+    if (s.id === 'iron_cheek') return new THREE.Vector3(-0.3, -0.66, 0.22);
+    if (s.id === 'tug_strong') return new THREE.Vector3(0.3, -0.66, 0.22);
+    return new THREE.Vector3(0, 0.36, 0.08);
   }
   const sign = BR_ANG[s.branch] < 0 ? -1 : 1;
-  const r = 0.34 + 0.17 * s.tier;
+  const r = 0.3 + 0.205 * s.tier;
   const a = BR_ANG[s.branch] - sign * s.tier * 0.06 + Math.sin(s.tier * 1.7) * 0.05;
-  return new THREE.Vector3(Math.sin(a) * r * 1.14, Math.cos(a) * r * 0.86 - 0.04, 0.2 - s.tier * 0.045 + Math.sin(s.tier * 2.3) * 0.03);
+  return new THREE.Vector3(Math.sin(a) * r * 1.1, Math.cos(a) * r * 0.9 - 0.04, 0.2 - s.tier * 0.045 + Math.sin(s.tier * 2.3) * 0.03);
 }
 
 /** tapered tube along a curve, with aT (0..1 along) for grow & glow */
@@ -288,9 +288,9 @@ class SkillTree {
       const root = new THREE.Group();
       const pos = nodePos(s);
       root.position.copy(pos);
-      const icon = normalize(buildIcon(game, s.icon), s.branch === 'life' ? 0.24 : 0.28);
+      const icon = normalize(buildIcon(game, s.icon), s.branch === 'life' ? 0.2 : 0.24);
       icon.traverse((o: any) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; o.material = Array.isArray(o.material) ? o.material.map((m: any) => m.clone()) : o.material.clone(); } });
-      const glow = dreamGlow(0.62, 0.62, 0xffd88a);
+      const glow = dreamGlow(0.5, 0.5, 0xffd88a, false);
       glow.position.z = -0.05;
       root.add(glow, icon);
       root.scale.setScalar(0.001);
@@ -320,7 +320,7 @@ class SkillTree {
       const prev = n.state;
       n.state = st;
       const owned = st === 'owned', ready = st === 'ready';
-      const col = owned ? 0xffe2a0 : ready ? 0xffc75a : st === 'poor' ? 0xbfc6ff : 0x8a93b8;
+      const col = owned ? 0xffd27a : ready ? 0xff9f2e : st === 'poor' ? 0x9aa6e6 : 0x7a7fa6;
       (n.glow.material as THREE.ShaderMaterial).uniforms.uCol.value.set(col);
       n.icon.traverse((o: any) => {
         if (!o.isMesh) return;
@@ -361,12 +361,12 @@ class SkillTree {
       if (old && old.key === key) continue;
       if (old) { old.ft.dispose(); this.labels.splice(this.labels.indexOf(old), 1); }
       const ft = new FlyText([
-        { text: `${BRANCH_NAME[b].th}  Lv.${p.lv}`, style: { font: F.bubbly, size: 46, weight: 700, color: '#5a3d1e', stroke: '#fff8ea', strokeWidth: 6 } },
-        { text: p.lv >= 15 ? 'MAX' : `${p.cur}/${p.need} xp`, style: { font: F.body, size: 26, weight: 600, color: '#7a6250', stroke: '#fff8ea', strokeWidth: 4 } },
+        { text: `${BRANCH_NAME[b].th}  Lv.${p.lv}`, style: { font: F.bubbly, size: 44, weight: 700, color: '#4a2f14', stroke: '#fffaf0', strokeWidth: 3 } },
+        { text: p.lv >= 15 ? 'MAX' : `${p.cur}/${p.need} xp`, style: { font: F.body, size: 26, weight: 700, color: '#6a5240', stroke: '#fffaf0', strokeWidth: 2 } },
       ], { px: 0.0021, stagger: 0.02, depthTest: false });
-      const tip = nodePos(SKILLS.find((s) => s.branch === b && s.tier === 0)!);
+      const tip = nodePos(SKILLS.find((s) => s.branch === b && s.tier === 4)!);
       const ang = BR_ANG[b as Exclude<Branch, 'life'>];
-      ft.mesh.position.set(tip.x * 0.55 + Math.sign(ang) * 0.02, tip.y * 0.5 + (Math.abs(ang) > 1.5 ? -0.13 : 0.14), 0.32);
+      ft.mesh.position.set(tip.x * 0.96, tip.y + (Math.abs(ang) > 1.5 ? -0.2 : 0.2), 0.36);
       ft.t = -0.9 - BRANCHES.indexOf(b as any) * 0.12;
       this.group.add(ft.mesh);
       this.labels.push({ ft, key, br: b });
@@ -399,10 +399,10 @@ class SkillTree {
       const status = st.st === 'owned' ? 'ปลดแล้ว ✓' : st.st === 'ready' ? `คลิกเพื่อปลด · ใช้ ${n.s.cost} แต้ม (มี ${me.sp ?? 0})` : st.why?.th ?? '';
       const key = `node:${n.s.id}:${st.st}:${me.sp}`;
       this.info.set(key, () => new FlyText([
-        { text: n.s.name.th, style: { font: F.bubbly, size: 66, weight: 700, color: '#3b2614', stroke: '#fff9ee', strokeWidth: 9, maxWidth: 1500 } },
-        { text: n.s.desc.th, style: { font: F.ui, size: 34, weight: 600, color: '#4a3424', stroke: '#fff9ee', strokeWidth: 6, maxWidth: 1300 } },
-        { text: `${n.s.name.en} — ${n.s.desc.en}`, style: { font: F.body, size: 24, weight: 500, color: '#6e5a48', stroke: '#fff9ee', strokeWidth: 4, maxWidth: 1400 } },
-        { text: status, style: { font: F.ui, size: 30, weight: 700, color: st.st === 'ready' ? '#b36b00' : st.st === 'owned' ? '#3c7d2e' : '#7a5a8a', stroke: '#fff9ee', strokeWidth: 6 } },
+        { text: n.s.name.th, style: { font: F.bubbly, size: 66, weight: 700, color: '#2e1a0c', stroke: '#fffaf0', strokeWidth: 4, maxWidth: 1500 } },
+        { text: n.s.desc.th, style: { font: F.ui, size: 36, weight: 600, color: '#3a2618', stroke: '#fffaf0', strokeWidth: 3, maxWidth: 1300 } },
+        { text: `${n.s.name.en} — ${n.s.desc.en}`, style: { font: F.body, size: 25, weight: 600, color: '#5a4636', stroke: '#fffaf0', strokeWidth: 2, maxWidth: 1400 } },
+        { text: status, style: { font: F.ui, size: 30, weight: 700, color: st.st === 'ready' ? '#a85a00' : st.st === 'owned' ? '#2f6e22' : '#6a4a7a', stroke: '#fffaf0', strokeWidth: 3 } },
       ], { px: 0.0021, depthTest: false, stagger: 0.012, dur: 0.45 }));
       return;
     }
@@ -412,9 +412,9 @@ class SkillTree {
       const th = ths[this.thoughtIdx % ths.length];
       const key = `thought:${this.thoughtIdx}:${me.sp ?? 0}`;
       this.info.set(key, () => new FlyText([
-        { text: th.th, style: { font: F.hand, size: 52, weight: 400, color: '#4a3424', stroke: '#fff9ee', strokeWidth: 7, maxWidth: 1400 } },
-        ...(th.en ? [{ text: th.en, style: { font: F.body, size: 24, weight: 500, color: '#7a6654', stroke: '#fff9ee', strokeWidth: 4 } }] : []),
-        { text: `แต้มสกิล ${me.sp ?? 0} แต้ม · เลเวลรวม ${totalLevel(me)}`, style: { font: F.ui, size: 30, weight: 700, color: (me.sp ?? 0) > 0 ? '#b36b00' : '#6e5a48', stroke: '#fff9ee', strokeWidth: 6 } },
+        { text: th.th, style: { font: F.hand, size: 56, weight: 400, color: '#33220f', stroke: '#fffaf0', strokeWidth: 3, maxWidth: 1400 } },
+        ...(th.en ? [{ text: th.en, style: { font: F.body, size: 25, weight: 600, color: '#5e4a3a', stroke: '#fffaf0', strokeWidth: 2 } }] : []),
+        { text: `แต้มสกิล ${me.sp ?? 0} แต้ม · เลเวลรวม ${totalLevel(me)}`, style: { font: F.ui, size: 32, weight: 700, color: (me.sp ?? 0) > 0 ? '#a85a00' : '#5e4a3a', stroke: '#fffaf0', strokeWidth: 3 } },
       ], { px: 0.0021, depthTest: false, stagger: 0.016 }));
     }
   }
@@ -463,8 +463,8 @@ class SkillTree {
       n.icon.rotation.set(0.35 + Math.sin(this.t * 0.7 + n.pos.y) * 0.15, this.t * spin + n.pos.x * 3, Math.sin(this.t * 0.5 + n.pos.x) * 0.1);
       const gu = (n.glow.material as THREE.ShaderMaterial).uniforms;
       gu.uTime.value = this.t + n.pos.x * 10;
-      const pulse = n.state === 'ready' ? 0.7 + 0.3 * Math.sin(this.t * 4 + n.pos.x * 3) : n.state === 'owned' ? 0.85 : 0.35;
-      gu.uK.value = (pulse + n.hover * 0.5) * k;
+      const pulse = n.state === 'ready' ? 0.55 + 0.3 * Math.sin(this.t * 4 + n.pos.x * 3) : n.state === 'owned' ? 0.6 : 0.3;
+      gu.uK.value = Math.min(0.95, (pulse + n.hover * 0.35) * k);
       n.glow.quaternion.copy(this.group.quaternion).invert().multiply(camQ);
     }
     this.info.update(dt);
@@ -583,7 +583,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     Sound.play('whoosh_text', { vol: 0.5 });
     const rig = rigOf(game, me.id);
     rig?.setFace?.('think');
-    if (!lateOff) lateOff = game.engine.onLate(() => { if (local) game.engine.post.setLook('dream', Math.min(1, local.lookK) * 0.12); });
+    if (!lateOff) lateOff = game.engine.onLate(() => { if (local) game.engine.post.setLook('dream', Math.min(1, local.lookK) * 0.07); });
   }
 
   function stop(popped = false) {
@@ -680,7 +680,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
         local.lookK = e;
         const post = game.engine.post;
         if (!local.leaving && local.t > 0.3 && !params.has('nodof')) { post.setDOF(true, want.distanceTo(local.cloudPos), 2.2); post.focusOn(local.cloudPos.clone().add(new THREE.Vector3(0, -0.1, 0.3).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw))); }
-        post.bloom.intensity = local.bloom0 + 0.25 * e;
+        post.bloom.intensity = local.bloom0 + 0.08 * e;
         const rig = rigOf(game, me.id);
         if (!local.leaving) rig?.setFace?.('think');
         // ---- hover / click (cursor is free in external mode)

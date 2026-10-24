@@ -178,7 +178,7 @@ export function buildCasino(): CasinoSet {
   // ---------------------------------------------------------------- lights
   const hemi = new THREE.HemisphereLight(0xffe2b8, 0x3a0d0a, 1.1);
   root.add(hemi);
-  const key = new THREE.SpotLight(0xffd7a0, 260, 14, 0.62, 0.55, 1.4);
+  const key = new THREE.SpotLight(0xffd7a0, 200, 14, 0.62, 0.55, 1.4);
   key.position.set(0.2, H - 0.4, 0.4);
   key.target.position.set(0, TABLE_Y, 0.15);
   key.castShadow = true;
@@ -256,7 +256,7 @@ function buildCardTable(teak: THREE.Material) {
   shape.moveTo(-1.35, 0.55);
   shape.lineTo(1.35, 0.55);
   shape.absellipse(0, 0.55, 1.35, 1.3, 0, Math.PI, true);
-  const felt = Assets.pbr('felt_casino_green', { repeat: 2.2, color: '#8a9a8a' });
+  const felt = Assets.pbr('felt_casino_green', { repeat: 2.2, color: '#6f7d6c' });
   const top = new THREE.ExtrudeGeometry(shape, { depth: 0.04, bevelEnabled: true, bevelSize: 0.01, bevelThickness: 0.01, bevelSegments: 1, curveSegments: 36 });
   top.rotateX(-Math.PI / 2).translate(0, TABLE_Y - 0.04, 0);
   g.add(mesh(top, felt));
@@ -285,7 +285,7 @@ function buildCardTable(teak: THREE.Material) {
 function buildRoulette(teak: THREE.Material, brass: THREE.Material) {
   const group = new THREE.Group();
   group.position.set(ROULETTE.x, 0, ROULETTE.z);
-  const felt = Assets.pbr('felt_casino_green', { repeat: [5, 2.5], color: '#8a9a8a' });
+  const felt = Assets.pbr('felt_casino_green', { repeat: [5, 2.5], color: '#6f7d6c' });
   const top = new THREE.Mesh(new RoundedBoxGeometry(2.8, 0.08, 1.3, 2, 0.03), felt);
   top.position.set(0.25, ROULETTE.y - 0.04, 0); top.receiveShadow = true;
   group.add(top);

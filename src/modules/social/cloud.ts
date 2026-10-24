@@ -83,10 +83,10 @@ void main() {
   float ao = mix(0.42, 1.0, crease) * (0.88 + 0.24 * fluff);
   // inward-facing back wall glows like the inside of a dream
   float inner = smoothstep(-0.3, -1.0, vL.z) * smoothstep(1.7, 0.2, length(vL.xy * vec2(0.7, 1.0)));
-  vec3 col = base * (0.62 + 0.72 * dif) * ao;
-  col += uInner * inner * 0.35 * (0.8 + 0.4 * fluff);
-  col += uRim * fres * 0.75;
-  col += uGlow * sss * 0.6;
+  vec3 col = base * (0.46 + 0.44 * dif) * ao;
+  col += uInner * inner * 0.18 * (0.8 + 0.4 * fluff);
+  col += uRim * fres * 0.32;
+  col += uGlow * sss * 0.3;
   col = mix(col, col * vec3(0.78, 0.8, 1.0) + vec3(0.02, 0.025, 0.05), uNight * 0.45);
   gl_FragColor = vec4(col, uOpacity);
 }`;
@@ -244,14 +244,18 @@ void main() {
   float n = fbm2(vec3(p * 2.2, uTime * 0.07));
   float a = smoothstep(1.0, 0.0, r + (n - 0.5) * 0.45) * uK;
   gl_FragColor = vec4(uCol * a, a);
+  #ifdef STRAIGHT
+  gl_FragColor = vec4(uCol, a);
+  #endif
 }`;
 
-export function dreamGlow(w: number, h: number, color: THREE.ColorRepresentation) {
+export function dreamGlow(w: number, h: number, color: THREE.ColorRepresentation, additive = true) {
   const m = new THREE.ShaderMaterial({
     vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: glowFrag, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    fragmentShader: glowFrag, transparent: true, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
     uniforms: { uTime: { value: 0 }, uK: { value: 1 }, uCol: { value: new THREE.Color(color) } },
   });
+  if (!additive) m.defines = { STRAIGHT: 1 };
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
   mesh.renderOrder = 4;
   return mesh;
