@@ -250,6 +250,9 @@ function frame(game: Game, dt: number) {
   if (!S || S.game.scene !== game.scene || !game.scene) return;
   U.uTime.value += dt;
   const cam = game.camera;
+  // cables stay >= ~1 px wide: radius per metre = 1 / (P11 * viewport height)
+  const ph = game.engine.renderer.domElement.height || 1080;
+  U.uWirePx.value = 0.9 / (Math.max(0.1, (cam as THREE.PerspectiveCamera).projectionMatrix.elements[5]) * ph);
   S.dbg?.update(dt);
   S.atmo.update(dt, cam);
   cam.getWorldPosition(_cam);

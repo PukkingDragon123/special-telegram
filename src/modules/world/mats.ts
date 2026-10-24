@@ -152,6 +152,8 @@ export interface WorldTex { alb: THREE.DataArrayTexture; nra: THREE.DataArrayTex
 /** shared uniforms for every world material */
 export const U = {
   uTime: { value: 0 },
+  /** world-space radius per metre of distance that makes a cable ~1 px wide (set per frame) */
+  uWirePx: { value: 0.0006 },
   uNight: { value: 0 },
   uWet: { value: 0 },
   uWind: { value: new THREE.Vector3(1, 0, 0.4) },
@@ -208,8 +210,8 @@ export async function loadWorldTextures(size: number, worldManifest: WorldManife
   const N = LAYERS.length;
   const alb = new Uint8Array(size * size * 4 * N);
   const nra = new Uint8Array(size * size * 4 * N);
-  const metal = new Float32Array(64);
-  const rough = new Float32Array(64).fill(1);
+  const metal = new Float32Array(N);
+  const rough = new Float32Array(N).fill(1);
   const tiles: [number, number][] = [];
   const pbr = Assets.pbrManifest;
   const worldFiles = new Set<string>(worldManifest ? Object.keys(worldManifest) : []);
@@ -357,10 +359,11 @@ function injectWorldVertex(shader: any) {
 if (aExtra.y < -0.5) {
   // thin cable: keep it at least ~1 px wide far away (otherwise it breaks into dashes)
   vec3 wcp = (modelMatrix * vec4(transformed, 1.0)).xyz;
-  transformed += normalize(objectNormal) * max(0.0, distance(cameraPosition, wcp) * 0.00045 - 0.007);
+  transformed += normalize(objectNormal) * max(0.0, distance(cameraPosition, wcp) * uWirePx - 0.007);
 }`)
     .replace('#include <common>', `#include <common>
 attribute vec4 aExtra;
+uniform float uWirePx;
 varying vec2 vUvT;
 varying vec4 vExt;
 varying vec3 vWPos;
@@ -388,6 +391,7 @@ export function makeWorldMaterial(tex: WorldTex, cutout = false): THREE.MeshStan
     uMetal: { value: tex.metal }, uRoughL: { value: tex.rough },
     uNormalScale: { value: 1.0 },
   };
+  const NL = Math.max(1, tex.metal.length);   // one entry per texture-array layer
   m.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms, U);
     injectWorldVertex(shader);
@@ -395,8 +399,8 @@ export function makeWorldMaterial(tex: WorldTex, cutout = false): THREE.MeshStan
       .replace('#include <common>', `#include <common>
 uniform sampler2DArray uAlb;
 uniform sampler2DArray uNra;
-uniform float uMetal[64];
-uniform float uRoughL[64];
+uniform float uMetal[${NL}];
+uniform float uRoughL[${NL}];
 uniform float uNormalScale;
 uniform vec3 uEmisCol[16];
 uniform float uEmisDay[16];

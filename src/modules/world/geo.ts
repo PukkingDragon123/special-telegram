@@ -444,7 +444,8 @@ export class WB {
         const s2 = (s + 1) % sides;
         const u0 = lens[i], u1 = lens[i + 1];
         const v0 = (s / sides) * r * 6.28, v1 = ((s + 1) / sides) * r * 6.28;
-        this.quad(A[s * 3], A[s * 3 + 1], A[s * 3 + 2], Bb[s * 3], Bb[s * 3 + 1], Bb[s * 3 + 2], Bb[s2 * 3], Bb[s2 * 3 + 1], Bb[s2 * 3 + 2], A[s2 * 3], A[s2 * 3 + 1], A[s2 * 3 + 2], [u0, v0, u1, v1]);
+        // outward-facing winding (a → around → along): normal = (A[s2]-A[s]) × (B[s]-A[s]) points away from the axis
+        this.quad(A[s * 3], A[s * 3 + 1], A[s * 3 + 2], A[s2 * 3], A[s2 * 3 + 1], A[s2 * 3 + 2], Bb[s2 * 3], Bb[s2 * 3 + 1], Bb[s2 * 3 + 2], Bb[s * 3], Bb[s * 3 + 1], Bb[s * 3 + 2], [v0, u0, v1, u1]);
       }
     }
     this.uvMode = sv;
