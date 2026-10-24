@@ -157,7 +157,7 @@ function lifeLab(game: Game) {
   if (dog) { game.npcs.stop(dog); const p = at(2.4, -0.7); dog.p = [p.x, p.y, p.z]; dog.yaw = yaw + Math.PI * 0.6; dog.st = 'sit'; }
   const cat = life.pets.cat();
   if (cat) { game.npcs.stop(cat); const p = at(2.6, 0.9); cat.p = [p.x, p.y, p.z]; cat.yaw = yaw - Math.PI * 0.7; cat.st = 'sit'; }
-  life.homeless.labMove(at(4.2, 2.4));
+  life.homeless.labMove(at(3.0, 1.4));
   if (me) { game.items.give(me, 'dog_food'); game.items.give(me, 'dog_food'); }
   console.info('[life] lifelab ready', tl('หมา แมว ลุง มาแล้ว').th);
 }

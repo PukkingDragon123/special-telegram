@@ -21,7 +21,7 @@ export class FoliageSys {
   has(kind: string) { return (this.kinds[kind] ?? []).length > 0; }
 }
 
-export async function loadFoliage(): Promise<FoliageSys | null> {
+export async function loadFoliage(atlasSize = 4096): Promise<FoliageSys | null> {
   const items: { id: string; url: string; w: number; h: number }[] = [];
   const kinds: Record<string, string[]> = {};
   const add = (kind: string, id: string, url: string, w: number, h: number) => {
@@ -52,7 +52,7 @@ export async function loadFoliage(): Promise<FoliageSys | null> {
   items.push({ id: 'f:wires', url: 'textures/world/wire_bundle_tangle_photo.png', w: 768, h: 768 });
   kinds.wires = ['f:wires'];
   if (!items.length) return null;
-  const atlas = await Atlas.build(items, 4096, 4);
+  const atlas = await Atlas.build(items, atlasSize, 4);
   return new FoliageSys(atlas, kinds);
 }
 

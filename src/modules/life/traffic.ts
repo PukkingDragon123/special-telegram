@@ -539,6 +539,17 @@ export class Traffic {
     });
   }
 
+  /** dev: drop a static copy of a vehicle model (screenshots / checks) */
+  debugPlace(id: string, p: ArrayLike<number>, yaw = 0) {
+    const mdl = vehicleModel(id);
+    const g = new THREE.Group();
+    g.add(new THREE.Mesh(mdl.geo, mdl.mat));
+    if (mdl.cutout) g.add(new THREE.Mesh(mdl.cutout.geo, mdl.cutout.mat));
+    g.position.set(p[0], p[1], p[2]); g.rotation.y = yaw;
+    this.game.scene?.add(g);
+    return g;
+  }
+
   /** for other systems: vehicles near a point */
   near(p: THREE.Vector3, r: number) { const out: { pos: THREE.Vector3; yaw: number; kind: string }[] = []; for (const v of this.veh.values()) if (v.pos.distanceToSquared(p) < r * r) out.push({ pos: v.pos, yaw: v.yaw, kind: v.def.kind }); return out; }
   get count() { return this.veh.size; }

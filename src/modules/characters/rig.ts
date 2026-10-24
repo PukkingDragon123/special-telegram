@@ -95,7 +95,7 @@ function paintEntry(e: AtlasEntry) {
   if (base?.painted) {
     cv = document.createElement('canvas');
     cv.width = cv.height = e.size;
-    cv.getContext('2d')!.drawImage(base.cv, 0, 0);
+    cv.getContext('2d', { willReadFrequently: true })!.drawImage(base.cv, 0, 0);
     repaintFace(cv, e.look, e.variant, onFace);
   } else cv = paintAtlas(e.look, e.size, e.variant, onFace);
   e.cv = cv;

@@ -19,24 +19,13 @@ export function makeProps(w: WB) {
   const memo = (key: string, fn: () => Template) => { let t = cache.get(key); if (!t) { t = fn(); cache.set(key, t); } return t; };
 
   // ------------------------------------------------------------------ building services
-  const acUnit = () => memo('ac', () => T((w) => {
+  const acUnit = (v = 0) => memo('ac' + v, () => T((w) => {
     // condenser body (dirty off-white sheet metal) — origin bottom centre, back against the wall at z=0, front +Z
     w.mat('metal_paint', { tint: 0xd6d2c4, ov: 'steel_rust', ovAmt: 0.35, uv: 'local' });
     w.bevelBox(-0.41, 0, 0.02, 0.41, 0.56, 0.31, 0.025);
-    // front: dark fan recess + spokes + side grille
-    w.mat('galv', { tint: 0x3a3a3a, uv: 'local' });
-    w.cyl(-0.1, 0.28, 0.315, 0.2, 0.2, 0.005, 12, 1);
-    w.pushTR(-0.1, 0.28, 0.315, Math.PI / 2, 0, 0);
-    w.cyl(0, 0, 0, 0.21, 0.21, 0.012, 12, 0);
-    w.pop();
-    w.mat('metal_paint', { tint: 0x1a1a1a, uv: 'local' });
-    for (let i = 0; i < 4; i++) {
-      w.pushTR(-0.1, 0.28, 0.322, 0, 0, (i / 4) * Math.PI);
-      w.box(-0.19, -0.008, 0, 0.19, 0.008, 0.006, PZ);
-      w.pop();
-    }
-    w.mat('galv', { tint: 0x9a9890, uv: 'local' });
-    w.box(0.16, 0.06, 0.312, 0.37, 0.5, 0.318, PZ);
+    // front: real photo of a split-type condenser face (fan grille + side panel)
+    w.mat(v ? 'ac_front_b' : 'ac_front_a', { tint: 0xffffff, uv: 'face' });
+    w.quad(-0.4, 0.01, 0.312, 0.4, 0.01, 0.312, 0.4, 0.55, 0.312, -0.4, 0.55, 0.312, [0, 0, 1, 1]);
     // brackets (rusty angle iron) + pipes to the wall
     w.mat('steel_rust', { uv: 'local' });
     w.box(-0.38, -0.05, -0.02, -0.33, 0.0, 0.42, ALL);

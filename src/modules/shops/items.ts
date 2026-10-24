@@ -98,8 +98,8 @@ function build(spec: FbSpec): THREE.Object3D {
       const body = mesh(g, spec.tex ? photoMat(spec.tex, { color: c }) : flat(c));
       if (spec.shape === 'heap') return group(body);
       const film = mesh(new THREE.SphereGeometry(0.52, 10, 7).scale(w, h * 1.05, d).translate(0, h * 0.5, 0), mat('bagfilm', () => new THREE.MeshStandardMaterial({ color: 0xf6f6f6, roughness: 0.25, transparent: true, opacity: 0.28, depthWrite: false })));
-      const knot = mesh(new THREE.ConeGeometry(w * 0.12, h * 0.35, 6).translate(0, h * 1.08, 0), mat('bagknot', () => new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.3, transparent: true, opacity: 0.7 })));
-      return group(body, film, knot);
+      film.geometry = merge([film.geometry, new THREE.ConeGeometry(w * 0.12, h * 0.35, 6).translate(0, h * 1.08, 0)]);
+      return group(body, film);
     }
     case 'bunch': { // bundle of leaf cards / sticks tied with a rubber band
       const leaves: THREE.BufferGeometry[] = [];

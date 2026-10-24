@@ -61,8 +61,49 @@ function pickCheck(color: string, fam: 'check' | 'window'): { fab: string; exact
   return { fab: `${fam}_${k}`, exact };
 }
 
-/** research-agent photo textures (clothing prints, hair), keyed by catalogue id / pattern / style */
-const PHOTO: { clothing: Record<string, { img: HTMLImageElement; tile: number; tint: boolean }>; hair: Record<string, { img: HTMLImageElement; tint: boolean }> } = { clothing: {}, hair: {} };
+/** research-agent photo textures (public/assets/textures/clothing|hair), by manifest id */
+interface PhotoRec { id: string; img: HTMLCanvasElement; tile: number; tint: boolean; avg: [number, number, number] | null }
+const PHOTO: { clothing: Record<string, PhotoRec>; hair: Record<string, PhotoRec> } = { clothing: {}, hair: {} };
+/** catalogue id / pattern → candidate real-photo textures (nearest average colour wins; recoloured when far) */
+const PHOTO_USE: Record<string, { ids: string[]; tile?: number; recolor?: boolean }> = {
+  singlet_white: { ids: ['singlet_rib_white', 'singlet_rib_yellowed'], tile: 0.2 },
+  shirt_stripe_white: { ids: ['stripe_white_grey_thin'], tile: 0.32 },
+  hawaiian_green: { ids: ['hawaiian_green_leaf_ref4'], tile: 0.42 },
+  hawaiian: { ids: ['hawaiian_red_hibiscus', 'hawaiian_blue_floral', 'hawaiian_sage_hibiscus', 'hawaiian_palm_sage', 'thai_songkran_floral'], tile: 0.42 },
+  polo_stripe_green: { ids: ['stripe_green_white_ref4'], tile: 0.3 },
+  shirt_paisley: { ids: ['paisley_blue_white'], tile: 0.3 },
+  shirt_white: { ids: ['shirt_white_poplin'], tile: 0.22 },
+  school_shirt: { ids: ['shirt_white_poplin'], tile: 0.22 },
+  school_blouse: { ids: ['shirt_white_poplin'], tile: 0.22 },
+  temple_white: { ids: ['shirt_white_poplin'], tile: 0.22 },
+  dress_shirt: { ids: ['stripe_blue_shirting', 'shirt_white_poplin'], tile: 0.25 },
+  suit_black: { ids: ['suit_black_wool'], tile: 0.22 },
+  suit_maroon: { ids: ['casino_maroon_velvet'], tile: 0.3 },
+  suit_gold: { ids: ['casino_gold_satin'], tile: 0.3 },
+  moto_vest: { ids: ['vest_orange_poly'], tile: 0.25, recolor: true },
+  auntie_blouse: { ids: ['auntie_blouse_pink_ditsy', 'auntie_blouse_mint_ditsy'], tile: 0.28 },
+  house_dress: { ids: ['thai_songkran_floral', 'hawaiian_palm_sage', 'auntie_blouse_mint_ditsy'], tile: 0.4 },
+  police_shirt: { ids: ['police_khaki_brown'], tile: 0.25 },
+  rider_jacket: { ids: ['rider_green_poly', 'rider_pink_poly'], tile: 0.25, recolor: true },
+  tshirt: { ids: ['jersey_grey', 'stripe_heather_wide'], tile: 0.25, recolor: true },
+  polo: { ids: ['pique_white', 'stripe_green_white_pique'], tile: 0.2, recolor: true },
+  boxer_plaid: { ids: ['boxer_plaid_navy_beige', 'boxer_plaid_black_white', 'boxer_plaid_navy_green'], tile: 0.3 },
+  slacks: { ids: ['suit_black_wool', 'suit_grey_wool', 'police_khaki_brown', 'cotton_black', 'school_navy_twill'], tile: 0.22, recolor: true },
+  khaki_pants: { ids: ['cotton_khaki_twill', 'police_khaki_brown'], tile: 0.25, recolor: true },
+  cloth_shorts: { ids: ['cotton_khaki_twill', 'cotton_black', 'school_navy_twill'], tile: 0.25, recolor: true },
+  shorts_school: { ids: ['school_navy_twill', 'cotton_khaki_twill'], tile: 0.25 },
+  skirt_school: { ids: ['school_navy_twill', 'cotton_black'], tile: 0.25 },
+  pha_khao_ma: { ids: ['phakhaoma_blue_white', 'phakhaoma_red_yellow', 'phakhaoma_rainbow', 'phakhaoma_green_yellow'], tile: 0.4 },
+  sarong_m: { ids: ['sarong_red_purple', 'phakhaoma_blue_white', 'phakhaoma_green_yellow'], tile: 0.45 },
+  khakuay: { ids: ['khakuay_indigo_cotton'], tile: 0.3, recolor: true },
+  apron: { ids: ['apron_stained'], tile: 0.5, recolor: true },
+  towel_neck: { ids: ['terry_white_headband'], tile: 0.2, recolor: true },
+  headband_white: { ids: ['terry_white_headband'], tile: 0.2, recolor: true },
+  sneakers: { ids: ['sneaker_white_leather'], tile: 0.25, recolor: true },
+  hair_straight: { ids: ['hair_black_straight', 'hair_dyed_brown', 'hair_salt_pepper'] },
+  hair_curly: { ids: ['hair_afro_black', 'hair_perm_black', 'hair_perm_light_brown', 'hair_perm_dark_burgundy'] },
+  hair_buzz: { ids: ['hair_buzz_scalp'] },
+};
 
 const DET = 256;
 function makeDetail(f: Fab) {
@@ -73,7 +114,7 @@ function makeDetail(f: Fab) {
   g.drawImage(im, 0, 0, DET, DET);
   f.col = document.createElement('canvas');
   f.col.width = f.col.height = DET;
-  f.col.getContext('2d')!.drawImage(cv, 0, 0);
+  f.col.getContext('2d', { willReadFrequently: true })!.drawImage(cv, 0, 0);
   const d = g.getImageData(0, 0, DET, DET);
   let sum = 0;
   const L = new Float32Array(DET * DET);
@@ -90,24 +131,50 @@ export function preloadFabrics(): Promise<void> {
   if (preloadP) return preloadP;
   const fabs = Object.values(FABRICS).map((f) => Assets.image(f.path).then((im) => { f.img = im; makeDetail(f); }).catch(() => { f.img = null; }));
   const clothing = Assets.jsonSafe<any>('textures/clothing/manifest.json', null).then((m) => ingestPhotoManifest(m, 'textures/clothing/', PHOTO.clothing));
-  const hair = Assets.jsonSafe<any>('textures/hair/manifest.json', null).then((m) => ingestPhotoManifest(m, 'textures/hair/', PHOTO.hair as any));
+  const hair = Assets.jsonSafe<any>('textures/hair/manifest.json', null).then((m) => ingestPhotoManifest(m, 'textures/hair/', PHOTO.hair));
   preloadP = Promise.all([...fabs, clothing, hair]).then(() => undefined);
   return preloadP;
 }
 
-async function ingestPhotoManifest(m: any, base: string, out: Record<string, any>) {
+async function ingestPhotoManifest(m: any, base: string, out: Record<string, PhotoRec>) {
   if (!m) return;
-  const list: any[] = Array.isArray(m) ? m : Array.isArray(m.items) ? m.items : Array.isArray(m.textures) ? m.textures : Object.entries(m).filter(([k]) => !k.startsWith('_')).map(([k, v]: any) => (typeof v === 'string' ? { id: k, file: v } : { id: k, ...(v ?? {}) }));
+  const src = m.textures ?? m.items ?? m;
+  const list: any[] = Array.isArray(src) ? src : Object.entries(src).filter(([k]) => !k.startsWith('_') && k !== 'about').map(([k, v]: any) => (typeof v === 'string' ? { id: k, file: v } : { id: k, ...(v ?? {}) }));
   await Promise.all(list.map(async (e) => {
     const file = e.file ?? e.albedo ?? e.path ?? e.image;
-    if (!file || !e.id) return;
+    if (!file || !e.id || !/tileable/.test(String(e.kind ?? 'tileable'))) return;
     const path = /^(textures|gen|https?:)/.test(file) ? file : base + file;
     try {
-      const img = await Assets.image(path);
-      const rec = { img, tile: e.tileMeters ?? e.tile ?? 0.3, tint: !!(e.tint ?? e.tintable) };
-      for (const key of [e.id, ...(e.ids ?? []), ...(e.use ?? []), ...(e.for ?? [])]) out[key] = rec;
+      const im = await Assets.image(path);
+      // resample to 512² CPU canvas: cheap repeated pattern fills
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 512;
+      cv.getContext('2d', { willReadFrequently: true })!.drawImage(im, 0, 0, 512, 512);
+      let avg: number[] | null = typeof e.avgRGB === 'string' ? hexToRgb(e.avgRGB) : null;
+      if (!avg) {
+        const one = document.createElement('canvas'); one.width = one.height = 1;
+        const g1 = one.getContext('2d', { willReadFrequently: true })!;
+        g1.drawImage(cv, 0, 0, 1, 1);
+        avg = Array.from(g1.getImageData(0, 0, 1, 1).data.slice(0, 3));
+      }
+      out[e.id] = { id: e.id, img: cv, tile: e.tileMeters ?? 0.3, tint: !!(e.tint ?? e.tintable), avg: [avg[0], avg[1], avg[2]] };
     } catch { /* missing file → keep procedural fallback */ }
   }));
+}
+
+/** nearest-colour real photo for these keys; `far` = colour distance (0..1) */
+function pickPhoto(keys: string[], color: string | undefined, lib: Record<string, PhotoRec>): { rec: PhotoRec; tile: number; recolor: boolean; far: number } | null {
+  for (const k of keys) {
+    const use = PHOTO_USE[k];
+    if (!use) continue;
+    const recs = use.ids.map((id) => lib[id]).filter(Boolean);
+    if (!recs.length) continue;
+    const c = color ? hexToRgb(color) : null;
+    let best = recs[0], bd = Infinity;
+    if (c) for (const r of recs) { if (!r.avg) continue; const d = Math.hypot(r.avg[0] - c[0], r.avg[1] - c[1], r.avg[2] - c[2]) / 441; if (d < bd) { bd = d; best = r; } }
+    return { rec: best, tile: use.tile ?? best.tile, recolor: !!use.recolor, far: bd === Infinity ? 0 : bd };
+  }
+  return null;
 }
 
 // ------------------------------------------------------------------ helpers
@@ -124,7 +191,7 @@ function noiseCanvas() {
   if (noiseTile) return noiseTile;
   const S = 256;
   const cv = document.createElement('canvas'); cv.width = cv.height = S;
-  const g = cv.getContext('2d')!;
+  const g = cv.getContext('2d', { willReadFrequently: true })!;
   const im = g.createImageData(S, S);
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
     const u = x / S, v = y / S;
@@ -205,18 +272,27 @@ class Painter {
     g.restore();
   }
 
-  /** photo print from the research agent (if any) for these keys */
-  photoPrint(keys: string[], regName: string, reg: Region, s0: number, t0: number, s1: number, t1: number, tint?: string): boolean {
-    const rec = keys.map((k) => PHOTO.clothing[k]).find(Boolean);
-    if (!rec) return false;
+  /** real-photo fabric from the research agent (if any) for these keys; recoloured toward `tint` when the photo's colour is far off */
+  photoPrint(keys: string[], regName: string, reg: Region, s0: number, t0: number, s1: number, t1: number, tint?: string, ppmO?: [number, number]): boolean {
+    const pk = pickPhoto(keys, tint, PHOTO.clothing);
+    if (!pk) return false;
+    const { rec } = pk;
     const g = this.g;
     const [x, y, w, h] = this.rect(reg, s0, t0, s1, t1);
+    if (w <= 0 || h <= 0) return true;
     g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
     const p = g.createPattern(rec.img, 'repeat')!;
-    const ppm = PPM[regName] ?? [500, 500];
-    p.setTransform(new DOMMatrix().translate(x, y).scale((rec.tile * ppm[0]) / rec.img.width, (rec.tile * ppm[1]) / rec.img.height));
+    const ppm = ppmO ?? PPM[regName] ?? [500, 500];
+    p.setTransform(new DOMMatrix().translate(x, y).scale((pk.tile * ppm[0]) / rec.img.width, (pk.tile * ppm[1]) / rec.img.height));
     g.fillStyle = p; g.fillRect(x, y, w, h);
-    if (tint && rec.tint) { g.globalCompositeOperation = 'color'; g.fillStyle = tint; g.globalAlpha = 0.85; g.fillRect(x, y, w, h); }
+    if (tint && (pk.recolor || rec.tint) && pk.far > 0.12) {
+      g.globalCompositeOperation = 'color'; g.fillStyle = tint; g.fillRect(x, y, w, h);
+      const mean = rec.avg ? (rec.avg[0] * 0.299 + rec.avg[1] * 0.587 + rec.avg[2] * 0.114) / 255 : 0.5;
+      const kk = lum(tint) / Math.max(0.05, mean);
+      g.globalCompositeOperation = kk < 1 ? 'multiply' : 'screen';
+      const v = kk < 1 ? 255 * kk : 255 * Math.min(1, (kk - 1) * 0.5);
+      g.fillStyle = css(v, v, v); g.fillRect(x, y, w, h);
+    }
     g.restore();
     return true;
   }
@@ -292,22 +368,21 @@ export function lookKey(look: Look) {
 export function paintAtlas(look: Look, size: number, variant: FaceVariant, onFaceReady?: () => void): HTMLCanvasElement {
   const cv = document.createElement('canvas');
   cv.width = cv.height = size;
+  // CPU-backed canvas: predictable paint cost (no per-blend-mode GPU shader compiles), cheap readbacks for face tinting
+  cv.getContext('2d', { willReadFrequently: true });
   const P = new Painter(cv, size);
   const spec = bodySpec(look);
   const skin = look.skin || '#c69472';
   const r = new RNG(hashStr(lookKey(look)));
-  const prof = (window as any).__atlasProf as Record<string, number> | undefined;
-  let t = performance.now();
-  const tick = (k: string) => { if (!prof) return; const n = performance.now(); prof[k] = (prof[k] || 0) + n - t; t = n; };
-  paintSkin(P, look, spec, skin); tick('skin');
-  paintFace(P, look, skin, variant, onFaceReady); tick('face');
-  paintScalp(P, look, skin); tick('scalp');
-  paintBottom(P, look, spec, skin, r); tick('bottom');
-  paintTop(P, look, spec, skin, r); tick('top');
-  paintShoes(P, look, spec, skin); tick('shoes');
-  paintAcc(P, look, spec, skin, r); tick('acc');
-  paintHair(P, look, r); tick('hair');
-  paintGrime(P, look, spec, r); tick('grime');
+  paintSkin(P, look, spec, skin);
+  paintFace(P, look, skin, variant, onFaceReady);
+  paintScalp(P, look, skin);
+  paintBottom(P, look, spec, skin, r);
+  paintTop(P, look, spec, skin, r);
+  paintShoes(P, look, spec, skin);
+  paintAcc(P, look, spec, skin, r);
+  paintHair(P, look, r);
+  paintGrime(P, look, spec, r);
   return cv;
 }
 
@@ -492,7 +567,7 @@ function paintBottom(P: Painter, look: Look, spec: BodySpec, skin: string, r: RN
 
 function baseBottomFabric(P: Painter, b: BottomSpec, rn: string, reg: Region, t0: number, t1: number, col: string, c2: string, ppm?: [number, number]) {
   const ids = [b.id, b.pattern];
-  if (P.photoPrint(ids, rn, reg, 0, t0, 1, t1, col)) return;
+  if (P.photoPrint(ids, rn, reg, 0, t0, 1, t1, col, ppm)) return;
   switch (b.pattern) {
     case 'denim': P.fabric(rn, reg, 0, t0, 1, t1, lum(col) < 0.12 ? 'denim_black' : 'denim', col, { mode: 'color', ppm }); break;
     case 'denim_light': P.fabric(rn, reg, 0, t0, 1, t1, 'denim_light', col, { mode: 'color', ppm }); break;
@@ -917,7 +992,7 @@ function paintShoes(P: Painter, look: Look, spec: BodySpec, skin: string) {
       break;
     }
     case 'sneaker': {
-      P.fabric('foot', F, 0, 0, 1, 1, 'canvas', col, { contrast: 0.22, scale: 0.6 });
+      if (!P.photoPrint(['sneakers'], 'foot', F, 0, 0, 1, 1, col)) P.fabric('foot', F, 0, 0, 1, 1, 'canvas', col, { contrast: 0.22, scale: 0.6 });
       // rubber sole band (bottom & lower sides = s near 0/1), toe cap, laces
       P.band(F, 0, 1, '#ecebe6', 1, 0, 0.16); P.band(F, 0, 1, '#ecebe6', 1, 0.84, 1);
       P.band(F, 0, 1, '#b9b8b2', 1, 0.155, 0.17); P.band(F, 0, 1, '#b9b8b2', 1, 0.83, 0.845);
@@ -974,7 +1049,7 @@ function paintAcc(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
       case 'helmet': { const H = R.hat as Region; P.fill(H, col); P.blob(H, 0.33, 0.25, 0.3, 0.4, '#ffffff', 0.35); P.band(H, 0, 1, shade(col, 0.6), 1, 0.3, 0.36); P.band(H, 0.85, 1, '#1d1d1f', 1, 0, 0.66); P.fill(H, '#1d1d1f', 0.7, 0, 1, 1); break; }
       case 'police_cap': { const H = R.hat as Region; P.fabric('hat', H, 0, 0, 0.66, 1, 'linen', col, { contrast: 0.5 }); P.fill(H, '#121212', 0.68, 0, 1, 1); P.blob(H, 0.85, 0.5, 0.2, 0.3, '#ffffff', 0.15); P.band(H, 0.7, 0.85, '#1d1d1f', 1, 0, 0.66); P.dot(H, 0.33, 0.6, 6, '#c9b06a', '#fff4c0'); break; }
       case 'straw': { const H = R.hat as Region; P.fabric('hat', H, 0, 0, 1, 1, 'hessian', '#cfae6a', { mode: 'overlay', contrast: 0.85, scale: 0.6 }); for (let i = 1; i < 5; i++) P.band(H, i * 0.2 - 0.01, i * 0.2 + 0.01, '#8a6a3a', 0.4); break; }
-      case 'headband': P.fabric('band', R.band, 0, 0, 1, 1, 'terry', col, { contrast: 0.7 }); P.band(R.band, 0, 0.12, shade(col, 0.85), 1); P.band(R.band, 0.88, 1, shade(col, 0.85), 1); break;
+      case 'headband': if (!P.photoPrint(['headband_white'], 'band', R.band, 0, 0, 1, 1, col)) P.fabric('band', R.band, 0, 0, 1, 1, 'terry', col, { contrast: 0.7 }); P.band(R.band, 0, 0.12, shade(col, 0.85), 1); P.band(R.band, 0.88, 1, shade(col, 0.85), 1); break;
       case 'mask': {
         const M = R.mask;
         P.fabric('mask', M, 0, 0, 1, 1, 'poplin', col, { contrast: 0.4 });
@@ -984,7 +1059,7 @@ function paintAcc(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
       }
       case 'towel': {
         const W = R.towel;
-        P.fabric('towel', W, 0, 0, 1, 1, 'terry', col, { contrast: 0.8 });
+        if (!P.photoPrint(['towel_neck'], 'towel', W, 0, 0, 1, 1, col)) P.fabric('towel', W, 0, 0, 1, 1, 'terry', col, { contrast: 0.8 });
         const stripe = lum(col) > 0.7 ? '#4a7ab8' : '#f2f0ea';
         for (const s of [0.06, 0.1, 0.9, 0.94]) P.band(W, 0, 1, stripe, 0.85, s - 0.012, s + 0.012);
         P.noise(W, 0.25);
@@ -1003,7 +1078,7 @@ function paintAcc(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
       }
       case 'apron': {
         const Ap = R.apron;
-        P.fabric('apron', Ap, 0, 0, 1, 1, 'canvas', col, { contrast: 0.35, scale: 0.8 });
+        if (!P.photoPrint(['apron'], 'apron', Ap, 0, 0, 1, 1, col)) P.fabric('apron', Ap, 0, 0, 1, 1, 'canvas', col, { contrast: 0.35, scale: 0.8 });
         P.line(Ap, [[0.2, 0.55], [0.8, 0.55], [0.8, 0.75], [0.2, 0.75], [0.2, 0.55]], shade(col, 0.65), 2, 0.8);
         P.line(Ap, [[0.5, 0.55], [0.5, 0.75]], shade(col, 0.65), 1.5, 0.8);
         P.band(Ap, 0, 0.03, shade(col, 0.8), 1);
@@ -1042,7 +1117,9 @@ function paintHair(P: Painter, look: Look, r: RNG) {
   const style = look.hair?.style ?? 'short';
   const col = look.hair?.color ?? '#141110';
   const H = R.hair;
-  const ph = PHOTO.hair[style] ?? PHOTO.hair[style.split('_')[0]] ?? PHOTO.hair.default;
+  const hk = style === 'afro' || style === 'auntie_perm' ? 'hair_curly' : style === 'buzz' || style === 'shaved' ? 'hair_buzz' : 'hair_straight';
+  const pk = pickPhoto([hk], style === 'salt_pepper' ? '#8a8682' : col, PHOTO.hair);
+  const ph = pk ? { img: pk.rec.img, tint: pk.far > 0.08 } : null;
   const [x, y, w, h] = P.rect(H, 0, 0, 1, 1);
   const g = P.g;
   g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();

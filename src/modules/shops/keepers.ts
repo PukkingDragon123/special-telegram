@@ -131,7 +131,7 @@ export function wakeKeeper(game: Game, rt: ShopRT) {
 
 interface Proxy { obj: THREE.Mesh; id: number; snore: any; buzz: any }
 const proxies = new Map<number, Proxy>();
-const proxyMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
+const proxyMat = new THREE.MeshBasicMaterial({ visible: false }); // not rendered, still raycastable
 const proxyGeo = new THREE.CapsuleGeometry(0.38, 1.1, 2, 6).translate(0, 0.95, 0);
 
 /** Interaction proxies + local loops (snore, fly buzz) for every keeper entity (all peers). */
@@ -194,6 +194,10 @@ export function registerFallbackKeeperView(game: Game) {
       rig,
       update: (e: Ent, dt: number) => {
         followEnt(root, e, dt, 10);
+        // LOD: the stub rig is ~20 meshes — hide far keepers
+        const cam = game.camera?.position;
+        rig.root.visible = !cam || Math.hypot(root.position.x - cam.x, root.position.z - cam.z) < 40;
+        if (!rig.root.visible) return;
         const d = root.position.distanceTo(prev) / Math.max(dt, 1e-4);
         prev.copy(root.position);
         speed += (Math.min(d, 6) - speed) * Math.min(1, dt * 8);

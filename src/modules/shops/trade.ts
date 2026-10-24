@@ -967,7 +967,7 @@ function keeperActions(rt: ShopRT, ctx: Ctx): Action[] {
 
 // ------------------------------------------------------------------ client visuals
 
-let visAcc = 0;
+let visAcc = 1;
 const tagViews = new Map<number, { g: THREE.Group; price: number; ang: number; vel: number; last: THREE.Vector3 | null }>();
 const calcs = new Map<string, { mesh: THREE.Mesh; text: string }>();
 
@@ -983,7 +983,7 @@ export function clearClient() {
 export function clientFrame(game: Game, dt: number) {
   G = game;
   keeperFrame(game, dt);
-  visAcc += dt;
+  visAcc += Math.max(dt, 0.05);
   for (const rt of RT.values()) {
     if (!rt.fix) continue;
     if (rt.ent.id < 0 || !game.state.get(rt.ent.id)) linkClient(rt);
@@ -1017,13 +1017,16 @@ function cull(game: Game) {
     if (!rt.fix) continue;
     const c = rt.fix.center;
     const d = Math.hypot(c[0] - cam.x, c[2] - cam.z);
-    rt.fix.root.visible = d < 75 + rt.fix.radius;
+    rt.fix.root.visible = d < 55 + rt.fix.radius;
   }
   game.state.each('item', (e) => {
     if (!e.disp || !e.p) return;
     const obj = game.views.objectOf(e.id);
     const vis = obj?.children[0];
-    if (vis) vis.visible = Math.hypot(e.p[0] - cam.x, e.p[2] - cam.z) < 38;
+    if (!vis) return;
+    vis.visible = Math.hypot(e.p[0] - cam.x, e.p[2] - cam.z) < 32;
+    // small goods on display don't need to cast shadows (saves a shadow-pass draw per mesh)
+    if (!vis.userData.noShadow) { vis.userData.noShadow = true; vis.traverse((m: any) => { if (m.isMesh) m.castShadow = false; }); }
   });
 }
 
@@ -1031,16 +1034,13 @@ function updateCards(game: Game) {
   const shown = new Map<string, number>();
   game.state.each('item', (e) => { if (e.disp && e.shop) { const k = e.shop + ':' + e.sk; shown.set(k, (shown.get(k) ?? 0) + 1); } });
   for (const rt of RT.values()) {
-    if (!rt.fix) continue;
+    if (!rt.fix || !rt.fix.root.visible) continue;
     for (const st of rt.def.stock) {
-      const card = rt.fix.cards.get(st.id);
-      if (!card) continue;
       const avail = stockAvailable(rt, st);
-      card.visible = avail && (rt.ent.open || rt.def.kind === 'store');
-      if (!avail) continue;
+      const visible = avail && (!!rt.ent.open || rt.def.kind === 'store');
       const sold = (rt.ent.left?.[st.id] ?? 1) <= 0 && !shown.get(rt.def.id + ':' + st.id);
       const name = st.label?.th ?? game.items.def(rt.kinds.get(st.id)!)?.name.th ?? st.id;
-      updateCard(rt.fix, st, name, st.price, sold);
+      updateCard(rt.fix, st, name, st.price, sold, !visible);
     }
   }
 }

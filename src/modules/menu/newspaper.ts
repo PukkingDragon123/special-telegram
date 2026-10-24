@@ -64,8 +64,11 @@ export async function renderFrontPage(s: Stats): Promise<HTMLCanvasElement> {
     if (!r) return;
     ctx.save();
     ctx.font = fnt(w, size, o.fam);
-    const m = ctx.measureText(text);
-    const sx = Math.max(o.minSX ?? 0.62, Math.min(o.maxSX ?? 1, r.w / Math.max(1, m.width)));
+    let m = ctx.measureText(text);
+    const minSX = o.minSX ?? 0.62;
+    // still too wide at the narrowest condense → shrink the type
+    if (m.width * minSX > r.w) { size = Math.floor(size * r.w / (m.width * minSX)); ctx.font = fnt(w, size, o.fam); m = ctx.measureText(text); }
+    const sx = Math.max(minSX, Math.min(o.maxSX ?? 1, r.w / Math.max(1, m.width)));
     const realW = m.width * sx;
     let x = r.x;
     if (o.align === 'center') x = r.x + (r.w - realW) / 2; else if (o.align === 'right') x = r.x + r.w - realW;
@@ -115,11 +118,15 @@ export async function renderFrontPage(s: Stats): Promise<HTMLCanvasElement> {
   const pickT: HeadlineTpl = (pool.length ? pool : tpls)[Math.floor(Math.random() * (pool.length || tpls.length))];
   const parts = fill(pickT.th, s).split('|');
   let h1 = parts[0] ?? '', h2 = parts[1] ?? '';
-  if (!h2) { // split a single-line template in two
-    const words = h1.split(' ');
-    const mid = Math.ceil(words.length / 2);
-    h2 = words.slice(mid).join(' ');
-    h1 = words.slice(0, mid).join(' ');
+  if (!h2) { // split a single-line template in two: after "!" if there is one, else at the space nearest the middle
+    const bang = h1.indexOf('!');
+    let cut = bang > 3 && bang < h1.length - 3 ? bang + 1 : -1;
+    if (cut < 0) {
+      let best = -1;
+      for (let i = 0; i < h1.length; i++) if (h1[i] === ' ' && (best < 0 || Math.abs(i - h1.length / 2) < Math.abs(best - h1.length / 2))) best = i;
+      cut = best;
+    }
+    if (cut > 0) { h2 = h1.slice(cut).trim(); h1 = h1.slice(0, cut).trim(); }
   }
   // ---- dynamic regions
   fit(String(s.day), R.day_number, 96, 900, INK, { align: 'center', minSX: 0.6 });
@@ -218,6 +225,9 @@ async function renderBackPage(s: Stats): Promise<HTMLCanvasElement> {
 export class Newspaper {
   private showing: Promise<void> | null = null;
   constructor(private game: Game) {}
+
+  /** The composed front page as a canvas (1448×2048) – e.g. to lay the paper on a table in the world. */
+  async frontPage(stats?: DayStatsIn | null): Promise<HTMLCanvasElement> { return renderFrontPage(normStats(this.game, stats)); }
 
   show(stats?: DayStatsIn | null): Promise<void> {
     if (this.showing) return this.showing;

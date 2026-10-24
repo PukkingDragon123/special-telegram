@@ -113,7 +113,7 @@ const KIND_CAT: [RegExp, string][] = [
   [/warning/, 'wallsign'], [/convenience/, 'convenience'], [/banner/, 'banner,shop'],
 ];
 
-export async function loadSigns(): Promise<SignSys | null> {
+export async function loadSigns(atlasSize = 4096): Promise<SignSys | null> {
   const items: AtlasItem[] = [];
   const list: { id: string; cat: string[]; glow: number }[] = [];
   // streets research agent's manifest: { signs: [{ file, kind, px:[w,h], real_size_m, mount }] }
@@ -157,6 +157,6 @@ export async function loadSigns(): Promise<SignSys | null> {
     list.push({ id, cat: cat.split(','), glow: /lightbox|neon/.test(kind + f) ? 1 : 0 });
   }
   if (!items.length) return null;
-  const atlas = await Atlas.build(items, 4096, 3, '#202020');
+  const atlas = await Atlas.build(items, atlasSize, 3, '#202020');
   return new SignSys(atlas, list);
 }

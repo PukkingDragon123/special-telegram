@@ -251,7 +251,7 @@ export function buildStreets(c: Ctx) {
       const x = onSoi ? rng.range(-3, 3) : rng.range(-125, 125);
       const z = onSoi ? rng.range(-156, 4) : rng.range(MAIN.z0 + 0.6, MAIN.z1 - 0.6);
       const k = rng.int(0, 3), s = rng.range(0.7, 1.4);
-      groundDecal(w, hole(k % 2, k >> 1), x, 0.0095, z, s * 1.3, s, rng.range(0, 6.28), { alpha: 1 });
+      groundDecal(w, hole(k % 2, k >> 1), x, 0.0095, z, s * 1.3, s, rng.range(0, 6.28), { alpha: 1, tint: 0x7a7670 });
     }
     // litter: bags, bottles, cups, foam boxes along gutters & sidewalks (photo atlas 4x5)
     const lit = (i: number) => D.cell('decal_litter_atlas', i % 4, Math.floor(i / 4) % 5, 4, 5);
@@ -274,7 +274,7 @@ export function buildStreets(c: Ctx) {
       const z = onSoi ? rng.range(-156, 5) : rng.range(MAIN.z0 + 0.5, MAIN.z1 - 0.5);
       const k = rng.int(0, 3);
       const s = rng.range(1.2, 2.8);
-      groundDecal(w, patch(k % 2, k >> 1), x, 0.007, z, s, s * rng.range(0.7, 1.3), rng.range(0, 6.28), { alpha: rng.range(0.7, 1) });
+      groundDecal(w, patch(k % 2, k >> 1), x, 0.007, z, s, s * rng.range(0.7, 1.3), rng.range(0, 6.28), { alpha: rng.range(0.7, 1), tint: 0x8c8882 });
     }
     // puddles collect at gutters and potholes (mirror-like)
     for (let i = 0; i < 46; i++) {

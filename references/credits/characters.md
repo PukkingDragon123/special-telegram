@@ -30,3 +30,21 @@ public/assets/textures/{faces,clothing,hair} (research agent, see its credits).
 | fab/grid_red.jpg | https://ambientcg.com/a/Fabric067 | ambientCG (Lennart Demes) | CC0 |
 | fab/stripe_check.jpg | https://ambientcg.com/a/Fabric078 | ambientCG (Lennart Demes) | CC0 |
 | fab/quilted.jpg | https://ambientcg.com/a/Fabric047 | ambientCG (Lennart Demes) | CC0 |
+
+## Sculpted rigged bodies + animation library
+
+| file | source | author | licence |
+|---|---|---|---|
+| body_m.glb, body_f.glb (+ .json metrics) | "Universal Base Characters [Standard]" — Superhero_Male_FullBody / Superhero_Female_FullBody (Godot-UE skeleton), https://quaternius.itch.io/universal-base-characters | Quaternius | CC0 |
+| anims.glb | "Universal Animation Library [Standard]" — UAL1_Standard.glb (43 clips), https://quaternius.itch.io/universal-animation-library | Quaternius | CC0 |
+
+Processing (headless Blender 4.2, `scripts/characters/build_chars.py`): seam-weld, muscle softening (less
+"superhero"), eye sockets filled (static photo faces are painted on), eyes/brows/hair meshes removed, decimated to
+4.6k / 1.5k tris, atlas-layout UVs, plane-cut clothing shells (tops/sleeves/bottoms/shoe) and skirt cones with
+transferred weights, measured torso/neck/head tables for the procedural hair/accessory fitter. Clips are kept
+unmodified and retargeted at load time (rest-pose delta per bone).
+
+Clothing photo textures used through `PHOTO_USE` in atlas.ts (stripes, Hawaiian prints, ผ้าขาวม้า checks, denim,
+suiting, satin/velvet, school twill, police khaki, vest/rider polys, ditsy blouses, apron, terry, sneaker leather) and
+hair photos come from public/assets/textures/clothing|hair — sources/licences are listed in those manifests and in
+references/credits/R3-people.md (research agent).

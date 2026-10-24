@@ -68,7 +68,16 @@ export class Thumbnailer {
     const rim = new THREE.DirectionalLight(0xfff0d0, 1.6);
     rim.position.set(2, 2, -2);
     this.scene.add(key, rim, new THREE.HemisphereLight(0xffffff, 0x8a7a6a, 1.4));
+    // a hidden "keeper" model: holds a reference to the rig shader programs of this scene so that
+    // disposing each product-shot model doesn't release (and later recompile) the same programs
+    try {
+      this.keeper = game.chars.create(game.chars.playerLook(0), { lod: 'low', castShadow: false });
+      this.keeper.root.position.set(0, 0, 12); // behind the product camera: drawn (programs acquired) but clipped
+      this.keeper.root.traverse((o: any) => { o.frustumCulled = false; });
+      this.scene.add(this.keeper.root);
+    } catch { this.keeper = null; }
   }
+  private keeper: any = null;
   request(look: Look, framing: Framing, cb: (c: HTMLCanvasElement) => void, tag?: number) { this.queue.push({ look, framing, cb, tag }); }
   /** move the jobs of one page to the front of the queue */
   front(tag: number) { const a = this.queue.filter((j) => j.tag === tag), b = this.queue.filter((j) => j.tag !== tag); this.queue = [...a, ...b]; }
@@ -168,7 +177,7 @@ export class Thumbnailer {
     return cv;
   }
 
-  dispose() { if (this.cur) { this.scene.remove(this.cur.rig.root); this.cur.rig.dispose(); this.cur = null; } this.rt.dispose(); this.queue.length = 0; }
+  dispose() { if (this.cur) { this.scene.remove(this.cur.rig.root); this.cur.rig.dispose(); this.cur = null; } this.keeper?.dispose(); this.rt.dispose(); this.queue.length = 0; }
 }
 
 // ------------------------------------------------------------------ the magazine
@@ -755,7 +764,7 @@ function tabCanvas(label: string, color: string, i: number) {
   g.addColorStop(0, 'rgba(0,0,0,0.12)'); g.addColorStop(0.25, 'rgba(0,0,0,0)'); g.addColorStop(0.92, 'rgba(255,255,255,0.15)'); g.addColorStop(1, 'rgba(0,0,0,0.12)');
   ctx.fillStyle = g; ctx.fill();
   ctx.fillStyle = '#1b2b6b';
-  ctx.font = `400 ${label.length > 9 ? 38 : label.length > 6 ? 46 : 58}px ${F.hand}`;
+  ctx.font = `400 ${label.length > 9 ? 31 : label.length > 6 ? 42 : 58}px ${F.hand}`;
   ctx.textBaseline = 'middle';
   ctx.save(); ctx.translate(114, 62); ctx.rotate((rnd() - 0.5) * 0.06); ctx.fillText(label, 0, 0); ctx.restore();
   return cv;

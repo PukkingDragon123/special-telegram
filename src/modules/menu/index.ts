@@ -64,7 +64,7 @@ export default defineModule({
     game.onIntent('menu.ready', (pl, d) => { pl.ready = !!d?.ready; });
 
     const np = new Newspaper(game);
-    (game as any).newspaper = { show: (stats?: any) => np.show(stats) };
+    (game as any).newspaper = { show: (stats?: any) => np.show(stats), frontPage: (stats?: any) => np.frontPage(stats) };
 
     if (params.has('newspaper')) {
       let shown = false;

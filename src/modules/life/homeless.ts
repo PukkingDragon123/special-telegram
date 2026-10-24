@@ -214,7 +214,7 @@ export class Homeless {
     card2.rotation.y = -0.4;
     g.add(card2);
     // tin cup for coins (photo of a dented tin can)
-    const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.09, 12, 1, true), new THREE.MeshStandardMaterial({ map: lifeTex('tin_can.jpg', { fallback: '#9a9a96', kind: 'metal' }), metalness: 0.7, roughness: 0.4, side: THREE.DoubleSide }));
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.09, 12, 1, true), Assets.pbr('aluminium_scratched', { fallback: 0x9a9a96, side: THREE.DoubleSide }));
     cup.position.set(0.55, 0.05, -0.3);
     cup.castShadow = true;
     g.add(cup);
@@ -222,7 +222,7 @@ export class Homeless {
     coins.position.set(0.55, 0.02, -0.3);
     g.add(coins);
     // bundle of belongings: a stuffed rice sack (real woven sack photo)
-    const sack = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), new THREE.MeshStandardMaterial({ map: lifeTex('rice_sack.jpg', { fallback: '#d8d2bf' }), roughness: 0.9 }));
+    const sack = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), Assets.pbr('canvas_tarp', { fallback: 0xd8d2bf, color: '#e8e0c8' }));
     sack.scale.set(1, 0.75, 0.8);
     sack.position.set(-0.45, 0.16, -0.38);
     sack.castShadow = true;

@@ -25,7 +25,9 @@ export function lifeTex(file: string, o: { srgb?: boolean; repeat?: [number, num
   cache.set(key, tex);
   const url = Assets.url(file.includes('/') ? file : 'gen/life/tex/' + file);
   loader.load(url, (t) => {
-    tex.image = t.image;
+    // new size → free the GPU texture first (immutable storage is reallocated on next upload)
+    tex.dispose();
+    tex.source = t.source;
     tex.needsUpdate = true;
   }, undefined, () => console.warn('[life] missing texture', file));
   return tex;

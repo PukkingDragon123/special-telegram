@@ -56,11 +56,12 @@ function startPreload(game: Game) {
     const tp = performance.now();
     const worldMan = await Assets.jsonSafe<any>('textures/world/manifest.json', null);
     const size = game.engine.quality === 'low' ? 256 : 512;
+    const atlasSize = game.engine.quality === 'low' ? 2048 : 4096;   // decal / sign / foliage atlases
     const [tex, decals, signs, fol] = await Promise.all([
       loadWorldTextures(size, worldMan).then((r) => { TIMES.texArrays = Math.round(performance.now() - tp); return r; }),
-      loadDecals(worldMan).then((r) => { TIMES.decals = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] decals', e); return null; }),
-      loadSigns().then((r) => { TIMES.signs = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] signs', e); return null; }),
-      loadFoliage().then((r) => { TIMES.foliage = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] foliage', e); return null; }),
+      loadDecals(worldMan, atlasSize).then((r) => { TIMES.decals = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] decals', e); return null; }),
+      loadSigns(atlasSize).then((r) => { TIMES.signs = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] signs', e); return null; }),
+      loadFoliage(atlasSize).then((r) => { TIMES.foliage = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] foliage', e); return null; }),
     ]);
     return { tex, decals, signs, fol };
   })();
@@ -68,7 +69,7 @@ function startPreload(game: Game) {
 }
 
 /** decal atlas from textures/world (+ our gen/world extras) */
-async function loadDecals(man: any): Promise<Atlas | null> {
+async function loadDecals(man: any, atlasSize = 4096): Promise<Atlas | null> {
   const base = 'textures/world/';
   const D = (id: string, w: number, h: number) => ({ id, url: base + id + '.png', w, h });
   const items = [
@@ -90,7 +91,7 @@ async function loadDecals(man: any): Promise<Atlas | null> {
   // our own real-photo decals (graffiti, stains, posters) from gen/world
   const gen = await Assets.jsonSafe<any>('gen/world/decals.json', null);
   if (gen) for (const d of gen.items ?? []) items.push({ id: d.id, url: 'gen/world/' + d.file, w: d.w ?? 512, h: d.h ?? 512 });
-  return Atlas.build(items, 4096, 4);
+  return Atlas.build(items, atlasSize, 4);
 }
 
 const TIMES: Record<string, number> = {};

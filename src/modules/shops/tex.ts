@@ -113,38 +113,113 @@ export type CardStyle = 'star' | 'card' | 'shelf' | 'yellow';
 const STAR_TINTS = ['star_pink', 'star_yellow', 'star_green', 'star_orange'];
 
 /** Market / shop price card for a product ("หมูสับ ถุงละ 75"). */
-export function priceCardTex(style: CardStyle, name: string, unit: string, price: number, seed = 0): THREE.CanvasTexture {
-  const key = `card:${style}:${name}:${unit}:${price}:${seed % 4}`;
+/** Card proportions + real-photo base per style. */
+export function cardSpec(style: CardStyle, seed = 0): { w: number; h: number; base: string } {
+  if (style === 'shelf' || style === 'yellow') return { w: 512, h: 192, base: style === 'yellow' ? 'shelf_label_yellow' : 'shelf_label' };
+  if (style === 'star') return { w: 384, h: 384, base: STAR_TINTS[seed % STAR_TINTS.length] };
+  return { w: 448, h: 320, base: 'card_kraft' };
+}
+
+/** Draw one price card into ctx at (0,0,w,h). */
+export function drawCard(ctx: CanvasRenderingContext2D, w: number, h: number, img: HTMLImageElement | null, style: CardStyle, name: string, unit: string, price: number, seed = 0, sold = false) {
+  const k = w / cardSpec(style).w; // scale fonts with the cell size
   if (style === 'shelf' || style === 'yellow') {
-    // printed shelf-edge label (8-Twelve / wholesale)
-    return composed(key, 512, 192, style === 'yellow' ? 'shelf_label_yellow' : 'shelf_label', (ctx, w, h, img) => {
-      if (img) drawImg(ctx, img, 0, 0, w, h, 'cover');
-      else { ctx.fillStyle = '#f7f7f2'; ctx.fillRect(0, 0, w, h); }
-      if (style === 'yellow') { ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = '#ffd814'; ctx.fillRect(0, 0, w, h); ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#d8231a'; ctx.fillRect(0, 0, w, 14); }
-      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-      fitText(ctx, name, 22, 64, w * 0.62, 48, F.ui, 600, '#1d1d1d');
-      ctx.textAlign = 'right';
-      fitText(ctx, String(price), w - 26, 150, w * 0.42, 118, F.heavy, 800, style === 'yellow' ? '#c4121a' : '#111');
-      ctx.textAlign = 'left';
-      fitText(ctx, 'บาท', 24, 152, 120, 40, F.body, 600, '#333');
-    }, false);
+    if (img) drawImg(ctx, img, 0, 0, w, h, 'cover');
+    else { ctx.fillStyle = '#f7f7f2'; ctx.fillRect(0, 0, w, h); }
+    if (style === 'yellow') { ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = '#ffd814'; ctx.fillRect(0, 0, w, h); ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#d8231a'; ctx.fillRect(0, 0, w, 14 * k); }
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    fitText(ctx, name, 22 * k, 64 * k, w * 0.62, 48 * k, F.ui, 600, '#1d1d1d');
+    ctx.textAlign = 'right';
+    fitText(ctx, sold ? 'หมด' : String(price), w - 26 * k, 150 * k, w * 0.42, 118 * k, F.heavy, 800, style === 'yellow' || sold ? '#c4121a' : '#111');
+    ctx.textAlign = 'left';
+    if (!sold) fitText(ctx, 'บาท', 24 * k, 152 * k, 120 * k, 40 * k, F.body, 600, '#333');
+    return;
   }
   if (style === 'star') {
-    const base = STAR_TINTS[seed % STAR_TINTS.length];
-    return composed(key, 384, 384, base, (ctx, w, h, img) => {
-      if (img) drawImg(ctx, img, 0, 0, w, h, 'contain');
-      else { starPath(ctx, w / 2, h / 2, w * 0.48, w * 0.3, 12); ctx.fillStyle = ['#ff5fa8', '#ffe94d', '#7dff6a', '#ff9a3c'][seed % 4]; ctx.fill(); }
-      handText(ctx, name, w / 2, h * 0.36, w * 0.62, 56, '#1a1a1a', F.scrawl, seed);
-      handText(ctx, `${unit} ${price}`.trim(), w / 2, h * 0.6, w * 0.66, 92, '#111', F.scrawl, seed + 3);
-    });
+    if (img) drawImg(ctx, img, 0, 0, w, h, 'contain');
+    else { starPath(ctx, w / 2, h / 2, w * 0.48, w * 0.3, 12); ctx.fillStyle = ['#ff5fa8', '#ffe94d', '#7dff6a', '#ff9a3c'][seed % 4]; ctx.fill(); }
+    handText(ctx, name, w / 2, h * 0.36, w * 0.62, 56 * k, '#1a1a1a', F.scrawl, seed);
+    handText(ctx, sold ? 'หมดแล้ว' : `${unit} ${price}`.trim(), w / 2, h * 0.6, w * 0.66, 92 * k, sold ? '#c4121a' : '#111', F.scrawl, seed + 3);
+    return;
   }
-  // cardboard card
-  return composed(key, 448, 320, 'card_kraft', (ctx, w, h, img) => {
-    if (img) drawImg(ctx, img, 0, 0, w, h, 'cover');
-    else { ctx.fillStyle = '#c8a77a'; ctx.fillRect(0, 0, w, h); }
-    handText(ctx, name, w / 2, h * 0.33, w * 0.86, 70, '#16243f', F.scrawl, seed);
-    handText(ctx, `${unit} ${price}`.trim(), w / 2, h * 0.7, w * 0.9, 104, '#a3121a', F.scrawl, seed + 5);
-  }, false);
+  if (img) drawImg(ctx, img, 0, 0, w, h, 'cover');
+  else { ctx.fillStyle = '#c8a77a'; ctx.fillRect(0, 0, w, h); }
+  handText(ctx, name, w / 2, h * 0.33, w * 0.86, 70 * k, '#16243f', F.scrawl, seed);
+  handText(ctx, sold ? 'หมดแล้ว' : `${unit} ${price}`.trim(), w / 2, h * 0.7, w * 0.9, 104 * k, '#a3121a', F.scrawl, seed + 5);
+}
+
+export function priceCardTex(style: CardStyle, name: string, unit: string, price: number, seed = 0): THREE.CanvasTexture {
+  const sp = cardSpec(style, seed);
+  return composed(`card:${style}:${name}:${unit}:${price}:${seed % 4}`, sp.w, sp.h, sp.base, (ctx, w, h, img) => drawCard(ctx, w, h, img, style, name, unit, price, seed), style === 'star');
+}
+
+/**
+ * All price cards of one shop in ONE canvas atlas (one texture, one merged mesh → 1 draw call per
+ * shop instead of one per card). Cells re-render when their photo base loads or the price changes.
+ */
+export class CardAtlas {
+  static CW = 320; static CH = 224; static COLS = 4;
+  canvas = document.createElement('canvas');
+  ctx: CanvasRenderingContext2D;
+  tex: THREE.CanvasTexture;
+  cells: { style: CardStyle; name: string; unit: string; price: number; seed: number; sold: boolean; hidden: boolean; key: string }[] = [];
+  constructor(n: number) {
+    const rows = Math.max(1, Math.ceil(n / CardAtlas.COLS));
+    this.canvas.width = CardAtlas.CW * CardAtlas.COLS;
+    this.canvas.height = CardAtlas.CH * rows;
+    this.ctx = this.canvas.getContext('2d')!;
+    this.tex = new THREE.CanvasTexture(this.canvas);
+    this.tex.colorSpace = THREE.SRGBColorSpace;
+    this.tex.anisotropy = 4;
+  }
+  /** cell rect of the drawn card (pixels) */
+  rect(i: number) {
+    const c = this.cells[i];
+    const sp = cardSpec(c.style);
+    const s = Math.min(CardAtlas.CW / sp.w, CardAtlas.CH / sp.h);
+    const w = sp.w * s, h = sp.h * s;
+    const x = (i % CardAtlas.COLS) * CardAtlas.CW + (CardAtlas.CW - w) / 2, y = Math.floor(i / CardAtlas.COLS) * CardAtlas.CH + (CardAtlas.CH - h) / 2;
+    return { x, y, w, h };
+  }
+  add(style: CardStyle, name: string, unit: string, price: number, seed: number) {
+    this.cells.push({ style, name, unit, price, seed, sold: false, hidden: false, key: '' });
+    const i = this.cells.length - 1;
+    this.draw(i);
+    return i;
+  }
+  /** UV rect (three.js, flipY) for cell i */
+  uv(i: number) {
+    const r = this.rect(i), W = this.canvas.width, H = this.canvas.height;
+    return { u0: r.x / W, u1: (r.x + r.w) / W, v0: 1 - (r.y + r.h) / H, v1: 1 - r.y / H };
+  }
+  set(i: number, o: { price?: number; sold?: boolean; hidden?: boolean; name?: string }) {
+    const c = this.cells[i];
+    if (!c) return;
+    Object.assign(c, Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)));
+    this.draw(i);
+  }
+  draw(i: number) {
+    const c = this.cells[i];
+    const key = `${c.price}|${c.sold}|${c.hidden}|${c.name}`;
+    if (key === c.key) return;
+    c.key = key;
+    const r = this.rect(i);
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.clearRect((i % CardAtlas.COLS) * CardAtlas.CW, Math.floor(i / CardAtlas.COLS) * CardAtlas.CH, CardAtlas.CW, CardAtlas.CH);
+    if (!c.hidden) {
+      const sp = cardSpec(c.style, c.seed);
+      const path = photoPath(sp.base);
+      const img = path ? imgCache.get(path) ?? null : null;
+      if (path && imgCache.get(path) === undefined) loadImg(path).then((im) => { if (im) { c.key = ''; this.draw(i); } });
+      else if (!path) loadShopManifest().then(() => { if (photoPath(sp.base)) { c.key = ''; this.draw(i); } });
+      ctx.translate(r.x, r.y);
+      ctx.beginPath(); ctx.rect(0, 0, r.w, r.h); ctx.clip();
+      drawCard(ctx, r.w, r.h, img, c.style, c.name, c.unit, c.price, c.seed, c.sold);
+    }
+    ctx.restore();
+    this.tex.needsUpdate = true;
+  }
 }
 
 export function starPath(ctx: CanvasRenderingContext2D, cx: number, cy: number, r0: number, r1: number, n: number) {

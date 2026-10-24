@@ -77,6 +77,7 @@ export const TOPS: TopSpec[] = [
   T('polo_stripe_green', 'เสื้อโปโลลายขวางเขียว-ขาว', 'green-white striped polo', { price: 250, sleeve: 'short', loose: 0.014, hem: 0.86, collar: 'polo', pattern: 'polo_stripe', color: '#4f9a62', color2: '#f2f0ea', colors: ['#4f9a62', '#2f5fa8', '#c8423a', '#1d1d1f'] }),
   T('polo', 'เสื้อโปโล', 'polo shirt', { price: 220, sleeve: 'short', loose: 0.013, hem: 0.86, collar: 'polo', pattern: 'pique', color: '#2f4f86', colors: BRIGHT }),
   T('shirt_white', 'เสื้อเชิ้ตขาว', 'white button shirt', { price: 390, sleeve: 'rolled', loose: 0.016, hem: 0.84, collar: 'shirt', pattern: 'oxford', color: '#f3f1ec', color2: '#c9ccd2', colors: ['#f3f1ec', '#dfe8f2', '#f0e6dc'] }),
+  T('shirt_paisley', 'เสื้อเชิ้ตขาวลายเพสลีย์', 'white paisley shirt', { price: 450, sleeve: 'rolled', loose: 0.016, hem: 0.84, collar: 'shirt', pattern: 'oxford', color: '#f3f1ec', color2: '#c9ccd2', colors: ['#f3f1ec'] }),
   T('dress_shirt', 'เสื้อเชิ้ตทำงาน', 'office shirt', { price: 350, sleeve: 'long', loose: 0.012, hem: 0.98, collar: 'shirt', pattern: 'oxford', color: '#cfe0f1', color2: '#9fb1c6', colors: ['#cfe0f1', '#f3f1ec', '#f2d9de', '#e2e2e2', '#d9e8d2'] }),
   T('blouse_office', 'เสื้อเบลาส์ทำงาน', 'office blouse', { price: 320, sex: 'f', sleeve: 'short', loose: 0.012, hem: 0.98, collar: 'mandarin', pattern: 'satin_plain', color: '#f3f1ec', colors: ['#f3f1ec', '#f2d9de', '#cfe0f1', '#1d1d1f', '#e9dcc6'] }),
   T('suit_black', 'สูทดำ', 'black suit', { price: 2500, sleeve: 'long', loose: 0.03, sleeveLoose: 0.016, hem: 0.8, collar: 'suit', pattern: 'suit', color: '#1e1f24', color2: '#f3f1ec', colors: ['#1e1f24', '#2b3550', '#4a4d52'] }),
@@ -363,7 +364,7 @@ export function playerLook(slot: number): Look {
     // G3 back right: green-white striped polo, jeans
     { sex: 'm', height: 1.7, build: 0.5, skin: '#cd9c76', face: 'm03', hair: { style: 'short', color: '#16120f' }, top: { id: 'polo_stripe_green', color: '#4f9a62' }, bottom: { id: 'jeans', color: '#2f3d5a' }, shoes: { id: 'sneakers', color: '#ecebe6' }, acc: [] },
     // G4 front right: white button shirt (rolled sleeves), dark jeans, white sneakers, digital watch
-    { sex: 'm', height: 1.75, build: 0.36, skin: '#e2b893', face: 'm04', hair: { style: 'spiky', color: '#1a1512' }, top: { id: 'shirt_white', color: '#f3f1ec' }, bottom: { id: 'jeans', color: '#222a3c' }, shoes: { id: 'sneakers', color: '#f4f4f2' }, acc: ['watch_casio'] },
+    { sex: 'm', height: 1.75, build: 0.36, skin: '#e2b893', face: 'm04', hair: { style: 'spiky', color: '#1a1512' }, top: { id: 'shirt_paisley', color: '#f3f1ec' }, bottom: { id: 'jeans', color: '#222a3c' }, shoes: { id: 'sneakers', color: '#f4f4f2' }, acc: ['watch_casio'] },
   ];
   return JSON.parse(JSON.stringify(L[((slot % 4) + 4) % 4]));
 }

@@ -130,7 +130,7 @@ export class Shophouse {
     const apt = u.style === 'apartment';
     const noG = !!u.noGround;
     // ---- look
-    const wallL = u.wall ?? rng.weighted(['plaster', 'plaster_dirty', 'plaster_peeling', 'concrete_streaked', 'tiles_wall', 'plaster_red'], [42, 22, 12, 12, 7, 3]);
+    const wallL = u.wall ?? rng.weighted(['plaster', 'plaster_dirty', 'plaster_peeling', 'concrete_streaked', 'tiles_wall', 'plaster_red', 'wall_peel_teal', 'wall_peel_orange', 'wall_peel_cream'], [40, 20, 8, 12, 7, 2, 4, 3, 4]);
     const tint = u.tint ?? (wallL === 'plaster' || wallL === 'plaster_dirty' ? rng.pick(WALL_TINTS) : wallL === 'tiles_wall' ? rng.pick([0xffffff, 0xe8f0e8, 0xf0e8e0, 0xd8e4f0]) : 0xffffff);
     const ovL = rng.pick(['plaster_moldy', 'concrete_streaked', 'plaster_moldy', 'plaster_dirty']);
     const ovA = rng.range(0.35, 0.95);
@@ -202,8 +202,15 @@ export class Shophouse {
         const sl = rng.chance(ground === 'closed' ? 0.8 : 0.45) ? 'shutter_rust' : 'shutter';
         const st = sl === 'shutter' ? rng.pick(SHUTTER_TINTS) : 0xffffff;
         const bottom = ground === 'half' ? y0 + rng.range(1.1, 1.8) : y0;
-        w.mat(sl, { tint: st, uv: 'face', ov: 'steel_rust', ovAmt: rng.range(0.2, 0.7), autoDirt: true });
-        w.quad(ox0, bottom, -0.06, ox1, bottom, -0.06, ox1, yb, -0.06, ox0, yb, -0.06);
+        // real-photo whole shutter bay (rusty white / graffiti) on some full-height closed fronts
+        const bay = ground !== 'half' && ox1 - ox0 > 2.2 && ox1 - ox0 < 5 && rng.chance(0.45) ? rng.pick(['shutter_bay_white', 'shutter_bay_white', 'shutter_bay_graffiti']) : '';
+        if (bay) {
+          w.mat(bay, { tint: 0xffffff, uv: 'face', autoDirt: true });
+          w.quad(ox0, bottom, -0.06, ox1, bottom, -0.06, ox1, yb, -0.06, ox0, yb, -0.06, [0, 0, 1, 0.9]);
+        } else {
+          w.mat(sl, { tint: st, uv: 'face', ov: 'steel_rust', ovAmt: rng.range(0.2, 0.7), autoDirt: true });
+          w.quad(ox0, bottom, -0.06, ox1, bottom, -0.06, ox1, yb, -0.06, ox0, yb, -0.06);
+        }
         if (ground === 'half') { w.mat('metal_paint', { tint: 0x4a4a48 }); w.box(ox0, bottom - 0.05, -0.1, ox1, bottom, -0.02, ALL); }
         // shutter housing box
         w.mat('metal_paint', { tint: st, ov: 'steel_rust', ovAmt: 0.5 });
@@ -212,7 +219,7 @@ export class Shophouse {
         w.mat('steel_rust');
         if (ground !== 'half') { w.box(W / 2 - 0.2, y0 + 0.02, -0.06, W / 2 - 0.12, y0 + 0.12, 0.02, ALL); w.box(W / 2 + 0.12, y0 + 0.02, -0.06, W / 2 + 0.2, y0 + 0.12, 0.02, ALL); }
         // graffiti on closed shutters
-        if (ground !== 'half' && c.signs && rng.chance(0.55)) {
+        if (ground !== 'half' && bay !== 'shutter_bay_graffiti' && c.signs && rng.chance(bay ? 0.25 : 0.55)) {
           const g = c.signs.graffiti(rng);
           if (g) this.decalOnFacade(g, ox0 + rng.range(0.1, 0.6), y0 + rng.range(0.4, 1.0), rng.range(1.4, Math.min(3.0, ox1 - ox0 - 0.4)), -0.055);
         }
@@ -264,7 +271,8 @@ export class Shophouse {
       for (const x of [0.15, W - 0.15]) w.tube([x, yb - 0.6, 0.03, x, ay - drop - 0.03, cd + ad - 0.1], 0.025, 4);
     } else if (awn === 'tarp' && !far) {
       const ad = rng.range(1.6, 2.6), ay = yb + 0.1;
-      w.mat('tarp', { tint: rng.pick([0x2a5ab0, 0x2a8a4a, 0xc0b8a0, 0xb03a2a, 0x3a3a8a]), ao: 0.95, uv: 'local' });
+      const tl = rng.weighted(['tarp', 'tarp_blue', 'awning_ry', 'awning_gw', 'awning_rp'], [3, 3, 2, 2, 1]);
+      w.mat(tl, { tint: tl === 'tarp' ? rng.pick([0x2a8a4a, 0xc0b8a0, 0xb03a2a, 0x3a3a8a]) : rng.pick([0xffffff, 0xe0dcd4, 0xc8c4bc]), ao: 0.95, uv: 'local', ov: 'plaster_moldy', ovAmt: 0.35 });
       const sag = 0.18;
       w.quad(0, ay - 0.5, cd + ad, W, ay - 0.5, cd + ad, W, ay, cd, 0, ay, cd);
       w.quad(W, ay - 0.5 - 0.005, cd + ad, 0, ay - 0.5 - 0.005, cd + ad, 0, ay - 0.005, cd, W, ay - 0.005, cd);
@@ -331,7 +339,7 @@ export class Shophouse {
     }
 
     // ================================================================ SIDE / BACK WALLS + ROOF
-    const sideL = rng.pick(['concrete_streaked', 'plaster_moldy', 'cement_block', 'plaster_brick']);
+    const sideL = rng.pick(['concrete_streaked', 'plaster_moldy', 'cement_block', 'plaster_brick', 'wall_mould']);
     w.mat(sideL, { tint: sideL === 'plaster_moldy' ? tint : 0xffffff, ov: 'plaster_moldy', ovAmt: 0.75 });
     if (u.corner === 'left') this.sideFacade(0, D, n, y1, hf, yP, rng, wallMat, trimMat, grilleCol, far, -Math.PI / 2, 0, -D);
     else if (nb.left < yP - 0.05) w.quad(0, Math.max(0, nb.left), -D, 0, Math.max(0, nb.left), 0, 0, yP, 0, 0, yP, -D);
@@ -395,7 +403,7 @@ export class Shophouse {
       w.box((h[0] + h[1]) / 2 - t / 2, h[2], -0.14, (h[0] + h[1]) / 2 + t / 2, h[3], -0.1, PZ | PX | NX);
       trimMat();
       w.box(h[0] - 0.05, h[2] - 0.06, 0, h[1] + 0.05, h[2], 0.07, PZ | PY | NY | PX | NX);
-      if (!far && h[2] > y1 && rng.chance(0.35)) { w.setGroup('detail'); w.put(P.acUnit(), (h[0] + h[1]) / 2, h[2] - 0.75, 0.02, 0); w.setGroup('base'); }
+      if (!far && h[2] > y1 && rng.chance(0.35)) { w.setGroup('detail'); w.put(P.acUnit(rng.int(0, 1)), (h[0] + h[1]) / 2, h[2] - 0.75, 0.02, 0); w.setGroup('base'); }
       if (!far && h[2] > y1 && rng.chance(0.3)) {
         w.setGroup('detail');
         w.mat('metal_paint', { tint: grilleCol, ov: 'steel_rust', ovAmt: 0.5, uv: 'local' });
@@ -508,7 +516,7 @@ export class Shophouse {
           }
         }
         // AC unit or junk on the balcony
-        if (rng.chance(0.55)) w.put(P.acUnit(), rng.chance(0.5) ? 0.6 : W - 0.6, fl.y + 0.06, 0.05, 0);
+        if (rng.chance(0.55)) w.put(P.acUnit(rng.int(0, 1)), rng.chance(0.5) ? 0.6 : W - 0.6, fl.y + 0.06, 0.05, 0);
         if (rng.chance(0.4)) w.put(P.bucket(rng.pick(PLASTIC_COLORS)), W * 0.5 + rng.range(-0.8, 0.8), fl.y + 0.06, bd * 0.5, rng.range(0, 6));
         w.setGroup('base');
       }
@@ -520,7 +528,11 @@ export class Shophouse {
       : [[fl.hx0, fl.hx1]];
     const fcol = rng.pick([0xc8c8c0, 0xb0a890, 0x6a6a68, 0x8a7a5a, 0xe8e8e0, 0x3a3a3a]);
     for (const [a, b] of wins) {
-      if (fl.style === 'louver' || fl.style === 'old') louvers(a, fl.hy0, b, fl.hy1, rng.pick([0x5a7a5a, 0x4a6a8a, 0x8a5a3a, 0xa0a090, 0x2a5a4a]), rng.chance(0.25));
+      if (fl.style === 'old' && rng.chance(0.6)) {
+        // real photo: closed old wooden shutters in a crumbling frame
+        w.mat('win_wood_shutters', { tint: 0xffffff, uv: 'face' });
+        w.quad(a, fl.hy0, zg + 0.01, b, fl.hy0, zg + 0.01, b, fl.hy1, zg + 0.01, a, fl.hy1, zg + 0.01, [0, 0, 1, 1]);
+      } else if (fl.style === 'louver' || fl.style === 'old') louvers(a, fl.hy0, b, fl.hy1, rng.pick([0x5a7a5a, 0x4a6a8a, 0x8a5a3a, 0xa0a090, 0x2a5a4a]), rng.chance(0.25));
       else { glass(a, fl.hy0, b, fl.hy1); frame(a, fl.hy0, b, fl.hy1, Math.max(1, Math.round((b - a) / 0.9) - 1), fcol); }
       // sill
       w.mat('plaster_dirty', { tint: trim, ov: 'plaster_moldy', ovAmt: 0.7 });
@@ -552,7 +564,7 @@ export class Shophouse {
     if (!far && rng.chance(0.42)) {
       w.setGroup('detail');
       const ax = rng.range(0.7, Math.max(0.75, W - 0.7));
-      w.put(P.acUnit(), ax, fl.hy0 - 0.75, 0.02, 0);
+      w.put(P.acUnit(rng.int(0, 1)), ax, fl.hy0 - 0.75, 0.02, 0);
       w.setGroup('base');
     }
   }

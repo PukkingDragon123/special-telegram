@@ -4,7 +4,7 @@ import type { Game } from '../../game/game';
 import { Assets } from '../../core/assets';
 import { F } from '../../core/fonts';
 import type { ShopDef, StockDef } from './data';
-import { canvasMat, mat, photo, photoMat, priceCardTex, signTex, CardStyle } from './tex';
+import { canvasMat, mat, photo, photoMat, signTex, CardStyle, CardAtlas } from './tex';
 import { buildShape } from './items';
 
 /**
@@ -26,8 +26,9 @@ export interface ShopFix {
   /** rect test for stores/warehouses (world x/z) */
   rect?: [number, number, number, number];
   counter: THREE.Object3D[];
-  cards: Map<string, THREE.Mesh>;
+  cards: Map<string, number>;
   cardStyle: CardStyle;
+  atlas: CardAtlas;
   shutter?: { obj: THREE.Object3D; mesh: THREE.Mesh; h: number; tex: THREE.Texture | null; k: number; collider: any; box: { c: number[]; s: number[]; yaw: number } };
   tarp?: THREE.Object3D;
   closedSign?: THREE.Mesh;
@@ -110,13 +111,36 @@ function photoPanel(key: string, w: number, h: number, curve = 0.06) {
   return { g, m: photoMat(key, { rough: 0.8 }) };
 }
 
-function card(style: CardStyle, st: StockDef, name: string, w: number, seed: number) {
-  const tex = priceCardTex(style, name, st.unit, st.price, seed);
+/** Price card placeholder: positioned like a mesh, baked into the shop's card atlas mesh later. */
+function card(atlas: CardAtlas, style: CardStyle, st: StockDef, name: string, w: number, seed: number) {
   const ar = style === 'star' ? 1 : style === 'card' ? 320 / 448 : 192 / 512;
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, w * ar), canvasMat(tex, { alpha: style === 'star' }));
-  m.castShadow = false;
-  m.name = 'price:' + st.id;
-  return m;
+  const o = new THREE.Object3D();
+  o.userData.card = { i: atlas.add(style, name, st.unit, st.price, seed), w, h: w * ar };
+  o.name = 'price:' + st.id;
+  return o;
+}
+
+/** Merge all card placeholders of a shop into one mesh (one draw call). */
+function bakeCards(root: THREE.Object3D, atlas: CardAtlas, cards: Map<string, number>) {
+  const geos: THREE.BufferGeometry[] = [];
+  const ph = root.children.filter((c) => c.userData.card);
+  for (const o of ph) {
+    o.updateMatrix();
+    const { i, w, h } = o.userData.card;
+    const g = new THREE.PlaneGeometry(w, h);
+    const { u0, u1, v0, v1 } = atlas.uv(i);
+    const uv = g.getAttribute('uv') as THREE.BufferAttribute;
+    for (let k = 0; k < uv.count; k++) uv.setXY(k, uv.getX(k) < 0.5 ? u0 : u1, uv.getY(k) < 0.5 ? v0 : v1);
+    g.applyMatrix4(o.matrix);
+    geos.push(g);
+    cards.set(o.name.slice(6), i);
+    o.removeFromParent();
+  }
+  if (!geos.length) return;
+  const m = new THREE.Mesh(mergeGeometries(geos, false)!, new THREE.MeshStandardMaterial({ map: atlas.tex, alphaTest: 0.35, side: THREE.DoubleSide, roughness: 0.85 }));
+  m.name = 'price-cards';
+  m.castShadow = false; m.receiveShadow = true;
+  root.add(m);
 }
 
 /** Group the shop's stock into display "lanes" along a surface. */
@@ -190,7 +214,7 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
     heap.scale(0.5, 0.22, 0.34);
     const x = (i - (st.decor.length - 1) / 2) * 0.62 + 0.05;
     B.add(heap, photoMat(key), fr, x, 0.06, zc + D / 2 + 0.35);
-    B.add(new THREE.CylinderGeometry(0.29, 0.24, 0.12, 12, 1, true).translate(0, 0.06, 0), mat('basket:' + i, () => { const t = photo('kradong'); const m = new THREE.MeshStandardMaterial({ map: t, color: t ? 0xffffff : 0xb8955a, roughness: 0.8, side: THREE.DoubleSide }); return m; }), fr, x, 0, zc + D / 2 + 0.35);
+    B.add(new THREE.CylinderGeometry(0.29, 0.24, 0.12, 12, 1, true).translate(0, 0.06, 0), mat('stallbasket', () => { const t = photo('kradong'); const m = new THREE.MeshStandardMaterial({ map: t, color: t ? 0xffffff : 0xb8955a, roughness: 0.8, side: THREE.DoubleSide }); return m; }), fr, x, 0, zc + D / 2 + 0.35);
   });
   // backdrop: a real photo of the neighbouring stall (depth + density behind the keeper)
   const bd = photoPanel(st.backdrop, 3.2, 2.0, 0.12);
@@ -209,7 +233,8 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
   root.add(sign);
   // display slots: 2 rows (front on the sheet, back on the tier)
   const slots: Slot[] = [];
-  const cards = new Map<string, THREE.Mesh>();
+  const cards = new Map<string, number>();
+  const atlas = new CardAtlas(s.stock.length);
   const rows = lanes(s.stock, s.stock.length > 7 ? 2 : 1);
   const style: CardStyle = 'star';
   rows.forEach((row, ri) => {
@@ -221,21 +246,21 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
       const grid = unitGrid(stk.show ?? 2, cw, rows.length === 1 ? 0.6 : 0.36);
       for (const [dx, dz] of grid) slots.push({ stock: stk.id, p: fr.arr(xc + dx, y, zRow + dz), yaw: fr.yaw + (Math.sin(slots.length * 3.7) * 0.4) });
       const kind = kinds.get(stk.id) ?? stk.fb;
-      const c = card(style, stk, nameOf(game, stk, kind), 0.2, i + ri * 3 + s.id.length);
+      const c = card(atlas, style, stk, nameOf(game, stk, kind), 0.2, i + ri * 3 + s.id.length);
       c.position.copy(fr.at(xc, y + (ri === 0 || rows.length === 1 ? 0.13 : 0.2), zRow - (rows.length === 1 ? 0.32 : 0.18)));
       c.rotation.set(0, fr.yaw, 0, 'YXZ');
       c.rotateX(-0.35);
       root.add(c);
-      cards.set(stk.id, c);
     });
   });
   // closed: blue tarp draped over the table
   const cover = new THREE.Mesh((() => { const g = new THREE.BoxGeometry(W + 0.2, 0.5, D + 0.25, 10, 2, 4); const p = g.getAttribute('position') as THREE.BufferAttribute; for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i); p.setXYZ(i, x * (1 + (y < 0 ? 0.04 : 0)), y + Math.sin(x * 7 + z * 5) * 0.03, z); } g.computeVertexNormals(); return g.translate(0, H + 0.02, 0); })(), pbr('canvas_tarp', 0x2a58b0, 0x2a58b0));
   cover.position.copy(fr.at(0, 0, zc)); cover.rotation.y = fr.yaw; cover.visible = false; cover.castShadow = true;
   root.add(cover);
+  bakeCards(root, atlas, cards);
   const colliders = [game.physics.addBox(fr.arr(0, H / 2, zc + 0.05), [W + 0.1, H, D + 0.1], fr.yaw)];
   return {
-    sid: s.id, root, slots, cards, cardStyle: style, counter: [cover, sign],
+    sid: s.id, root, slots, cards, cardStyle: style, atlas, counter: [cover, sign],
     keeper: { p: fr.arr(-0.25, 0, zc + D / 2 + 0.55), yaw: fr.back, sit: false },
     center: fr.arr(0, 0, zc), radius: s.radius, tarp: cover, colliders, calc,
   };
@@ -267,7 +292,8 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
   }
   // stepped display tables left & right of the entrance aisle
   const slots: Slot[] = [];
-  const cards = new Map<string, THREE.Mesh>();
+  const cards = new Map<string, number>();
+  const atlas = new CardAtlas(s.stock.length);
   const tableMat = pbr('wood_painted_weathered', undefined, hs.table);
   const steps: { x: number; z: number; w: number; d: number; h: number }[] = [
     { x: sw.off - 1.55, z: zFront + 1.25, w: 2.0, d: 0.9, h: 0.62 },
@@ -311,9 +337,9 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
       slots.push({ stock: stk.id, p: fr.arr(xc + dx, stack ? k * 0.12 : 0, zFront - 0.75), yaw: fr.yaw + (stack ? k * 0.4 : 0) });
     }
     const kind = kinds.get(stk.id) ?? stk.fb;
-    const c = card(style, stk, nameOf(game, stk, kind), 0.3, i);
+    const c = card(atlas, style, stk, nameOf(game, stk, kind), 0.3, i);
     c.position.copy(fr.at(xc, 1.05, zFront - 0.42)); c.rotation.y = fr.yaw;
-    root.add(c); cards.set(stk.id, c);
+    root.add(c);
   });
   // steps: front ledge + raised back ledge
   const ledges = steps.flatMap((t) => [{ x: t.x, y: t.h + 0.004, z: t.z - t.d * 0.2, w: t.w }, { x: t.x, y: t.h + 0.304, z: t.z + t.d * 0.27, w: t.w }]);
@@ -326,10 +352,11 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     const grid = unitGrid(stk.show ?? 1, cw, 0.3);
     for (const [dx, dz] of grid) slots.push({ stock: stk.id, p: fr.arr(xc + dx, L.y, L.z + dz), yaw: fr.yaw });
     const kind = kinds.get(stk.id) ?? stk.fb;
-    const c = card(style, stk, nameOf(game, stk, kind), 0.2, i + 5);
+    const c = card(atlas, style, stk, nameOf(game, stk, kind), 0.2, i + 5);
     c.position.copy(fr.at(xc, L.y + 0.02, L.z - 0.2)); c.rotation.set(0, fr.yaw, 0, 'YXZ'); c.rotateX(-0.9);
-    root.add(c); cards.set(stk.id, c);
+    root.add(c);
   });
+  bakeCards(root, atlas, cards);
   const { shut, sign } = makeShutter(game, root, fr, sw.off, sw.w, sw.h, zFront, s.closedNote?.th ?? 'ปิด');
   const colliders = [
     game.physics.addBox(fr.arr(steps[0].x, 0.47, steps[0].z), [steps[0].w, 0.94, steps[0].d], fr.yaw),
@@ -337,7 +364,7 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     game.physics.addBox(fr.arr(cx, 0.45, cz), [1.3, 0.9, 0.62], fr.yaw),
   ];
   return {
-    sid: s.id, root, slots, cards, cardStyle: style,
+    sid: s.id, root, slots, cards, cardStyle: style, atlas,
     counter: [],
     keeper: { p: fr.arr(cx - 0.05, 0, cz + 0.62), yaw: fr.back, sit: !!s.keeper.sit },
     center: fr.arr(sw.off, 0, zFront + 1.4), radius: s.radius,
@@ -389,7 +416,8 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
   B.add(bk.g, bk.m, ctr, 0, 0.2, 2.35, 0);
   // gondolas: 2 double-sided runs between the door and the counter (door frame: x = right, z = forward)
   const slots: Slot[] = [];
-  const cards = new Map<string, THREE.Mesh>();
+  const cards = new Map<string, number>();
+  const atlas = new CardAtlas(s.stock.length);
   const gond = (x: number, z0: number, len: number, photoA: string, photoB: string) => {
     B.add(mbox(0.9, 0.12, len, 1), flat(0x2a2c30, 0.6, 0.3), door, x, 0, z0 + len / 2);
     B.add(mbox(0.08, 1.55, len, 1), flat(0xe8e8e4, 0.5, 0.4), door, x, 0, z0 + len / 2);
@@ -425,23 +453,24 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
     const n = stk.show ?? 1;
     for (let k = 0; k < n; k++) slots.push({ stock: stk.id, p: door.arr(sp.x, sp.y, Math.min(sp.z0 + sp.len - 0.1, zc + k * 0.14)), yaw: door.yaw + sp.face * Math.PI / 2 });
     const kind = kinds.get(stk.id) ?? stk.fb;
-    const c = card(style, stk, nameOf(game, stk, kind), 0.16, i);
+    const c = card(atlas, style, stk, nameOf(game, stk, kind), 0.16, i);
     c.position.copy(door.at(sp.x + sp.face * 0.21, sp.y - 0.03, zc)); c.rotation.y = door.yaw + sp.face * Math.PI / 2;
-    root.add(c); cards.set(stk.id, c);
+    root.add(c);
   });
   drinks.forEach((stk, i) => {
     const zc = 1.4 + i * 0.6;
     const n = stk.show ?? 2;
     for (let k = 0; k < n; k++) slots.push({ stock: stk.id, p: door.arr(fx - 0.22, 0.62 + (k % 2) * 0.004, zc + (k - (n - 1) / 2) * 0.1), yaw: door.yaw - Math.PI / 2 });
     const kind = kinds.get(stk.id) ?? stk.fb;
-    const c = card(style, stk, nameOf(game, stk, kind), 0.16, i + 9);
+    const c = card(atlas, style, stk, nameOf(game, stk, kind), 0.16, i + 9);
     c.position.copy(door.at(fx - 0.3, 0.52, zc)); c.rotation.y = door.yaw - Math.PI / 2;
-    root.add(c); cards.set(stk.id, c);
+    root.add(c);
   });
   // a ledge in front of the fridge for drinks
   const ledge = new THREE.Mesh(mbox(0.3, 0.6, 3.4, 1), flat(0xdcdcd8, 0.4, 0.5));
   ledge.position.copy(door.at(fx - 0.22, 0, 2.8)); ledge.rotation.y = door.yaw;
   root.add(ledge);
+  bakeCards(root, atlas, cards);
   const counterMesh = root.children[0];
   const colliders = [
     game.physics.addBox(ctr.arr(0, 0.5, 0.75), [cw, 1.0, 0.72], ctr.yaw),
@@ -452,7 +481,7 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
   // store rect (world) from the door: forward 0..7.5, right -7.5..6.8
   const c1 = door.at(-7.2, 0, -0.3), c2 = door.at(6.8, 0, 7.6);
   return {
-    sid: s.id, root, slots, cards, cardStyle: style, counter: [counterMesh],
+    sid: s.id, root, slots, cards, cardStyle: style, atlas, counter: [counterMesh],
     keeper: { p: ctr.arr(0.2, 0, 1.6), yaw: ctr.back, sit: false },
     center: door.arr(0, 0, 3.2), radius: s.radius,
     rect: [Math.min(c1.x, c2.x), Math.min(c1.z, c2.z), Math.max(c1.x, c2.x), Math.max(c1.z, c2.z)],
@@ -490,7 +519,8 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
   B.flush(root);
   // stock: on the pallets (lowest level) of the 3 rows, both faces
   const slots: Slot[] = [];
-  const cards = new Map<string, THREE.Mesh>();
+  const cards = new Map<string, number>();
+  const atlas = new CardAtlas(s.stock.length);
   const style: CardStyle = 'shelf';
   const spots: { x: number; z: number; face: number }[] = [];
   for (const rz of rackRows) for (const face of [-1, 1]) for (let i = 0; i < 4; i++) spots.push({ x: -1 + rackLen / 8 + i * (rackLen / 4), z: rz + face * 0.25, face });
@@ -499,10 +529,11 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
     const n = stk.show ?? 1;
     for (let k = 0; k < n; k++) slots.push({ stock: stk.id, p: door.arr(sp.x + (k - (n - 1) / 2) * 0.3, 0.145, sp.z), yaw: sp.face < 0 ? door.yaw : door.back });
     const kind = kinds.get(stk.id) ?? stk.fb;
-    const c = card(style, stk, nameOf(game, stk, kind), 0.4, i);
+    const c = card(atlas, style, stk, nameOf(game, stk, kind), 0.4, i);
     c.position.copy(door.at(sp.x, 1.12, sp.z + sp.face * 0.31)); c.rotation.y = sp.face < 0 ? door.yaw : door.back;
-    root.add(c); cards.set(stk.id, c);
+    root.add(c);
   });
+  bakeCards(root, atlas, cards);
   const colliders: any[] = [];
   for (let lane = 0; lane < 3; lane++) colliders.push(game.physics.addBox(ctr.arr(lane * 3.2, 0.45, 0.75), [2.6, 0.9, 0.8], ctr.yaw));
   for (const rz of rackRows) for (let i = 0; i <= 4; i++) colliders.push(game.physics.addBox(door.arr(-1 + i * (rackLen / 4), 1.8, rz), [0.1, 3.6, 1.1], door.yaw));
@@ -510,7 +541,7 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
   const { shut, sign } = makeShutter(game, root, door, 0, 5.2, 3.2, -0.2, (game.g.day ?? 1) < s.day ? (s.lockedNote?.th ?? 'ปิด') : (s.closedNote?.th ?? 'ปิด'));
   return {
     shutter: shut, closedSign: sign,
-    sid: s.id, root, slots, cards, cardStyle: style, counter: [root.children[0]],
+    sid: s.id, root, slots, cards, cardStyle: style, atlas, counter: [root.children[0]],
     keeper: { p: ctr.arr(0, 0, 1.45), yaw: ctr.back, sit: false },
     center: door.arr(3, 0, 9), radius: s.radius,
     rect: [Math.min(c1.x, c2.x), Math.min(c1.z, c2.z), Math.max(c1.x, c2.x), Math.max(c1.z, c2.z)],
@@ -551,16 +582,9 @@ export function setShutter(game: Game, fix: ShopFix, k: number) {
   else if (!want && sh.collider && game.physics) { try { game.physics.removeBody(sh.collider.parent()); } catch {} sh.collider = null; }
 }
 
-/** Re-render a product's price card (price change / sold out). */
-export function updateCard(fix: ShopFix, st: StockDef, name: string, price: number, soldOut: boolean) {
-  const m = fix.cards.get(st.id);
-  if (!m) return;
-  const key = `${price}|${soldOut}`;
-  if (m.userData.key === key) return;
-  m.userData.key = key;
-  const tex = soldOut
-    ? signTex('soldout:' + fix.sid + st.id, [{ text: name, size: 64, color: '#222' }, { text: 'หมดแล้ว', size: 96, color: '#c4121a', font: F.scrawl }], 'card_kraft', 448, 320)
-    : priceCardTex(fix.cardStyle, name, st.unit, price, st.id.length);
-  const mm = m.material as THREE.MeshStandardMaterial;
-  mm.map = tex; mm.needsUpdate = true;
+/** Re-render a product's price card (price change / sold out / hidden while locked). */
+export function updateCard(fix: ShopFix, st: StockDef, name: string, price: number, soldOut: boolean, hidden = false) {
+  const i = fix.cards.get(st.id);
+  if (i === undefined) return;
+  fix.atlas.set(i, { price, sold: soldOut, hidden, name });
 }

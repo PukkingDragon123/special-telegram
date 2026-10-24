@@ -103,6 +103,10 @@ def build_body(src, sex):
             ec.append(c)
     for m in meshes:
         if m != body: bpy.data.objects.remove(m, do_unlink=True)
+    # the glTF importer splits vertices at every UV seam → weld them, or smoothing/decimation tears cracks open
+    bmw = bmesh.new(); bmw.from_mesh(body.data)
+    bmesh.ops.remove_doubles(bmw, verts=bmw.verts, dist=1e-4)
+    bmw.to_mesh(body.data); bmw.free(); body.data.update()
     B = {b.name: b for b in arm.data.bones}
     W = lambda n: arm.matrix_world @ B[n].head_local
     eye_l, eye_r = (ec[0], ec[1]) if ec else (Vector((0.031, -0.07, W('Head').z + 0.1)), Vector((-0.031, -0.07, W('Head').z + 0.1)))
@@ -327,7 +331,7 @@ def build_body(src, sex):
         return o
 
     shells = []
-    z_neck = zof(1.452)
+    z_neck = zof(1.435)
     sh_edge = sh_x + 0.05
     TOPS = {'u': (0.86, 0.012), 't': (0.975, 0.009), 'l': (0.82, 0.022), 'j': (0.78, 0.03)}
     for key, (hem, off) in TOPS.items():

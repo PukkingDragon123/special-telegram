@@ -3,6 +3,7 @@ import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import { tl } from '../../core/util';
 import { lifeTex } from './tex';
+import { Assets } from '../../core/assets';
 
 /* ============================================================================================
  * life item kinds: dog_food (real product bag photo), garland (พวงมาลัย, real photo),
@@ -81,7 +82,7 @@ export function defineLifeItems(game: Game) {
     kind: 'flashlight', name: tl('ไฟฉาย', 'flashlight'), weight: 0.3, carry: 'hand', tags: ['light', 'tool'], price: 89,
     build: () => {
       const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.17, 10), photoMat('flashlight_body.jpg', '#1d1d1f', { roughness: 0.4, metalness: 0.5 }));
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.17, 10), Assets.pbr('aluminium_scratched', { fallback: 0x1d1d1f, color: '#3a3a40' }));
       body.rotation.z = Math.PI / 2;
       body.position.y = 0.022;
       g.add(body);

@@ -77,7 +77,7 @@ function tintPhoto(base: HTMLImageElement, det: HTMLImageElement | null, mask: H
   const S = FACE_PX;
   const cv = document.createElement('canvas');
   cv.width = cv.height = S;
-  const ctx = cv.getContext('2d')!;
+  const ctx = cv.getContext('2d', { willReadFrequently: true })!;
   const bp = pixels(base);
   const out = ctx.createImageData(S, S);
   const o = out.data;
@@ -134,7 +134,7 @@ function pores(): HTMLCanvasElement {
   const S = 128;
   const cv = document.createElement('canvas');
   cv.width = cv.height = S;
-  const ctx = cv.getContext('2d')!;
+  const ctx = cv.getContext('2d', { willReadFrequently: true })!;
   const im = ctx.createImageData(S, S);
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
     const n = NZ.n2(x * 0.35, y * 0.35) * 0.5 + NZ.n2(x * 1.3, y * 1.3) * 0.35 + (Math.random() - 0.5) * 0.5;
@@ -160,7 +160,7 @@ export function proceduralFace(f: FaceEntry, v: FaceVariant, skin: string): HTML
   const S = FACE_PX;
   const cv = document.createElement('canvas');
   cv.width = cv.height = S;
-  const g = cv.getContext('2d')!;
+  const g = cv.getContext('2d', { willReadFrequently: true })!;
   const p = faceParams(f);
   const old = p.age === 'old';
   // --- base skin & form shading
@@ -332,7 +332,7 @@ export function proceduralFace(f: FaceEntry, v: FaceVariant, skin: string): HTML
   g.restore();
   const soft = document.createElement('canvas');
   soft.width = soft.height = S;
-  const sg2 = soft.getContext('2d')!;
+  const sg2 = soft.getContext('2d', { willReadFrequently: true })!;
   sg2.filter = 'blur(1.1px)';
   sg2.drawImage(cv, 0, 0);
   g.drawImage(soft, 0, 0);

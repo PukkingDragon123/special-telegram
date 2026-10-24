@@ -98,7 +98,7 @@ export class CustomizeView {
     this.magRoot.add(this.mag.group);
     this.magRoot.position.set(0.02, -0.004, -0.5);
     this.camera.add(this.magRoot);
-    const ml = new THREE.SpotLight(0xfff6e8, 4.5, 3, 0.9, 0.7, 1.5);
+    const ml = new THREE.SpotLight(0xfff6e8, 3.0, 3, 0.9, 0.7, 1.5);
     ml.position.set(-0.25, 0.35, 0.15);
     ml.target = this.mag.group;
     this.camera.add(ml);
@@ -119,7 +119,7 @@ export class CustomizeView {
     };
     this.stickers.push(this.ui.add({ lines: L('แต่งตัว', 'CUSTOMIZE', 58), anchor: 'tl', x: 135, y: 62, passive: true, tilt: -4, delay: 0.3 }));
     this.stickers.push(this.ui.add({ lines: L('คลิกของในนิตยสารเพื่อลองใส่', 'CLICK ANYTHING IN THE MAGAZINE', 22), anchor: 'tl', x: 180, y: 128, passive: true, tilt: 1.5, delay: 0.5 }));
-    this.stickers.push(this.ui.add({ lines: L('เสร็จแล้ว!', 'DONE', 56), style: GOLD, anchor: 'bl', x: 140, y: 70, tilt: -3, onClick: () => this.done(), delay: 0.7 }));
+    this.stickers.push(this.ui.add({ lines: L('เสร็จแล้ว!', 'DONE', 56), style: GOLD, anchor: 'bl', x: 170, y: 72, tilt: -3, onClick: () => this.done(), delay: 0.7 }));
     // ---- input
     const cv = game.engine.canvas;
     const onMove = () => { const over = this.mag.pick(new THREE.Vector2(Input.ndc.x, Input.ndc.y), this.camera); cv.style.cursor = over ? 'pointer' : ''; };
