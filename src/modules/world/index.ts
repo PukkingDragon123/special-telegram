@@ -107,7 +107,7 @@ async function buildWorld(game: Game) {
   const lights = new NightLights(q === 'low' ? 4 : q === 'medium' ? 6 : 8);
   const anchors: Record<string, AnchorPt> = JSON.parse(JSON.stringify(ANCHORS));
   const ctx: Ctx = { w, rng, decals: assets.decals, phys };
-  const shopCtx: ShopCtx = { w, props, lights, signs: assets.signs, decals: assets.decals, phys, anchors, managed: new Set(['kitchen_shop', 'plastic_shop', 'gas_shop']) };
+  const shopCtx: ShopCtx = { w, props, lights, signs: assets.signs, decals: assets.decals, phys, anchors, managed: new Set(['kitchen_shop', 'plastic_shop', 'gas_shop']), fol: assets.fol };
 
   // ---------------------------------------------------------------- build everything
   const step = (name: string, fn: () => void) => { const t = performance.now(); try { fn(); } catch (e) { console.error('[world] build step failed:', name, e); } const dt = performance.now() - t; TIMES[name] = Math.round(dt); };

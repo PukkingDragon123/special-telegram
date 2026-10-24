@@ -9,6 +9,8 @@ import type { NightLights } from './lights';
 import type { Atlas, AtlasRect } from './atlas';
 import { EMIS } from './mats';
 import type { AnchorPt } from '../../game/contracts';
+import type { FoliageSys } from './foliage';
+import { vines, bougainvillea } from './foliage';
 
 /**
  * PROCEDURAL SHOPHOUSE (ตึกแถว) GENERATOR
@@ -37,6 +39,7 @@ export interface ShopCtx {
   anchors: Record<string, AnchorPt>;
   /** shops whose fronts are owned by the shops module (no shutters, keep 3.5 m clear) */
   managed: Set<string>;
+  fol?: FoliageSys | null;
 }
 
 const WALL_TINTS = [0xe8dcc8, 0xd9c7a6, 0xc9d6c2, 0xe2c6c0, 0xc8d2dc, 0xe6d7a0, 0xd8d8d0, 0xb8c4a8, 0xd8b8a0, 0xa8b8c8, 0xe0e0d8, 0xd0c0b0, 0xc0b8a8, 0xe8c8a0];
@@ -311,6 +314,21 @@ export class Shophouse {
     if (rng.chance(0.5)) w.box(0, yR - 0.12, 0, W, yR + 0.08, 0.1, PZ | PY | NY); // roof slab edge band
     // windows, grilles, balconies, AC units, laundry
     for (const fl of floors) this.floorFill(fl, W, hf, rng, grilleCol, trim, far);
+    if (!far && c.decals) {
+      // black water streaks below sills and AC units, moss at the base, torn posters on pilasters
+      for (const fl of floors) if (rng.chance(0.65)) {
+        const k = rng.int(0, 3);
+        const sx = rng.range(fl.hx0, Math.max(fl.hx0 + 0.1, fl.hx1 - 1.0));
+        this.cellDecal('decal_wall_grime_streaks_photo', k % 2, k >> 1, sx, fl.hy0 - rng.range(1.4, 2.4), rng.range(0.7, 1.3), rng.range(1.3, 2.3), 0, rng.range(0.55, 0.9));
+      }
+      if (rng.chance(0.5)) { const k = rng.int(0, 3); this.cellDecal('decal_wall_grime_streaks_photo', k % 2, k >> 1, rng.range(0, W - 1.6), yR - rng.range(1.6, 2.6), rng.range(1.2, 1.8), rng.range(1.6, 2.6), 0, 0.8); }
+      if (rng.chance(0.55)) { const k = rng.int(0, 3); this.cellDecal('decal_moss_photo', k % 2, k >> 1, rng.chance(0.5) ? -0.02 : W - 0.7, y0 - 0.05, 0.72, rng.range(0.35, 0.7), 0.07, 0.9); }
+      if (rng.chance(0.35)) { const k = rng.int(0, 3); this.cellDecal('decal_torn_posters_photo', k % 2, k >> 1, rng.chance(0.5) ? -0.05 : W - 0.25, y0 + rng.range(0.9, 1.4), 0.3, 0.45, 0.07, 0.95); }
+    }
+    if (!far && c.fol) {
+      if (rng.chance(0.18)) vines(w, c.fol, rng.range(0.6, W - 0.6), yP, 0.08, 0, rng, rng.chance(0.4));
+      if (rng.chance(0.12) && floors.some((f) => f.balcony)) { const fb = floors.find((f) => f.balcony)!; bougainvillea(w, c.fol, rng.range(0.5, W - 0.5), fb.y + 0.2, 0.8, rng, 0.7); }
+    }
 
     // ================================================================ SIDE / BACK WALLS + ROOF
     const sideL = rng.pick(['concrete_streaked', 'plaster_moldy', 'cement_block', 'plaster_brick']);
@@ -391,6 +409,16 @@ export class Shophouse {
     for (let k = 2; k < n; k++) { const yk = y1 + (k - 1) * hf; w.box(0, yk - 0.14, 0, D, yk + 0.05, 0.09, PZ | PY | NY); }
     w.box(0, yP, -0.3, D, yP + 0.07, 0.1, ALL & ~NY);
     w.pop();
+  }
+
+  /** grime streak / moss / poster decal from a 2x2 photo atlas cell on the facade plane */
+  private cellDecal(id: string, cx: number, cy: number, x: number, y: number, ww: number, hh: number, z = 0, alpha = 0.85) {
+    const D = this.c.decals;
+    const r = D?.cell(id, cx, cy, 2, 2);
+    if (!r) return;
+    const w = this.c.w;
+    w.atlas('decal', { ao: alpha, group: 'detail' });
+    w.quad(x, y, z + 0.014, x + ww, y, z + 0.014, x + ww, y + hh, z + 0.014, x, y + hh, z + 0.014, [r.u0, r.v0, r.u1, r.v1]);
   }
 
   /** decal on the facade plane (local coords) */

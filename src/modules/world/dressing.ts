@@ -151,7 +151,7 @@ export function buildStreetLife(c: Ctx) {
   // ---------------------------------------------------------------- posters & loan stickers on poles
   for (const [px, pz] of allPoles) {
     if (rng.chance(0.4)) continue;
-    const ps = c.signs?.poster(rng);
+    const ps = (rng.chance(0.6) ? c.decals?.get('decal_flyers_loan_cluster_photo') : null) ?? c.signs?.poster(rng);
     if (!ps) break;
     const sideN = px < -3 ? [1, 0] : px > 3 ? [-1, 0] : pz < 10 ? [0, 1] : [0, -1];
     wallDecal(w, ps, px + sideN[0] * 0.17, SW_H + rng.range(1.2, 1.8), pz + sideN[1] * 0.17, sideN[0], sideN[1], 0.3, 0.42, { alpha: 0.95 });
