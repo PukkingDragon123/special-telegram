@@ -198,10 +198,14 @@ export async function loadWorldTextures(size: number, worldManifest: WorldManife
   const tiles: [number, number][] = [];
   const pbr = Assets.pbrManifest;
   const worldFiles = new Set<string>(worldManifest ? Object.keys(worldManifest) : []);
+  // pre-baked 512² layers (src/modules/world/tools/bake_layers.py) — much faster to decode
+  const baked = (await Assets.jsonSafe<any>('gen/world/layers/layers.json', null))?.layers ?? {};
 
   // resolve sources
   type Res = { albedo?: string; normal?: string; orm?: string; tile?: [number, number] };
   const resolved: Res[] = await Promise.all(LAYERS.map(async (L): Promise<Res> => {
+    const b = baked[L.name];
+    if (b?.albedo && L.src.includes(b.src)) return { albedo: b.albedo, normal: b.normal, orm: b.orm, tile: b.tile ? [b.tile, b.tile] : undefined };
     for (const s of L.src) {
       if (s.startsWith('w:')) {
         const base = s.slice(2);
@@ -547,4 +551,20 @@ reflectedLight.indirectDiffuse += diffuseColor.rgb * 0.08 * folAO;`);
   d.onBeforeCompile = (shader) => { vtx(shader); };
   d.customProgramCacheKey = () => 'world-fol-depth-v1';
   return { mat: m, depth: d };
+}
+
+/** Transparent storefront glass: vertex colour = tint, vertex alpha = opacity; strong env reflections. */
+export function makeGlassMaterial(): THREE.MeshStandardMaterial {
+  const m = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, transparent: true, roughness: 0.06, metalness: 0.0, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 1.4 });
+  m.name = 'world-glass';
+  m.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `diffuseColor.rgb *= vColor.rgb; diffuseColor.a = vColor.a;`)
+      .replace('#include <opaque_fragment>', `
+      // fresnel: glass gets more opaque/reflective at grazing angles
+      float fres = pow(1.0 - saturate(dot(normalize(vViewPosition), normal * (gl_FrontFacing ? 1.0 : -1.0))), 3.0);
+      diffuseColor.a = clamp(diffuseColor.a + fres * 0.55, 0.0, 0.92);
+      #include <opaque_fragment>`);
+  };
+  m.customProgramCacheKey = () => 'world-glass-v1';
+  return m;
 }

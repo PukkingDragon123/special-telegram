@@ -13,7 +13,7 @@ import { mulberry } from './util';
  * matching the slot's keywords is found — so materials never need rebuilding.
  */
 
-interface Entry { id: string; file: string; text: string; alpha?: boolean; dir: string; meta?: any }
+interface Entry { id: string; file: string; text: string; alpha?: boolean; dir: string; meta?: any; normal?: string }
 const entries: Entry[] = [];
 let ready = false;
 const waiting: (() => void)[] = [];
@@ -35,15 +35,18 @@ function harvest(dir: string, node: any, idHint: string, out: Entry[], depth = 0
   const id = String(node.id ?? node.name ?? node.key ?? idHint ?? '');
   let file: string | null = null;
   for (const k of ['file', 'albedo', 'image', 'path', 'src', 'png', 'jpg', 'webp', 'texture', 'flat', 'label']) if (isImg(node[k])) { file = node[k]; break; }
+  let normal: string | undefined;
   if (!file && Array.isArray(node.files)) {
     const fs = node.files.filter(isImg) as string[];
-    // prefer the clean (non-worn) variant
-    file = fs.find((f) => !/worn|grease|dirty/i.test(f)) ?? fs[0] ?? null;
+    const isN = (f: string) => /_n\.(jpe?g|png|webp)$/i.test(f);
+    normal = fs.find(isN);
+    // prefer the clean (non-worn) albedo variant
+    file = fs.find((f) => !isN(f) && !/worn|grease|dirty/i.test(f)) ?? fs.find((f) => !isN(f)) ?? null;
   }
   if (file) {
     const text = [id, node.product, node.desc, node.description, node.brand, node.brand_th, node.brand_en, node.kind, node.topic, node.use, (node.tags ?? []).join?.(' '), file]
       .filter(Boolean).join(' ').toLowerCase();
-    out.push({ id: id.toLowerCase(), file, text, alpha: !!(node.alpha ?? /\.png$/i.test(file)), dir, meta: node });
+    out.push({ id: id.toLowerCase(), file, text, alpha: !!(node.alpha ?? /\.png$/i.test(file)), dir, meta: node, normal });
     return;
   }
   for (const [k, v] of Object.entries(node)) {
@@ -65,7 +68,7 @@ export async function loadCookingManifests() {
     const out: Entry[] = [];
     harvest(dir, js, '', out);
     // relative paths inside the manifest are relative to its folder
-    for (const e of out) e.file = resolvePath(dir, e.file);
+    for (const e of out) { e.file = resolvePath(dir, e.file); if (e.normal) e.normal = resolvePath(dir, e.normal); }
     entries.push(...out);
   }));
   ready = true;
@@ -104,7 +107,7 @@ export interface LateOpts { srgb?: boolean; repeat?: [number, number]; clamp?: b
  * Texture for a slot: placeholder now, real photo when found. `fallback` paints a temporary
  * neutral canvas (only visible until the real asset arrives).
  */
-export function lateTex(slot: string, keys: string[], fallback: (ctx: CanvasRenderingContext2D, S: number) => void, o: LateOpts & { not?: string[]; dirs?: string[]; size?: number } = {}): THREE.Texture {
+export function lateTex(slot: string, keys: string[], fallback: (ctx: CanvasRenderingContext2D, S: number) => void, o: LateOpts & { not?: string[]; dirs?: string[]; size?: number; normal?: boolean } = {}): THREE.Texture {
   const hit = lateCache.get(slot);
   if (hit) return hit;
   const S = o.size ?? 128;
@@ -123,11 +126,15 @@ export function lateTex(slot: string, keys: string[], fallback: (ctx: CanvasRend
   const bind = () => {
     const e = findEntry(keys, o.not ?? [], o.dirs);
     if (!e) return;
-    Assets.image(e.file).then((img) => {
-      tex.image = img;
+    const file = o.normal ? e.normal : e.file;
+    if (!file) return;
+    Assets.image(file).then((img) => {
+      // dispose first: the GPU storage is immutable and sized for the placeholder canvas
+      tex.dispose();
+      tex.source = new THREE.Source(img);
       if (o.flipY !== undefined) tex.flipY = o.flipY;
       tex.needsUpdate = true;
-      (tex as any).userData = { slot, real: true, file: e.file };
+      (tex as any).userData = { slot, real: true, file };
     }).catch(() => {});
   };
   if (ready) bind(); else waiting.push(bind);
@@ -174,75 +181,90 @@ export function placeholderLabel(th: string, bg: string, fg = '#fff') {
 
 const FOOD = ['textures/food/', 'gen/cooking/'];
 const LAB = ['img/labels/', 'gen/cooking/', 'textures/props/'];
+const ph = (base: string, seed: number) => speckle(base, [['rgba(255,255,255,0.12)', 120, 3], ['rgba(0,0,0,0.12)', 90, 3]], seed);
 
+/** Real food photo textures (textures/food/manifest.json). Tiles wrap; *Card = alpha cut-outs. */
 export const T = {
-  rice: () => lateTex('rice', ['rice_close', 'cooked rice', 'steamed rice', 'rice grains', 'jasmine rice cooked', 'rice'], speckle('#f1ece0', [['#fffdf6', 260, 3], ['#d9d1c0', 90, 2]], 3), { dirs: FOOD, not: ['raw', 'sack', 'bag', 'fried', 'paddy', 'field'] }),
-  riceMound: () => lateTex('riceMound', ['rice_mound', 'rice plate top', 'rice_close', 'rice'], speckle('#efe9dc', [['#fffef8', 260, 3], ['#d6cdbb', 90, 2]], 4), { dirs: FOOD, not: ['raw', 'sack', 'bag', 'fried', 'paddy', 'field'] }),
-  porkRaw: () => lateTex('porkRaw', ['pork_raw', 'minced pork raw', 'raw minced', 'ground pork', 'pork mince'], speckle('#d98c8c', [['#efb4ad', 240, 3], ['#b45f63', 140, 3], ['#f6e3dc', 60, 2]], 5), { dirs: FOOD, not: ['cooked', 'tray'] }),
-  porkCooked: () => lateTex('porkCooked', ['pork_cooked', 'minced pork cooked', 'kaphrao_close', 'kaphrao', 'pad kra pao'], speckle('#7a4a2a', [['#9c6a42', 260, 3], ['#4e2c17', 160, 3], ['#c49060', 40, 2]], 6), { dirs: FOOD }),
-  kaphrao: () => lateTex('kaphrao', ['kaphrao_close', 'kaphrao', 'pad kra pao', 'holy basil stir fry', 'basil pork'], speckle('#6e3f22', [['#8f5a33', 220, 3], ['#2f5a1f', 70, 5], ['#c0281f', 26, 2], ['#4a2914', 120, 3]], 7), { dirs: FOOD }),
-  basil: () => lateTex('basil', ['basil_white', 'holy basil leaves', 'basil leaf', 'basil'], (ctx, S) => {
-    ctx.clearRect(0, 0, S, S);
-    ctx.fillStyle = '#2f6b26';
-    ctx.beginPath(); ctx.ellipse(S / 2, S / 2, S * 0.42, S * 0.22, 0, 0, Math.PI * 2); ctx.fill();
-  }, { dirs: FOOD, not: ['cooked', 'stir'] }),
-  basilCooked: () => lateTex('basilCooked', ['basil_cooked', 'stir fried basil', 'basil_white', 'basil'], (ctx, S) => {
-    ctx.clearRect(0, 0, S, S);
-    ctx.fillStyle = '#244a1b';
-    ctx.beginPath(); ctx.ellipse(S / 2, S / 2, S * 0.42, S * 0.2, 0.2, 0, Math.PI * 2); ctx.fill();
-  }, { dirs: FOOD }),
-  chili: () => lateTex('chili', ['chili_red_white', 'red bird eye chili', 'chili red', 'chili'], speckle('#b8231b', [['#e0372a', 60, 6], ['#6d1410', 40, 4]], 8), { dirs: FOOD, not: ['flake', 'powder', 'paste'] }),
-  chiliGreen: () => lateTex('chiliGreen', ['chili_green_white', 'green chili', 'chili green'], speckle('#3f7a1e', [['#5c9a2c', 60, 6]], 9), { dirs: FOOD }),
-  garlic: () => lateTex('garlic', ['garlic_white', 'garlic cloves', 'garlic'], speckle('#e9e0cf', [['#f8f3e8', 80, 6], ['#c9b89b', 60, 3]], 10), { dirs: FOOD, not: ['crushed', 'fried'] }),
-  garlicCrushed: () => lateTex('garlicCrushed', ['garlic_crushed', 'crushed garlic', 'pounded garlic', 'garlic_white'], speckle('#e6d9b8', [['#f6eed9', 160, 3], ['#b89e6a', 60, 2], ['#c22a1d', 30, 2]], 11), { dirs: FOOD }),
-  eggFried: () => lateTex('eggFried', ['egg_crispy', 'crispy fried egg', 'egg_fried_white', 'fried egg'], (ctx, S) => {
-    ctx.fillStyle = '#f7f2e6'; ctx.fillRect(0, 0, S, S);
-    ctx.fillStyle = '#e7a23a'; ctx.beginPath(); ctx.arc(S / 2, S / 2, S * 0.16, 0, Math.PI * 2); ctx.fill();
-  }, { dirs: FOOD, not: ['omelet'] }),
-  omelette: () => lateTex('omelette', ['omelette', 'omelet', 'kai jeow', 'khai jiao'], speckle('#d9a43a', [['#b97a22', 120, 6], ['#f0c860', 80, 5]], 12), { dirs: FOOD }),
-  friedRice: () => lateTex('friedRice', ['friedrice_close', 'fried rice', 'khao phat'], speckle('#d6b27a', [['#efd7a6', 220, 3], ['#8a5a30', 60, 3], ['#f2c84a', 40, 4]], 13), { dirs: FOOD }),
-  noodles: () => lateTex('noodles', ['noodles_wide', 'pad see ew', 'wide rice noodles', 'noodle'], speckle('#a8763f', [['#c99a5e', 90, 8], ['#5e3a1c', 60, 5], ['#3d6a24', 30, 6]], 14), { dirs: FOOD }),
-  tomyum: () => lateTex('tomyum', ['tomyum_top', 'tom yum', 'tomyum'], speckle('#d4602a', [['#e98a3a', 80, 8], ['#f2c9a0', 20, 9], ['#3f7a2a', 20, 5]], 15), { dirs: FOOD }),
-  longbean: () => lateTex('longbean', ['longbean_white', 'yardlong bean', 'long bean'], speckle('#4f8a2c', [['#6aa63c', 60, 6]], 16), { dirs: FOOD }),
-  cucumber: () => lateTex('cucumber', ['cucumber_white', 'cucumber slices', 'cucumber'], speckle('#d9e8b0', [['#5f8f35', 40, 8], ['#eef6d8', 60, 5]], 17), { dirs: FOOD }),
-  onion: () => lateTex('onion', ['onion_white', 'sliced onion', 'onion'], speckle('#efe6d2', [['#d8c9a8', 50, 6]], 18), { dirs: FOOD }),
-  burnt: () => lateTex('burnt', ['burnt', 'charred', 'burned'], speckle('#2a1a12', [['#120a06', 160, 4], ['#4a3022', 60, 3]], 19), { dirs: FOOD }),
-  sauce: () => lateTex('sauce', ['sauce_glossy', 'glossy sauce', 'brown sauce'], speckle('#5a3216', [['#7a4a22', 80, 6]], 20), { dirs: FOOD }),
-  oil: () => lateTex('oil', ['oil_pan', 'hot oil', 'oil'], speckle('#c9a23a', [['#e8c860', 50, 6]], 21), { dirs: FOOD, not: ['bottle', 'label'] }),
-  curry: () => lateTex('curry', ['phat phrik kaeng', 'red curry stir', 'curry paste', 'phrik kaeng'], speckle('#a8341c', [['#c9532a', 120, 5], ['#4a8a2a', 40, 6]], 22), { dirs: FOOD }),
-  greens: () => lateTex('greens', ['kale', 'morning glory', 'phak bung', 'greens'], speckle('#3f7a26', [['#5b9a34', 90, 7], ['#2a5418', 60, 5]], 23), { dirs: FOOD }),
-  shrimp: () => lateTex('shrimp', ['shrimp', 'prawn'], speckle('#e98a6a', [['#f4b39a', 60, 6]], 24), { dirs: FOOD }),
-  gravy: () => lateTex('gravy', ['rat na', 'radna', 'gravy'], speckle('#8a5a26', [['#a8783a', 70, 7], ['#3f7a26', 30, 6]], 25), { dirs: FOOD }),
+  rice: () => lateTex('rice', ['rice_cooked_tile', 'rice cooked', 'cooked jasmine rice'], ph('#efe9dc', 3), { dirs: FOOD }),
+  riceN: () => lateTex('riceN', ['rice_cooked_tile'], (c, S) => { c.fillStyle = '#8080ff'; c.fillRect(0, 0, S, S); }, { dirs: FOOD, normal: true, srgb: false }),
+  riceMound: () => lateTex('riceMound', ['rice_mound_top', 'rice mound'], ph('#efe9dc', 4), { dirs: FOOD, clamp: true }),
+  porkRaw: () => lateTex('porkRaw', ['pork_minced_raw_tile', 'raw minced pork'], ph('#d98c8c', 5), { dirs: FOOD }),
+  porkRawN: () => lateTex('porkRawN', ['pork_minced_raw_tile'], (c, S) => { c.fillStyle = '#8080ff'; c.fillRect(0, 0, S, S); }, { dirs: FOOD, normal: true, srgb: false }),
+  porkCooked: () => lateTex('porkCooked', ['kaphrao_pork_tile', 'cooked minced pork'], ph('#7a4a2a', 6), { dirs: FOOD }),
+  porkCookedN: () => lateTex('porkCookedN', ['kaphrao_pork_tile'], (c, S) => { c.fillStyle = '#8080ff'; c.fillRect(0, 0, S, S); }, { dirs: FOOD, normal: true, srgb: false }),
+  kaphrao: () => lateTex('kaphrao', ['kaphrao_full_tile', 'kaphrao_pork_tile'], ph('#6e3f22', 7), { dirs: FOOD }),
+  kaphraoN: () => lateTex('kaphraoN', ['kaphrao_full_tile'], (c, S) => { c.fillStyle = '#8080ff'; c.fillRect(0, 0, S, S); }, { dirs: FOOD, normal: true, srgb: false }),
+  basil: () => lateTex('basil', ['basil_sprig_fresh', 'basil_bunch_fresh'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  basilBunch: () => lateTex('basilBunch', ['basil_bunch_fresh', 'basil_sprig_fresh'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  basilCooked: () => lateTex('basilCooked', ['basil_sprig_cooked', 'basil_bunch_cooked'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  basilSoggy: () => lateTex('basilSoggy', ['basil_bunch_cooked', 'basil_sprig_cooked'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  chiliCard: () => lateTex('chiliCard', ['chili_red_bunch'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  chiliGreenCard: () => lateTex('chiliGreenCard', ['chili_green_pile'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  garlicCard: () => lateTex('garlicCard', ['garlic_crushed'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  garlicMinced: () => lateTex('garlicMinced', ['garlic_minced_pile', 'garlic_crushed'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  eggCrispy: () => lateTex('eggCrispy', ['egg_fried_crispy'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  eggRunny: () => lateTex('eggRunny', ['egg_fried_runny'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  eggBurnt: () => lateTex('eggBurnt', ['egg_fried_burnt'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  omeletteCard: () => lateTex('omeletteCard', ['omelette_whole'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  omelette: () => lateTex('omelette', ['omelette_tile', 'omelette'], ph('#d9a43a', 12), { dirs: FOOD }),
+  friedRice: () => lateTex('friedRice', ['fried_rice_tile', 'fried rice'], ph('#d6b27a', 13), { dirs: FOOD }),
+  friedRiceN: () => lateTex('friedRiceN', ['fried_rice_tile'], (c, S) => { c.fillStyle = '#8080ff'; c.fillRect(0, 0, S, S); }, { dirs: FOOD, normal: true, srgb: false }),
+  noodles: () => lateTex('noodles', ['noodles_phat_si_io_tile', 'noodles'], ph('#a8763f', 14), { dirs: FOOD }),
+  beansCard: () => lateTex('beansCard', ['long_beans_bundle'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  beansCut: () => lateTex('beansCut', ['long_beans_cut_tile'], ph('#4f8a2c', 16), { dirs: FOOD }),
+  onionCard: () => lateTex('onionCard', ['onion_slices', 'shallots_sliced'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  shallotCard: () => lateTex('shallotCard', ['shallots_sliced', 'onion_slices'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  kaleCard: () => lateTex('kaleCard', ['kale_leaf'], (c, S) => { c.clearRect(0, 0, S, S); }, { dirs: FOOD, clamp: true }),
+  burnt: () => lateTex('burnt', ['burnt_residue_tile', 'burnt'], ph('#2a1a12', 19), { dirs: FOOD }),
+  oil: () => lateTex('oil', ['oil_frying_tile', 'frying oil'], ph('#c9a23a', 21), { dirs: FOOD }),
+  oilN: () => lateTex('oilN', ['oil_frying_tile'], (c, S) => { c.fillStyle = '#8080ff'; c.fillRect(0, 0, S, S); }, { dirs: FOOD, normal: true, srgb: false }),
+  greens: () => lateTex('greens', ['phak_bung_tile', 'morning glory'], ph('#3f7a26', 23), { dirs: FOOD }),
+  // not shipped by research yet → closest real photo, tinted by the material
+  curry: () => lateTex('curry', ['phat_phrik_kaeng', 'red curry', 'kaphrao_pork_tile'], ph('#a8341c', 22), { dirs: FOOD }),
+  shrimp: () => lateTex('shrimp', ['shrimp', 'prawn', 'pork_minced_raw_tile'], ph('#e98a6a', 24), { dirs: FOOD }),
+  tomyum: () => lateTex('tomyum', ['tom yum', 'tomyum', 'oil_frying_tile'], ph('#d4602a', 15), { dirs: FOOD }),
+  gravy: () => lateTex('gravy', ['rat na', 'gravy', 'noodles_phat_si_io_tile'], ph('#8a5a26', 25), { dirs: FOOD }),
 };
 
-/** Label (real flattened label photos) per product kind. */
+/** Real flattened label photos per product kind (img/labels/manifest.json); exact ids first. */
 export const LABELS: Record<string, { keys: string[]; not?: string[]; th: string; bg: string }> = {
-  oyster_sauce: { keys: ['oyster', 'แม่ครัว', 'maekrua', 'mae krua', 'หอยนางรม'], th: 'ซอสหอยนางรม', bg: '#b5121b' },
-  soy_light: { keys: ['light soy', 'thin soy', 'light_soy', 'ซีอิ๊วขาว', 'hb_lightsoy'], th: 'ซีอิ๊วขาว', bg: '#e8b81e' },
-  soy_dark: { keys: ['dark soy', 'dark_soy', 'ซีอิ๊วดำ', 'hb_darksoy'], th: 'ซีอิ๊วดำหวาน', bg: '#5a1a12' },
-  fish_sauce: { keys: ['fish sauce', 'fish_sauce', 'น้ำปลา', 'tiparos', 'ทิพรส'], th: 'น้ำปลา', bg: '#c22a1d' },
-  seasoning_sauce: { keys: ['seasoning sauce', 'golden mountain', 'ภูเขาทอง', 'gm_sauce', 'seasoning'], th: 'ซอสปรุงรส', bg: '#1f8a3c' },
-  cooking_oil: { keys: ['palm oil', 'soybean oil', 'cooking oil', 'cooking_oil', 'น้ำมัน', 'angoon', 'morakot', 'oil'], not: ['oyster'], th: 'น้ำมันพืช', bg: '#e0b01a' },
-  white_pepper: { keys: ['white pepper', 'pepper', 'พริกไทย'], th: 'พริกไทยป่น', bg: '#1d5a3a' },
-  chili_flakes: { keys: ['chili powder', 'chili flakes', 'chili_powder', 'chili_flakes', 'พริกป่น'], th: 'พริกป่น', bg: '#8a140e' },
-  sugar: { keys: ['sugar', 'mitr phol', 'mitrphol', 'มิตรผล', 'น้ำตาล'], th: 'น้ำตาลทราย', bg: '#2a6ab8' },
-  msg: { keys: ['ajinomoto', 'msg', 'อายิโนะโมะโต๊ะ', 'ผงชูรส'], th: 'ผงชูรส', bg: '#d8231a' },
-  vinegar: { keys: ['vinegar', 'น้ำส้มสายชู'], th: 'น้ำส้มสายชู', bg: '#e6e6e6' },
-  rice_bag: { keys: ['rice5', 'jasmine rice bag', 'ข้าวหอมมะลิ', 'rice bag', 'rice sack', 'rice15'], th: 'ข้าวหอมมะลิ 5 กก.', bg: '#e8d27a' },
-  water_jug: { keys: ['drinking water', 'water bottle', 'น้ำดื่ม', 'water'], not: ['sauce', 'soy'], th: 'น้ำดื่ม', bg: '#2a8ad8' },
-  egg_tray: { keys: ['eggs', 'egg pack', 'ไข่ไก่', 'egg'], not: ['fried', 'omelet'], th: 'ไข่ไก่', bg: '#e8c070' },
-  gas_tank: { keys: ['lpg', 'gas cylinder', 'ถังแก๊ส', 'ปตท'], th: 'ก๊าซหุงต้ม', bg: '#c4161c' },
-  pork_minced: { keys: ['pork_tray', 'minced pork tray', 'หมูบด', 'หมูสับ'], th: 'หมูสับ', bg: '#f2f2f2' },
-  holy_basil: { keys: ['basil_pack', 'ใบกะเพรา'], th: 'ใบกะเพรา', bg: '#3a8a2a' },
+  oyster_sauce: { keys: ['oyster_sauce_maekrua', 'oyster sauce', 'แม่ครัว'], th: 'ซอสหอยนางรม', bg: '#b5121b' },
+  soy_light: { keys: ['light_soy_healthy_boy', 'thin soy', 'light soy'], th: 'ซีอิ๊วขาว', bg: '#e8b81e' },
+  soy_dark: { keys: ['dark_soy_healthy_boy', 'dark soy'], th: 'ซีอิ๊วดำหวาน', bg: '#5a1a12' },
+  fish_sauce: { keys: ['fish_sauce_tiparos', 'fish_sauce_squid', 'fish sauce'], th: 'น้ำปลา', bg: '#c22a1d' },
+  seasoning_sauce: { keys: ['seasoning_sauce_golden_mountain', 'seasoning sauce', 'golden mountain'], th: 'ซอสปรุงรส', bg: '#1f8a3c' },
+  cooking_oil: { keys: ['palm_oil_morakot_1l', 'palm oil', 'cooking oil'], not: ['oyster'], th: 'น้ำมันพืช', bg: '#e0b01a' },
+  white_pepper: { keys: ['white_pepper_hand_brand_jar', 'white pepper', 'white_pepper_hand_brand_tin'], th: 'พริกไทยป่น', bg: '#1d5a3a' },
+  chili_flakes: { keys: ['chili_powder_hand_brand', 'ground chili', 'chili powder'], th: 'พริกป่น', bg: '#8a140e' },
+  sugar: { keys: ['sugar_mitr_phol_1kg', 'sugar'], th: 'น้ำตาลทราย', bg: '#2a6ab8' },
+  msg: { keys: ['msg_ajinomoto_500g', 'ajinomoto', 'msg'], th: 'ผงชูรส', bg: '#d8231a' },
+  vinegar: { keys: ['vinegar_osor', 'vinegar'], th: 'น้ำส้มสายชู', bg: '#e6e6e6' },
+  rice_bag: { keys: ['rice_5kg_tra_chat', 'rice_5kg_hong_thong', 'jasmine rice bag'], th: 'ข้าวหอมมะลิ 5 กก.', bg: '#e8d27a' },
+  water_jug: { keys: ['water_crystal_600ml', 'drinking water'], not: ['sauce', 'soy'], th: 'น้ำดื่ม', bg: '#2a8ad8' },
+  egg_tray: { keys: ['eggs_cp_pack_label', 'eggs pack'], th: 'ไข่ไก่', bg: '#e8c070' },
+  gas_tank: { keys: ['lpg_cylinder_world_gas', 'lpg'], th: 'ก๊าซหุงต้ม', bg: '#c4161c' },
+  pork_minced: { keys: ['pork_tray_cp_price_sticker', 'scale label'], th: 'หมูสับ', bg: '#f2f2f2' },
+  pork_top: { keys: ['pork_tray_cp_top'], th: 'หมูสด', bg: '#f2f2f2' },
+  holy_basil: { keys: ['basil_pack_sleeve'], th: 'ใบกะเพรา', bg: '#3a8a2a' },
   curry_paste: { keys: ['curry paste', 'พริกแกง'], th: 'พริกแกงเผ็ด', bg: '#a8241a' },
-  tomyum_paste: { keys: ['tom yum paste', 'chili paste', 'น้ำพริกเผา'], th: 'น้ำพริกเผา', bg: '#b8361a' },
+  tomyum_paste: { keys: ['chili paste', 'น้ำพริกเผา', 'tom yum paste'], th: 'น้ำพริกเผา', bg: '#b8361a' },
   gravy_starch: { keys: ['tapioca', 'starch', 'แป้งมัน'], th: 'แป้งมันสำปะหลัง', bg: '#3a6ad8' },
   noodles_wide: { keys: ['sen yai', 'wide rice noodle pack', 'เส้นใหญ่'], th: 'เส้นใหญ่', bg: '#f0f0f0' },
 };
 
+/** Label photo aspect (w/h) and real size hints, once the manifest is in. */
+export function labelInfo(kind: string): { aspect: number; meta: any } | null {
+  const L = LABELS[kind];
+  if (!L) return null;
+  const e = findEntry(L.keys, L.not ?? [], LAB);
+  if (!e?.meta) return null;
+  const sz = e.meta.size_px ?? e.meta.size;
+  return { aspect: sz ? sz[0] / sz[1] : 1, meta: e.meta };
+}
+
 export function labelTex(kind: string): THREE.Texture {
   const L = LABELS[kind] ?? { keys: [kind], th: kind, bg: '#888' };
-  return lateTex('label:' + kind, L.keys, placeholderLabel(L.th, L.bg), { dirs: LAB, not: L.not, size: 128, clamp: false });
+  return lateTex('label:' + kind, L.keys, placeholderLabel(L.th, L.bg), { dirs: LAB, not: L.not, size: 128, clamp: true });
 }
 
 // ------------------------------------------------------------------ materials

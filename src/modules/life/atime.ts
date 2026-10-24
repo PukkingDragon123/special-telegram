@@ -21,7 +21,7 @@ export class AmbientClock {
   hostTick(dt: number) {
     const g = this.game.g;
     if (g.paused) return;
-    if (!this.init) { this.hostT = Number(g.lifeT) || 0; this.init = true; }
+    if (!this.init) { this.hostT = Number(g.lifeT) || 900 + ((g.seed ?? 0) % 600); this.init = true; g.lifeT = Math.round(this.hostT * 10) / 10; }
     this.hostT += dt;
     this.hostWrite += dt;
     if (this.hostWrite >= 1 || g.lifeT === undefined) { this.hostWrite = 0; g.lifeT = Math.round(this.hostT * 10) / 10; }

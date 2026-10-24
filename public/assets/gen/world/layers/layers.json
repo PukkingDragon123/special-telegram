@@ -1,0 +1,594 @@
+{
+ "size": 512,
+ "layers": {
+  "asphalt_main": {
+   "src": "w:asphalt_main_worn",
+   "albedo": "gen/world/layers/asphalt_main_a.jpg",
+   "normal": "gen/world/layers/asphalt_main_n.jpg",
+   "orm": "gen/world/layers/asphalt_main_o.jpg",
+   "metal": 0.003
+  },
+  "asphalt_soi": {
+   "src": "w:asphalt_soi_patched",
+   "albedo": "gen/world/layers/asphalt_soi_a.jpg",
+   "normal": "gen/world/layers/asphalt_soi_n.jpg",
+   "orm": "gen/world/layers/asphalt_soi_o.jpg",
+   "metal": 0.004
+  },
+  "asphalt_cracked": {
+   "src": "p:asphalt_cracked",
+   "albedo": "gen/world/layers/asphalt_cracked_a.jpg",
+   "normal": "gen/world/layers/asphalt_cracked_n.jpg",
+   "orm": "gen/world/layers/asphalt_cracked_o.jpg",
+   "metal": 0.02,
+   "tile": 3.0
+  },
+  "asphalt_patched": {
+   "src": "p:asphalt_patched",
+   "albedo": "gen/world/layers/asphalt_patched_a.jpg",
+   "normal": "gen/world/layers/asphalt_patched_n.jpg",
+   "orm": "gen/world/layers/asphalt_patched_o.jpg",
+   "metal": 0.004,
+   "tile": 5.0
+  },
+  "concrete_road": {
+   "src": "p:concrete_soi_road",
+   "albedo": "gen/world/layers/concrete_road_a.jpg",
+   "normal": "gen/world/layers/concrete_road_n.jpg",
+   "orm": "gen/world/layers/concrete_road_o.jpg",
+   "metal": 0.007,
+   "tile": 2.5
+  },
+  "footpath": {
+   "src": "w:concrete_slab_footpath",
+   "albedo": "gen/world/layers/footpath_a.jpg",
+   "normal": "gen/world/layers/footpath_n.jpg",
+   "orm": "gen/world/layers/footpath_o.jpg",
+   "metal": 0.004
+  },
+  "tile_chain": {
+   "src": "w:sidewalk_tile_chain_grey",
+   "albedo": "gen/world/layers/tile_chain_a.jpg",
+   "normal": "gen/world/layers/tile_chain_n.jpg",
+   "orm": "gen/world/layers/tile_chain_o.jpg",
+   "metal": 0.008
+  },
+  "tile_circles": {
+   "src": "w:sidewalk_tile_circles_grey",
+   "albedo": "gen/world/layers/tile_circles_a.jpg",
+   "normal": "gen/world/layers/tile_circles_n.jpg",
+   "orm": "gen/world/layers/tile_circles_o.jpg",
+   "metal": 0.005
+  },
+  "tile_redband": {
+   "src": "w:sidewalk_tile_grid_grey_redband",
+   "albedo": "gen/world/layers/tile_redband_a.jpg",
+   "normal": "gen/world/layers/tile_redband_n.jpg",
+   "orm": "gen/world/layers/tile_redband_o.jpg",
+   "metal": 0.008
+  },
+  "tile_redhex": {
+   "src": "w:sidewalk_tile_red_hex",
+   "albedo": "gen/world/layers/tile_redhex_a.jpg",
+   "normal": "gen/world/layers/tile_redhex_n.jpg",
+   "orm": "gen/world/layers/tile_redhex_o.jpg",
+   "metal": 0.005
+  },
+  "pavers_inter": {
+   "src": "w:paver_interlock_I",
+   "albedo": "gen/world/layers/pavers_inter_a.jpg",
+   "normal": "gen/world/layers/pavers_inter_n.jpg",
+   "orm": "gen/world/layers/pavers_inter_o.jpg",
+   "metal": 0.004
+  },
+  "pavers_square": {
+   "src": "p:sidewalk_pavers_square",
+   "albedo": "gen/world/layers/pavers_square_a.jpg",
+   "normal": "gen/world/layers/pavers_square_n.jpg",
+   "orm": "gen/world/layers/pavers_square_o.jpg",
+   "metal": 0.008,
+   "tile": 2.0
+  },
+  "tactile": {
+   "src": "w:tactile_strip_yellow",
+   "albedo": "gen/world/layers/tactile_a.jpg",
+   "normal": "gen/world/layers/tactile_n.jpg",
+   "orm": "gen/world/layers/tactile_o.jpg",
+   "metal": 0.003
+  },
+  "concrete_old": {
+   "src": "p:concrete_old_cracked",
+   "albedo": "gen/world/layers/concrete_old_a.jpg",
+   "normal": "gen/world/layers/concrete_old_n.jpg",
+   "orm": "gen/world/layers/concrete_old_o.jpg",
+   "metal": 0.005,
+   "tile": 2.0
+  },
+  "concrete_wet": {
+   "src": "p:concrete_wet_puddles",
+   "albedo": "gen/world/layers/concrete_wet_a.jpg",
+   "normal": "gen/world/layers/concrete_wet_n.jpg",
+   "orm": "gen/world/layers/concrete_wet_o.jpg",
+   "metal": 0.006,
+   "tile": 1.9
+  },
+  "curb": {
+   "src": "w:curb_bare_concrete",
+   "albedo": "gen/world/layers/curb_a.jpg",
+   "normal": "gen/world/layers/curb_n.jpg",
+   "orm": "gen/world/layers/curb_o.jpg",
+   "metal": 0.002
+  },
+  "curb_rw": {
+   "src": "w:curb_red_white",
+   "albedo": "gen/world/layers/curb_rw_a.jpg",
+   "normal": "gen/world/layers/curb_rw_n.jpg",
+   "orm": "gen/world/layers/curb_rw_o.jpg",
+   "metal": 0.003
+  },
+  "curb_yb": {
+   "src": "w:curb_yellow_black",
+   "albedo": "gen/world/layers/curb_yb_a.jpg",
+   "normal": "gen/world/layers/curb_yb_n.jpg",
+   "orm": "gen/world/layers/curb_yb_o.jpg",
+   "metal": 0.003
+  },
+  "curb_wy": {
+   "src": "w:curb_white_yellow",
+   "albedo": "gen/world/layers/curb_wy_a.jpg",
+   "normal": "gen/world/layers/curb_wy_n.jpg",
+   "orm": "gen/world/layers/curb_wy_o.jpg",
+   "metal": 0.003
+  },
+  "dirt": {
+   "src": "p:dirt_path_dry",
+   "albedo": "gen/world/layers/dirt_a.jpg",
+   "normal": "gen/world/layers/dirt_n.jpg",
+   "orm": "gen/world/layers/dirt_o.jpg",
+   "metal": 0.005,
+   "tile": 2.07
+  },
+  "laterite": {
+   "src": "p:laterite_red_dirt",
+   "albedo": "gen/world/layers/laterite_a.jpg",
+   "normal": "gen/world/layers/laterite_n.jpg",
+   "orm": "gen/world/layers/laterite_o.jpg",
+   "metal": 0.014,
+   "tile": 2.0
+  },
+  "mud": {
+   "src": "p:mud_wet_rural",
+   "albedo": "gen/world/layers/mud_a.jpg",
+   "normal": "gen/world/layers/mud_n.jpg",
+   "orm": "gen/world/layers/mud_o.jpg",
+   "metal": 0.016,
+   "tile": 1.3
+  },
+  "grass_dry": {
+   "src": "p:grass_dry",
+   "albedo": "gen/world/layers/grass_dry_a.jpg",
+   "normal": "gen/world/layers/grass_dry_n.jpg",
+   "orm": "gen/world/layers/grass_dry_o.jpg",
+   "metal": 0.021,
+   "tile": 2.0
+  },
+  "grass": {
+   "src": "p:grass_lush",
+   "albedo": "gen/world/layers/grass_a.jpg",
+   "normal": "gen/world/layers/grass_n.jpg",
+   "orm": "gen/world/layers/grass_o.jpg",
+   "metal": 0.013,
+   "tile": 1.4
+  },
+  "gravel": {
+   "src": "p:gravel_crushed",
+   "albedo": "gen/world/layers/gravel_a.jpg",
+   "normal": "gen/world/layers/gravel_n.jpg",
+   "orm": "gen/world/layers/gravel_o.jpg",
+   "metal": 0.006,
+   "tile": 2.0
+  },
+  "leaves": {
+   "src": "p:leaf_litter_dry",
+   "albedo": "gen/world/layers/leaves_a.jpg",
+   "normal": "gen/world/layers/leaves_n.jpg",
+   "orm": "gen/world/layers/leaves_o.jpg",
+   "metal": 0.007,
+   "tile": 2.0
+  },
+  "terrazzo": {
+   "src": "p:terrazzo_floor",
+   "albedo": "gen/world/layers/terrazzo_a.jpg",
+   "normal": "gen/world/layers/terrazzo_n.jpg",
+   "orm": "gen/world/layers/terrazzo_o.jpg",
+   "metal": 0.013,
+   "tile": 1.2
+  },
+  "tiles_floor": {
+   "src": "p:tiles_floor_ceramic",
+   "albedo": "gen/world/layers/tiles_floor_a.jpg",
+   "normal": "gen/world/layers/tiles_floor_n.jpg",
+   "orm": "gen/world/layers/tiles_floor_o.jpg",
+   "metal": 0.004,
+   "tile": 1.5
+  },
+  "tiles_terracotta": {
+   "src": "p:tiles_floor_terracotta",
+   "albedo": "gen/world/layers/tiles_terracotta_a.jpg",
+   "normal": "gen/world/layers/tiles_terracotta_n.jpg",
+   "orm": "gen/world/layers/tiles_terracotta_o.jpg",
+   "metal": 0.007,
+   "tile": 2.08
+  },
+  "grate": {
+   "src": "w:trench_grate_steel",
+   "albedo": "gen/world/layers/grate_a.jpg",
+   "normal": "gen/world/layers/grate_n.jpg",
+   "orm": "gen/world/layers/grate_o.jpg",
+   "metal": 0.144
+  },
+  "drain_cover": {
+   "src": "w:drain_cover_concrete_holes",
+   "albedo": "gen/world/layers/drain_cover_a.jpg",
+   "normal": "gen/world/layers/drain_cover_n.jpg",
+   "orm": "gen/world/layers/drain_cover_o.jpg",
+   "metal": 0.097
+  },
+  "plaster": {
+   "src": "p:plaster_painted_clean",
+   "albedo": "gen/world/layers/plaster_a.jpg",
+   "normal": "gen/world/layers/plaster_n.jpg",
+   "orm": "gen/world/layers/plaster_o.jpg",
+   "metal": 0.003,
+   "tile": 2.0
+  },
+  "plaster_dirty": {
+   "src": "p:plaster_painted_dirty",
+   "albedo": "gen/world/layers/plaster_dirty_a.jpg",
+   "normal": "gen/world/layers/plaster_dirty_n.jpg",
+   "orm": "gen/world/layers/plaster_dirty_o.jpg",
+   "metal": 0.01,
+   "tile": 1.0
+  },
+  "plaster_moldy": {
+   "src": "p:plaster_moldy_stained",
+   "albedo": "gen/world/layers/plaster_moldy_a.jpg",
+   "normal": "gen/world/layers/plaster_moldy_n.jpg",
+   "orm": "gen/world/layers/plaster_moldy_o.jpg",
+   "metal": 0.011,
+   "tile": 3.0
+  },
+  "plaster_peeling": {
+   "src": "p:plaster_peeling",
+   "albedo": "gen/world/layers/plaster_peeling_a.jpg",
+   "normal": "gen/world/layers/plaster_peeling_n.jpg",
+   "orm": "gen/world/layers/plaster_peeling_o.jpg",
+   "metal": 0.003,
+   "tile": 1.8
+  },
+  "plaster_red": {
+   "src": "p:plaster_peeling_red",
+   "albedo": "gen/world/layers/plaster_red_a.jpg",
+   "normal": "gen/world/layers/plaster_red_n.jpg",
+   "orm": "gen/world/layers/plaster_red_o.jpg",
+   "metal": 0.008,
+   "tile": 1.8
+  },
+  "plaster_brick": {
+   "src": "p:plaster_broken_brick",
+   "albedo": "gen/world/layers/plaster_brick_a.jpg",
+   "normal": "gen/world/layers/plaster_brick_n.jpg",
+   "orm": "gen/world/layers/plaster_brick_o.jpg",
+   "metal": 0.004,
+   "tile": 2.0
+  },
+  "concrete_streaked": {
+   "src": "p:concrete_streaked",
+   "albedo": "gen/world/layers/concrete_streaked_a.jpg",
+   "normal": "gen/world/layers/concrete_streaked_n.jpg",
+   "orm": "gen/world/layers/concrete_streaked_o.jpg",
+   "metal": 0.006,
+   "tile": 3.0
+  },
+  "concrete_mossy": {
+   "src": "p:concrete_mossy",
+   "albedo": "gen/world/layers/concrete_mossy_a.jpg",
+   "normal": "gen/world/layers/concrete_mossy_n.jpg",
+   "orm": "gen/world/layers/concrete_mossy_o.jpg",
+   "metal": 0.006,
+   "tile": 1.8
+  },
+  "cement_block": {
+   "src": "p:cement_block_wall",
+   "albedo": "gen/world/layers/cement_block_a.jpg",
+   "normal": "gen/world/layers/cement_block_n.jpg",
+   "orm": "gen/world/layers/cement_block_o.jpg",
+   "metal": 0.004,
+   "tile": 2.0
+  },
+  "brick": {
+   "src": "p:brick_exposed_red",
+   "albedo": "gen/world/layers/brick_a.jpg",
+   "normal": "gen/world/layers/brick_n.jpg",
+   "orm": "gen/world/layers/brick_o.jpg",
+   "metal": 0.006,
+   "tile": 1.5
+  },
+  "tiles_wall": {
+   "src": "p:tiles_wall_white_dirty",
+   "albedo": "gen/world/layers/tiles_wall_a.jpg",
+   "normal": "gen/world/layers/tiles_wall_n.jpg",
+   "orm": "gen/world/layers/tiles_wall_o.jpg",
+   "metal": 0.002,
+   "tile": 1.0
+  },
+  "temple_wall": {
+   "src": "p:temple_white_wall",
+   "albedo": "gen/world/layers/temple_wall_a.jpg",
+   "normal": "gen/world/layers/temple_wall_n.jpg",
+   "orm": "gen/world/layers/temple_wall_o.jpg",
+   "metal": 0.015,
+   "tile": 2.0
+  },
+  "marble": {
+   "src": "p:marble_white",
+   "tile": 1.5
+  },
+  "shutter": {
+   "src": "p:shutter_roller_painted",
+   "albedo": "gen/world/layers/shutter_a.jpg",
+   "normal": "gen/world/layers/shutter_n.jpg",
+   "orm": "gen/world/layers/shutter_o.jpg",
+   "metal": 0.006,
+   "tile": 2.0
+  },
+  "shutter_rust": {
+   "src": "p:shutter_roller_rusty",
+   "albedo": "gen/world/layers/shutter_rust_a.jpg",
+   "normal": "gen/world/layers/shutter_rust_n.jpg",
+   "orm": "gen/world/layers/shutter_rust_o.jpg",
+   "metal": 0.005,
+   "tile": 1.9
+  },
+  "corr_rust": {
+   "src": "p:corrugated_rusty",
+   "albedo": "gen/world/layers/corr_rust_a.jpg",
+   "normal": "gen/world/layers/corr_rust_n.jpg",
+   "orm": "gen/world/layers/corr_rust_o.jpg",
+   "metal": 0.004,
+   "tile": 2.0
+  },
+  "corr_paint": {
+   "src": "p:corrugated_painted",
+   "albedo": "gen/world/layers/corr_paint_a.jpg",
+   "normal": "gen/world/layers/corr_paint_n.jpg",
+   "orm": "gen/world/layers/corr_paint_o.jpg",
+   "metal": 0.006,
+   "tile": 2.0
+  },
+  "roof_galv": {
+   "src": "p:roof_corrugated_galvanized",
+   "albedo": "gen/world/layers/roof_galv_a.jpg",
+   "normal": "gen/world/layers/roof_galv_n.jpg",
+   "orm": "gen/world/layers/roof_galv_o.jpg",
+   "metal": 0.987,
+   "tile": 1.12
+  },
+  "roof_fibre": {
+   "src": "p:roof_fibrecement_corrugated",
+   "albedo": "gen/world/layers/roof_fibre_a.jpg",
+   "normal": "gen/world/layers/roof_fibre_n.jpg",
+   "orm": "gen/world/layers/roof_fibre_o.jpg",
+   "metal": 0.003,
+   "tile": 2.0
+  },
+  "roof_slab": {
+   "src": "p:roof_concrete_slab",
+   "albedo": "gen/world/layers/roof_slab_a.jpg",
+   "normal": "gen/world/layers/roof_slab_n.jpg",
+   "orm": "gen/world/layers/roof_slab_o.jpg",
+   "metal": 0.007,
+   "tile": 5.0
+  },
+  "roof_tiles": {
+   "src": "p:roof_clay_tiles",
+   "albedo": "gen/world/layers/roof_tiles_a.jpg",
+   "normal": "gen/world/layers/roof_tiles_n.jpg",
+   "orm": "gen/world/layers/roof_tiles_o.jpg",
+   "metal": 0.005,
+   "tile": 2.6
+  },
+  "metal_paint": {
+   "src": "p:metal_painted_chipped",
+   "albedo": "gen/world/layers/metal_paint_a.jpg",
+   "normal": "gen/world/layers/metal_paint_n.jpg",
+   "orm": "gen/world/layers/metal_paint_o.jpg",
+   "metal": 0.004,
+   "tile": 1.0
+  },
+  "steel_rust": {
+   "src": "p:steel_rusty",
+   "albedo": "gen/world/layers/steel_rust_a.jpg",
+   "normal": "gen/world/layers/steel_rust_n.jpg",
+   "orm": "gen/world/layers/steel_rust_o.jpg",
+   "metal": 0.007,
+   "tile": 1.0
+  },
+  "galv": {
+   "src": "p:galvanized_steel",
+   "albedo": "gen/world/layers/galv_a.jpg",
+   "normal": "gen/world/layers/galv_n.jpg",
+   "orm": "gen/world/layers/galv_o.jpg",
+   "metal": 0.996,
+   "tile": 1.0
+  },
+  "stainless": {
+   "src": "p:stainless_brushed",
+   "albedo": "gen/world/layers/stainless_a.jpg",
+   "normal": "gen/world/layers/stainless_n.jpg",
+   "orm": "gen/world/layers/stainless_o.jpg",
+   "metal": 0.994,
+   "tile": 0.6
+  },
+  "stainless_dirty": {
+   "src": "p:stainless_dented_greasy",
+   "albedo": "gen/world/layers/stainless_dirty_a.jpg",
+   "normal": "gen/world/layers/stainless_dirty_n.jpg",
+   "orm": "gen/world/layers/stainless_dirty_o.jpg",
+   "metal": 0.995,
+   "tile": 0.5
+  },
+  "alu": {
+   "src": "p:aluminium_scratched",
+   "albedo": "gen/world/layers/alu_a.jpg",
+   "normal": "gen/world/layers/alu_n.jpg",
+   "orm": "gen/world/layers/alu_o.jpg",
+   "metal": 0.996,
+   "tile": 0.5
+  },
+  "chrome": {
+   "src": "p:chrome",
+   "albedo": "gen/world/layers/chrome_a.jpg",
+   "normal": "gen/world/layers/chrome_n.jpg",
+   "orm": "gen/world/layers/chrome_o.jpg",
+   "metal": 0.999,
+   "tile": 0.5
+  },
+  "brass": {
+   "src": "p:brass_gold",
+   "albedo": "gen/world/layers/brass_a.jpg",
+   "normal": "gen/world/layers/brass_n.jpg",
+   "orm": "gen/world/layers/brass_o.jpg",
+   "metal": 0.994,
+   "tile": 0.5
+  },
+  "wood_old": {
+   "src": "p:wood_planks_old",
+   "albedo": "gen/world/layers/wood_old_a.jpg",
+   "normal": "gen/world/layers/wood_old_n.jpg",
+   "orm": "gen/world/layers/wood_old_o.jpg",
+   "metal": 0.006,
+   "tile": 2.0
+  },
+  "wood_paint": {
+   "src": "p:wood_painted_weathered",
+   "albedo": "gen/world/layers/wood_paint_a.jpg",
+   "normal": "gen/world/layers/wood_paint_n.jpg",
+   "orm": "gen/world/layers/wood_paint_o.jpg",
+   "metal": 0.003,
+   "tile": 1.6
+  },
+  "plywood": {
+   "src": "p:plywood",
+   "albedo": "gen/world/layers/plywood_a.jpg",
+   "normal": "gen/world/layers/plywood_n.jpg",
+   "orm": "gen/world/layers/plywood_o.jpg",
+   "metal": 0.014,
+   "tile": 0.5
+  },
+  "teak": {
+   "src": "p:wood_teak",
+   "albedo": "gen/world/layers/teak_a.jpg",
+   "normal": "gen/world/layers/teak_n.jpg",
+   "orm": "gen/world/layers/teak_o.jpg",
+   "metal": 0.006,
+   "tile": 2.0
+  },
+  "bamboo": {
+   "src": "p:bamboo_poles",
+   "albedo": "gen/world/layers/bamboo_a.jpg",
+   "normal": "gen/world/layers/bamboo_n.jpg",
+   "orm": "gen/world/layers/bamboo_o.jpg",
+   "metal": 0.005,
+   "tile": 2.0
+  },
+  "bamboo_woven": {
+   "src": "p:bamboo_woven",
+   "albedo": "gen/world/layers/bamboo_woven_a.jpg",
+   "normal": "gen/world/layers/bamboo_woven_n.jpg",
+   "orm": "gen/world/layers/bamboo_woven_o.jpg",
+   "metal": 0.006,
+   "tile": 1.85
+  },
+  "tarp": {
+   "src": "p:canvas_tarp",
+   "albedo": "gen/world/layers/tarp_a.jpg",
+   "normal": "gen/world/layers/tarp_n.jpg",
+   "orm": "gen/world/layers/tarp_o.jpg",
+   "metal": 0.006,
+   "tile": 0.4
+  },
+  "plastic": {
+   "src": "p:plastic_rough",
+   "albedo": "gen/world/layers/plastic_a.jpg",
+   "normal": "gen/world/layers/plastic_n.jpg",
+   "orm": "gen/world/layers/plastic_o.jpg",
+   "metal": 0.004,
+   "tile": 0.5
+  },
+  "plastic_gloss": {
+   "src": "p:plastic_glossy",
+   "albedo": "gen/world/layers/plastic_gloss_a.jpg",
+   "normal": "gen/world/layers/plastic_gloss_n.jpg",
+   "orm": "gen/world/layers/plastic_gloss_o.jpg",
+   "metal": 0.005,
+   "tile": 0.5
+  },
+  "rubber": {
+   "src": "p:rubber_black",
+   "albedo": "gen/world/layers/rubber_a.jpg",
+   "normal": "gen/world/layers/rubber_n.jpg",
+   "orm": "gen/world/layers/rubber_o.jpg",
+   "metal": 0.005,
+   "tile": 0.75
+  },
+  "leather": {
+   "src": "p:leather_black",
+   "albedo": "gen/world/layers/leather_a.jpg",
+   "normal": "gen/world/layers/leather_n.jpg",
+   "orm": "gen/world/layers/leather_o.jpg",
+   "metal": 0.011,
+   "tile": 0.5
+  },
+  "cardboard": {
+   "src": "p:cardboard_worn",
+   "albedo": "gen/world/layers/cardboard_a.jpg",
+   "normal": "gen/world/layers/cardboard_n.jpg",
+   "orm": "gen/world/layers/cardboard_o.jpg",
+   "metal": 0.005,
+   "tile": 0.6
+  },
+  "fabric": {
+   "src": "p:cotton_jersey",
+   "albedo": "gen/world/layers/fabric_a.jpg",
+   "normal": "gen/world/layers/fabric_n.jpg",
+   "orm": "gen/world/layers/fabric_o.jpg",
+   "metal": 0.018,
+   "tile": 0.264
+  },
+  "denim": {
+   "src": "p:denim",
+   "albedo": "gen/world/layers/denim_a.jpg",
+   "normal": "gen/world/layers/denim_n.jpg",
+   "orm": "gen/world/layers/denim_o.jpg",
+   "metal": 0.097,
+   "tile": 0.273
+  },
+  "glass": {
+   "src": "p:glass_dirty",
+   "albedo": "gen/world/layers/glass_a.jpg",
+   "normal": "gen/world/layers/glass_n.jpg",
+   "orm": "gen/world/layers/glass_o.jpg",
+   "metal": 0.011,
+   "tile": 1.0
+  },
+  "paper": {
+   "src": "p:paper_creased",
+   "albedo": "gen/world/layers/paper_a.jpg",
+   "normal": "gen/world/layers/paper_n.jpg",
+   "orm": "gen/world/layers/paper_o.jpg",
+   "metal": 0.002,
+   "tile": 0.4
+  }
+ }
+}

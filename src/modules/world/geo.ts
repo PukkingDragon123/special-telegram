@@ -16,7 +16,7 @@ import * as THREE from 'three';
  *   fol       : x = wind weight, y = phase, z = stiffness
  */
 
-export type Kind = 'world' | 'cut' | 'sign' | 'decal' | 'fol';
+export type Kind = 'world' | 'cut' | 'sign' | 'decal' | 'fol' | 'glass';
 export type Group = 'base' | 'detail';
 export type UVMode = 'world' | 'local' | 'face';
 
@@ -150,6 +150,15 @@ export class WB {
   }
   /** cutout variant of a world layer (alpha from the albedo array) */
   cut(name: string, o: MatOpts = {}) { this.mat(name, o); this.kind = 'cut'; return this; }
+  /** transparent shop-window glass (see-through, reflective) */
+  glass(o: { tint?: number | [number, number, number]; alpha?: number; group?: Group } = {}) {
+    this.kind = 'glass';
+    const t = tintOf(o.tint ?? 0xd8e4e8); this.tr = t[0]; this.tg = t[1]; this.tb = t[2];
+    this.ao = o.alpha ?? 0.22; this.dirt = 1; this.layer = 0; this.ov = 0; this.ovAmt = 0; this.emis = 0;
+    this.uvMode = 'world'; this.uvS = 1; this.uo = 0; this.vo = 0; this.autoDirt = false; this.tile = 1; this.tileV = 1;
+    if (o.group) this.group = o.group;
+    return this;
+  }
   /** atlas based kinds: uv are explicit atlas coordinates */
   atlas(kind: 'sign' | 'decal' | 'fol', o: { tint?: number | [number, number, number]; ao?: number; dirt?: number; e0?: number; e1?: number; e2?: number; e3?: number; group?: Group } = {}) {
     this.kind = kind;
@@ -494,6 +503,7 @@ export class WB {
       m.castShadow = opts.shadows[kind] && (group === 'base' || kind !== 'decal');
       m.receiveShadow = true;
       if (kind === 'decal') m.renderOrder = 1;
+      if (kind === 'glass') { m.renderOrder = 3; m.castShadow = false; }
       out.push({ mesh: m, kind, group });
     }
     this.buckets.clear();

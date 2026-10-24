@@ -108,7 +108,7 @@ export const hasSound = (name: string) => !!sk(name);
 export function play(name: string, o: SoundOpts = {}): SoundHandle | null {
   const k = sk(name);
   if (!k) return null;
-  return Sound.play(k, o);
+  return Sound.play(k, { loop: false, ...o });
 }
 /** Local loop (logical name). */
 export function loop(name: string, o: SoundOpts = {}): SoundHandle | null {
@@ -120,5 +120,5 @@ export function loop(name: string, o: SoundOpts = {}): SoundHandle | null {
 export function sfx(game: Game, name: string, pos: ArrayLike<number> | THREE.Vector3 | null, o: Omit<SoundOpts, 'pos'> = {}) {
   const k = sk(name);
   if (!k) return;
-  game.sfx(k, pos, o);
+  game.sfx(k, pos, { loop: false, ...o });
 }

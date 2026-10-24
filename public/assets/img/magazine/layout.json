@@ -1,0 +1,2173 @@
+{
+ "page": {
+  "w": 1024,
+  "h": 1448
+ },
+ "spread": {
+  "w": 2048,
+  "h": 1448
+ },
+ "cover": {
+  "file": "cover_soikay_1024x1448.jpg",
+  "player_render": {
+   "x": 262,
+   "y": 470,
+   "w": 500,
+   "h": 760,
+   "note": "paste the live player render (transparent PNG) here, feet near y=1230; it overlaps the cover lines' inner edges like a real cover star"
+  },
+  "background_photo": {
+   "name": "talat_noi_mural_cc0",
+   "url": "https://www.flickr.com/photos/52775988@N00/55591634412/",
+   "author": "Mussi Katz",
+   "license": "CC0 1.0"
+  },
+  "barcode_digits": "8855555000065",
+  "masthead_note": "masthead printed in red Trirong Black; S O I - K A Y tracking 6"
+ },
+ "spreads": {
+  "A": {
+   "file": "spread_A_tops_bottoms_2048x1448.jpg",
+   "left": {
+    "category": "tops",
+    "title": "เสื้อ",
+    "slots": [
+     {
+      "id": "tops_1",
+      "render": {
+       "x": 56,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 56,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 56,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 56,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 305,
+       "y": 590
+      },
+      "hit": {
+       "x": 56,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "tops_2",
+      "render": {
+       "x": 367,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 367,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 367,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 367,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 616,
+       "y": 590
+      },
+      "hit": {
+       "x": 367,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "tops_3",
+      "render": {
+       "x": 678,
+       "y": 560,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 678,
+       "y": 816,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 678,
+       "y": 854,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 678,
+       "y": 891,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 928,
+       "y": 590
+      },
+      "hit": {
+       "x": 678,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "tops_4",
+      "render": {
+       "x": 56,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 56,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 56,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 56,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 305,
+       "y": 989
+      },
+      "hit": {
+       "x": 56,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "tops_5",
+      "render": {
+       "x": 367,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 367,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 367,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 367,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 616,
+       "y": 989
+      },
+      "hit": {
+       "x": 367,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "tops_6",
+      "render": {
+       "x": 678,
+       "y": 959,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 678,
+       "y": 1215,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 678,
+       "y": 1253,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 678,
+       "y": 1290,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 928,
+       "y": 989
+      },
+      "hit": {
+       "x": 678,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     }
+    ]
+   },
+   "right": {
+    "category": "bottoms",
+    "title": "กางเกง",
+    "slots": [
+     {
+      "id": "bottoms_1",
+      "render": {
+       "x": 1080,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1080,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1080,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1080,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1329,
+       "y": 590
+      },
+      "hit": {
+       "x": 1080,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "bottoms_2",
+      "render": {
+       "x": 1391,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1391,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1391,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1391,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1640,
+       "y": 590
+      },
+      "hit": {
+       "x": 1391,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "bottoms_3",
+      "render": {
+       "x": 1702,
+       "y": 560,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 1702,
+       "y": 816,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1702,
+       "y": 854,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1702,
+       "y": 891,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1952,
+       "y": 590
+      },
+      "hit": {
+       "x": 1702,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "bottoms_4",
+      "render": {
+       "x": 1080,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1080,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1080,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1080,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1329,
+       "y": 989
+      },
+      "hit": {
+       "x": 1080,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "bottoms_5",
+      "render": {
+       "x": 1391,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1391,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1391,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1391,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1640,
+       "y": 989
+      },
+      "hit": {
+       "x": 1391,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "bottoms_6",
+      "render": {
+       "x": 1702,
+       "y": 959,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 1702,
+       "y": 1215,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1702,
+       "y": 1253,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1702,
+       "y": 1290,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1952,
+       "y": 989
+      },
+      "hit": {
+       "x": 1702,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     }
+    ]
+   },
+   "player_polaroid": {
+    "x": 640,
+    "y": 150,
+    "w": 370,
+    "h": 426,
+    "window": {
+     "x": 682,
+     "y": 192,
+     "w": 264,
+     "h": 272
+    },
+    "rotation_deg": 3.0,
+    "note": "polaroid baked in; paste the player render into 'window' (rotate +3deg around its centre)"
+   },
+   "photos": [
+    {
+     "name": "clothes_alley_pratunam",
+     "url": "https://www.flickr.com/photos/47769024@N06/35873132281/",
+     "author": "David Yap",
+     "license": "All Rights Reserved"
+    },
+    {
+     "name": "clothes_alley2",
+     "url": "https://www.flickr.com/photos/47769024@N06/35964614276/",
+     "author": "David Yap",
+     "license": "All Rights Reserved"
+    }
+   ]
+  },
+  "B": {
+   "file": "spread_B_shoes_accessories_2048x1448.jpg",
+   "left": {
+    "category": "shoes",
+    "title": "รองเท้า",
+    "slots": [
+     {
+      "id": "shoes_1",
+      "render": {
+       "x": 56,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 56,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 56,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 56,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 305,
+       "y": 590
+      },
+      "hit": {
+       "x": 56,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "shoes_2",
+      "render": {
+       "x": 367,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 367,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 367,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 367,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 616,
+       "y": 590
+      },
+      "hit": {
+       "x": 367,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "shoes_3",
+      "render": {
+       "x": 678,
+       "y": 560,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 678,
+       "y": 816,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 678,
+       "y": 854,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 678,
+       "y": 891,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 928,
+       "y": 590
+      },
+      "hit": {
+       "x": 678,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "shoes_4",
+      "render": {
+       "x": 56,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 56,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 56,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 56,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 305,
+       "y": 989
+      },
+      "hit": {
+       "x": 56,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "shoes_5",
+      "render": {
+       "x": 367,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 367,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 367,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 367,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 616,
+       "y": 989
+      },
+      "hit": {
+       "x": 367,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "shoes_6",
+      "render": {
+       "x": 678,
+       "y": 959,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 678,
+       "y": 1215,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 678,
+       "y": 1253,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 678,
+       "y": 1290,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 928,
+       "y": 989
+      },
+      "hit": {
+       "x": 678,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     }
+    ]
+   },
+   "right": {
+    "category": "accessories",
+    "title": "เครื่องประดับ",
+    "slots": [
+     {
+      "id": "accessories_1",
+      "render": {
+       "x": 1080,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1080,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1080,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1080,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1329,
+       "y": 590
+      },
+      "hit": {
+       "x": 1080,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "accessories_2",
+      "render": {
+       "x": 1391,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1391,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1391,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1391,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1640,
+       "y": 590
+      },
+      "hit": {
+       "x": 1391,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "accessories_3",
+      "render": {
+       "x": 1702,
+       "y": 560,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 1702,
+       "y": 816,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1702,
+       "y": 854,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1702,
+       "y": 891,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1952,
+       "y": 590
+      },
+      "hit": {
+       "x": 1702,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "accessories_4",
+      "render": {
+       "x": 1080,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1080,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1080,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1080,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1329,
+       "y": 989
+      },
+      "hit": {
+       "x": 1080,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "accessories_5",
+      "render": {
+       "x": 1391,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1391,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1391,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1391,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1640,
+       "y": 989
+      },
+      "hit": {
+       "x": 1391,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "accessories_6",
+      "render": {
+       "x": 1702,
+       "y": 959,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 1702,
+       "y": 1215,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1702,
+       "y": 1253,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1702,
+       "y": 1290,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1952,
+       "y": 989
+      },
+      "hit": {
+       "x": 1702,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     }
+    ]
+   },
+   "player_polaroid": {
+    "x": 640,
+    "y": 150,
+    "w": 370,
+    "h": 426,
+    "window": {
+     "x": 682,
+     "y": 192,
+     "w": 264,
+     "h": 272
+    },
+    "rotation_deg": 3.0,
+    "note": "polaroid baked in; paste the player render into 'window' (rotate +3deg around its centre)"
+   },
+   "photos": [
+    {
+     "name": "shoe_wall",
+     "url": "https://www.flickr.com/photos/47769024@N06/35964597596/",
+     "author": "David Yap",
+     "license": "All Rights Reserved"
+    },
+    {
+     "name": "sunglasses_pile",
+     "url": "https://www.flickr.com/photos/28201220@N07/4155302478/",
+     "author": "bag_lady",
+     "license": "All Rights Reserved"
+    }
+   ]
+  },
+  "C": {
+   "file": "spread_C_face_hair_skin_2048x1448.jpg",
+   "left": {
+    "category": "face_hair",
+    "title": "หน้าตา ทรงผม",
+    "slots": [
+     {
+      "id": "face_hair_1",
+      "render": {
+       "x": 56,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 56,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 56,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 56,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 305,
+       "y": 590
+      },
+      "hit": {
+       "x": 56,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "face_hair_2",
+      "render": {
+       "x": 367,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 367,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 367,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 367,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 616,
+       "y": 590
+      },
+      "hit": {
+       "x": 367,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "face_hair_3",
+      "render": {
+       "x": 678,
+       "y": 560,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 678,
+       "y": 816,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 678,
+       "y": 854,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 678,
+       "y": 891,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 928,
+       "y": 590
+      },
+      "hit": {
+       "x": 678,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "face_hair_4",
+      "render": {
+       "x": 56,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 56,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 56,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 56,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 305,
+       "y": 989
+      },
+      "hit": {
+       "x": 56,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "face_hair_5",
+      "render": {
+       "x": 367,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 367,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 367,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 367,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 616,
+       "y": 989
+      },
+      "hit": {
+       "x": 367,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "face_hair_6",
+      "render": {
+       "x": 678,
+       "y": 959,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 678,
+       "y": 1215,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 678,
+       "y": 1253,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 678,
+       "y": 1290,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 928,
+       "y": 989
+      },
+      "hit": {
+       "x": 678,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     }
+    ]
+   },
+   "right": {
+    "category": "skin",
+    "title": "สีผิว",
+    "slots": [
+     {
+      "id": "skin_1",
+      "render": {
+       "x": 1080,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1080,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1080,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1080,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1329,
+       "y": 590
+      },
+      "hit": {
+       "x": 1080,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "skin_2",
+      "render": {
+       "x": 1391,
+       "y": 560,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1391,
+       "y": 816,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1391,
+       "y": 854,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1391,
+       "y": 891,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1640,
+       "y": 590
+      },
+      "hit": {
+       "x": 1391,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "skin_3",
+      "render": {
+       "x": 1702,
+       "y": 560,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 1702,
+       "y": 816,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 846
+      },
+      "name_en": {
+       "x": 1702,
+       "y": 854,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 872,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1702,
+       "y": 891,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 931
+      },
+      "sticker_anchor": {
+       "x": 1952,
+       "y": 590
+      },
+      "hit": {
+       "x": 1702,
+       "y": 560,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "skin_4",
+      "render": {
+       "x": 1080,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1080,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1080,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1080,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1329,
+       "y": 989
+      },
+      "hit": {
+       "x": 1080,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "skin_5",
+      "render": {
+       "x": 1391,
+       "y": 959,
+       "w": 289,
+       "h": 248
+      },
+      "name": {
+       "x": 1391,
+       "y": 1215,
+       "w": 289,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1391,
+       "y": 1253,
+       "w": 289,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1391,
+       "y": 1290,
+       "w": 289,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1640,
+       "y": 989
+      },
+      "hit": {
+       "x": 1391,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     },
+     {
+      "id": "skin_6",
+      "render": {
+       "x": 1702,
+       "y": 959,
+       "w": 290,
+       "h": 248
+      },
+      "name": {
+       "x": 1702,
+       "y": 1215,
+       "w": 290,
+       "h": 38,
+       "font": "NotoSansThaiLooped@800",
+       "size": 26,
+       "color": "#1A1A1A",
+       "baseline": 1245
+      },
+      "name_en": {
+       "x": 1702,
+       "y": 1253,
+       "w": 290,
+       "h": 24,
+       "font": "Trirong-Bold",
+       "size": 16,
+       "color": "#555555",
+       "baseline": 1271,
+       "tracking_px": 1
+      },
+      "price": {
+       "x": 1702,
+       "y": 1290,
+       "w": 290,
+       "h": 44,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 38,
+       "color": "#D7262E",
+       "baseline": 1330
+      },
+      "sticker_anchor": {
+       "x": 1952,
+       "y": 989
+      },
+      "hit": {
+       "x": 1702,
+       "y": 959,
+       "w": 289,
+       "h": 377
+      }
+     }
+    ]
+   },
+   "player_polaroid": {
+    "x": 640,
+    "y": 150,
+    "w": 370,
+    "h": 426,
+    "window": {
+     "x": 682,
+     "y": 192,
+     "w": 264,
+     "h": 272
+    },
+    "rotation_deg": 3.0,
+    "note": "polaroid baked in; paste the player render into 'window' (rotate +3deg around its centre)"
+   },
+   "photos": [
+    {
+     "name": "barber_chairs",
+     "url": "https://www.flickr.com/photos/162221761@N05/44209754700/",
+     "author": "Fabio Ferlito",
+     "license": "All Rights Reserved"
+    },
+    {
+     "name": "foundation_swatches",
+     "url": "https://www.flickr.com/photos/132546933@N07/21082342265/",
+     "author": "mineral botanica",
+     "license": "All Rights Reserved"
+    }
+   ]
+  }
+ },
+ "tabs": {
+  "tops": {
+   "file": "tabs/tab_tops.png",
+   "label": "เสื้อ",
+   "spread": "A",
+   "x": 1978,
+   "y": 150,
+   "w": 210,
+   "h": 128,
+   "hit": {
+    "x": 2044,
+    "y": 155,
+    "w": 140,
+    "h": 114
+   },
+   "note": "tab sticks out past the right page edge: x is where its adhesive end sits under the page; pull it 12px further out when active"
+  },
+  "bottoms": {
+   "file": "tabs/tab_bottoms.png",
+   "label": "กางเกง",
+   "spread": "A",
+   "x": 1978,
+   "y": 278,
+   "w": 210,
+   "h": 128,
+   "hit": {
+    "x": 2044,
+    "y": 283,
+    "w": 140,
+    "h": 114
+   },
+   "note": "tab sticks out past the right page edge: x is where its adhesive end sits under the page; pull it 12px further out when active"
+  },
+  "shoes": {
+   "file": "tabs/tab_shoes.png",
+   "label": "รองเท้า",
+   "spread": "B",
+   "x": 1978,
+   "y": 406,
+   "w": 210,
+   "h": 128,
+   "hit": {
+    "x": 2044,
+    "y": 411,
+    "w": 140,
+    "h": 114
+   },
+   "note": "tab sticks out past the right page edge: x is where its adhesive end sits under the page; pull it 12px further out when active"
+  },
+  "accessories": {
+   "file": "tabs/tab_accessories.png",
+   "label": "เครื่องประดับ",
+   "spread": "B",
+   "x": 1978,
+   "y": 534,
+   "w": 210,
+   "h": 128,
+   "hit": {
+    "x": 2044,
+    "y": 539,
+    "w": 140,
+    "h": 114
+   },
+   "note": "tab sticks out past the right page edge: x is where its adhesive end sits under the page; pull it 12px further out when active"
+  },
+  "face_hair": {
+   "file": "tabs/tab_face_hair.png",
+   "label": "หน้า/ผม",
+   "spread": "C",
+   "x": 1978,
+   "y": 662,
+   "w": 210,
+   "h": 128,
+   "hit": {
+    "x": 2044,
+    "y": 667,
+    "w": 140,
+    "h": 114
+   },
+   "note": "tab sticks out past the right page edge: x is where its adhesive end sits under the page; pull it 12px further out when active"
+  },
+  "skin": {
+   "file": "tabs/tab_skin.png",
+   "label": "สีผิว",
+   "spread": "C",
+   "x": 1978,
+   "y": 790,
+   "w": 210,
+   "h": 128,
+   "hit": {
+    "x": 2044,
+    "y": 795,
+    "w": 140,
+    "h": 114
+   },
+   "note": "tab sticks out past the right page edge: x is where its adhesive end sits under the page; pull it 12px further out when active"
+  }
+ },
+ "parts": {
+  "polaroid_your_look.png": {
+   "window_local": {
+    "x": 42,
+    "y": 42,
+    "w": 264,
+    "h": 272
+   },
+   "rotation_deg": 3.0,
+   "size": {
+    "w": 370,
+    "h": 426
+   }
+  }
+ },
+ "skin_tones": {
+  "note": "suggested swatch chips for the skin page (game colours)",
+  "tones": [
+   {
+    "th": "ขาวอมชมพู",
+    "hex": "#F1C9A8"
+   },
+   {
+    "th": "ขาวเหลือง",
+    "hex": "#E9C08F"
+   },
+   {
+    "th": "สองสี",
+    "hex": "#C98E5E"
+   },
+   {
+    "th": "แทนแดดไทย",
+    "hex": "#A86B43"
+   },
+   {
+    "th": "คล้ำเข้ม",
+    "hex": "#7A4A2C"
+   },
+   {
+    "th": "เข้มมาก",
+    "hex": "#55321F"
+   }
+  ]
+ },
+ "fonts": {
+  "rule": "LOOPED Thai fonts only",
+  "headline": "Trirong-Black",
+  "pullquote": "Taviraj-Bold",
+  "item_name": "NotoSansThaiLooped@800",
+  "price": "NotoSansThaiLooped@900 + font-stretch 75%",
+  "latin": "Trirong-Bold (tracking)",
+  "hand": "Sriracha-Regular (tabs, polaroid label)"
+ },
+ "render_hints": {
+  "item_renders": "render each clothing item on transparent bg, paste into slot.render with object-fit: contain, add a soft contact shadow; then multiply-blend a 6% paper grain (paper_glossy_1024.jpg) over it so it sits in the print",
+  "selected": "draw marks/marker_circle.png over the selected slot (scale to slot.hit) and optionally marks/marker_note_this.png",
+  "stickers": "stickers/*.png at slot.sticker_anchor (centre), random rotation -10..10 deg",
+  "material": "three.js: MeshPhysicalMaterial({map: spread, roughnessMap: paper_glossy_roughness_1024 (repeat 2,1.4), roughness:0.35, clearcoat:0.6, clearcoatRoughness:0.25, normalMap: spread_normal}); overlay spread_gutter_shadow if the spread is drawn flat"
+ },
+ "photo_sources": {
+  "barber_chairs": {
+   "url": "https://www.flickr.com/photos/162221761@N05/44209754700/",
+   "author": "Fabio Ferlito",
+   "license": "All Rights Reserved"
+  },
+  "clothes_alley2": {
+   "url": "https://www.flickr.com/photos/47769024@N06/35964614276/",
+   "author": "David Yap",
+   "license": "All Rights Reserved"
+  },
+  "clothes_alley_pratunam": {
+   "url": "https://www.flickr.com/photos/47769024@N06/35873132281/",
+   "author": "David Yap",
+   "license": "All Rights Reserved"
+  },
+  "clothes_mannequins": {
+   "url": "https://www.flickr.com/photos/41162375@N00/610009329/",
+   "author": "Matthew Klein",
+   "license": "CC BY-NC-ND 2.0"
+  },
+  "dress_stall_cc0": {
+   "url": "https://www.flickr.com/photos/52775988@N00/55594304446/",
+   "author": "Mussi Katz",
+   "license": "CC0 1.0"
+  },
+  "foundation_swatches": {
+   "url": "https://www.flickr.com/photos/132546933@N07/21082342265/",
+   "author": "mineral botanica",
+   "license": "All Rights Reserved"
+  },
+  "shoe_wall": {
+   "url": "https://www.flickr.com/photos/47769024@N06/35964597596/",
+   "author": "David Yap",
+   "license": "All Rights Reserved"
+  },
+  "sticky_note": {
+   "url": "https://www.flickr.com/photos/40557724@N07/51925251577/",
+   "author": "1Q89",
+   "license": "All Rights Reserved"
+  },
+  "sunglasses_pile": {
+   "url": "https://www.flickr.com/photos/28201220@N07/4155302478/",
+   "author": "bag_lady",
+   "license": "All Rights Reserved"
+  },
+  "talat_noi_mural_cc0": {
+   "url": "https://www.flickr.com/photos/52775988@N00/55591634412/",
+   "author": "Mussi Katz",
+   "license": "CC0 1.0"
+  },
+  "tshirt_pile": {
+   "url": "https://www.flickr.com/photos/21691610@N02/3236950844/",
+   "author": "adrianling1",
+   "license": "All Rights Reserved"
+  }
+ }
+}

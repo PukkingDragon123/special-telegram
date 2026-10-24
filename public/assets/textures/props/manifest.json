@@ -1,0 +1,427 @@
+{
+ "note": "Prop textures (real photos + CC0 scans). *_n = OpenGL normal map, *_r = roughness. Tiles are seamless unless noted.",
+ "textures": [
+  {
+   "name": "bowl_rooster_side",
+   "files": [
+    "bowl_rooster_side.jpg"
+   ],
+   "purpose": "ชามตราไก่ rooster bowl: exterior side band (u = angle, v = rim->foot)",
+   "alpha": false,
+   "size": [
+    1024,
+    359
+   ],
+   "notes": "Conical (frustum) unwrap of a real rooster-bowl photo; covers ~130 deg — mirror/repeat for the back, or keep the rooster on the front. Inside of the bowl: plain white with a red rim line.",
+   "sources": [
+    {
+     "file": "realprod/rooster_bowl/rooster_bowl_08.jpg",
+     "image_url": "https://down-th.img.susercontent.com/file/6c7952db359fbd2872016e4019afd97e",
+     "page_url": "https://shopee.co.th/%F0%9F%8D%9C%E0%B8%96%E0%B9%89%E0%B8%A7%E0%B8%A2-%E0%B8%8A%E0%B8%B2%E0%B8%A1-%E0%B8%95%E0%B8%A3%E0%B8%B2%E0%B9%84%E0%B8%81%E0%B9%88-%E0%B8%A5%E0%B8%B3%E0%B8%9B%E0%B8%B2%E0%B8%87-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94-8-7-6-5-%E0%B8%99%E0%B8%B4%E0%B9%89%E0%B8%A7%F0%9F%8D%9C-i.153280002.4231593711",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    }
+   ]
+  },
+  {
+   "name": "cardboard",
+   "files": [
+    "cardboard_corrugated_tile.jpg",
+    "cardboard_corrugated_tile_n.jpg",
+    "cardboard_mat_mama.jpg",
+    "carton_chang_side_face.jpg",
+    "cardboard_mat_chang.jpg",
+    "cardboard_mat_plain.jpg",
+    "foam_mat_dirty.jpg"
+   ],
+   "purpose": "corrugated cardboard + flattened brand cartons to sleep on (Mama noodles, Chang beer, plain)",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "cardboard_corrugated_tile: CC0 ambientCG Cardboard003. Sleeping mats: real carton prints (Mama, Chang) perspective-flattened from product photos, multiplied onto corrugated kraft, plus fold creases, dirt, grease rings and flip-flop prints (edited). cardboard_mat_plain has marker scribbles (Thai, looped handwriting font Sriracha). foam_mat_dirty: dirty styrofoam sheet.",
+   "sources": [
+    {
+     "asset": "Cardboard003",
+     "url": "https://ambientcg.com/view?id=Cardboard003",
+     "licence": "CC0 1.0"
+    },
+    {
+     "file": "realprod/mama_carton/mama_carton_07.jpg",
+     "image_url": "https://th-test-11.slatic.net/p/f0b6115e3361f513add64d1ac5086aba.jpg",
+     "page_url": "https://thaipick.com/product/lazada/3084175",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    },
+    {
+     "file": "realprod/beer_carton_brown/beer_carton_brown_01.jpg",
+     "image_url": "https://biermomentje.nl/wp-content/uploads/2026/03/chang-620-doos.jpg",
+     "page_url": "https://biermomentje.nl/product/chang-bier-12-st/",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    },
+    {
+     "asset": "Styrofoam004",
+     "url": "https://ambientcg.com/view?id=Styrofoam004",
+     "licence": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "name": "glass_grime",
+   "files": [
+    "glass_grime_overlay.png"
+   ],
+   "purpose": "grime overlay for the cart's glass display box (dust, fingerprints, grease smears, drips)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "RGBA overlay built from CC0 ambientCG Fingerprints002, Smear002 and SurfaceImperfections003/015 masks; put on a second plane / decal over the glass. Alpha = grime amount.",
+   "sources": [
+    {
+     "asset": "Fingerprints002",
+     "url": "https://ambientcg.com/view?id=Fingerprints002",
+     "licence": "CC0 1.0"
+    },
+    {
+     "asset": "Smear002",
+     "url": "https://ambientcg.com/view?id=Smear002",
+     "licence": "CC0 1.0"
+    },
+    {
+     "asset": "SurfaceImperfections003",
+     "url": "https://ambientcg.com/view?id=SurfaceImperfections003",
+     "licence": "CC0 1.0"
+    },
+    {
+     "asset": "SurfaceImperfections015",
+     "url": "https://ambientcg.com/view?id=SurfaceImperfections015",
+     "licence": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "name": "lpg_paint",
+   "files": [
+    "lpg_paint_red_tile.jpg",
+    "lpg_paint_blue_tile.jpg",
+    "lpg_paint_tile_n.jpg",
+    "lpg_paint_tile_r.jpg"
+   ],
+   "purpose": "LPG cylinder painted steel (scratched enamel): red and World-Gas blue",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "CC0 ambientCG PaintedMetal004 (scratched red paint, silver scratches) and a hue-shifted blue; pair with img/labels/lpg_cylinder_world_gas.png for the logo band.",
+   "sources": [
+    {
+     "asset": "PaintedMetal004",
+     "url": "https://ambientcg.com/view?id=PaintedMetal004",
+     "licence": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "name": "melamine_plates",
+   "files": [
+    "plate_rooster_green_rim.png",
+    "plate_floral_rim.png",
+    "plate_blue_white.png",
+    "plate_white_chipped.png"
+   ],
+   "purpose": "melamine / ceramic plates (top view, alpha): rooster + green vine rim, floral rim, blue & white, plain white chipped",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Real Thai plate photos rectified to circles. plate_white_chipped adds rim chips, cutlery scratches and curry stains (edited). Map planar onto the plate top; the rim fades to transparent outside the plate.",
+   "sources": [
+    {
+     "file": "propsrc/melamine_green_rim/melamine_green_rim_06.jpg",
+     "image_url": "https://down-th.img.susercontent.com/file/sg-11134201-7ra3c-mbeototbgj1e22",
+     "page_url": "https://shopee.co.th/%E0%B8%88%E0%B8%B2%E0%B8%99%E0%B9%80%E0%B8%A1%E0%B8%A5%E0%B8%B2%E0%B8%A1%E0%B8%B5%E0%B8%99-6%E0%B9%83%E0%B8%9A-%E0%B8%88%E0%B8%B2%E0%B8%99%E0%B9%80%E0%B8%A1%E0%B8%A5%E0%B8%B2%E0%B8%A1%E0%B8%B5%E0%B8%99%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%AB%E0%B8%99%E0%B8%B2-%E0%B8%88%E0%B8%B2%E0%B8%99-9-%E0%B8%99%E0%B8%B4%E0%B9%89%E0%B8%A7-6%E0%B9%83%E0%B8%9A-%E0%B8%A5%E0%B8%B2%E0%B8%A2%E0%B9%84%E0%B8%81%E0%B9%88%E0%B8%82%E0%B8%AD%E0%B8%9A%E0%B9%80%E0%B8%82%E0%B8%B5%E0%B8%A2%E0%B8%A7-i.130327693.40855965507",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    },
+    {
+     "file": "realprod/melamine_leaf/melamine_leaf_01.jpg",
+     "image_url": "https://th-test-11.slatic.net/p/e0a06d8567fa697c8c464bee986f2e82.jpg",
+     "page_url": "https://thaipick.com/product/lazada/3323938",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    },
+    {
+     "file": "realprod/melamine_blue/melamine_blue_01.jpg",
+     "image_url": "https://th-test-11.slatic.net/p/89d3e9c8f9b0d1cde202095bd96c324f.jpg",
+     "page_url": "https://www.lazada.co.th/products/12-89-i4272648888.html",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    },
+    {
+     "file": "realprod/melamine_white/melamine_white_05.jpg",
+     "image_url": "https://cb2.scene7.com/is/image/CB2/PebbleWhtMlmnSaladPlateSHS24?$web_pdp_main_carousel_med$",
+     "page_url": "https://www.cb2.com/pebble-white-melamine-salad-plate/s678190",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    }
+   ]
+  },
+  {
+   "name": "plastic_film_clear",
+   "files": [
+    "plastic_film_clear.png",
+    "plastic_film_clear_n.jpg"
+   ],
+   "purpose": "clear PE/PP plastic bag film (ถุงแกง / ถุงร้อน, ice bags): crinkle highlights",
+   "alpha": true,
+   "size": [
+    512,
+    512
+   ],
+   "notes": "From a real photo of clear plastic bags. PNG alpha = highlight/crinkle opacity (use with a transparent material, low opacity base); *_n = crinkle normal map.",
+   "sources": [
+    {
+     "file": "propsrc/plastic_crumpled/plastic_crumpled_01.jpg",
+     "image_url": "https://laz-img-sg.alicdn.com/p/7cae93920e681e516026aff385bfb2ef.jpg",
+     "page_url": "https://thaipick.com/product/lazada/2968377",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    }
+   ]
+  },
+  {
+   "name": "plastic_stool",
+   "files": [
+    "plastic_pp_blue.jpg",
+    "plastic_pp_red.jpg",
+    "plastic_pp_n.jpg",
+    "plastic_pp_r.jpg",
+    "stool_band_floral_blue.jpg",
+    "stool_band_floral_red.jpg",
+    "stool_logo_esqube.png"
+   ],
+   "purpose": "red / blue PP plastic (stools, tables, tubs) + real stool embossed band & logo",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Colour from real Thai plastic stools; micro-surface from CC0 ambientCG Plastic010 (normal/roughness). stool_band_floral_*: cylindrical unwrap of a real stool's embossed floral band (red = hue-shifted). stool_logo_esqube.png: real moulded-in logo label (alpha).",
+   "sources": [
+    {
+     "file": "realprod/stool_blue/stool_blue_04.jpg",
+     "image_url": "https://cdn.chinamartdubai.com/uploads/2025/01/71jmlcyyvol._ac_sl1500_.jpg",
+     "page_url": "https://chinamartdubai.com/product/esqube-lilly-plastic-compact-step-stool-blue-color/",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    },
+    {
+     "asset": "Plastic010",
+     "url": "https://ambientcg.com/view?id=Plastic010",
+     "licence": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "name": "pp_woven_sack",
+   "files": [
+    "pp_woven_sack_white_tile.jpg",
+    "pp_woven_sack_tile_n.jpg",
+    "pp_woven_sack_natural_tile.jpg"
+   ],
+   "purpose": "woven polypropylene sack fabric (rice / fertiliser sacks), white and natural",
+   "alpha": false,
+   "size": [
+    512,
+    512
+   ],
+   "notes": "Seamless tile from a real woven-PP fabric macro photo (flat region, watermark excluded); *_natural = beige-green recycled-PP tint (fertiliser / market sacks).",
+   "sources": [
+    {
+     "file": "propsrc/pp_woven_macro/pp_woven_macro_06.jpg",
+     "image_url": "https://image.made-in-china.com/2f0j00JSihcVIrEkuo/PP-Woven-Fabric-for-Packing-and-Bags-White-Green-Bule-Beig-Transparent-Color.jpg",
+     "page_url": "https://wfxinhao.en.made-in-china.com/product/WORtTAUdYVph/China-PP-Woven-Fabric-for-Packing-and-Bags-White-Green-Bule-Beig-Transparent-Color.html",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    }
+   ]
+  },
+  {
+   "name": "rice_cooker_body",
+   "files": [
+    "rice_cooker_body_sharp.jpg"
+   ],
+   "purpose": "big commercial rice cooker body (white enamel, logo + switch)",
+   "alpha": false,
+   "size": [
+    1024,
+    428
+   ],
+   "notes": "Cylindrical unwrap (~130 deg front) of a real Sharp KSH-D1010 10 L commercial rice cooker.",
+   "sources": [
+    {
+     "file": "realprod/rice_cooker_big/rice_cooker_big_03.jpg",
+     "image_url": "https://down-th.img.susercontent.com/file/th-11134207-7r98x-m0007yaa20ld9d",
+     "page_url": "https://shopee.co.th/%E0%B8%AB%E0%B8%A1%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B8%B8%E0%B8%87%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B8%8A%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%9B%E0%B9%80%E0%B8%8A%E0%B8%B4%E0%B8%87%E0%B8%9E%E0%B8%B2%E0%B8%93%E0%B8%B4%E0%B8%8A%E0%B8%A2%E0%B9%8C-%E0%B8%8B%E0%B8%B9%E0%B9%82%E0%B8%A1%E0%B9%88-10-%E0%B8%A5%E0%B8%B4%E0%B8%95%E0%B8%A3-Sharp-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-KSH-D1010-i.93329534.2600611385",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    }
+   ]
+  },
+  {
+   "name": "rubber_hose_orange",
+   "files": [
+    "rubber_hose_orange_tile.jpg",
+    "rubber_hose_tile_n.jpg",
+    "rubber_hose_tile_r.jpg"
+   ],
+   "purpose": "orange LPG rubber hose",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "CC0 ambientCG Rubber004 surface recoloured to the orange of Thai low-pressure LPG hoses.",
+   "sources": [
+    {
+     "asset": "Rubber004",
+     "url": "https://ambientcg.com/view?id=Rubber004",
+     "licence": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "name": "stainless_brushed_dented",
+   "files": [
+    "stainless_brushed_dented.jpg",
+    "stainless_brushed_dented_n.jpg",
+    "stainless_brushed_dented_r.jpg",
+    "stainless_grimy.jpg",
+    "stainless_grimy_r.jpg"
+   ],
+   "purpose": "brushed stainless steel with dents, scratches & grease (cart body, table top)",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Base: ambientCG Metal009 (CC0 brushed-metal scan) + procedural dents/creases in the normal map + CC0 fingerprint/surface-imperfection grime. _n = OpenGL normal, _r = roughness. *_grimy = dirtier variant for the old cart (grease, water stains towards the bottom).",
+   "sources": [
+    {
+     "asset": "Metal009",
+     "url": "https://ambientcg.com/view?id=Metal009",
+     "licence": "CC0 1.0"
+    },
+    {
+     "asset": "Fingerprints002",
+     "url": "https://ambientcg.com/view?id=Fingerprints002",
+     "licence": "CC0 1.0"
+    },
+    {
+     "asset": "SurfaceImperfections015",
+     "url": "https://ambientcg.com/view?id=SurfaceImperfections015",
+     "licence": "CC0 1.0"
+    },
+    {
+     "asset": "Smear002",
+     "url": "https://ambientcg.com/view?id=Smear002",
+     "licence": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "name": "styrofoam",
+   "files": [
+    "styrofoam_tile.jpg",
+    "styrofoam_tile_n.jpg"
+   ],
+   "purpose": "styrofoam (EPS) for food boxes, ice boxes, foam sheets",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "CC0 ambientCG Styrofoam004 (bead texture), slightly warmed.",
+   "sources": [
+    {
+     "asset": "Styrofoam004",
+     "url": "https://ambientcg.com/view?id=Styrofoam004",
+     "licence": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "name": "tamarind_board",
+   "files": [
+    "tamarind_board_top.jpg",
+    "tamarind_board_top_n.jpg",
+    "tamarind_board_top_used.jpg",
+    "tamarind_board_top_used_n.jpg",
+    "tamarind_board_side_tile.jpg",
+    "tamarind_board_side_tile_n.jpg"
+   ],
+   "purpose": "thick round tamarind-wood chopping board (เขียงไม้มะขาม): end-grain top (clean + used), side",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Top: real tamarind board end grain (growth rings, off-centre pith) rectified to a circle, handle rivets inpainted. *_used: + knife scars, chop dents, damp dark centre, meat/chili stains (edited). Side: CC0 ambientCG Wood049 tinted to the tamarind sapwood colour (seamless).",
+   "sources": [
+    {
+     "file": "propsrc/board_used_top/board_used_top_04.jpg",
+     "image_url": "https://down-th.img.susercontent.com/file/th-11134207-7r98p-lxl742xaycwfb3",
+     "page_url": "https://shopee.co.th/%E0%B9%80%E0%B8%82%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%84%E0%B8%A1%E0%B9%89%E0%B8%A1%E0%B8%B0%E0%B8%82%E0%B8%B2%E0%B8%A1%E0%B9%81%E0%B8%97%E0%B9%89100-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%947-8-9-10-11-12%E0%B8%99%E0%B8%B4%E0%B9%89%E0%B8%A7-%E0%B9%81%E0%B8%8A%E0%B9%88%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B9%80%E0%B8%81%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%84%E0%B8%B8%E0%B8%93%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%94%E0%B8%B5-%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B9%83%E0%B8%8A%E0%B9%89%E0%B8%87%E0%B8%B2%E0%B8%99-i.170675458.25033374885",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    },
+    {
+     "asset": "Wood049",
+     "url": "https://ambientcg.com/view?id=Wood049",
+     "licence": "CC0 1.0"
+    }
+   ]
+  },
+  {
+   "name": "wok_black_exterior",
+   "files": [
+    "wok_black_exterior_tile.jpg",
+    "wok_black_exterior_tile_n.jpg"
+   ],
+   "purpose": "black pre-seasoned wok exterior (smooth carbonised steel)",
+   "alpha": false,
+   "size": [
+    512,
+    512
+   ],
+   "notes": "Seamless tile from a real black carbon-steel wok product photo; lighting flattened.",
+   "sources": [
+    {
+     "file": "realprod/wok_inside/wok_inside_07.jpg",
+     "image_url": "https://en-au.yosukata.com/wp-content/uploads/2020/11/WOK_01_3-scaled.jpg",
+     "page_url": "https://en-au.yosukata.com/catalogue/yosukata-black-carbon-steel-wok-pan-14-woks-and-stir-fry-pans-2/",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    }
+   ]
+  },
+  {
+   "name": "wok_carbon_interior",
+   "files": [
+    "wok_carbon_interior_top.jpg",
+    "wok_carbon_interior_top_n.jpg",
+    "wok_carbon_interior_polar.jpg",
+    "wok_carbon_patina_tile.jpg",
+    "wok_carbon_patina_tile_n.jpg"
+   ],
+   "purpose": "seasoned carbon-steel wok interior: top-view disc + polar strip + patina tile",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Real used carbon-steel wok (bronze/blue heat tint, dark seasoned centre). *_top.jpg: rim ellipse rectified to a circle (planar/disc UV). *_polar.jpg: u = angle 0-360 deg, v = radius (top row = centre, bottom = rim) — matches THREE.LatheGeometry UVs. *_tile.jpg: seamless patina. *_n.jpg normal maps (OpenGL).",
+   "sources": [
+    {
+     "file": "realprod/wok_inside/wok_inside_02.jpg",
+     "image_url": "https://i.redd.it/dat3vajef6ma1.jpg",
+     "page_url": "https://storage.googleapis.com/dghjcvsxxlgfke/is-carbon-steel-good-for-a-wok.html",
+     "licence": "unknown (web photo, client instruction 2026-10-19)"
+    }
+   ]
+  }
+ ]
+}

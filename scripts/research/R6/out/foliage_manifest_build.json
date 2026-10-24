@@ -1,0 +1,886 @@
+{
+ "banana_leaf_whole": {
+  "albedo": "banana_leaf_whole/albedo.png",
+  "normal": "banana_leaf_whole/normal.jpg",
+  "pixelSize": [
+   1024,
+   512
+  ],
+  "widthMeters": 2.2,
+  "heightMeters": 1.1,
+  "pivot": [
+   0.0,
+   0.5
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "banana",
+   "leaf",
+   "tropical",
+   "whole",
+   "card"
+  ],
+  "source": "photo: 'File:Starr-130507-4410-Musa acuminata-Cv Rose leaf with deep red vein-Hawea Pl Olinda-Maui (24842962259).jpg'",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:Starr-130507-4410-Musa_acuminata-Cv_Rose_leaf_with_deep_red_vein-Hawea_Pl_Olinda-Maui_(24842962259).jpg",
+  "author": "Forest and Kim Starr",
+  "license": "CC BY 3.0 us",
+  "note": "Leaf base at the left edge (attach to petiole/pseudostem). Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "banana_leaf_torn": {
+  "albedo": "banana_leaf_torn/albedo.png",
+  "normal": "banana_leaf_torn/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.8,
+  "heightMeters": 1.8,
+  "pivot": [
+   0.85,
+   0.15
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "banana",
+   "leaf",
+   "torn",
+   "tattered",
+   "backlit",
+   "tropical",
+   "card"
+  ],
+  "source": "photo: 'File:Starr-141229-3324-Musa x paradisiaca-leaf crinkling showing boron deficiency-Hoku Nui Piiholo-Maui (24954808580).jpg'",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:Starr-141229-3324-Musa_x_paradisiaca-leaf_crinkling_showing_boron_deficiency-Hoku_Nui_Piiholo-Maui_(24954808580).jpg",
+  "author": "Forest and Kim Starr",
+  "license": "CC BY 3.0 us",
+  "note": "Wind-shredded banana leaf seen from below; midrib runs to the lower right. Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "bamboo_leaves_branch": {
+  "albedo": "bamboo_leaves_branch/albedo.png",
+  "normal": "bamboo_leaves_branch/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.6,
+  "heightMeters": 1.6,
+  "pivot": [
+   1.0,
+   0.75
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "bamboo",
+   "leaves",
+   "branch",
+   "rural",
+   "canal",
+   "card"
+  ],
+  "source": "photo: 'Bamboo Sky'",
+  "sourceUrl": "https://www.flickr.com/photos/24934185@N00/26718658",
+  "author": "pfly",
+  "license": "CC BY-SA 2.0",
+  "note": "Branch enters from the right edge. Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "bamboo_leaves_spray": {
+  "albedo": "bamboo_leaves_spray/albedo.png",
+  "normal": "bamboo_leaves_spray/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.4,
+  "heightMeters": 1.2,
+  "pivot": [
+   0.5,
+   0.0
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "bamboo",
+   "leaves",
+   "spray",
+   "bush",
+   "card"
+  ],
+  "source": "photo: 'Bamboo leaves'",
+  "sourceUrl": "https://www.flickr.com/photos/34714188@N06/3569124547",
+  "author": "Rafiq Mirza",
+  "license": "CC BY-SA 2.0",
+  "note": "Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "coconut_frond": {
+  "albedo": "coconut_frond/albedo.png",
+  "normal": "coconut_frond/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 3.0,
+  "heightMeters": 3.0,
+  "pivot": [
+   0.2,
+   1.0
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "coconut",
+   "palm",
+   "frond",
+   "leaflets",
+   "tropical",
+   "card"
+  ],
+  "source": "photo: 'File:Starr-140909-1761-Cocos nucifera-leaves with Omiodes blackburni feeding damage-Wailua-Maui (25245875635).jpg'",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:Starr-140909-1761-Cocos_nucifera-leaves_with_Omiodes_blackburni_feeding_damage-Wailua-Maui_(25245875635).jpg",
+  "author": "Forest and Kim Starr",
+  "license": "CC BY 3.0 us",
+  "note": "Hanging coconut frond leaflets against the sky (frond enters from the top-left). Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "coconut_palm_crown": {
+  "albedo": "coconut_palm_crown/albedo.png",
+  "normal": "coconut_palm_crown/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 7.0,
+  "heightMeters": 7.0,
+  "pivot": [
+   0.5,
+   0.02
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "coconut",
+   "palm",
+   "tree",
+   "crown",
+   "distant",
+   "billboard",
+   "tropical"
+  ],
+  "source": "photo: 'Mawa Coconut Tree In Malaysia (MYD x WAT)'",
+  "sourceUrl": "https://www.flickr.com/photos/26978304@N08/5496582087",
+  "author": "thienzieyung",
+  "license": "CC BY 2.0",
+  "note": "Complete coconut palm crown (Malaysian roadside palm); pivot = top of trunk, pair with a trunk mesh using polyhaven palm_bark. Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "bougainvillea_branch": {
+  "albedo": "bougainvillea_branch/albedo.png",
+  "normal": "bougainvillea_branch/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.0,
+  "heightMeters": 1.0,
+  "pivot": [
+   0.1,
+   1.0
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "bougainvillea",
+   "flowers",
+   "magenta",
+   "pink",
+   "branch",
+   "wall-top",
+   "card"
+  ],
+  "source": "photo: 'File:Sky Flower 1.jpg'",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sky_Flower_1.jpg",
+  "author": "Mauz Shaikh",
+  "license": "CC BY-SA 4.0",
+  "note": "Magenta bougainvillea spray hanging from the top-left. Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "bougainvillea_cluster": {
+  "albedo": "bougainvillea_cluster/albedo.png",
+  "normal": "bougainvillea_cluster/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.6,
+  "heightMeters": 1.6,
+  "pivot": [
+   0.0,
+   0.5
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "bougainvillea",
+   "flowers",
+   "magenta",
+   "bush",
+   "dense",
+   "card"
+  ],
+  "source": "photo: 'File:Mauve on Blue - Flickr - AdaMacey.jpg'",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mauve_on_Blue_-_Flickr_-_AdaMacey.jpg",
+  "author": "AdaMacey from Brisbane (-27.470963,153.026505), Australia",
+  "license": "CC BY 2.0",
+  "note": "Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "bougainvillea_red": {
+  "albedo": "bougainvillea_red/albedo.png",
+  "normal": "bougainvillea_red/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.4,
+  "heightMeters": 1.4,
+  "pivot": [
+   0.5,
+   0.0
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "bougainvillea",
+   "flowers",
+   "red",
+   "bush",
+   "card"
+  ],
+  "source": "photo: 'File:Rose Flower with blue sky.jpg'",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rose_Flower_with_blue_sky.jpg",
+  "author": "Faris Gamal Ahmed",
+  "license": "CC BY-SA 4.0",
+  "note": "Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "morning_glory_vine": {
+  "albedo": "morning_glory_vine/albedo.png",
+  "normal": "morning_glory_vine/normal.jpg",
+  "pixelSize": [
+   1024,
+   512
+  ],
+  "widthMeters": 1.0,
+  "heightMeters": 0.5,
+  "pivot": [
+   0.5,
+   0.5
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "morning-glory",
+   "ipomoea",
+   "vine",
+   "flower",
+   "blue",
+   "fence",
+   "chain-link",
+   "card"
+  ],
+  "source": "photo: '0808A11'",
+  "sourceUrl": "https://www.flickr.com/photos/21050990@N03/3690080442",
+  "author": "syntheticaperture",
+  "license": "CC BY 2.0",
+  "note": "Morning glory twining on a rusty chain-link fence (wire included). Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "hanging_vines_ivy": {
+  "albedo": "hanging_vines_ivy/albedo.png",
+  "normal": "hanging_vines_ivy/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.5,
+  "heightMeters": 1.5,
+  "pivot": [
+   0.5,
+   1.0
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "vines",
+   "ivy",
+   "hanging",
+   "wall",
+   "gate",
+   "card"
+  ],
+  "source": "photo: 'Diese Aufforderung gilt ausdrücklich nicht für Grünzeug'",
+  "sourceUrl": "https://www.flickr.com/photos/60565771@N04/6052357799",
+  "author": "MaretH.",
+  "license": "CC BY 2.0",
+  "note": "Ivy curtain hanging from a wall top (pivot = top centre). Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "hanging_vines_cascade": {
+  "albedo": "hanging_vines_cascade/albedo.png",
+  "normal": "hanging_vines_cascade/normal.jpg",
+  "pixelSize": [
+   512,
+   1024
+  ],
+  "widthMeters": 0.6,
+  "heightMeters": 1.2,
+  "pivot": [
+   0.5,
+   1.0
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "vines",
+   "hanging",
+   "cascade",
+   "wall",
+   "balcony",
+   "card"
+  ],
+  "source": "photo: 'Jiaogulan (Gynostemma pentaphyllum)'",
+  "sourceUrl": "https://www.flickr.com/photos/47439717@N05/6452197391",
+  "author": "blumenbiene",
+  "license": "CC BY 2.0",
+  "note": "Creeper cascading down a wall from a planter (pivot = top centre). Cut out from a real photo; normal map derived from photo luminance."
+ },
+ "grass_clump_low": {
+  "albedo": "grass_clump_low/albedo.png",
+  "normal": "grass_clump_low/normal.jpg",
+  "pixelSize": [
+   1024,
+   512
+  ],
+  "widthMeters": 0.9,
+  "heightMeters": 0.45,
+  "pivot": [
+   0.5,
+   0.0
+  ],
+  "alphaTest": 0.45,
+  "tags": [
+   "grass",
+   "clump",
+   "bermuda",
+   "lawn-edge",
+   "roadside",
+   "low"
+  ],
+  "source": "polyhaven:grass_bermuda_01",
+  "sourceUrl": "https://polyhaven.com/a/grass_bermuda_01",
+  "license": "CC0",
+  "author": "Poly Haven (see credits)"
+ },
+ "grass_tall_tuft": {
+  "albedo": "grass_tall_tuft/albedo.png",
+  "normal": "grass_tall_tuft/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 0.9,
+  "heightMeters": 0.9,
+  "pivot": [
+   0.5,
+   0.0
+  ],
+  "alphaTest": 0.4,
+  "tags": [
+   "grass",
+   "tall",
+   "tuft",
+   "empty-lot",
+   "canal-bank",
+   "rural"
+  ],
+  "source": "ambientcg:Foliage001 + polyhaven:grass_medium_02",
+  "sourceUrl": "https://ambientcg.com/a/Foliage001 ; https://polyhaven.com/a/grass_medium_02",
+  "license": "CC0",
+  "author": "ambientCG + Poly Haven"
+ },
+ "weeds_roadside": {
+  "albedo": "weeds_roadside/albedo.png",
+  "normal": "weeds_roadside/normal.jpg",
+  "pixelSize": [
+   1024,
+   512
+  ],
+  "widthMeters": 1.2,
+  "heightMeters": 0.6,
+  "pivot": [
+   0.5,
+   0.0
+  ],
+  "alphaTest": 0.45,
+  "tags": [
+   "weeds",
+   "roadside",
+   "empty-lot",
+   "pavement-crack",
+   "mixed"
+  ],
+  "source": "polyhaven:weed_plant_02 + polyhaven:nettle_plant + polyhaven:shrub_sorrel_01 + ambientcg:Foliage006",
+  "sourceUrl": "https://polyhaven.com/a/weed_plant_02 ; https://polyhaven.com/a/nettle_plant ; https://polyhaven.com/a/shrub_sorrel_01 ; https://ambientcg.com/a/Foliage006",
+  "license": "CC0",
+  "author": "Poly Haven + ambientCG"
+ },
+ "grass_dry_seedheads": {
+  "albedo": "grass_dry_seedheads/albedo.png",
+  "normal": "grass_dry_seedheads/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.0,
+  "heightMeters": 1.0,
+  "pivot": [
+   0.5,
+   0.0
+  ],
+  "alphaTest": 0.35,
+  "tags": [
+   "grass",
+   "dry",
+   "seed-heads",
+   "hot-season",
+   "empty-lot",
+   "rural"
+  ],
+  "source": "ambientcg:Foliage002 + ambientcg:Foliage003 + ambientcg:Foliage004 + ambientcg:Foliage007",
+  "sourceUrl": "https://ambientcg.com/a/Foliage002 ; https://ambientcg.com/a/Foliage003 ; https://ambientcg.com/a/Foliage004 ; https://ambientcg.com/a/Foliage007",
+  "license": "CC0",
+  "author": "ambientCG (Lennart Demes)",
+  "note": "Re-coloured to sun-dried straw."
+ },
+ "rice_clump_young": {
+  "albedo": "rice_clump_young/albedo.png",
+  "normal": "rice_clump_young/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 0.7,
+  "heightMeters": 0.8,
+  "pivot": [
+   0.5,
+   0.0
+  ],
+  "alphaTest": 0.4,
+  "tags": [
+   "rice",
+   "paddy",
+   "rural",
+   "field",
+   "young",
+   "green"
+  ],
+  "source": "ambientcg:Foliage001 + ambientcg:Foliage008",
+  "sourceUrl": "https://ambientcg.com/a/Foliage001 ; https://ambientcg.com/a/Foliage008",
+  "license": "CC0",
+  "author": "ambientCG (Lennart Demes)",
+  "note": "Composed rice clump: grass blades re-coloured."
+ },
+ "rice_clump_ripe": {
+  "albedo": "rice_clump_ripe/albedo.png",
+  "normal": "rice_clump_ripe/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 0.7,
+  "heightMeters": 0.9,
+  "pivot": [
+   0.5,
+   0.0
+  ],
+  "alphaTest": 0.4,
+  "tags": [
+   "rice",
+   "paddy",
+   "rural",
+   "field",
+   "ripe",
+   "golden",
+   "harvest"
+  ],
+  "source": "ambientcg:Foliage001 + ambientcg:Foliage008 + ambientcg:Foliage002",
+  "sourceUrl": "https://ambientcg.com/a/Foliage001 ; https://ambientcg.com/a/Foliage008 ; https://ambientcg.com/a/Foliage002",
+  "license": "CC0",
+  "author": "ambientCG (Lennart Demes)",
+  "note": "Composed rice clump: grass blades re-coloured, grass panicles re-coloured gold and drooping."
+ },
+ "canopy_broadleaf": {
+  "albedo": "canopy_broadleaf/albedo.png",
+  "normal": "canopy_broadleaf/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 3.0,
+  "heightMeters": 3.0,
+  "pivot": [
+   0.5,
+   0.2
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "tree",
+   "canopy",
+   "card",
+   "tropical",
+   "broadleaf",
+   "street-tree"
+  ],
+  "source": "polyhaven:island_tree_01 + polyhaven:island_tree_02",
+  "sourceUrl": "https://polyhaven.com/a/island_tree_01 ; https://polyhaven.com/a/island_tree_02",
+  "license": "CC0",
+  "author": "Poly Haven / ambientCG (see credits)",
+  "note": "Glossy broadleaf street tree canopy cluster."
+ },
+ "canopy_smallleaf": {
+  "albedo": "canopy_smallleaf/albedo.png",
+  "normal": "canopy_smallleaf/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 3.0,
+  "heightMeters": 3.0,
+  "pivot": [
+   0.5,
+   0.2
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "tree",
+   "canopy",
+   "card",
+   "tropical",
+   "small-leaf",
+   "shrub-tree"
+  ],
+  "source": "polyhaven:tree_small_02",
+  "sourceUrl": "https://polyhaven.com/a/tree_small_02",
+  "license": "CC0",
+  "author": "Poly Haven / ambientCG (see credits)",
+  "note": "Small-leaved tree / hedge-tree canopy cluster."
+ },
+ "canopy_feathery": {
+  "albedo": "canopy_feathery/albedo.png",
+  "normal": "canopy_feathery/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 3.0,
+  "heightMeters": 3.0,
+  "pivot": [
+   0.5,
+   0.2
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "tree",
+   "canopy",
+   "card",
+   "tropical",
+   "feathery",
+   "bipinnate",
+   "rain-tree",
+   "flame-tree",
+   "tamarind"
+  ],
+  "source": "polyhaven:jacaranda_tree",
+  "sourceUrl": "https://polyhaven.com/a/jacaranda_tree",
+  "license": "CC0",
+  "author": "Poly Haven / ambientCG (see credits)",
+  "note": "Bipinnate foliage (reads as rain tree / flame tree / tamarind)."
+ },
+ "potted_leaves_atlas": {
+  "albedo": "potted_leaves_atlas/albedo.png",
+  "normal": "potted_leaves_atlas/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "type": "atlas",
+  "widthMeters": null,
+  "heightMeters": null,
+  "pivot": null,
+  "alphaTest": 0.5,
+  "regions": [
+   {
+    "name": "syngonium",
+    "source": "ph:potted_plant_02",
+    "uv": [
+     0.0,
+     0.6667,
+     0.25,
+     1.0
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "syngonium",
+    "source": "ph:potted_plant_02",
+    "uv": [
+     0.25,
+     0.6667,
+     0.5,
+     1.0
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "syngonium",
+    "source": "ph:potted_plant_02",
+    "uv": [
+     0.5,
+     0.6667,
+     0.75,
+     1.0
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "anthurium",
+    "source": "ph:anthurium_botany_01",
+    "uv": [
+     0.75,
+     0.6667,
+     1.0,
+     1.0
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "anthurium",
+    "source": "ph:anthurium_botany_01",
+    "uv": [
+     0.0,
+     0.3333,
+     0.25,
+     0.6667
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "anthurium",
+    "source": "ph:anthurium_botany_01",
+    "uv": [
+     0.25,
+     0.3333,
+     0.5,
+     0.6667
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "calathea",
+    "source": "ph:calathea_orbifolia_01",
+    "uv": [
+     0.5,
+     0.3333,
+     0.75,
+     0.6667
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "calathea",
+    "source": "ph:calathea_orbifolia_01",
+    "uv": [
+     0.75,
+     0.3333,
+     1.0,
+     0.6667
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "pachira",
+    "source": "ph:pachira_aquatica_01",
+    "uv": [
+     0.0,
+     0.0,
+     0.25,
+     0.3333
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "pachira",
+    "source": "ph:pachira_aquatica_01",
+    "uv": [
+     0.25,
+     0.0,
+     0.5,
+     0.3333
+    ],
+    "leafBase": "bottom-centre of cell"
+   },
+   {
+    "name": "heart-leaf",
+    "source": "acg:LeafSet004",
+    "uv": [
+     0.5,
+     0.0,
+     0.75,
+     0.3333
+    ],
+    "leafBase": "bottom-centre of cell"
+   }
+  ],
+  "tags": [
+   "potted-plant",
+   "leaves",
+   "atlas",
+   "syngonium",
+   "anthurium",
+   "calathea",
+   "pachira",
+   "shop",
+   "house"
+  ],
+  "source": "polyhaven:potted_plant_02 + polyhaven:anthurium_botany_01 + polyhaven:calathea_orbifolia_01 + polyhaven:pachira_aquatica_01 + ambientcg:LeafSet004",
+  "sourceUrl": "https://polyhaven.com/a/potted_plant_02 ; https://polyhaven.com/a/anthurium_botany_01 ; https://polyhaven.com/a/calathea_orbifolia_01 ; https://polyhaven.com/a/pachira_aquatica_01 ; https://ambientcg.com/a/LeafSet004",
+  "license": "CC0",
+  "author": "Poly Haven + ambientCG",
+  "note": "One leaf per cell (uv = [u0,v0,u1,v1], v up). Leaf ~0.15-0.3 m. Build pot plants from rotated quads."
+ },
+ "potted_syngonium_cluster": {
+  "albedo": "potted_syngonium_cluster/albedo.png",
+  "normal": "potted_syngonium_cluster/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 0.7,
+  "heightMeters": 0.7,
+  "pivot": [
+   0.5,
+   0.04
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "potted-plant",
+   "syngonium",
+   "house-plant",
+   "shop",
+   "cluster"
+  ],
+  "source": "polyhaven:potted_plant_02",
+  "sourceUrl": "https://polyhaven.com/a/potted_plant_02",
+  "license": "CC0",
+  "author": "Poly Haven (see credits)",
+  "note": "Leaf cluster for a pot (pot not included; use the pot from Poly Haven potted_plant_02 or a model)."
+ },
+ "periwinkle_bush": {
+  "albedo": "periwinkle_bush/albedo.png",
+  "normal": "periwinkle_bush/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 0.6,
+  "heightMeters": 0.6,
+  "pivot": [
+   0.5,
+   0.05
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "flowers",
+   "periwinkle",
+   "pink",
+   "pot",
+   "roadside",
+   "garden",
+   "shrub"
+  ],
+  "source": "polyhaven:periwinkle_plant",
+  "sourceUrl": "https://polyhaven.com/a/periwinkle_plant",
+  "license": "CC0",
+  "author": "Poly Haven (see credits)",
+  "note": "Madagascar periwinkle (common Thai roadside / pot flower)."
+ },
+ "fern_rosette": {
+  "albedo": "fern_rosette/albedo.png",
+  "normal": "fern_rosette/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "widthMeters": 1.0,
+  "heightMeters": 1.0,
+  "pivot": [
+   0.5,
+   0.02
+  ],
+  "alphaTest": 0.5,
+  "tags": [
+   "fern",
+   "understory",
+   "shade",
+   "pot",
+   "tropical"
+  ],
+  "source": "polyhaven:fern_02",
+  "sourceUrl": "https://polyhaven.com/a/fern_02",
+  "license": "CC0",
+  "author": "Poly Haven (see credits)"
+ },
+ "moss_patch_a": {
+  "albedo": "moss_patch_a/albedo.png",
+  "normal": "moss_patch_a/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "type": "decal",
+  "widthMeters": 0.8,
+  "heightMeters": 0.8,
+  "pivot": [
+   0.5,
+   0.5
+  ],
+  "alphaTest": 0.3,
+  "tags": [
+   "moss",
+   "patch",
+   "decal",
+   "wall-base",
+   "canal",
+   "damp",
+   "shade"
+  ],
+  "source": "polyhaven:concrete_moss",
+  "sourceUrl": "https://polyhaven.com/a/concrete_moss",
+  "license": "CC0",
+  "author": "Poly Haven (see credits)",
+  "note": "Moss patches cut from a real scan by their own green coverage (decal / polygon-offset quad)."
+ },
+ "moss_patch_b": {
+  "albedo": "moss_patch_b/albedo.png",
+  "normal": "moss_patch_b/normal.jpg",
+  "pixelSize": [
+   1024,
+   1024
+  ],
+  "type": "decal",
+  "widthMeters": 0.8,
+  "heightMeters": 0.8,
+  "pivot": [
+   0.5,
+   0.5
+  ],
+  "alphaTest": 0.3,
+  "tags": [
+   "moss",
+   "patch",
+   "decal",
+   "wall-base",
+   "canal",
+   "damp",
+   "shade"
+  ],
+  "source": "polyhaven:worn_mossy_plasterwall",
+  "sourceUrl": "https://polyhaven.com/a/worn_mossy_plasterwall",
+  "license": "CC0",
+  "author": "Poly Haven (see credits)",
+  "note": "Moss patches cut from a real scan by their own green coverage (decal / polygon-offset quad)."
+ }
+}

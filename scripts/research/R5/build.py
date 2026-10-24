@@ -27,9 +27,10 @@ class Entry:
 
 
 def V(src, ss=None, t=None, af=None, rate=None, gain_db=0.0, fin=0.003, fout=0.03, trim=True,
-      thr=-45.0, tail=-55.0, xfade=1.0, loop_len=None, lufs=None, post_af=None, maxlen=None):
+      thr=-45.0, tail=-55.0, xfade=1.0, loop_len=None, lufs=None, post_af=None, maxlen=None, preloop=False):
     return dict(src=src, ss=ss, t=t, af=af, rate=rate, gain_db=gain_db, fin=fin, fout=fout, trim=trim, thr=thr,
-                tail=tail, xfade=xfade, loop_len=loop_len, lufs=lufs, post_af=post_af, maxlen=maxlen)
+                tail=tail, xfade=xfade, loop_len=loop_len, lufs=lufs, post_af=post_af, maxlen=maxlen,
+                preloop=preloop)
 
 
 def load_src(v, ch):
@@ -61,17 +62,22 @@ def process(e, v):
     if v["gain_db"]:
         x = x * 10 ** (v["gain_db"] / 20)
     x = A.hp(x, 25 if e.cat in ("amb", "music") else 35, 2)  # DC / sub-sonic cleanup
-    if e.loop:
+    if e.loop and not v["preloop"]:
         x = A.make_loop(x, v["xfade"], length=v["loop_len"])
+    elif e.loop:
+        pass  # already seamless (music rendered with its reverb tail folded onto the start)
     else:
         if v["trim"]:
-            x = A.trim(x, v["thr"], v["tail"])
+            if e.cat == "voice":
+                x = A.trim(x, max(v["thr"], -36.0), max(v["tail"], -40.0), pre=0.01, post=0.06)
+            else:
+                x = A.trim(x, v["thr"], v["tail"])
         if v["maxlen"] and len(x) > v["maxlen"] * A.SR:
             x = x[: int(v["maxlen"] * A.SR)]
             v = dict(v, fout=max(v["fout"], 0.08))
         x = A.fade(x, v["fin"], v["fout"])
     target = v["lufs"] if v["lufs"] is not None else (e.lufs if e.lufs is not None else TARGET[e.cat])
-    x = A.normalize(x, target, tp=-1.0)
+    x = A.normalize(x, target, tp=-1.0, slow=(e.cat == "music"), max_gr_db=(4.0 if e.cat == "music" else 9.0))
     if e.loop:
         # keep loop seam continuous: no fades, but make sure the ends are tiny-matched
         pass

@@ -1,0 +1,192 @@
+[
+ {
+  "out": "street_sign_yaowarat_blue.png",
+  "src": "d4357d2f_1920",
+  "quad": [
+   [
+    142,
+    293
+   ],
+   [
+    1111,
+    246
+   ],
+   [
+    1114,
+    535
+   ],
+   [
+    130,
+    549
+   ]
+  ],
+  "w_m": 1.6,
+  "h_m": 0.5,
+  "px": 1024,
+  "mask": "rect",
+  "inset": 0.004,
+  "wb": 0.3,
+  "th": "ถนนเยาวราช THANON YAOWARAT CHINA TOWN",
+  "en": "Yaowarat Road (Chinatown) street-name sign",
+  "mount": "pole (ornate cast post, 2.8-3.2 m)",
+  "kind": "street-name sign"
+ },
+ {
+  "out": "street_sign_maharaj3_ornate.png",
+  "src": "1fcaf8b0_1920",
+  "quad": [
+   [
+    373,
+    717
+   ],
+   [
+    1590,
+    717
+   ],
+   [
+    1590,
+    1300
+   ],
+   [
+    373,
+    1300
+   ]
+  ],
+  "w_m": 1.5,
+  "h_m": 0.72,
+  "px": 1024,
+  "mask": "poly",
+  "wb": 0.25,
+  "poly": [
+   [
+    373,
+    925
+   ],
+   [
+    495,
+    717
+   ],
+   [
+    1465,
+    717
+   ],
+   [
+    1590,
+    925
+   ],
+   [
+    1465,
+    1125
+   ],
+   [
+    1218,
+    1125
+   ],
+   [
+    1218,
+    1300
+   ],
+   [
+    572,
+    1300
+   ],
+   [
+    572,
+    1125
+   ],
+   [
+    495,
+    1125
+   ]
+  ],
+  "th": "มหาราช 3 Maharaj Rd. เทศบาลเมืองกระบี่",
+  "en": "Ornate provincial street sign (Maharaj Rd 3, Krabi municipality)",
+  "mount": "pole (gold post with elephant finial)",
+  "kind": "street-name sign"
+ },
+ {
+  "out": "street_sign_soi_ekkachai46_blue.png",
+  "src": "06a6f5bf_1920",
+  "quad": [
+   [
+    308,
+    235
+   ],
+   [
+    1542,
+    220
+   ],
+   [
+    1550,
+    846
+   ],
+   [
+    293,
+    825
+   ]
+  ],
+  "w_m": 1.2,
+  "h_m": 0.6,
+  "px": 1024,
+  "mask": "poly",
+  "wb": 0.3,
+  "th": "ซอยเอกชัย 46 แยก (6) (สังขสิทธิ์) สนับสนุนโดย ...",
+  "en": "Blue soi name sign (Soi Ekkachai 46, branch 6) donated by a local politician",
+  "mount": "pole / wall",
+  "kind": "soi sign",
+  "poly": [
+   [
+    308,
+    235
+   ],
+   [
+    700,
+    292
+   ],
+   [
+    1542,
+    220
+   ],
+   [
+    1550,
+    846
+   ],
+   [
+    293,
+    825
+   ]
+  ]
+ },
+ {
+  "out": "street_sign_thaniya_blue.png",
+  "src": "165be108_1920",
+  "quad": [
+   [
+    486,
+    627
+   ],
+   [
+    1480,
+    420
+   ],
+   [
+    1485,
+    816
+   ],
+   [
+    481,
+    966
+   ]
+  ],
+  "w_m": 1.5,
+  "h_m": 0.6,
+  "px": 1024,
+  "mask": "rect",
+  "inset": 0.005,
+  "wb": 0.3,
+  "th": "ถนนธนิยะ Thaniya Rd. (ถนนส่วนบุคคล)",
+  "en": "Private-road street sign (Thaniya Rd), ornate black frame",
+  "mount": "pole (ornate black post)",
+  "kind": "street-name sign"
+ }
+]

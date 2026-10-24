@@ -689,11 +689,12 @@ def dun_dun_dunn():
         x = S.svf(x / 10, fc, 0.9, "lp")
         x *= env_points(m, [(0, 0), (0.01, 1), (d * 0.6, 0.8), (d, 0)])
         # timpani
-        tm = int(min(d, 1.5) * SR)
+        tm = int(1.5 * SR)
         tf = S.glide(tm, [(0, S.midi(chord[0] - 12) * 1.1), (0.1, S.midi(chord[0] - 12))])
         tp = S.sine(tf, n=tm) * S.env_exp(tm, 0.45, a=0.002) + \
             S.butter(S.noise(tm), "lowpass", 400, 2) * S.env_exp(tm, 0.05) * 0.5
-        S.place(out, S.pan(x, -0.15) + S.pan(tp * 0.9, 0.1), t0)
+        S.place(out, S.pan(x, -0.15), t0)
+        S.place(out, S.pan(A.fade(tp, 0.001, 0.2) * 0.9, 0.1), t0)
     out = S.reverb(out, ir, wet=0.25)[:n]
     return out, [SY("dun_dun_dunn")]
 
@@ -724,7 +725,7 @@ def crickets_awkward():
 
 
 def tick_tock(beats=6, period=0.5):
-    n = int(beats * period * SR)
+    n = int((beats * period + 0.06) * SR)
     out = np.zeros(n)
     for k in range(beats):
         imp = np.zeros(int(0.15 * SR))
@@ -770,7 +771,7 @@ def crowd_vowel(kind="aww", voices=26, seed=3):
             F = [(S.lin_env(m, [(0, 380), (dd * 0.5, 450), (dd, 400)]), 6),
                  (S.lin_env(m, [(0, 800), (dd * 0.5, 900), (dd, 820)]), 7), (2500, 10)]
         f = f * (1 + 0.01 * np.sin(2 * np.pi * r.uniform(4.5, 6.5) * np.arange(m) / SR + r.uniform(0, 6)))
-        src = S.saw(f, m) * 0.6 + 0.08 * r.standard_normal(m)
+        src = S.saw(f, m) * 0.6 + 0.03 * r.standard_normal(m)
         if fem:
             F = [(fc * 1.15 if np.isscalar(fc) else fc * 1.15, q) for fc, q in F]
         x = np.zeros(m)

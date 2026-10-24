@@ -1,0 +1,374 @@
+[
+ {
+  "out": "plate_car_private_kt2058_chachoengsao.png",
+  "src": "945f7f26_1920",
+  "quad": [
+   [
+    14,
+    20
+   ],
+   [
+    1890,
+    20
+   ],
+   [
+    1890,
+    812
+   ],
+   [
+    14,
+    812
+   ]
+  ],
+  "w_m": 0.34,
+  "h_m": 0.15,
+  "px": 512,
+  "mask": "round:0.06",
+  "wb": 0.25,
+  "th": "กท 2058 ฉะเชิงเทรา",
+  "en": "Private car plate (white, black letters), Chachoengsao",
+  "mount": "vehicle front/rear",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_car_private_kt1063_udonthani.png",
+  "src": "a5cfd749_1920",
+  "quad": [
+   [
+    236,
+    206
+   ],
+   [
+    1703,
+    197
+   ],
+   [
+    1711,
+    762
+   ],
+   [
+    241,
+    768
+   ]
+  ],
+  "w_m": 0.34,
+  "h_m": 0.15,
+  "px": 512,
+  "mask": "round:0.06",
+  "wb": 0.25,
+  "th": "กท 1063 อุดรธานี",
+  "en": "Private car plate, Udon Thani",
+  "mount": "vehicle",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_car_private_red_sk234_nonthaburi.png",
+  "src": "bd9b9738_1920",
+  "quad": [
+   [
+    14,
+    22
+   ],
+   [
+    1892,
+    30
+   ],
+   [
+    1898,
+    771
+   ],
+   [
+    14,
+    771
+   ]
+  ],
+  "w_m": 0.34,
+  "h_m": 0.15,
+  "px": 512,
+  "mask": "round:0.06",
+  "wb": 0.2,
+  "th": "ศก 234 นนทบุรี",
+  "en": "Older private plate with red-brown letters (pre-2000s style), Nonthaburi",
+  "mount": "vehicle",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_taxi_yellow_31-4304_bangkok.png",
+  "src": "2b10666d_1920",
+  "quad": [
+   [
+    22,
+    22
+   ],
+   [
+    1909,
+    22
+   ],
+   [
+    1909,
+    908
+   ],
+   [
+    22,
+    908
+   ]
+  ],
+  "w_m": 0.34,
+  "h_m": 0.15,
+  "px": 512,
+  "mask": "round:0.06",
+  "wb": 0.2,
+  "th": "THAILAND 01 / 31-4304 / กรุงเทพมหานคร",
+  "en": "Yellow public-transport plate (taxi / tuk-tuk / bus), Bangkok",
+  "mount": "taxi, tuk-tuk, songthaew",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_public_yellow_70-2157_udonthani.png",
+  "src": "fa2a8026_1920",
+  "quad": [
+   [
+    55,
+    49
+   ],
+   [
+    1887,
+    49
+   ],
+   [
+    1887,
+    905
+   ],
+   [
+    55,
+    905
+   ]
+  ],
+  "w_m": 0.34,
+  "h_m": 0.15,
+  "px": 512,
+  "mask": "round:0.06",
+  "wb": 0.2,
+  "th": "THAILAND 42 / 70-2157 / อุดรธานี",
+  "en": "Yellow public-transport plate, Udon Thani (songthaew / provincial bus)",
+  "mount": "vehicle",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_pickup_green_2tr1387_bangkok.png",
+  "src": "1f9628f5_1920",
+  "quad": [
+   [
+    22,
+    22
+   ],
+   [
+    1876,
+    22
+   ],
+   [
+    1876,
+    740
+   ],
+   [
+    22,
+    740
+   ]
+  ],
+  "w_m": 0.34,
+  "h_m": 0.15,
+  "px": 512,
+  "mask": "round:0.06",
+  "wb": 0.2,
+  "th": "2ฒร 1387 กรุงเทพมหานคร",
+  "en": "Green-letter plate = private pickup / van (rot kra-ba), Bangkok",
+  "mount": "pickup truck",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_pickup_green_bt4772_nakhonsawan.png",
+  "src": "8727ea0c_1920",
+  "quad": [
+   [
+    73,
+    331
+   ],
+   [
+    1221,
+    331
+   ],
+   [
+    1198,
+    651
+   ],
+   [
+    95,
+    651
+   ]
+  ],
+  "w_m": 0.34,
+  "h_m": 0.15,
+  "px": 512,
+  "mask": "round:0.06",
+  "wb": 0.2,
+  "th": "บต 4772 นครสวรรค์",
+  "en": "Green-letter pickup plate, Nakhon Sawan",
+  "mount": "pickup truck",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_temporary_red_ph1301_bangkok.png",
+  "src": "3f377a0d_1920",
+  "quad": [
+   [
+    11,
+    11
+   ],
+   [
+    1915,
+    11
+   ],
+   [
+    1915,
+    793
+   ],
+   [
+    11,
+    793
+   ]
+  ],
+  "w_m": 0.34,
+  "h_m": 0.15,
+  "px": 512,
+  "mask": "round:0.06",
+  "wb": 0.15,
+  "th": "ฝ-1301 กรุงเทพมหานคร",
+  "en": "Red temporary 'new car' dealer plate (ป้ายแดง), Bangkok",
+  "mount": "brand-new car",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_moto_khns660_rayong.png",
+  "src": "6976630c_1920",
+  "quad": [
+   [
+    201,
+    91
+   ],
+   [
+    1161,
+    82
+   ],
+   [
+    1161,
+    805
+   ],
+   [
+    210,
+    814
+   ]
+  ],
+  "w_m": 0.22,
+  "h_m": 0.165,
+  "px": 512,
+  "mask": "round:0.07",
+  "wb": 0.25,
+  "th": "ขนษ ระยอง 660",
+  "en": "Motorcycle plate (3 lines: letters / province / number), Rayong",
+  "mount": "motorbike rear",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_moto_1kth2933_chumphon.png",
+  "src": "b831dc7d_1920",
+  "quad": [
+   [
+    346,
+    123
+   ],
+   [
+    1868,
+    110
+   ],
+   [
+    1895,
+    1275
+   ],
+   [
+    304,
+    1289
+   ]
+  ],
+  "w_m": 0.22,
+  "h_m": 0.165,
+  "px": 512,
+  "mask": "round:0.07",
+  "wb": 0.2,
+  "th": "1กธ ชุมพร 2933",
+  "en": "Worn motorcycle plate, Chumphon (rusty edges, dirt)",
+  "mount": "motorbike rear",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_moto_phlkh772_bangkok.png",
+  "src": "960b2ae4_1920",
+  "quad": [
+   [
+    219,
+    483
+   ],
+   [
+    1001,
+    433
+   ],
+   [
+    1130,
+    1018
+   ],
+   [
+    261,
+    1100
+   ]
+  ],
+  "w_m": 0.22,
+  "h_m": 0.165,
+  "px": 512,
+  "mask": "round:0.07",
+  "wb": 0.25,
+  "th": "พลข กรุงเทพมหานคร 772",
+  "en": "Motorcycle plate in chrome holder, Bangkok",
+  "mount": "motorbike rear",
+  "kind": "licence plate"
+ },
+ {
+  "out": "plate_driving_school_yellow_son_bangkok.png",
+  "src": "44b34f72_1920",
+  "quad": [
+   [
+    15,
+    15
+   ],
+   [
+    1263,
+    15
+   ],
+   [
+    1263,
+    971
+   ],
+   [
+    15,
+    971
+   ]
+  ],
+  "w_m": 0.3,
+  "h_m": 0.23,
+  "px": 512,
+  "mask": "round:0.07",
+  "wb": 0.2,
+  "th": "สอน กรุงเทพมหานคร 1",
+  "en": "Yellow 'สอน' (teaching) driving-school plate, Bangkok",
+  "mount": "driving-school car",
+  "kind": "licence plate"
+ }
+]

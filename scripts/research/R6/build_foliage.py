@@ -35,59 +35,6 @@ def recolor(sp, target, amount=1.0, keep=0.0):
     return F.Sprite(np.clip(out, 0, 255), sp.a, sp.n, sp.src)
 
 
-def stroke(cv, pts, widths, colors, rng=None, noise=0.15, ss=1):
-    """Render an anti-aliased tapered stroke (twig/rachis/stem) with cylinder normals onto canvas."""
-    pts = np.asarray(pts, np.float32)
-    widths = np.asarray(widths, np.float32)
-    colors = np.asarray(colors, np.float32)
-    H, W = cv.h, cv.w
-    la = np.zeros((H, W), np.float32)
-    lc = np.zeros((H, W, 3), np.float32)
-    ln = np.zeros((H, W, 3), np.float32)
-    ln[..., 2] = 1
-    for i in range(len(pts) - 1):
-        a, b = pts[i], pts[i + 1]
-        wmax = max(widths[i], widths[i + 1]) / 2 + 2
-        x0, x1 = int(max(0, min(a[0], b[0]) - wmax)), int(min(W, max(a[0], b[0]) + wmax + 1))
-        y0, y1 = int(max(0, min(a[1], b[1]) - wmax)), int(min(H, max(a[1], b[1]) + wmax + 1))
-        if x1 <= x0 or y1 <= y0:
-            continue
-        yy, xx = np.mgrid[y0:y1, x0:x1].astype(np.float32)
-        ab = b - a
-        L2 = float(ab @ ab) + 1e-6
-        t = np.clip(((xx - a[0]) * ab[0] + (yy - a[1]) * ab[1]) / L2, 0, 1)
-        px, py = a[0] + t * ab[0], a[1] + t * ab[1]
-        dx, dy = xx - px, yy - py
-        d = np.sqrt(dx * dx + dy * dy)
-        w = (widths[i] * (1 - t) + widths[i + 1] * t) / 2
-        al = np.clip(w - d + 0.5, 0, 1)
-        perp = np.array([-ab[1], ab[0]]) / math.sqrt(L2)
-        s = np.clip((dx * perp[0] + dy * perp[1]) / np.maximum(w, 0.5), -1, 1)
-        col = colors[i][None, None] * (1 - t[..., None]) + colors[i + 1][None, None] * t[..., None]
-        shade = 0.75 + 0.25 * np.sqrt(np.clip(1 - s * s, 0, 1))
-        col = col * shade[..., None]
-        sub = la[y0:y1, x0:x1]
-        upd = al > sub
-        if not upd.any():
-            continue
-        nn = np.stack([perp[0] * s, -perp[1] * s, np.sqrt(np.clip(1 - s * s, 0.05, 1))], -1)
-        lc[y0:y1, x0:x1][upd] = col[upd]
-        ln[y0:y1, x0:x1][upd] = nn[upd]
-        sub[upd] = al[upd]
-    if noise and rng is not None:
-        nz = L.tile_noise(max(H, W), scale=40, beta=1.2, seed=int(rng.integers(1e6)))[:H, :W]
-        lc *= (1 - noise / 2 + noise * nz)[..., None]
-    cv.c = lc * la[..., None] + cv.c * (1 - la[..., None])
-    cv.n = ln * la[..., None] + cv.n * (1 - la[..., None])
-    cv.a = la + cv.a * (1 - la)
-
-
-def bezier(p0, p1, p2, p3, n=40):
-    t = np.linspace(0, 1, n)[:, None]
-    p0, p1, p2, p3 = map(lambda p: np.asarray(p, np.float32), (p0, p1, p2, p3))
-    return ((1 - t) ** 3) * p0 + 3 * ((1 - t) ** 2) * t * p1 + 3 * (1 - t) * t * t * p2 + t ** 3 * p3
-
-
 def finish(cid, cv, meta, man, out=(1024, 1024), dome=0.0):
     if dome:
         cv.dome(dome)
@@ -157,9 +104,10 @@ def grass_tall_tuft(man):
 
 def weeds_roadside(man):
     rng = np.random.default_rng(3)
-    big = sprites("ph:weed_plant_02", min_area=8000, base="auto")
-    nett = sprites("ph:nettle_plant", min_area=4000, base="auto")
-    clover = [s for s in sprites("ph:shrub_sorrel_01", min_area=6000, base="bottom") if s.h < s.w * 1.6]
+    big = sprites("ph:weed_plant_02", min_area=8000, base="auto", max_aspect=5, min_fill=0.25)
+    nett = sprites("ph:nettle_plant", min_area=4000, base="auto", max_aspect=5, min_fill=0.25)
+    clover = [s for s in sprites("ph:shrub_sorrel_01", min_area=6000, base="bottom") if s.h < s.w * 1.6
+              and s.rgb[s.a > 0.5].mean(0)[1] > s.rgb[s.a > 0.5].mean(0)[0]]          # green leaves only (no pink flowers)
     blades = sprites("acg:Foliage006", min_area=3000, base="bottom")
     cv = F.Canvas(2048, 1024)
     for k in range(40):  # back: grass blades
@@ -229,83 +177,11 @@ def rice_clump(man, ripe):
            man, (1024, 1024), dome=0.1)
 
 
-def bamboo_leaf_spray(man):
-    rng = np.random.default_rng(7)
-    lv = sprites("acg:Foliage005", min_area=4000, base="left")
-    lv = [recolor(s, (118, 150, 64), 0.5) for s in lv[:2]] + [recolor(lv[0], (150, 160, 80), 0.6)]
-    cv = F.Canvas(2048, 2048)
-    # main twig arching from bottom-left to the right
-    main = bezier((150, 1950), (500, 1100), (1200, 700), (1900, 820), 60)
-    stroke(cv, main, np.linspace(26, 8, len(main)), [(150, 140, 70)] * len(main), rng)
-    for k in range(9):
-        t = 0.22 + k * 0.085
-        i = int(t * (len(main) - 1))
-        p = main[i]
-        d = main[min(i + 1, len(main) - 1)] - main[max(i - 1, 0)]
-        base_ang = math.degrees(math.atan2(-d[1], d[0]))
-        side = 1 if k % 2 == 0 else -1
-        tw_ang = math.radians(base_ang + side * rng.uniform(35, 55))
-        ln = rng.uniform(160, 280)
-        q = p + np.array([math.cos(tw_ang), -math.sin(tw_ang)]) * ln
-        stroke(cv, [p, (p + q) / 2 + rng.normal(0, 10, 2), q], [11, 8, 5], [(140, 132, 66)] * 3, rng)
-        for j in range(rng.integers(4, 8)):  # fan of drooping leaves at the twig tip
-            leaf_dir = base_ang + side * rng.uniform(20, 70) - rng.uniform(10, 60)
-            s = lv[rng.integers(len(lv))]
-            sc = rng.uniform(0.55, 0.8) * 520 / s.h
-            cv.stamp(s, q[0], q[1], sc, leaf_dir - 90, rng.random() < .5,
-                     (rng.uniform(0.92, 1.06), rng.uniform(0.95, 1.05), 0.95), rng.uniform(0.78, 1.05),
-                     tilt=(rng.normal(0, .2), rng.normal(0, .2)))
-    finish("bamboo_leaf_spray", cv, dict(widthMeters=1.2, heightMeters=1.2, pivot=[0.07, 0.03], alphaTest=0.45,
-                                         tags=["bamboo", "leaves", "spray", "branch", "rural", "temple-garden"],
-                                         **src_meta(["acg:Foliage005"]), author="ambientCG (Lennart Demes) + R6 twig strokes",
-                                         note="Lanceolate blades arranged as bamboo leaf fans on a procedural twig. Pivot = twig base."),
-           man, (1024, 1024))
-
-
-def coconut_frond(man, variant):
-    rng = np.random.default_rng(10 + variant)
-    lf = sprites("acg:Foliage008", min_area=3000, base="left") + sprites("acg:Foliage001", min_area=4000, base="bottom")
-    col = (112, 150, 58) if variant == 0 else (140, 150, 62)
-    lf = [recolor(s, col, 0.55) for s in lf]
-    W, H = 2048, 1024
-    cv = F.Canvas(W, H)
-    droop = 0.18 if variant == 0 else 0.32
-    rach = bezier((40, 470), (700, 300), (1400, 360 + droop * 400), (2000, 560 + droop * 700), 80)
-    n = len(rach)
-    for side in (-1, 1):
-        for i in range(6, n - 2):
-            if rng.random() < 0.08:
-                continue  # gaps
-            t = i / (n - 1)
-            p = rach[i]
-            d = rach[min(i + 1, n - 1)] - rach[i - 1]
-            ang = math.degrees(math.atan2(-d[1], d[0]))
-            spread = (60 - 25 * t) * side + rng.normal(0, 6)
-            hang = -(15 + 35 * t + droop * 40) if side > 0 else (15 + 35 * t + droop * 40) * 0.3
-            leaf_ang = ang + spread + hang * 0.5
-            s = lf[rng.integers(len(lf))]
-            length = (380 + 120 * math.sin(math.pi * min(1, t * 1.15))) * rng.uniform(0.85, 1.1)
-            sc = length / s.h
-            sh = rng.uniform(0.75, 1.0) * (0.85 if side < 0 else 1.0)
-            tint = (rng.uniform(0.95, 1.08), rng.uniform(0.95, 1.05), rng.uniform(0.85, 1.0))
-            if variant == 1 and rng.random() < 0.15:
-                tint = (1.25, 1.05, 0.6)  # yellowing leaflet
-            cv.stamp(s, p[0], p[1], sc, leaf_ang - 90, rng.random() < .5, tint, sh,
-                     tilt=(0.0, 0.25 * side))
-    stroke(cv, rach, np.linspace(30, 6, n), np.linspace([170, 150, 80], [150, 160, 80], n), rng, noise=0.1)
-    finish(f"coconut_frond_{'a' if variant == 0 else 'b'}", cv,
-           dict(widthMeters=4.5, heightMeters=2.25, pivot=[0.02, 0.54], alphaTest=0.4,
-                tags=["coconut", "palm", "frond", "tropical", "tree-card"] + (["fresh"] if variant == 0 else ["older", "drooping", "yellowing"]),
-                **src_meta(["acg:Foliage008", "acg:Foliage001"]), author="ambientCG (Lennart Demes) + R6 rachis stroke",
-                note="Frond runs left->right; pivot = rachis base (attach to crown). Use 10-20 rotated copies per palm."),
-           man, (1024, 512))
-
-
-def canopy(man, cid, keys, n_leaves, leaf_px, seed, base="bottom", tint_col=None, twigs=True, tags=(), note=""):
+def canopy(man, cid, keys, n_leaves, leaf_px, seed, base="bottom", tint_col=None, twigs=False, tags=(), note=""):
     rng = np.random.default_rng(seed)
     pool = []
     for k in keys:
-        pool += sprites(k, min_area=3000, base=base)
+        pool += sprites(k, min_area=3000, base=base, max_aspect=4.5, min_fill=0.3)
     if tint_col:
         pool = [recolor(s, tint_col, 0.35) for s in pool]
     S = 2048
@@ -316,13 +192,6 @@ def canopy(man, cid, keys, n_leaves, leaf_px, seed, base="bottom", tint_col=None
     def inside(x, y):
         return max(1 - ((x - cx) / rx) ** 2 - ((y - cy) / ry) ** 2 for cx, cy, rx, ry in blobs)
 
-    if twigs:
-        for k in range(14):
-            a0 = rng.uniform(0, 2 * math.pi)
-            p0 = np.array([S / 2, S * 0.62])
-            p3 = p0 + np.array([math.cos(a0), -abs(math.sin(a0)) * 0.8]) * rng.uniform(350, 700)
-            pts = bezier(p0, p0 + (p3 - p0) * 0.3 + rng.normal(0, 60, 2), p0 + (p3 - p0) * 0.7 + rng.normal(0, 60, 2), p3, 30)
-            stroke(cv, pts, np.linspace(16, 4, 30), [(82, 66, 50)] * 30, rng)
     placed = 0
     tries = 0
     while placed < n_leaves and tries < n_leaves * 20:
@@ -391,8 +260,6 @@ def potted_syngonium_cluster(man):
         ln = rng.uniform(500, 1100)
         tip = base + np.array([math.sin(math.radians(-ang)), -math.cos(math.radians(ang))]) * ln * np.array([1, 1])
         tip[0] = base[0] - math.sin(math.radians(ang)) * ln
-        stroke(cv, bezier(base, base + (tip - base) * 0.4 + rng.normal(0, 30, 2), tip - (tip - base) * 0.2, tip, 20),
-               np.linspace(12, 7, 20), [(118, 140, 70)] * 20, rng)
         sc = rng.uniform(0.55, 0.85) * 700 / s.h
         depth = k / 34
         cv.stamp(s, tip[0], tip[1], sc, ang + rng.normal(0, 25), rng.random() < .5,
@@ -448,67 +315,32 @@ def fern_rosette(man):
                                     **src_meta(["ph:fern_02"]), author="Poly Haven (see credits)"), man, (1024, 1024), dome=0.2)
 
 
-def hanging_vines(man, cid, key, leaf_col, seed, tags, leaf_px=150):
-    rng = np.random.default_rng(seed)
-    sp = [s for s in sprites(key, min_area=8000, base="bottom")]
-    if leaf_col:
-        sp = [recolor(s, leaf_col, 0.3) for s in sp]
-    cv = F.Canvas(2048, 2048)
-    for strand in range(9):
-        x0 = rng.uniform(150, 1900)
-        length = rng.uniform(900, 1950)
-        pts = [np.array([x0, 0.0])]
-        x, sway = x0, rng.uniform(-60, 60)
-        for i in range(1, 40):
-            y = length * i / 39
-            x = x0 + sway * math.sin(i / 39 * math.pi * rng.uniform(0.8, 1.6)) + rng.normal(0, 3)
-            pts.append(np.array([x, y]))
-        pts = np.array(pts)
-        stroke(cv, pts, np.linspace(9, 4, len(pts)), [(92, 100, 52)] * len(pts), rng)
-        n_leaf = int(length / 70)
-        for j in range(n_leaf):
-            t = (j + rng.uniform(0, 0.8)) / n_leaf
-            i = int(t * (len(pts) - 1))
-            p = pts[i]
-            side = 1 if j % 2 == 0 else -1
-            s = sp[rng.integers(len(sp))]
-            sc = leaf_px * (1.15 - 0.45 * t) * rng.uniform(0.8, 1.15) / max(s.h, 1)
-            ang = side * rng.uniform(60, 130) + 180 + rng.normal(0, 15)
-            cv.stamp(s, p[0], p[1], sc, ang, rng.random() < .5, (1, 1, 1), rng.uniform(0.7, 1.05),
-                     tilt=(side * 0.25, -0.1))
-    finish(cid, cv, dict(widthMeters=1.5, heightMeters=1.5, pivot=[0.5, 1.0], alphaTest=0.5,
-                         tags=["vines", "hanging", "wall", "balcony", "wires"] + tags, **src_meta([key]),
-                         author="ambientCG (Lennart Demes) + R6 stem strokes", note="Hangs from the top edge (pivot = top centre)."),
-           man, (1024, 1024))
-
-
-def moss_patch(man, cid, seed):
-    rng = np.random.default_rng(seed)
-    p = L.fetch_acg("Moss002", "2K")
-    col = L.load_img(p["Color"], "RGB").astype(np.float32)
-    nrm = F.decode_n(L.load_img(p["NormalGL"], "RGB"))
-    S = col.shape[0]
-    n1 = L.tile_noise(S, scale=3, beta=2.2, seed=seed)
-    n2 = L.tile_noise(S, scale=12, beta=1.8, seed=seed + 1)
-    n3 = L.tile_noise(S, scale=60, beta=1.2, seed=seed + 2)
-    yy, xx = np.mgrid[0:S, 0:S].astype(np.float32) / S
-    rad = np.sqrt((xx - 0.5) ** 2 + (yy - 0.5) ** 2) * 2
-    field = (1 - rad) * 0.9 + 0.55 * (n1 - 0.5) + 0.25 * (n2 - 0.5) + 0.12 * (n3 - 0.5)
-    a = L.smoothstep(0.18, 0.26, field)
-    sprigs = L.smoothstep(0.1, 0.2, field) * (n3 > 0.55)  # fuzzy edge tufts
-    a = np.clip(np.maximum(a, sprigs * 0.9), 0, 1)
-    shade = (0.75 + 0.35 * L.smoothstep(0.2, 0.6, field))[..., None]
-    rgb = col * shade
-    edge = (1 - L.smoothstep(0.2, 0.4, field))[..., None]
-    rgb = rgb * (1 - 0.3 * edge) + np.array([120, 112, 60]) * 0.3 * edge  # browner, drier edges
-    cv = F.Canvas(S, S)
-    cv.c = rgb * a[..., None]
+def moss_patch(man, cid, ph_id, region, keep_pct=45):
+    """Moss decal cut from a real scan: alpha = the scan's own moss coverage (excess-green), colour = scan pixels."""
+    p = L.fetch_ph(ph_id, "2k", ("Diffuse", "nor_gl"))
+    col = L.load_img(p["Diffuse"], "RGB").astype(np.float32)
+    nrm = F.decode_n(L.load_img(p["nor_gl"], "RGB"))
+    H, W = col.shape[:2]
+    x0, y0, x1, y1 = region
+    sl = (slice(int(y0 * H), int(y1 * H)), slice(int(x0 * W), int(x1 * W)))
+    col, nrm = col[sl], nrm[sl]
+    exg = (2 * col[..., 1] - col[..., 0] - col[..., 2]) / 255.0
+    m = cv2.GaussianBlur(exg, (0, 0), 2.0)
+    t = np.percentile(m, 100 - keep_pct)          # keep the greenest keep_pct % (real moss density)
+    a = np.clip((m - t) / 0.03 + 0.5, 0, 1)
+    k = (a > 0.5).astype(np.uint8)
+    n, lab, st, _ = cv2.connectedComponentsWithStats(k, 8)
+    keep = np.zeros(n, bool)
+    keep[1:] = st[1:, cv2.CC_STAT_AREA] > 300
+    a = a * cv2.dilate(keep[lab].astype(np.uint8), np.ones((5, 5), np.uint8))
+    cv = F.Canvas(col.shape[1], col.shape[0])
+    cv.c = col * a[..., None]
     cv.a = a.astype(np.float32)
     cv.n = nrm
     finish(cid, cv, dict(type="decal", widthMeters=0.8, heightMeters=0.8, pivot=[0.5, 0.5], alphaTest=0.3,
                          tags=["moss", "patch", "decal", "wall-base", "canal", "damp", "shade"],
-                         **src_meta(["acg:Moss002"]), author="ambientCG (Lennart Demes)",
-                         note="Alpha-cut moss patch for walls/ground (use as decal or polygon offset quad)."),
+                         **src_meta(["ph:" + ph_id]), author="Poly Haven (see credits)",
+                         note="Moss patches cut from a real scan by their own green coverage (decal / polygon-offset quad)."),
            man, (1024, 1024))
 
 
@@ -519,9 +351,6 @@ CARDS = {
     "grass_dry_seedheads": dry_grass_seedheads,
     "rice_clump_young": lambda m: rice_clump(m, False),
     "rice_clump_ripe": lambda m: rice_clump(m, True),
-    "bamboo_leaf_spray": bamboo_leaf_spray,
-    "coconut_frond_a": lambda m: coconut_frond(m, 0),
-    "coconut_frond_b": lambda m: coconut_frond(m, 1),
     "canopy_broadleaf": lambda m: canopy(m, "canopy_broadleaf", ["ph:island_tree_01", "ph:island_tree_02"], 520, 150, 21,
                                          tags=["broadleaf", "street-tree"], note="Glossy broadleaf street tree canopy cluster."),
     "canopy_smallleaf": lambda m: canopy(m, "canopy_smallleaf", ["ph:tree_small_02"], 260, 330, 22, base="bottom",
@@ -533,11 +362,8 @@ CARDS = {
     "potted_syngonium_cluster": potted_syngonium_cluster,
     "periwinkle_bush": periwinkle_bush,
     "fern_rosette": fern_rosette,
-    "hanging_vines_heart": lambda m: hanging_vines(m, "hanging_vines_heart", "acg:LeafSet004", (70, 120, 50), 31,
-                                                   ["heart-leaf", "pothos-like"], 170),
-    "hanging_vines_ivy": lambda m: hanging_vines(m, "hanging_vines_ivy", "acg:LeafSet029", None, 32, ["ivy"], 150),
-    "moss_patch_a": lambda m: moss_patch(m, "moss_patch_a", 41),
-    "moss_patch_b": lambda m: moss_patch(m, "moss_patch_b", 42),
+    "moss_patch_a": lambda m: moss_patch(m, "moss_patch_a", "concrete_moss", (0.0, 0.0, 0.5, 0.5), 45),
+    "moss_patch_b": lambda m: moss_patch(m, "moss_patch_b", "mossy_brick", (0.0, 0.0, 0.5, 0.5), 40),
 }
 
 

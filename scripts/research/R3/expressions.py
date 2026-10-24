@@ -160,8 +160,21 @@ def close_eye(img, lm, side, amount=1.0, lash_strength=0.55):
     for i in brow:
         moves[i] = (0.0, 0.0)
     out, lm2 = tps_warp(img, lm, moves, free_radius=h_eye * 0.6)
-    # paint: soft lid shadow / lash emphasis along the new lid margin
     newU = resample([lm2[c_out]] + [lm2[i] for i in up] + [lm2[c_in]], 48)
+    if amount >= 1:
+        # remove any eyeball pixels left at the corners: inpaint the old opening except a
+        # thin band along the new lid line, from the surrounding (warped) lid skin
+        Uo, Lo = lid_curves(lm, side, 48)
+        E0 = np.zeros(img.shape[:2], np.uint8)
+        cv2.fillPoly(E0, [np.round(np.vstack([Uo, Lo[::-1]])).astype(np.int32)], 255)
+        E0 = cv2.dilate(E0, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)))
+        band = np.zeros(img.shape[:2], np.uint8)
+        cv2.polylines(band, [np.round(newU).astype(np.int32)], False, 255, max(3, int(h_eye * 0.22)))
+        hole = cv2.bitwise_and(E0, cv2.bitwise_not(band))
+        u8 = np.clip(out * 255, 0, 255).astype(np.uint8)
+        out = cv2.inpaint(u8, hole, max(4, int(h_eye * 0.25)), cv2.INPAINT_TELEA).astype(np.float32) / 255
+        # blend the inpainted area softly
+    # paint: soft lid shadow / lash emphasis along the new lid margin
     shade = np.zeros(img.shape[:2], np.float32)
     pts = np.round(newU).astype(np.int32)
     cv2.polylines(shade, [pts], False, 1.0, max(2, int(h_eye * 0.10)), cv2.LINE_AA)
@@ -169,15 +182,12 @@ def close_eye(img, lm, side, amount=1.0, lash_strength=0.55):
     lash = np.zeros(img.shape[:2], np.float32)
     cv2.polylines(lash, [pts], False, 1.0, max(1, int(h_eye * 0.06)), cv2.LINE_AA)
     lash = cv2.GaussianBlur(lash, (0, 0), 0.8)
-    # fine lash ticks pointing down/out
-    rng = np.random.default_rng(int(c[0]))
-    for k in range(4, 44, 2):
-        p = newU[k]
-        t = k / 47.0
-        ang = math.radians(100 + (t - 0.5) * (60 if side == "R" else -60))
-        ln = h_eye * (0.10 + 0.08 * math.sin(math.pi * t)) * rng.uniform(0.7, 1.2)
-        q = (p[0] + math.cos(ang) * ln * (1 if side == "R" else -1) * 0.4, p[1] + math.sin(ang) * ln)
-        cv2.line(lash, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), 0.7, 1, cv2.LINE_AA)
+    # taper the lash line towards the corners
+    taper = np.zeros(img.shape[:2], np.float32)
+    mid = newU[len(newU) // 2]
+    cv2.ellipse(taper, (int(mid[0]), int(mid[1])), (int(w_eye * 0.45), int(h_eye * 0.9)), 0, 0, 360, 1.0, -1)
+    taper = cv2.GaussianBlur(taper, (0, 0), w_eye * 0.12)
+    lash = lash * np.clip(taper * 1.3, 0, 1)
     out = out * (1 - 0.18 * shade[..., None])
     lash_col = np.float32([0.08, 0.06, 0.05])
     a = (lash * lash_strength)[..., None]
@@ -421,12 +431,30 @@ def open_mouth(img, lm, open_f, widen_f=0.0, kind="slight", upper_lift=0.12, chi
         dx = sgn * widen_f * mw * 0.12
         dy = gap * (0.28 if kind == "scream" else 0.18)
         moves[i] = (float(dx), float(dy))
-    for i in CHIN:
+    y_lo = float(lm[17][1])
+    y_ch = float(lm[152][1])
+    x_l, x_r = float(lm[172][0]), float(lm[397][0])
+    for i in range(len(lm)):
         if i in moves:
             continue
-        moves[i] = (0.0, float(gap * chin_f * (1.0 if lm[i][1] > lm[17][1] else 0.6)))
-    out, lm2 = tps_warp(img, lm, moves, free_radius=iod * 0.18, smoothing=1.0)
+        x, y = float(lm[i][0]), float(lm[i][1])
+        if y <= y_lo + 2 or x < x_l or x > x_r:
+            continue
+        t = min(max((y - y_lo) / max(y_ch - y_lo, 1.0), 0.0), 1.0)
+        xn = abs(x - cx) / max((x_r - x_l) / 2, 1.0)
+        side = max(0.0, 1.0 - xn ** 2)
+        moves[i] = (0.0, float(gap * (1.0 - t * (1.0 - chin_f)) * (0.35 + 0.65 * side)))
+    out, lm2 = tps_warp(img, lm, moves, free_radius=iod * 0.06, smoothing=1.0)
     col, a = mouth_interior(img.shape, lm2, gap, kind, seed=int(cx))
+    donor = DONOR_FOR.get(kind)
+    if donor is not None and _DONOR_LOADER is not None:
+        dimg, dlm = _DONOR_LOADER(donor)
+        if kind in ("scream", "o", "shock"):
+            dcol = compose_donor_mouth(dimg, dlm, out, lm2)
+        else:
+            dcol = warp_donor_mouth(dimg, dlm, out, lm2)
+        if dcol is not None:
+            col = dcol
     if col is not None:
         out = out * (1 - a[..., None]) + col * a[..., None]
         # wet inner-lip highlight
@@ -500,8 +528,8 @@ def make_variant(name, img, lm, avg_lin, seed=0):
     lm2 = lm.copy()
     out = img.copy()
     if name == "sleep":
-        out, lm2 = close_eye(out, lm2, "R", 1.0)
-        out, lm2 = close_eye(out, lm2, "L", 1.0)
+        out, lm2 = close_eye(out, lm2, "R", 1.0, lash_strength=0.30)
+        out, lm2 = close_eye(out, lm2, "L", 1.0, lash_strength=0.30)
         out, lm2 = brows(out, lm2, -0.012, 0.0, -0.012, 0.0)
         out, z, lm2 = open_mouth(out, lm2, 0.035, 0.0, "slight", upper_lift=0.0, chin_f=0.2)
         zero = np.maximum(zero, z)
@@ -520,16 +548,144 @@ def make_variant(name, img, lm, avg_lin, seed=0):
     elif name == "shock":
         out, lm2 = widen_eye(out, lm2, "R", 0.42, 0.12, 0.55)
         out, lm2 = widen_eye(out, lm2, "L", 0.42, 0.12, 0.55)
-        out, z, lm2 = open_mouth(out, lm2, 0.30, -0.35, "o", upper_lift=0.10, chin_f=0.45)
+        out, z, lm2 = open_mouth(out, lm2, 0.26, -0.30, "o", upper_lift=0.10, chin_f=0.30)
         zero = np.maximum(zero, z)
         out = pallor(out, lm2, 0.12)
     elif name == "scream":
         out, lm2 = widen_eye(out, lm2, "R", 0.50, 0.15, 0.70)
         out, lm2 = widen_eye(out, lm2, "L", 0.50, 0.15, 0.70)
         out, lm2 = brows(out, lm2, 0.05, 0.0, 0.05, 0.0)
-        out, z, lm2 = open_mouth(out, lm2, 0.48, 0.25, "scream", upper_lift=0.16, chin_f=0.45)
+        out, z, lm2 = open_mouth(out, lm2, 0.34, 0.20, "scream", upper_lift=0.14, chin_f=0.30)
         zero = np.maximum(zero, z)
     else:
         raise ValueError(name)
     # eyes never take the skin tint either
     return np.clip(out, 0, 1), zero, lm2
+
+
+# ----------------------------------------------------------------------------- donors
+# Photographic parts transplanted from other synthetic (CC0, SFHQ) faces, aligned to the
+# same canonical frame by face_build.align():  mouth interiors and closed eyelids.
+DONOR_FOR = {"slight": "SFHQ_pt2_00078890.jpg", "o": "SFHQ_pt4_00047693.jpg",
+             "scream": "SFHQ_pt4_00089594.jpg", "shock": "SFHQ_pt4_00047693.jpg"}
+EYE_DONOR = "SFHQ_pt4_00097018.jpg"
+_DONOR_LOADER = None
+
+
+def set_donor_loader(fn):
+    global _DONOR_LOADER
+    _DONOR_LOADER = fn
+
+
+def tps_backward(dst_pts, src_pts, shape, step=8):
+    """Map each target pixel to donor coords via TPS through the given correspondences."""
+    h, w = shape[:2]
+    rbf = RBFInterpolator(np.float32(dst_pts), np.float32(src_pts) - np.float32(dst_pts),
+                          kernel="thin_plate_spline", smoothing=0.5)
+    gy, gx = np.mgrid[0:h + step:step, 0:w + step:step].astype(np.float32)
+    disp = rbf(np.stack([gx.ravel(), gy.ravel()], 1)).reshape(gx.shape[0], gx.shape[1], 2).astype(np.float32)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    dx = cv2.remap(np.ascontiguousarray(disp[..., 0]), xx / step, yy / step, cv2.INTER_CUBIC)
+    dy = cv2.remap(np.ascontiguousarray(disp[..., 1]), xx / step, yy / step, cv2.INTER_CUBIC)
+    return xx + dx, yy + dy
+
+
+def ring(lm, idxs, scale):
+    c = np.mean(lm[idxs], axis=0)
+    return c + (lm[idxs] - c) * scale
+
+
+def warp_donor_mouth(dimg, dlm, timg, tlm):
+    """Donor mouth interior warped into the target's (parted) inner-lip polygon, with the
+    donor's brightness matched to the target's lips."""
+    shape = timg.shape
+    lip_in = [78] + LIP_UP_IN + [308] + LIP_LO_IN
+    lip_out = [61] + LIP_UP_OUT + [291] + LIP_LO_OUT
+    dst = np.vstack([tlm[lip_in], tlm[lip_out], ring(tlm, lip_out, 1.9)])
+    src = np.vstack([dlm[lip_in], dlm[lip_out], ring(dlm, lip_out, 1.9)])
+    mx, my = tps_backward(dst, src, shape)
+    warped = cv2.remap(dimg, mx, my, cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT101)
+
+    def lipY(img, lm):
+        m = poly(lm[lip_out], img.shape) * (1 - poly(lm[lip_in], img.shape))
+        px = img[m > 0.5]
+        return float(np.median(px @ np.float32([0.3, 0.59, 0.11]))) if len(px) else 0.5
+
+    k = float(np.clip((lipY(timg, tlm) / max(lipY(dimg, dlm), 1e-3)) ** 0.7, 0.75, 1.3))
+    return np.clip(warped * k, 0, 1)
+
+
+def compose_donor_mouth(dimg, dlm, timg, tlm, top_frac=0.62, bot_frac=0.45):
+    """Real-photo mouth interior at natural scale for big openings: donor upper-teeth strip
+    hangs from the target's upper inner lip, donor lower strip rests on the lower inner lip,
+    the gap between is the donor's own darkest interior colour (vertical falloff)."""
+    h, w = timg.shape[:2]
+    up_t = resample([tlm[78]] + [tlm[i] for i in LIP_UP_IN] + [tlm[308]], 64)
+    lo_t = resample([tlm[78]] + [tlm[i] for i in LIP_LO_IN[::-1]] + [tlm[308]], 64)
+    up_d = resample([dlm[78]] + [dlm[i] for i in LIP_UP_IN] + [dlm[308]], 64)
+    lo_d = resample([dlm[78]] + [dlm[i] for i in LIP_LO_IN[::-1]] + [dlm[308]], 64)
+    xl_t, xr_t = float(tlm[78][0]), float(tlm[308][0])
+    xl_d, xr_d = float(dlm[78][0]), float(dlm[308][0])
+    sx = (xr_d - xl_d) / max(xr_t - xl_t, 1.0)
+    gap_d = float(np.max(lo_d[:, 1] - up_d[:, 1]))
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    u = np.clip((xx - xl_t) / max(xr_t - xl_t, 1.0), 0, 1)
+    xd = xl_d + u * (xr_d - xl_d)
+    def curve(c, xq):
+        order = np.argsort(c[:, 0])
+        return np.interp(xq, c[order, 0], c[order, 1])
+    Ut = curve(up_t, xx[0])[None, :] * np.ones((h, 1), np.float32)
+    Lt = curve(lo_t, xx[0])[None, :] * np.ones((h, 1), np.float32)
+    Ud = np.interp(xd, up_d[np.argsort(up_d[:, 0]), 0], up_d[np.argsort(up_d[:, 0]), 1])
+    Ld = np.interp(xd, lo_d[np.argsort(lo_d[:, 0]), 0], lo_d[np.argsort(lo_d[:, 0]), 1])
+    Ht = gap_d * top_frac / sx
+    Hb = gap_d * bot_frac / sx
+    dy_top = yy - Ut
+    dy_bot = Lt - yy
+    top = cv2.remap(dimg, xd.astype(np.float32), (Ud + dy_top * sx).astype(np.float32), cv2.INTER_CUBIC,
+                    borderMode=cv2.BORDER_REFLECT101)
+    bot = cv2.remap(dimg, xd.astype(np.float32), (Ld - dy_bot * sx).astype(np.float32), cv2.INTER_CUBIC,
+                    borderMode=cv2.BORDER_REFLECT101)
+    mi = poly(np.vstack([up_d, lo_d[::-1]]), dimg.shape)
+    px = dimg[mi > 0.5]
+    Y = px @ np.float32([0.3, 0.59, 0.11]) if len(px) else np.array([0.05])
+    dark = px[Y <= np.percentile(Y, 8)].mean(0) if len(px) > 20 else np.float32([0.06, 0.02, 0.02])
+    mid = np.clip((yy - Ut) / np.maximum(Lt - Ut, 1), 0, 1)
+    fall = 0.55 + 0.45 * np.abs(mid - 0.45) / 0.55
+    xn = np.abs(u - 0.5) * 2
+    throat = dark[None, None, :] * (fall * (0.8 + 0.4 * xn))[..., None]
+    wt = np.clip(1 - dy_top / np.maximum(Ht, 1), 0, 1) ** 0.6 * (dy_top > -2)
+    wb = np.clip(1 - dy_bot / np.maximum(Hb, 1), 0, 1) ** 0.6 * (dy_bot > -2)
+    wt = cv2.GaussianBlur(wt.astype(np.float32), (0, 0), 1.5)
+    wb = cv2.GaussianBlur(wb.astype(np.float32), (0, 0), 1.5)
+    out = throat * (1 - wt[..., None]) + top * wt[..., None]
+    out = out * (1 - wb[..., None]) + bot * wb[..., None]
+    k = 1.0
+    return np.clip(out * k, 0, 1)
+
+
+def close_eye_donor(img, lm, side, dimg, dlm):
+    up, lo, (c_out, c_in), _, brow = eye_def(side)
+    U, L = lid_curves(lm, side, 9)
+    tgt_line = U + 0.70 * (L - U)
+    Ud, Ld = lid_curves(dlm, side, 9)
+    under = {"R": [111, 117, 118, 119, 120, 121, 128, 245, 193],
+             "L": [340, 346, 347, 348, 349, 350, 357, 465, 417]}[side]
+    brow_lo = {"R": [46, 53, 52, 65, 55], "L": [276, 283, 282, 295, 285]}[side]
+    dst = np.vstack([tgt_line, (tgt_line + L) / 2, lm[brow], lm[under], lm[[c_out, c_in]]])
+    src = np.vstack([Ld, Ld, dlm[brow], dlm[under], dlm[[c_out, c_in]]])
+    mx, my = tps_backward(dst, src, img.shape)
+    warped = cv2.remap(dimg, mx, my, cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT101)
+    region = np.vstack([lm[brow_lo] + np.float32([0, 4]), lm[under]])
+    hull = cv2.convexHull(np.round(region).astype(np.int32))
+    m = np.zeros(img.shape[:2], np.uint8)
+    cv2.fillConvexPoly(m, hull, 255)
+    m = cv2.erode(m, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
+    ys, xs = np.nonzero(m)
+    if len(xs) < 50:
+        return img
+    center = (int((xs.min() + xs.max()) / 2), int((ys.min() + ys.max()) / 2))
+    u8t = np.clip(img * 255, 0, 255).astype(np.uint8)
+    u8d = np.clip(warped * 255, 0, 255).astype(np.uint8)
+    out = cv2.seamlessClone(u8d, u8t, m, center, cv2.NORMAL_CLONE)
+    return out.astype(np.float32) / 255.0

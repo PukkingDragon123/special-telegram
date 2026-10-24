@@ -1,0 +1,10 @@
+[
+ {"out": "shop_gold_yulongkimkee_horizontal.png", "src": "d68602c2_1920", "quad": [[178,378],[1329,378],[1329,792],[178,792]], "w_m": 4.0, "h_m": 1.45, "px": 1024, "mask": "round:0.22", "wb": 0.2,
+  "th": "ห้างค้าทอง ยู่หลงกิมกี่", "en": "Yaowarat gold-shop sign (red with gold letters, scroll frame) — real ร้านทอง sign", "mount": "hanging on steel scaffold frame above shop / projecting from facade", "kind": "shop sign (gold shop)"},
+ {"out": "shop_gold_yulongkimkee_vertical_cn.png", "src": "d68602c2_1920", "quad": [[568,845],[986,845],[992,3030],[566,3030]], "w_m": 1.2, "h_m": 6.3, "px": 1536, "mask": "rect", "wb": 0.2,
+  "th": "裕隆金記大金行 (ห้างทอง ยู่หลงกิมกี่)", "en": "Tall vertical Chinese gold-shop sign, 7 stacked red boxes with gold characters", "mount": "vertical, projecting from facade on scaffold (3-4 storeys)", "kind": "shop sign (gold shop)"},
+ {"out": "shop_gold_vertical_green_white_cn.png", "src": "7b1b2eb6_1920", "quad": [[842,1011],[1015,1011],[1015,1990],[842,1990]], "w_m": 1.0, "h_m": 5.6, "px": 1024, "mask": "rect", "wb": 0.2,
+  "th": "和成興大金行", "en": "Vertical gold-shop sign, green/white/orange boxes with red characters (Yaowarat)", "mount": "vertical, projecting from facade", "kind": "shop sign (gold shop)"},
+ {"out": "shop_gold_jinhuaheng_neon_white.png", "src": "7b1b2eb6_1920", "quad": [[339,404],[894,339],[894,643],[339,652]], "w_m": 3.2, "h_m": 1.6, "px": 1024, "mask": "rect", "wb": 0.25,
+  "th": "ห้างขายทอง จินฮั้วเฮง (neon)", "en": "White gold-shop sign with red neon-tube Thai letters", "mount": "on roof scaffold / above facade", "kind": "shop sign (gold shop)"}
+]

@@ -914,6 +914,106 @@
    "source_image_url": "https://obs-ect.line-scdn.net/r/ect/ect/image_16750909624921274126c6b8686t11140302",
    "source_page_url": "https://shop.line.me/@743dsecr/product/1003790764",
    "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "beer_leo_bottle",
+   "files": [
+    "beer_leo_bottle.png"
+   ],
+   "size_px": [
+    570,
+    600
+   ],
+   "aspect_w_over_h": 0.95,
+   "product": "เบียร์ (beer bottle body label)",
+   "brand_real": "ลีโอ LEO",
+   "package": "brown glass bottle 620 ml; oval body label unwrapped (neck label not included)",
+   "real_dims_cm": {
+    "bottle_h": 28.5,
+    "bottle_d": 7.4,
+    "label_h": 8.5
+   },
+   "cap": "gold crown cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://s3.ap-southeast-1.wasabisys.com/sliquors3/wp-content/uploads/2023/06/Leo-Beer-Bottle-630ml.jpg",
+   "source_page_url": "https://www.s-liquor.com.kh/product/leo-beer-bottle-630ml/",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "beer_leo_can",
+   "files": [
+    "beer_leo_can.png"
+   ],
+   "size_px": [
+    502,
+    1024
+   ],
+   "aspect_w_over_h": 0.49,
+   "product": "เบียร์ กระป๋อง (beer can)",
+   "brand_real": "ลีโอ LEO",
+   "package": "aluminium can 490 ml; printed body unwrapped",
+   "real_dims_cm": {
+    "can_h": 16.8,
+    "can_d": 6.6
+   },
+   "cap": "pull-tab top",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://media.nedigital.sg/fairprice/fpol/media/images/product/XL/13241727_XL1_20231019.jpg",
+   "source_page_url": "https://www.fairprice.com.sg/product/leo-beer-can-490ml-13241727",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "beer_chang_bottle",
+   "files": [
+    "beer_chang_bottle.png"
+   ],
+   "size_px": [
+    529,
+    570
+   ],
+   "aspect_w_over_h": 0.928,
+   "product": "เบียร์ (beer bottle body label)",
+   "brand_real": "ช้าง Chang Classic",
+   "package": "green glass bottle 620 ml; body label unwrapped (neck foil not included)",
+   "real_dims_cm": {
+    "bottle_h": 28.5,
+    "bottle_d": 7.4,
+    "label_h": 9.0
+   },
+   "cap": "green/gold crown cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://i.pinimg.com/originals/6e/eb/42/6eeb420fce1261a5f07058f7696a69a0.jpg",
+   "source_page_url": "https://au.pinterest.com/pin/chang-classic-beer-from-thailand--66850375717127291/",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "soybean_oil_angoon_1l",
+   "files": [
+    "soybean_oil_angoon_1l.png",
+    "soybean_oil_angoon_1l_worn.png"
+   ],
+   "size_px": [
+    229,
+    324
+   ],
+   "aspect_w_over_h": 0.707,
+   "product": "น้ำมันถั่วเหลือง 1 ลิตร (soybean cooking oil)",
+   "brand_real": "องุ่น Angoon",
+   "package": "PET bottle 1 L; front label unwrapped",
+   "real_dims_cm": {
+    "bottle_h": 30.0,
+    "bottle_d": 8.4,
+    "label_h": 10.0
+   },
+   "cap": "yellow cap",
+   "method": "cylindrical unwrap of front photo (~120-150 deg of circumference)",
+   "uv_note": "front panel centred at u=0.5; texture covers only the photographed front arc, map it to the front of the container and tint the back with the edge colour",
+   "source_image_url": "https://www.domrey.com/uploads/catalogs/8850210000039.jpg",
+   "source_page_url": "https://www.domrey.com/single/6415034e45bed",
+   "licence": "unknown (real commercial product photo, used per client instruction 2026-10-19)"
   }
  ]
 }

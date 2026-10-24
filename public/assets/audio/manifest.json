@@ -1123,5 +1123,816 @@
   "cat": "sfx",
   "pitchVar": 0.02,
   "desc": "Ice-cream cart hand-bell rung in bursts (ไอติมกะทิ seller passing by)."
+ },
+ "female_scream_comedic": {
+  "files": [
+   "sfx/people/female_scream_comedic_1.mp3",
+   "sfx/people/female_scream_comedic_2.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Girl screams (customization gag: she sees you T-posing in shorts and runs)."
+ },
+ "gasp": {
+  "files": [
+   "sfx/people/gasp_1.mp3",
+   "sfx/people/gasp_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Shocked gasp (female / male)."
+ },
+ "crowd_laugh": {
+  "files": [
+   "sfx/people/crowd_laugh.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Crowd bursts out laughing."
+ },
+ "crowd_cheer": {
+  "files": [
+   "sfx/people/crowd_cheer.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Happy crowd cheer."
+ },
+ "crowd_aww": {
+  "files": [
+   "sfx/people/crowd_aww.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Sympathetic crowd 'awww' (sad moment, burnt dish)."
+ },
+ "applause": {
+  "files": [
+   "sfx/people/applause.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Applause (shop upgrade, perfect dish)."
+ },
+ "angry_grumble": {
+  "files": [
+   "sfx/people/angry_grumble_1.mp3",
+   "sfx/people/angry_grumble_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Angry muttering (mad shopkeeper / customer) - gibberish from reversed Thai speech."
+ },
+ "slot_machine_spin": {
+  "files": [
+   "sfx/casino/slot_machine_spin.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Slot machine reels spinning."
+ },
+ "slot_win": {
+  "files": [
+   "sfx/casino/slot_win.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Slot machine win jingle/bells."
+ },
+ "roulette_spin": {
+  "files": [
+   "sfx/casino/roulette_spin.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Roulette ball spinning, bouncing and settling."
+ },
+ "chips_clatter": {
+  "files": [
+   "sfx/casino/chips_clatter_1.mp3",
+   "sfx/casino/chips_clatter_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.06,
+  "desc": "Casino chips clattering / stacking."
+ },
+ "card_shuffle": {
+  "files": [
+   "sfx/casino/card_shuffle.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Deck of cards shuffled."
+ },
+ "cheers_glass_clink": {
+  "files": [
+   "sfx/casino/cheers_glass_clink_1.mp3",
+   "sfx/casino/cheers_glass_clink_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Cheers! glasses clinking."
+ },
+ "champagne_pop": {
+  "files": [
+   "sfx/casino/champagne_pop.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.04,
+  "desc": "Champagne cork pop + fizz + foam."
+ },
+ "beer_can_open": {
+  "files": [
+   "sfx/casino/beer_can_open.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Beer can cracked open."
+ },
+ "pour_beer": {
+  "files": [
+   "sfx/casino/pour_beer.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Pouring foamy beer into a glass."
+ },
+ "pour_wine": {
+  "files": [
+   "sfx/casino/pour_wine.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Pouring wine into a glass."
+ },
+ "slowmo_whoosh": {
+  "files": [
+   "sfx/casino/slowmo_whoosh.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Deep pitched-down slow-motion whoosh (slow-mo celebration)."
+ },
+ "heartbeat_slow": {
+  "files": [
+   "sfx/casino/heartbeat_slow.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Slow heartbeat (all-in bet, tension). Loopable-ish one-shot of ~9 s."
+ },
+ "lose_sting": {
+  "files": [
+   "sfx/casino/lose_sting.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Losing sting (lost everything at the casino)."
+ },
+ "whisper": {
+  "files": [
+   "sfx/ghost/whisper_1.mp3",
+   "sfx/ghost/whisper_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.03,
+  "desc": "Ghostly whispers: (1) a woman whispering 'ช่วยด้วย' (help me) in reverb, (2) male whispering voices."
+ },
+ "ghost_laugh_female": {
+  "files": [
+   "sfx/ghost/ghost_laugh_female_1.mp3",
+   "sfx/ghost/ghost_laugh_female_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.04,
+  "desc": "Female ghost laugh 'hihihi' with reverse-reverb swell (กระสือ / นางตานี)."
+ },
+ "wind_howl": {
+  "files": [
+   "sfx/ghost/wind_howl.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Howling wind gust."
+ },
+ "motorcycle_ghost_engine_loop": {
+  "files": [
+   "sfx/ghost/motorcycle_ghost_engine_loop.mp3"
+  ],
+  "vol": 0.55,
+  "loop": true,
+  "cat": "sfx",
+  "pitchVar": 0.0,
+  "desc": "Headless motorcycle ghost: slowed, distorted, reverb-drowned engine (loop)."
+ },
+ "ghost_scare_sting": {
+  "files": [
+   "sfx/ghost/ghost_scare_sting_1.mp3",
+   "sfx/ghost/ghost_scare_sting_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Jump-scare sting (kept below ear-splitting level)."
+ },
+ "dog_howl_night": {
+  "files": [
+   "sfx/ghost/dog_howl_night.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Dog howling far away at night."
+ },
+ "chain_rattle": {
+  "files": [
+   "sfx/ghost/chain_rattle.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Chains rattling in the dark."
+ },
+ "bells_eerie": {
+  "files": [
+   "sfx/ghost/bells_eerie.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "sfx",
+  "pitchVar": 0.05,
+  "desc": "Eerie slowed temple wind-bells in a big reverb."
+ },
+ "sad_trombone": {
+  "files": [
+   "meme/sad_trombone.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Wah-wah-wah-waaah sad trombone."
+ },
+ "airhorn": {
+  "files": [
+   "meme/airhorn_1.mp3",
+   "meme/airhorn_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.03,
+  "desc": "Air horn: (1) one long blast, (2) bwa-bwa-BWAAA."
+ },
+ "boing": {
+  "files": [
+   "meme/boing_1.mp3",
+   "meme/boing_2.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.08,
+  "desc": "Cartoon spring boing."
+ },
+ "bass_boom": {
+  "files": [
+   "meme/bass_boom.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Deep 'vine boom' style bass impact (original synthesis)."
+ },
+ "bonk": {
+  "files": [
+   "meme/bonk.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.06,
+  "desc": "Cartoon bonk on the head."
+ },
+ "slide_whistle_up": {
+  "files": [
+   "meme/slide_whistle_up.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Slide whistle rising."
+ },
+ "slide_whistle_down": {
+  "files": [
+   "meme/slide_whistle_down.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Slide whistle falling."
+ },
+ "crickets_awkward": {
+  "files": [
+   "meme/crickets_awkward.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Awkward silence... crickets."
+ },
+ "dun_dun_dunn": {
+  "files": [
+   "meme/dun_dun_dunn.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Dramatic 'dun dun DUNNN' orchestral stabs (original)."
+ },
+ "laugh_track": {
+  "files": [
+   "meme/laugh_track.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Sitcom laugh track with a bit of applause."
+ },
+ "ka_ching": {
+  "files": [
+   "meme/ka_ching.mp3"
+  ],
+  "vol": 0.65,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Ka-ching! cash register (profit!)."
+ },
+ "fail_buzzer": {
+  "files": [
+   "meme/fail_buzzer.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Long fail buzzer."
+ },
+ "quack": {
+  "files": [
+   "meme/quack.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.08,
+  "desc": "Duck quack (synthesized)."
+ },
+ "squeaky_toy": {
+  "files": [
+   "meme/squeaky_toy.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.08,
+  "desc": "Squeaky toy squeaks."
+ },
+ "record_scratch": {
+  "files": [
+   "meme/record_scratch.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Record scratch (everything stops)."
+ },
+ "wow_crowd": {
+  "files": [
+   "meme/wow_crowd.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Crowd 'wooOOOoo!' impressed reaction (synthesized crowd)."
+ },
+ "tada": {
+  "files": [
+   "meme/tada.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Ta-da! fanfare."
+ },
+ "ding_correct": {
+  "files": [
+   "meme/ding_correct.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Correct-answer ding (right words in the bargaining minigame)."
+ },
+ "wrong_buzz": {
+  "files": [
+   "meme/wrong_buzz.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Short wrong-answer buzz."
+ },
+ "sparkle_chime": {
+  "files": [
+   "meme/sparkle_chime.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Sparkle chime (item upgraded / shiny)."
+ },
+ "level_up_fanfare": {
+  "files": [
+   "meme/level_up_fanfare.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Short funny level-up / skill unlocked fanfare."
+ },
+ "cloud_poof": {
+  "files": [
+   "meme/cloud_poof.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.06,
+  "desc": "Poof! (thought cloud appears / disappears)."
+ },
+ "bubble_pop": {
+  "files": [
+   "meme/bubble_pop_1.mp3",
+   "meme/bubble_pop_2.mp3",
+   "meme/bubble_pop_3.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.12,
+  "desc": "Bubble pop (speech bubbles appearing, UI blips)."
+ },
+ "whoosh_text": {
+  "files": [
+   "meme/whoosh_text_1.mp3",
+   "meme/whoosh_text_2.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.08,
+  "desc": "Quick whoosh for flying 3D text / transitions."
+ },
+ "tick_tock_loop": {
+  "files": [
+   "meme/tick_tock_loop.mp3"
+  ],
+  "vol": 0.55,
+  "loop": true,
+  "cat": "meme",
+  "pitchVar": 0.0,
+  "desc": "3-second bargaining timer tick-tock (6 ticks, loops seamlessly)."
+ },
+ "camera_shutter": {
+  "files": [
+   "meme/camera_shutter.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.05,
+  "desc": "Camera shutter (newspaper photo, selfie)."
+ },
+ "main_menu": {
+  "files": [
+   "music/main_menu.mp3"
+  ],
+  "vol": 0.55,
+  "loop": true,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Main menu theme: warm, slightly lo-fi 2000s Thai-indie (clean guitar, EP, brushed kit). Original."
+ },
+ "day_gameplay_loop": {
+  "files": [
+   "music/day_gameplay_loop.mp3"
+  ],
+  "vol": 0.4,
+  "loop": true,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Daytime gameplay: light Thai-flavoured loop (ranat ek, khim, khaen drone, ching & thon). Original."
+ },
+ "night_loop": {
+  "files": [
+   "music/night_loop.mp3"
+  ],
+  "vol": 0.45,
+  "loop": true,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Night loop: eerie drone, sparse detuned ranat notes, ghostly bells. Original."
+ },
+ "casino_lounge": {
+  "files": [
+   "music/casino_lounge.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Casino lounge (intro): 'Local Forecast - Elevator' by Kevin MacLeod (CC BY 4.0) - credit required."
+ },
+ "slowmo_dramatic": {
+  "files": [
+   "music/slowmo_dramatic.mp3"
+  ],
+  "vol": 0.55,
+  "loop": true,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Over-dramatic slow-motion choir/strings/timpani (comedic intro celebration). Original."
+ },
+ "skill_tree_dreamy": {
+  "files": [
+   "music/skill_tree_dreamy.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Skill-tree thought cloud: dreamy harp arpeggios, celesta, warm pads. Original."
+ },
+ "bargaining_tension_loop": {
+  "files": [
+   "music/bargaining_tension_loop.mp3"
+  ],
+  "vol": 0.5,
+  "loop": true,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Bargaining / mad-system tension loop (128 bpm pizzicato ostinato). Original."
+ },
+ "sleep_lullaby": {
+  "files": [
+   "music/sleep_lullaby.mp3"
+  ],
+  "vol": 0.45,
+  "loop": true,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Midnight sleep on cardboard: slow khim lullaby over a soft pad. Original."
+ },
+ "shop_upgrade_jingle": {
+  "files": [
+   "music/shop_upgrade_jingle.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "Shop/restaurant upgrade jingle (ranat run + chord + ching). Original."
+ },
+ "day_end_jingle": {
+  "files": [
+   "music/day_end_jingle.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "music",
+  "pitchVar": 0.0,
+  "desc": "End-of-day jingle (khaen chord, ranat cadence). Original."
+ },
+ "sawasdee": {
+  "files": [
+   "voice/sawasdee_1.mp3",
+   "voice/sawasdee_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "สวัสดีค่ะ / สวัสดีครับ - hello (female, male). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "khob_khun": {
+  "files": [
+   "voice/khob_khun_1.mp3",
+   "voice/khob_khun_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "ขอบคุณค่ะ / ขอบคุณครับ - thank you (female, male). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "aroi": {
+  "files": [
+   "voice/aroi_1.mp3",
+   "voice/aroi_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "อร่อย! / อร่อยมากครับ - delicious! / very delicious! Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "phet": {
+  "files": [
+   "voice/phet.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "เผ็ด - spicy! Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "mai": {
+  "files": [
+   "voice/mai.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "ไม่ - no / not. Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "dai": {
+  "files": [
+   "voice/dai.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "ได้ - can / OK (ได้!). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "im_laew": {
+  "files": [
+   "voice/im_laew_1.mp3",
+   "voice/im_laew_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "อิ่มแล้วค่ะ / ผมอิ่มแล้วครับ - I'm full. Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "por_laew": {
+  "files": [
+   "voice/por_laew_1.mp3",
+   "voice/por_laew_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "พอแล้วค่ะ / พอแล้วครับ - that's enough! (seasoning, haggling). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "mai_pen_rai": {
+  "files": [
+   "voice/mai_pen_rai.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "ไม่เป็นไร - never mind / no problem. Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "kho_thot": {
+  "files": [
+   "voice/kho_thot_1.mp3",
+   "voice/kho_thot_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "ขอโทษค่ะ / ขอโทษครับ - sorry / excuse me. Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "chuay_duay": {
+  "files": [
+   "voice/chuay_duay_1.mp3",
+   "voice/chuay_duay_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.03,
+  "desc": "ช่วยด้วย! - help! Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "fai_mai": {
+  "files": [
+   "voice/fai_mai.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.03,
+  "desc": "ไฟไหม้! - fire! (wok flame-up / burnt food). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "tamruat": {
+  "files": [
+   "voice/tamruat_1.mp3",
+   "voice/tamruat_2.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.03,
+  "desc": "ตำรวจ! - police! Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "nii_arai": {
+  "files": [
+   "voice/nii_arai.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "นี่อะไรครับ - what is this? (customer looking at the menu). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "sabai_dee_mai": {
+  "files": [
+   "voice/sabai_dee_mai.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "voice",
+  "pitchVar": 0.04,
+  "desc": "สบายดีไหม - how are you? Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
  }
 }

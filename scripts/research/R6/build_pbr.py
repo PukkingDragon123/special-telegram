@@ -28,7 +28,6 @@ def m(mid, src, size=1024, tile=None, tint=False, tags=(), height=False, ops=(),
 m("asphalt_road_sunbleached", "ph:asphalt_04", 2048, 4.0, tags=["ground", "road", "asphalt", "outdoor", "main-road", "sun-bleached"], height=True, ops=[("lum", 0.36)],
   note="Main road. Grey, sun-bleached, faint cracks.")
 m("asphalt_cracked", "ph:asphalt_02", 1024, 3.0, tags=["ground", "road", "asphalt", "cracked", "outdoor"], height=True)
-m("asphalt_patched", "acg:Road015B", 1024, 5.0, tags=["ground", "road", "asphalt", "patched", "repairs", "outdoor"])
 m("asphalt_wet", "ph:asphalt_04", 1024, 4.0, tags=["ground", "road", "asphalt", "wet", "rain", "puddles", "night"], height=True,
   ops=[("lum", 0.36), ("wet", dict(coverage=0.17, damp=0.9, seed=11, darken=0.33, blob_scale=8))],
   note="Same base as asphalt_road_sunbleached with puddles in low areas (roughness ~0.05) and damp darkening.")
@@ -38,14 +37,15 @@ m("concrete_wet_puddles", "ph:garage_floor", 1024, 1.9, tags=["ground", "concret
   ops=[("desat", 0.45), ("wet", dict(coverage=0.2, damp=0.8, seed=5, darken=0.3, blob_scale=6))],
   note="Puddle-friendly concrete: height.jpg marks low spots; roughness already varies (wet patches).")
 m("sidewalk_pavers_square", "acg:PavingStones112", 2048, 2.0, tags=["ground", "sidewalk", "pavers", "square", "outdoor", "main-sidewalk"], height=True)
-m("sidewalk_pavers_interlocking", "acg:PavingStones072", 1024, 1.0, tags=["ground", "sidewalk", "pavers", "interlocking", "uni-paver", "outdoor"])
-m("sidewalk_tactile_yellow", "acg:TactilePaving003", 1024, 1.2, tags=["ground", "sidewalk", "tactile", "yellow", "outdoor"])
+m("sidewalk_pavers_interlocking", "ph:concrete_pavers", 1024, None, tags=["ground", "sidewalk", "pavers", "interlocking", "uni-paver", "outdoor"])
+m("sidewalk_tactile_yellow", "acg:TactilePaving006", 1024, 0.9, tags=["ground", "sidewalk", "tactile", "yellow", "outdoor"],
+  ops=[("recolor", dict(rgb=(222, 182, 38), amount=0.85))], note="Photogrammetry tactile tiles re-coloured to Thai safety yellow.")
 m("gravel_crushed", "acg:Gravel033", 1024, None, tags=["ground", "gravel", "roadside", "construction", "outdoor"])
 m("dirt_path_dry", "ph:dirt_floor", 1024, None, tags=["ground", "dirt", "path", "rural", "dry"])
 m("mud_wet_rural", "ph:brown_mud_02", 1024, None, tags=["ground", "mud", "wet", "rural", "path"], height=True)
 m("laterite_red_dirt", "ph:red_laterite_soil_stones", 1024, None, tags=["ground", "laterite", "red-dirt", "rural", "empty-lot"])
 m("grass_dry", "ph:withered_grass", 1024, None, tags=["ground", "grass", "dry", "hot-season", "empty-lot", "rural"])
-m("grass_lush", "acg:Grass004", 1024, None, tags=["ground", "grass", "lush", "green", "rainy-season", "rural"])
+m("grass_lush", "ph:leafy_grass", 1024, None, tags=["ground", "grass", "lush", "green", "rainy-season", "rural"])
 m("leaf_litter_dry", "ph:dry_decay_leaves", 1024, None, tags=["ground", "leaves", "litter", "dry", "under-trees"])
 
 # ------------------------------------------------------------------ walls
@@ -57,32 +57,28 @@ m("plaster_moldy_stained", "ph:concrete_wall_003", 1024, None, tags=["wall", "pl
 m("plaster_peeling", "ph:worn_plaster_wall", 1024, None, tint=True, tags=["wall", "plaster", "peeling", "old", "shophouse"],
   ops=[("desat", 0.75), ("lum", 0.55)])
 m("plaster_peeling_red", "ph:peeling_painted_wall", 1024, None, tags=["wall", "plaster", "peeling", "red", "cracked-paint"])
-m("plaster_broken_brick", "acg:PaintedPlaster014", 1024, 2.0, tags=["wall", "plaster", "broken", "exposed-brick", "old"])
+m("plaster_broken_brick", "ph:damaged_plaster", 1024, None, tags=["wall", "plaster", "broken", "exposed-brick", "old"])
 m("concrete_mossy", "ph:worn_mossy_plasterwall", 1024, None, tags=["wall", "concrete", "moss", "mold", "humid", "canal"])
 m("brick_exposed_red", "acg:Bricks090", 1024, None, tags=["wall", "brick", "red", "exposed", "mortar"])
-m("tiles_wall_white_dirty", "acg:Tiles133B", 1024, 1.0, tags=["wall", "tiles", "ceramic", "white", "kitchen", "dirty", "shophouse"])
-m("terrazzo_floor", "acg:Tiles043", 1024, 1.2, tags=["floor", "terrazzo", "shophouse", "interior"])
+m("tiles_wall_white_dirty", "acg:Tiles039", 1024, 1.6, tags=["wall", "tiles", "ceramic", "white", "kitchen", "dirty", "shophouse"])
+m("terrazzo_floor", "acg:Terrazzo019M", 1024, 0.65, tags=["floor", "terrazzo", "shophouse", "interior"])
 m("tiles_floor_ceramic", "ph:floor_tiles_08", 1024, None, tags=["floor", "tiles", "ceramic", "beige", "shop", "interior"])
 m("tiles_floor_terracotta", "ph:terracotta_floor_tiles", 1024, None, tags=["floor", "tiles", "terracotta", "temple", "old-house"])
 m("cement_block_wall", "ph:concrete_block_wall", 1024, None, tags=["wall", "cement-block", "masonry", "unplastered", "back-alley"],
   ops=[("desat", 0.55), ("lum", 0.42)])
-m("temple_white_wall", "acg:Plaster003", 1024, 2.0, tags=["wall", "plaster", "white", "temple", "whitewash"], ops=[("desat", 0.65)])
+m("temple_white_wall", "acg:PaintedPlaster017", 1024, 2.0, tags=["wall", "plaster", "white", "temple", "whitewash"])
 
 # ------------------------------------------------------------------ metals
-m("stainless_brushed", "acg:Metal009", 1024, 0.6, tags=["metal", "stainless", "brushed", "kitchen", "cart", "counter"])
-m("galvanized_steel", "acg:Metal014", 1024, 1.0, tags=["metal", "galvanized", "zinc", "sheet", "pipe"])
 m("steel_rusty", "ph:rusty_metal_02", 1024, None, tags=["metal", "steel", "rust", "rusty", "old"])
-m("corrugated_painted", "acg:CorrugatedSteel003", 1024, 2.0, tint=True, tags=["metal", "corrugated", "painted", "wall", "roof", "fence"],
-  ops=[("desat", 0.9)])
+m("corrugated_painted", "ph:box_profile_metal_sheet", 1024, None, tint=True, tags=["metal", "corrugated", "painted", "wall", "roof", "fence"],
+  ops=[("desat", 1.0), ("lum", 0.6)])
 m("corrugated_rusty", "ph:rusty_corrugated_iron", 1024, None, tags=["metal", "corrugated", "rust", "roof", "fence", "shack"])
-m("metal_painted_chipped", "acg:PaintedMetal012", 1024, 1.0, tint=True, tags=["metal", "painted", "chipped", "rust", "grille", "cart"],
-  ops=[("desat", 0.6)])
+m("metal_painted_chipped", "ph:green_metal_rust", 1024, None, tint=True, tags=["metal", "painted", "chipped", "rust", "grille", "cart"],
+  ops=[("neutralize", dict(keep_rust=True)), ("lum", 0.55)],
+  note="Real scan; green paint neutralised to grey so it can be tinted, rust spots keep their colour.")
 m("shutter_roller_rusty", "ph:rusty_metal_shutter", 1024, None, tags=["metal", "roller-shutter", "shophouse", "rust"])
 m("shutter_roller_painted", "ph:painted_metal_shutter", 1024, None, tags=["metal", "roller-shutter", "shophouse", "painted"])
-m("cast_iron_wok", "acg:Metal046B", 1024, 0.5, tags=["metal", "cast-iron", "carbon-steel", "wok", "seasoned", "dark"])
-m("chrome", "acg:Metal049A", 1024, 0.5, tags=["metal", "chrome", "polished", "mirror"], ops=[("lum", 0.8)])
-m("brass_gold", "acg:Metal048B", 1024, 0.5, tags=["metal", "brass", "gold", "casino", "fingerprints"])
-m("aluminium_scratched", "acg:Metal050C", 1024, 0.5, tags=["metal", "aluminium", "pot", "scratched", "kitchen"], ops=[("lum", 0.82)])
+m("cast_iron_wok", "acg:Metal063", 1024, 0.5, tags=["metal", "cast-iron", "carbon-steel", "wok", "seasoned", "dark"], ops=[("desat", 0.5), ("lum", 0.13)])
 
 # ------------------------------------------------------------------ wood
 m("wood_planks_old", "ph:old_planks_02", 1024, None, tags=["wood", "planks", "old", "weathered"])
@@ -102,18 +98,17 @@ m("roof_fibrecement_corrugated", "ph:asbestos_sheet", 1024, None, tags=["roof", 
 m("roof_concrete_slab", "ph:concrete_floor_damaged_01", 1024, None, tags=["roof", "concrete", "slab", "stained", "flat-roof"])
 
 # ------------------------------------------------------------------ plastic & misc
-m("plastic_rough", "acg:Plastic013B", 1024, 0.5, tint=True, tags=["plastic", "rough", "chair", "stool", "basin", "crate"], ops=[("desat", 1.0), ("lum", 0.8)])
-m("plastic_glossy", "acg:Plastic010", 1024, 0.5, tint=True, tags=["plastic", "glossy", "bottle", "bucket", "sign"], ops=[("desat", 1.0), ("lum", 0.8)])
-m("rubber_black", "acg:Rubber004", 1024, 0.75, tags=["rubber", "black", "mat", "tyre"])
-m("cardboard_worn", "acg:Cardboard003", 1024, 0.6, tags=["cardboard", "paper", "worn", "sleeping-mat", "box"])
+m("rubber_black", "ph:rubber_tiles", 1024, None, tags=["rubber", "black", "mat", "tyre"])
+m("cardboard_worn", "acg:Paper005", 1024, 0.6, tags=["cardboard", "paper", "worn", "sleeping-mat", "box"])
 m("paper_creased", "acg:Paper003", 1024, 0.4, tags=["paper", "creased", "white", "menu", "bag"])
-m("canvas_tarp", "acg:Fabric061", 1024, None, tint=True, tags=["fabric", "canvas", "tarp", "awning", "umbrella"], ops=[("desat", 1.0), ("lum", 0.7)])
+m("canvas_tarp", "acg:Fabric044", 1024, 0.5, tint=True, tags=["fabric", "canvas", "tarp", "awning", "umbrella"], ops=[("desat", 1.0), ("lum", 0.7)])
 m("cotton_jersey", "ph:cotton_jersey", 1024, None, tint=True, tags=["fabric", "cotton", "jersey", "singlet", "t-shirt"], ops=[("desat", 1.0), ("lum", 0.78)])
 m("denim", "ph:denim_fabric_04", 1024, None, tags=["fabric", "denim", "jeans"])
 m("velvet_red", "ph:velour_velvet", 1024, None, tags=["fabric", "velvet", "red", "casino", "curtain", "chair"])
-m("leather_black", "acg:Leather026", 1024, 0.5, tags=["leather", "black", "seat", "motorbike", "sofa"])
-m("leather_red_quilted", "acg:Leather011", 1024, 0.5, tags=["leather", "red", "quilted", "casino", "sofa"])
-m("marble_white", "acg:Marble021", 1024, 1.5, tags=["stone", "marble", "white", "casino", "counter"])
+m("leather_black", "acg:Leather037", 1024, 0.5, tags=["leather", "black", "seat", "motorbike", "sofa"], ops=[("desat", 0.85), ("lum", 0.08)])
+m("leather_red", "acg:Leather038", 1024, 0.5, tags=["leather", "red", "casino", "sofa", "booth"], ops=[("recolor", dict(rgb=(118, 16, 20), amount=0.9))],
+  note="Multi-angle photo leather re-coloured to casino red.")
+m("marble_beige_polished", "acg:Marble026", 1024, 1.5, tags=["stone", "marble", "beige", "polished", "casino", "counter", "lobby"])
 m("marble_checker_floor", "ph:floor_tiles_06", 1024, None, tags=["floor", "marble", "checkerboard", "casino", "lobby"])
 
 
@@ -189,7 +184,30 @@ def op_wet(mat, coverage=0.16, damp=0.85, seed=0, darken=0.35, puddle_rough=0.03
     mat.setdefault("extra", {})["wetmask"] = (p * 255).astype(np.uint8)
 
 
-OPS = dict(desat=op_desat, lum=op_lum, wet=op_wet)
+def op_recolor(mat, rgb=(200, 160, 40), amount=1.0):
+    """Shift a real scan toward a target colour while keeping its luminance detail."""
+    a = mat["albedo"].astype(np.float32)
+    l = lum(a)
+    new = (l / max(l.mean(), 1e-3))[..., None] * np.array(rgb, np.float32)
+    mat["albedo"] = np.clip(a * (1 - amount) + new * amount, 0, 255)
+
+
+def op_neutralize(mat, keep_rust=True):
+    """Desaturate the dominant paint hue (e.g. green) while keeping rust-coloured pixels."""
+    a = mat["albedo"].astype(np.float32)
+    mx, mn = a.max(-1), a.min(-1)
+    l = lum(a)[..., None]
+    gray = np.repeat(l, 3, -1)
+    if keep_rust:
+        r, g, b = a[..., 0], a[..., 1], a[..., 2]
+        rust = np.clip(((r - g) / (mx + 1e-3) - 0.08) / 0.15, 0, 1) * np.clip(((r - b) / (mx + 1e-3) - 0.15) / 0.2, 0, 1)
+    else:
+        rust = np.zeros(a.shape[:2], np.float32)
+    w = (1 - rust)[..., None]
+    mat["albedo"] = np.clip(gray * w + a * (1 - w), 0, 255)
+
+
+OPS = dict(desat=op_desat, lum=op_lum, wet=op_wet, recolor=op_recolor, neutralize=op_neutralize)
 
 
 def build(rec, report):

@@ -70,7 +70,15 @@ def poly_mask(pts, shape, dilate=0, blur=0):
 
 
 def gblur(a, s):
-    return cv2.GaussianBlur(a, (0, 0), s)
+    """Gaussian blur; large sigmas are computed on a downsampled copy (same result, ~100x faster)."""
+    if s <= 6:
+        return cv2.GaussianBlur(a, (0, 0), s)
+    h, w = a.shape[:2]
+    f = max(2, int(s / 3))
+    sw, sh = max(4, w // f), max(4, h // f)
+    small = cv2.resize(a, (sw, sh), interpolation=cv2.INTER_AREA)
+    small = cv2.GaussianBlur(small, (0, 0), s * sw / w)
+    return cv2.resize(small, (w, h), interpolation=cv2.INTER_LINEAR)
 
 
 def norm_conv(img, w, s):
@@ -201,7 +209,13 @@ def remove_hair(rgb, lm, dbg=None):
     Yk = lum(lin)[sk_w > 0.5]
     lo_y, hi_y = np.percentile(Yk, [12, 70]) if Yk.size > 100 else (0.1, 0.5)
     Yf = lum(fill)
-    scale = np.minimum(Yf, hi_y) / np.maximum(Yf, 1e-4)
+    gl = patch_mask(lm, [168, 9, 8, 6], iod * 0.05, (h, w)) * (keep > 0.95)
+    if gl.sum() > 30:
+        y_ref = float(np.median(lum(lin)[gl > 0.5]))
+        scale = (0.35 * Yf + 0.65 * y_ref) / np.maximum(Yf, 1e-4)
+        scale = np.minimum(scale * Yf, hi_y) / np.maximum(Yf, 1e-4)
+    else:
+        scale = np.minimum(Yf, hi_y) / np.maximum(Yf, 1e-4)
     fill = fill * scale[..., None]
     detail = skin_micro_detail(lin, lm, iod, (h, w))
     fill = fill * detail[..., None]
@@ -459,6 +473,23 @@ def main():
         sel = json.load(f)
     root = os.path.dirname(os.path.dirname(os.path.abspath(analysis)))
     os.makedirs(out_dir, exist_ok=True)
+    cache = {}
+
+    def donor_loader(name):
+        if name not in cache:
+            rec = A[name]
+            pth = rec["path"] if os.path.isabs(rec["path"]) else os.path.join(root, rec["path"])
+            bgr = cv2.imread(pth, cv2.IMREAD_COLOR)
+            rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
+            lmd = np.float32(rec["lm"])
+            if rgb.shape[0] != N:
+                lmd = lmd * (N / rgb.shape[0])
+                rgb = cv2.resize(rgb, (N, N), interpolation=cv2.INTER_CUBIC)
+            al, lm2, _ = align(rgb, lmd)
+            cache[name] = (al, lm2)
+        return cache[name]
+
+    X.set_donor_loader(donor_loader)
     meta_path = os.path.join(out_dir, "_build_meta.json")
     meta = json.load(open(meta_path)) if os.path.exists(meta_path) else {}
     for e in sel:

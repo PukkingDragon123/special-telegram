@@ -30,11 +30,12 @@ MAX_BYTES = 15 << 20
 SKIP_HOSTS = ("shutterstock.com/search", "logo", "vector", "clipart", "cartoon", "illustration")
 
 
-def ddg(q, pages=1):
+def _ddg_once(q, pages=1):
     r = S.get("https://duckduckgo.com/", params={"q": q, "iax": "images", "ia": "images"}, timeout=30)
     m = re.search(r'vqd=["\']?([\d-]+)', r.text)
     if not m:
-        return []
+        return None
+    time.sleep(1.5)
     vqd = m.group(1)
     out = []
     for p in range(1, pages + 1):
@@ -50,6 +51,30 @@ def ddg(q, pages=1):
                         "w": x.get("width", 0), "h": x.get("height", 0)})
         time.sleep(1.0)
     return out
+
+
+_LAST = [0.0]
+
+
+def ddg(q, pages=1, tries=5):
+    """DuckDuckGo image search with back-off: an empty answer usually means a soft rate limit."""
+    gap = time.time() - _LAST[0]
+    if gap < 8.0:
+        time.sleep(8.0 - gap)
+    _LAST[0] = time.time()
+    for t in range(tries):
+        try:
+            out = _ddg_once(q, pages)
+        except requests.RequestException as e:
+            print("ddg error", e, file=sys.stderr)
+            out = None
+        if out:
+            time.sleep(2.0)
+            return out
+        wait = 30 * (t + 1)
+        print(f"ddg: empty for {q!r}, sleeping {wait}s", file=sys.stderr, flush=True)
+        time.sleep(wait)
+    return []
 
 
 def commons(cat, limit=60):

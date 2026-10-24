@@ -43,13 +43,28 @@ def grab(url, dest, ua):
     return "ok"
 
 
+BIG = int(os.environ.get("R1_BIG", "0"))      # e.g. 1920 or 3840 for Commons hi-res
+
+
+def commons_thumb(orig, w):
+    u = orig.split("?")[0]
+    tail = u.split("/wikipedia/commons/")[1]
+    name = tail.split("/")[-1]
+    return f"https://thumb.wikimedia.org/wikipedia/commons/thumb/{tail}/{w}px-{name}"
+
+
 def job(c):
-    out = os.path.join(RAW, "full", c["id"] + ".jpg")
+    suffix = f"_{BIG}" if (BIG and c["source"] == "commons") else ""
+    out = os.path.join(RAW, "full", c["id"] + suffix + ".jpg")
     if os.path.exists(out) and os.path.getsize(out) > 3000:
         return c["id"], "cached"
     url = c["url"]
     if c["source"] == "commons":
         url = (c.get("thumb") or url).split("?")[0]
+        if BIG and (c.get("w") or 0) > BIG:
+            url = commons_thumb(c["url"], BIG)
+        elif BIG:
+            url = commons_thumb(c["url"], 1920) if (c.get("w") or 0) > 1920 else url
     ua = WM_UA if "wikimedia" in url else UA
     res = grab(url, out, ua)
     if res != "ok" and c.get("thumb") and c["thumb"] != url:
@@ -65,7 +80,7 @@ def main():
     missing = [i for i in sys.argv[1:] if i not in idx]
     if missing:
         print("unknown:", missing)
-    with cf.ThreadPoolExecutor(6) as ex:
+    with cf.ThreadPoolExecutor(3 if BIG else 6) as ex:
         for cid, res in ex.map(job, todo):
             print(cid, res, flush=True)
 

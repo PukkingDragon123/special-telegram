@@ -64,17 +64,17 @@
  },
  "sidewalk_pavers_interlocking": {
   "gl_check": [
-   -0.8489015698432922,
-   0.8494809865951538
+   -0.8622544407844543,
+   0.887088418006897
   ],
-  "src": "acg:PavingStones072"
+  "src": "ph:concrete_pavers"
  },
  "sidewalk_tactile_yellow": {
   "gl_check": [
-   -0.9676803946495056,
-   0.9676530361175537
+   -0.8604848980903625,
+   0.8582355976104736
   ],
-  "src": "acg:TactilePaving003"
+  "src": "acg:TactilePaving006"
  },
  "gravel_crushed": {
   "gl_check": [
@@ -113,10 +113,10 @@
  },
  "grass_lush": {
   "gl_check": [
-   -0.45666056871414185,
-   0.45440196990966797
+   -0.38828516006469727,
+   0.4524696469306946
   ],
-  "src": "acg:Grass004"
+  "src": "ph:leafy_grass"
  },
  "leaf_litter_dry": {
   "gl_check": [
@@ -162,10 +162,10 @@
  },
  "plaster_broken_brick": {
   "gl_check": [
-   -0.7267020344734192,
-   0.714246392250061
+   -0.6256765723228455,
+   0.584486722946167
   ],
-  "src": "acg:PaintedPlaster014"
+  "src": "ph:damaged_plaster"
  },
  "concrete_mossy": {
   "gl_check": [
@@ -183,17 +183,17 @@
  },
  "tiles_wall_white_dirty": {
   "gl_check": [
-   -0.9131773114204407,
-   0.9095108509063721
+   -0.6472029685974121,
+   0.6791536808013916
   ],
-  "src": "acg:Tiles133B"
+  "src": "acg:Tiles039"
  },
  "terrazzo_floor": {
   "gl_check": [
-   -0.4164375960826874,
-   0.42743855714797974
+   -0.41979891061782837,
+   0.5050235986709595
   ],
-  "src": "acg:Tiles043"
+  "src": "acg:Terrazzo019M"
  },
  "tiles_floor_ceramic": {
   "gl_check": [
@@ -218,10 +218,10 @@
  },
  "temple_white_wall": {
   "gl_check": [
-   -0.6001318097114563,
-   0.5994434952735901
+   -0.731655478477478,
+   0.7459908723831177
   ],
-  "src": "acg:Plaster003"
+  "src": "acg:PaintedPlaster017"
  },
  "galvanized_steel": {
   "gl_check": [
@@ -239,10 +239,10 @@
  },
  "corrugated_painted": {
   "gl_check": [
-   -0.9601029753684998,
-   0.4536658823490143
+   -0.9868884682655334,
+   0.444335401058197
   ],
-  "src": "acg:CorrugatedSteel003"
+  "src": "ph:box_profile_metal_sheet"
  },
  "corrugated_rusty": {
   "gl_check": [
@@ -253,10 +253,10 @@
  },
  "metal_painted_chipped": {
   "gl_check": [
-   -0.4577796757221222,
-   0.40515416860580444
+   -0.5886214971542358,
+   0.5771791934967041
   ],
-  "src": "acg:PaintedMetal012"
+  "src": "ph:green_metal_rust"
  },
  "shutter_roller_rusty": {
   "gl_check": [
@@ -274,10 +274,10 @@
  },
  "cast_iron_wok": {
   "gl_check": [
-   -0.6428622603416443,
-   0.6453900337219238
+   -0.18255475163459778,
+   0.2099473625421524
   ],
-  "src": "acg:Metal046B"
+  "src": "acg:Metal063"
  },
  "chrome": {
   "gl_check": [
@@ -400,17 +400,17 @@
  },
  "rubber_black": {
   "gl_check": [
-   -0.6759557723999023,
-   0.6767241954803467
+   -0.9212126731872559,
+   0.9582175612449646
   ],
-  "src": "acg:Rubber004"
+  "src": "ph:rubber_tiles"
  },
  "cardboard_worn": {
   "gl_check": [
-   -0.7666240334510803,
-   0.417235404253006
+   -0.7279402017593384,
+   0.8182894587516785
   ],
-  "src": "acg:Cardboard003"
+  "src": "acg:Paper005"
  },
  "paper_creased": {
   "gl_check": [
@@ -421,10 +421,10 @@
  },
  "canvas_tarp": {
   "gl_check": [
-   -0.8606774806976318,
-   0.8042995929718018
+   -0.9242557883262634,
+   0.9261224865913391
   ],
-  "src": "acg:Fabric061"
+  "src": "acg:Fabric044"
  },
  "cotton_jersey": {
   "gl_check": [
@@ -449,10 +449,10 @@
  },
  "leather_black": {
   "gl_check": [
-   -0.6364728212356567,
-   0.6426082849502563
+   -0.8336641788482666,
+   0.8325543999671936
   ],
-  "src": "acg:Leather026"
+  "src": "acg:Leather037"
  },
  "leather_red_quilted": {
   "gl_check": [
@@ -474,5 +474,19 @@
    0.44837090373039246
   ],
   "src": "ph:floor_tiles_06"
+ },
+ "leather_red": {
+  "gl_check": [
+   -0.495952844619751,
+   0.5470350980758667
+  ],
+  "src": "acg:Leather038"
+ },
+ "marble_beige_polished": {
+  "gl_check": [
+   -0.7621904015541077,
+   0.7584997415542603
+  ],
+  "src": "acg:Marble026"
  }
 }

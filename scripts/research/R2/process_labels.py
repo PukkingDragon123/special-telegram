@@ -188,6 +188,26 @@ job("carton_chang_3pack", "chang_carton/chang_carton_01.jpg", "crop", "แพ็
     box=(0.025, 0.415, 0.975, 0.975), deshade=0)
 
 
+job("beer_leo_bottle", "leo_bottle2/leo_bottle2_02.jpg", "cyl", "เบียร์ (beer bottle body label)", "ลีโอ LEO",
+    "brown glass bottle 620 ml; oval body label unwrapped (neck label not included)",
+    {"bottle_h": 28.5, "bottle_d": 7.4, "label_h": 8.5}, cap="gold crown cap", y0=0.545, y1=0.845,
+    max_deg=66, deshade=0.4)
+
+job("beer_leo_can", "leo_can/leo_can_01.jpg", "cyl", "เบียร์ กระป๋อง (beer can)", "ลีโอ LEO",
+    "aluminium can 490 ml; printed body unwrapped", {"can_h": 16.8, "can_d": 6.6}, cap="pull-tab top",
+    y0=0.07, y1=0.93, max_deg=70, deshade=0.35)
+
+job("beer_chang_bottle", "chang_bottle/chang_bottle_04.jpg", "cyl", "เบียร์ (beer bottle body label)",
+    "ช้าง Chang Classic", "green glass bottle 620 ml; body label unwrapped (neck foil not included)",
+    {"bottle_h": 28.5, "bottle_d": 7.4, "label_h": 9.0}, cap="green/gold crown cap", y0=0.515, y1=0.80,
+    max_deg=66, deshade=0.4)
+
+job("soybean_oil_angoon_1l", "angoon_oil/angoon_oil_04.jpg", "cyl", "น้ำมันถั่วเหลือง 1 ลิตร (soybean cooking oil)",
+    "องุ่น Angoon", "PET bottle 1 L; front label unwrapped", {"bottle_h": 30.0, "bottle_d": 8.4, "label_h": 10.0},
+    cap="yellow cap", y0=0.585, y1=0.885, cx_n=0.50, r_n=0.095, max_deg=64, deshade=0.4, worn=True,
+    worn_kw={"base_col": (170, 130, 40)})
+
+
 def run(j):
     img = FL.load(os.path.join(RAW, j["src"]))
     H, W = img.shape[:2]

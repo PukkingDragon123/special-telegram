@@ -298,13 +298,22 @@ def load_acg_material(aid, size, ao_from_disp=True):
     p = fetch_acg(aid, res_key)
     if "Color" not in p or "NormalGL" not in p:
         raise RuntimeError(f"{aid}: missing Color/NormalGL in {list(p)}")
-    albedo = resize_arr(load_img(p["Color"], "RGB"), size)
-    normal = resize_arr(load_img(p["NormalGL"], "RGB"), size)
-    rough = resize_arr(load_img(p["Roughness"], "L"), size) if "Roughness" in p else np.full((size, size), 200, np.uint8)
-    metal = resize_arr(load_img(p["Metalness"], "L"), size) if "Metalness" in p else np.zeros((size, size), np.uint8)
-    height = resize_arr(load_img(p["Displacement"], "F"), size, is_float=True) if "Displacement" in p else None
+    def sq(a):
+        """Non-square tileable sources (e.g. 2:1) are repeated along the short axis to become square."""
+        h, w = a.shape[:2]
+        if w == 2 * h:
+            a = np.concatenate([a, a], 0)
+        elif h == 2 * w:
+            a = np.concatenate([a, a], 1)
+        return a
+
+    albedo = resize_arr(sq(load_img(p["Color"], "RGB")), size)
+    normal = resize_arr(sq(load_img(p["NormalGL"], "RGB")), size)
+    rough = resize_arr(sq(load_img(p["Roughness"], "L")), size) if "Roughness" in p else np.full((size, size), 200, np.uint8)
+    metal = resize_arr(sq(load_img(p["Metalness"], "L")), size) if "Metalness" in p else np.zeros((size, size), np.uint8)
+    height = resize_arr(sq(load_img(p["Displacement"], "F")), size, is_float=True) if "Displacement" in p else None
     if "AmbientOcclusion" in p:
-        ao = resize_arr(load_img(p["AmbientOcclusion"], "L"), size)
+        ao = resize_arr(sq(load_img(p["AmbientOcclusion"], "L")), size)
     elif height is not None and ao_from_disp:
         ao = (ao_from_height(height) * 255).astype(np.uint8)
     else:
@@ -344,3 +353,60 @@ def write_material(mid, mat, size, write_height=False, extra=None, normal_q=85, 
         save_jpg(resize_arr(arr, data_size), os.path.join(d, f"{name}.jpg"), 85, 0)
         out[name] = f"{mid}/{name}.jpg"
     return out
+
+
+# ----------------------------------------------------------------------------- photo -> texture helpers
+def flat_field(rgb, sigma):
+    """Remove low-frequency lighting from a photo (divide by a heavy blur, keep the global mean)."""
+    import cv2
+    a = rgb.astype(np.float32)
+    lum_ = a @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    bl = cv2.GaussianBlur(lum_, (0, 0), sigma)
+    return np.clip(a * (lum_.mean() / np.maximum(bl, 1e-3))[..., None], 0, 255)
+
+
+def seamless_crossfade(a):
+    """Make a square image tileable: separable cross-fade with half-shifted copies (x then y),
+    with variance compensation so blend zones keep their contrast (histogram-preserving blend)."""
+    a = a.astype(np.float32)
+    N = a.shape[0]
+    assert a.shape[1] == N
+    t = (np.arange(N) + 0.5) / N
+    w = np.sin(np.pi * t) ** 2
+    mean = a.mean(axis=(0, 1), keepdims=True)
+
+    def blend(img, ww, axis):
+        sh = np.roll(img, N // 2, axis=axis)
+        shape = [1, 1] + ([1] if img.ndim == 3 else [])
+        shape[1 - axis] = 1
+        shape[axis] = N
+        wv = ww.reshape(shape)
+        out = img * wv + sh * (1 - wv)
+        comp = 1.0 / np.sqrt(wv ** 2 + (1 - wv) ** 2)
+        return mean + (out - mean) * comp
+
+    return blend(blend(a, w, 1), w, 0)
+
+
+def mirror_tile(a):
+    """2x2 mirror tiling of a square crop -> seamless tile of twice the size (symmetric repeat)."""
+    top = np.concatenate([a, a[:, ::-1]], 1)
+    return np.concatenate([top, top[::-1]], 0)
+
+
+def height_from_photo(rgb, hp_sigma=8.0, blur=0.8):
+    """Height proxy from photo luminance (high-pass), periodic, normalised 0..1."""
+    l = (rgb.astype(np.float32) @ np.array([0.2126, 0.7152, 0.0722], np.float32)) / 255.0
+    h = l - fft_blur(l, hp_sigma)
+    h = fft_blur(h, blur)
+    lo, hi = np.percentile(h, 0.5), np.percentile(h, 99.5)
+    return np.clip((h - lo) / (hi - lo + 1e-9), 0, 1).astype(np.float32)
+
+
+def blend_normals(n_base8, n_detail8, k=1.0):
+    """Whiteout blend of two OpenGL normal maps (uint8)."""
+    a = normal_decode(n_base8)
+    b = normal_decode(n_detail8)
+    b[..., :2] *= k
+    n = np.stack([a[..., 0] + b[..., 0], a[..., 1] + b[..., 1], a[..., 2] * b[..., 2]], -1)
+    return normal_encode(n)

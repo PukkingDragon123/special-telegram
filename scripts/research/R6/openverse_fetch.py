@@ -30,9 +30,17 @@ def main():
         if not os.path.exists(fn):
             rr = S.get(r["url"], timeout=120)
             rr.raise_for_status()
-            if rr.content[:3] != b"\xff\xd8\xff" and rr.content[:8] != b"\x89PNG\r\n\x1a\n":
+            c = rr.content
+            if c[:4] == b"RIFF" and c[8:12] == b"WEBP":
+                import io
+                from PIL import Image
+                im = Image.open(io.BytesIO(c)).convert("RGB")
+                bio = io.BytesIO()
+                im.save(bio, "JPEG", quality=95)
+                c = bio.getvalue()
+            if c[:3] != b"\xff\xd8\xff" and c[:8] != b"\x89PNG\r\n\x1a\n":
                 raise RuntimeError("not an image")
-            open(fn, "wb").write(rr.content)
+            open(fn, "wb").write(c)
             time.sleep(0.5)
         r = dict(r)
         r["file"] = fn

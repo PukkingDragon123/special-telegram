@@ -232,3 +232,16 @@ export function plateGeo(r: number, h: number, o: { well?: number; lip?: number;
   planarUV(g, 1 / (2 * r));
   return g;
 }
+
+/** Flat photo "card" lying in XZ (facing up), slightly domed. Image top → -Z. Origin centre. */
+export function card(w: number, d: number, dome = 0.006, seg = 4) {
+  const p = new THREE.PlaneGeometry(w, d, seg, seg);
+  const pos = p.getAttribute('position') as THREE.BufferAttribute;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i) / (w / 2), y = pos.getY(i) / (d / 2);
+    pos.setZ(i, dome * Math.max(0, 1 - x * x) * Math.max(0, 1 - y * y));
+  }
+  p.computeVertexNormals();
+  p.rotateX(-Math.PI / 2);
+  return p;
+}

@@ -247,3 +247,183 @@ add("fan_loop", WO, "sfx", "Standing electric fan whirring and slowly oscillatin
     [V(W.fan_loop, xfade=1.0)], vol=0.4, loop=True, pitchVar=0.0, lufs=-21)
 add("icecream_cart_bell", WO, "sfx", "Ice-cream cart hand-bell rung in bursts (ไอติมกะทิ seller passing by).",
     [V(W.icecream_bell, fout=0.3)], vol=0.5, pitchVar=0.02)
+
+import designs_people as DP
+import designs_world as W2
+import music as MU
+
+# remaining WORLD keys that need Thai voices / music
+add("tv_muffled_loop", WO, "sfx", "TV playing inside a shophouse, muffled through the wall (Thai voices, music, canned laughs).",
+    [V(P(DP.tv_muffled, 30.0, 51, MU.path("main_menu")), xfade=1.5)], vol=0.4, loop=True, pitchVar=0.0, lufs=-22)
+add("radio_distant_loop", WO, "sfx", "A neighbour's radio down the soi playing a Thai-flavoured song + DJ chatter (far away).",
+    [V(P(DP.radio_distant, 30.0, 53, MU.path("day_gameplay")), xfade=1.5)], vol=0.4, loop=True, pitchVar=0.0,
+    lufs=-22)
+add("junk_buyer_loudspeaker", WO, "sfx", "Parody of the roving junk-buyer pickup loudspeaker chant (synthesized Thai voice, megaphone, echo).",
+    [V(P(DP.junk_buyer, 22.0), xfade=1.0)], vol=0.5, loop=True, pitchVar=0.0, lufs=-19)
+
+PE = "sfx/people"
+# ----------------------------------------------------------------------------------------------- PEOPLE
+add("crowd_chatter_loop", AM, "amb", "Restaurant / street-food crowd chatter with Thai voices (busy shop, market tables).",
+    [V(P(DP.crowd_chatter, 32.0, 31), xfade=2.0)], vol=0.6, loop=True, pitchVar=0.0)
+add("female_scream_comedic", PE, "sfx", "Girl screams (customization gag: she sees you T-posing in shorts and runs).",
+    [V(og("female_screams", "x/1.ogg")), V(og("girly_scream", "wscream_2_0.wav"))], vol=0.7, pitchVar=0.05)
+add("gasp", PE, "sfx", "Shocked gasp (female / male).",
+    [V(mk(964)), V(mk(966))], vol=0.6, pitchVar=0.05)
+add("crowd_laugh", PE, "sfx", "Crowd bursts out laughing.",
+    [V(mk(460), ss=0.3, t=6.3, fout=1.0)], vol=0.6, pitchVar=0.0)
+add("crowd_cheer", PE, "sfx", "Happy crowd cheer.",
+    [V(mk(975), fout=0.5)], vol=0.6, pitchVar=0.0)
+add("crowd_aww", PE, "sfx", "Sympathetic crowd 'awww' (sad moment, burnt dish).",
+    [V(P(D.crowd_vowel, "aww", 26, 3), fout=0.5)], vol=0.55, pitchVar=0.03)
+add("applause", PE, "sfx", "Applause (shop upgrade, perfect dish).",
+    [V(mk(485), ss=0.2, t=7.5, fout=1.5)], vol=0.6, pitchVar=0.0)
+add("angry_grumble", PE, "sfx", "Angry muttering (mad shopkeeper / customer) - gibberish from reversed Thai speech.",
+    [V(P(DP.angry_grumble, 0)), V(P(DP.angry_grumble, 1))], vol=0.6, pitchVar=0.06)
+add("babble", "voice/babble", "voice",
+    "Speech-bubble blips: 12 sped-up real Thai syllables (Animal-Crossing style). Play a random one per character with pitchVar.",
+    [V(P(DP.babble, i), trim=False) for i in range(12)], vol=0.45, pitchVar=0.15)
+
+CA = "sfx/casino"
+# ----------------------------------------------------------------------------------------------- CASINO
+add("casino_ambience_loop", AM, "amb", "Casino floor: crowd, slot machine jingles, chips (intro cutscene).",
+    [V(DP.casino_amb, xfade=2.0)], vol=0.6, loop=True, pitchVar=0.0)
+add("slot_machine_spin", CA, "sfx", "Slot machine reels spinning.", [V(mk(1932), maxlen=4.4, fout=0.3)], vol=0.55)
+add("slot_win", CA, "sfx", "Slot machine win jingle/bells.", [V(mk(1928), fout=0.4)], vol=0.55)
+add("roulette_spin", CA, "sfx", "Roulette ball spinning, bouncing and settling.",
+    [V(mk(1985), ss=4.5, t=9.4, fout=0.4)], vol=0.55)
+add("chips_clatter", CA, "sfx", "Casino chips clattering / stacking.",
+    [V(kn("casino-audio", "chips-collide-2.ogg")), V(kn("casino-audio", "chips-stack-3.ogg"))], vol=0.55, pitchVar=0.06)
+add("card_shuffle", CA, "sfx", "Deck of cards shuffled.", [V(kn("casino-audio", "card-shuffle.ogg"))], vol=0.55)
+add("cheers_glass_clink", CA, "sfx", "Cheers! glasses clinking.", [V(mk(154)), V(mk(2936))], vol=0.6, pitchVar=0.05)
+add("champagne_pop", CA, "sfx", "Champagne cork pop + fizz + foam.", [V(D.champagne_pop)], vol=0.65, pitchVar=0.04)
+add("beer_can_open", CA, "sfx", "Beer can cracked open.", [V(P(D.can_open, 11))], vol=0.6, pitchVar=0.05)
+add("pour_beer", CA, "sfx", "Pouring foamy beer into a glass.", [V(mk(3181), ss=0.3, t=5.0, fout=0.5)], vol=0.55)
+add("pour_wine", CA, "sfx", "Pouring wine into a glass.", [V(mk(2826), ss=0.3, t=3.5, rate=0.92, fout=0.5)], vol=0.55)
+add("slowmo_whoosh", CA, "sfx", "Deep pitched-down slow-motion whoosh (slow-mo celebration).", [V(DP.slowmo_whoosh)], vol=0.7)
+add("heartbeat_slow", CA, "sfx", "Slow heartbeat (all-in bet, tension). Loopable-ish one-shot of ~9 s.",
+    [V(D.heartbeat_slow, fout=0.3)], vol=0.6)
+add("lose_sting", CA, "sfx", "Losing sting (lost everything at the casino).", [V(mk(2032), fout=0.5)], vol=0.6)
+
+GH = "sfx/ghost"
+# ----------------------------------------------------------------------------------------------- GHOST / NIGHT
+add("eerie_drone_loop", AM, "amb", "Eerie night drone for ghost encounters (low drone, ghostly air, far bells).",
+    [V(DP.eerie_drone, xfade=2.5)], vol=0.55, loop=True, pitchVar=0.0)
+add("whisper", GH, "sfx", "Ghostly whispers: (1) a woman whispering 'ช่วยด้วย' (help me) in reverb, (2) male whispering voices.",
+    [V(P(DP.ghost_whisper, 0), fout=0.6), V(P(DP.ghost_whisper, 1), fout=0.6)], vol=0.55, pitchVar=0.03)
+add("ghost_laugh_female", GH, "sfx", "Female ghost laugh 'hihihi' with reverse-reverb swell (กระสือ / นางตานี).",
+    [V(P(DP.ghost_laugh, 0), fout=0.8), V(P(DP.ghost_laugh, 1), fout=0.8)], vol=0.6, pitchVar=0.04)
+add("wind_howl", GH, "sfx", "Howling wind gust.", [V(mk(1266), ss=4.0, t=8.0, fin=0.6, fout=1.5)], vol=0.55)
+add("motorcycle_ghost_engine_loop", GH, "sfx", "Headless motorcycle ghost: slowed, distorted, reverb-drowned engine (loop).",
+    [V(DP.ghost_engine, xfade=1.5)], vol=0.55, loop=True, pitchVar=0.0, lufs=-19)
+add("ghost_scare_sting", GH, "sfx", "Jump-scare sting (kept below ear-splitting level).",
+    [V(P(DP.scare_sting, 0), fout=0.6, lufs=-18), V(mk(3130), maxlen=3.0, fout=0.8, lufs=-18)], vol=0.6)
+add("dog_howl_night", GH, "sfx", "Dog howling far away at night.", [V(DP.dog_howl, fout=1.0)], vol=0.5)
+add("chain_rattle", GH, "sfx", "Chains rattling in the dark.", [V(P(DP.chain_rattle, 4, 1.6), fout=0.4)], vol=0.5)
+add("bells_eerie", GH, "sfx", "Eerie slowed temple wind-bells in a big reverb.",
+    [V(P(W2.wind_bells, 7, 6.0, True), fout=0.8)], vol=0.5)
+
+ME = "meme"
+# ----------------------------------------------------------------------------------------------- MEME
+add("sad_trombone", ME, "meme", "Wah-wah-wah-waaah sad trombone.", [V(mk(471), fout=0.5)], vol=0.65)
+add("airhorn", ME, "meme", "Air horn: (1) one long blast, (2) bwa-bwa-BWAAA.",
+    [V(P(D.airhorn, ((0.0, 1.15),), 1)), V(P(D.airhorn, ((0.0, 0.16), (0.24, 0.16), (0.48, 0.95)), 2))],
+    vol=0.55, pitchVar=0.03)
+add("boing", ME, "meme", "Cartoon spring boing.", [V(mk(2894)), V(mk(2895))], vol=0.6, pitchVar=0.08)
+add("bass_boom", ME, "meme", "Deep 'vine boom' style bass impact (original synthesis).", [V(D.bass_boom, fout=0.6)], vol=0.7)
+add("bonk", ME, "meme", "Cartoon bonk on the head.", [V(D.bonk)], vol=0.65, pitchVar=0.06)
+add("slide_whistle_up", ME, "meme", "Slide whistle rising.", [V(P(D.slide_whistle, True))], vol=0.55)
+add("slide_whistle_down", ME, "meme", "Slide whistle falling.", [V(P(D.slide_whistle, False))], vol=0.55)
+add("crickets_awkward", ME, "meme", "Awkward silence... crickets.", [V(D.crickets_awkward, trim=False, fout=0.3)], vol=0.55)
+add("dun_dun_dunn", ME, "meme", "Dramatic 'dun dun DUNNN' orchestral stabs (original).", [V(D.dun_dun_dunn, fout=0.8)], vol=0.65)
+add("laugh_track", ME, "meme", "Sitcom laugh track with a bit of applause.", [V(mk(422), fout=0.8)], vol=0.6)
+add("ka_ching", ME, "meme", "Ka-ching! cash register (profit!).", [V(D.ka_ching, fout=0.3)], vol=0.65)
+add("fail_buzzer", ME, "meme", "Long fail buzzer.", [V(mk(954), fout=0.2)], vol=0.55)
+add("quack", ME, "meme", "Duck quack (synthesized).", [V(P(D.quack, 1))], vol=0.6, pitchVar=0.08)
+add("squeaky_toy", ME, "meme", "Squeaky toy squeaks.", [V(mk(2814), ss=0.0, t=0.47, fout=0.05)], vol=0.55, pitchVar=0.08)
+add("record_scratch", ME, "meme", "Record scratch (everything stops).", [V(mk(703), fout=0.05)], vol=0.6)
+add("wow_crowd", ME, "meme", "Crowd 'wooOOOoo!' impressed reaction (synthesized crowd).",
+    [V(P(D.crowd_vowel, "wow", 26, 5), fout=0.5)], vol=0.55)
+add("tada", ME, "meme", "Ta-da! fanfare.", [V(mk(2992), fout=0.4)], vol=0.6)
+add("ding_correct", ME, "meme", "Correct-answer ding (right words in the bargaining minigame).", [V(mk(947), fout=0.3)], vol=0.6)
+add("wrong_buzz", ME, "meme", "Short wrong-answer buzz.", [V(mk(950))], vol=0.55)
+add("sparkle_chime", ME, "meme", "Sparkle chime (item upgraded / shiny).", [V(mk(3062), fout=0.5)], vol=0.55)
+add("level_up_fanfare", ME, "meme", "Short funny level-up / skill unlocked fanfare.", [V(mk(2984), fout=0.8)], vol=0.6)
+add("cloud_poof", ME, "meme", "Poof! (thought cloud appears / disappears).", [V(P(D.cloud_poof, 1))], vol=0.55, pitchVar=0.06)
+add("bubble_pop", ME, "meme", "Bubble pop (speech bubbles appearing, UI blips).",
+    [V(mk(731), ss=0.0, t=0.12), V(mk(2925), ss=0.02, t=0.14), V(mk(3192), ss=0.05, t=0.16)], vol=0.5, pitchVar=0.12)
+add("whoosh_text", ME, "meme", "Quick whoosh for flying 3D text / transitions.", [V(mk(1464)), V(mk(3115))], vol=0.5, pitchVar=0.08)
+add("tick_tock_loop", ME, "meme", "3-second bargaining timer tick-tock (6 ticks, loops seamlessly).",
+    [V(P(D.tick_tock, 6, 0.5), trim=False, xfade=0.02, loop_len=3.0)], vol=0.55, loop=True, pitchVar=0.0)
+add("camera_shutter", ME, "meme", "Camera shutter (newspaper photo, selfie).", [V(mk(1133))], vol=0.55)
+
+import pc_extract as PX
+MUS = "music"
+# ----------------------------------------------------------------------------------------------- MUSIC
+add("main_menu", MUS, "music", "Main menu theme: warm, slightly lo-fi 2000s Thai-indie (clean guitar, EP, brushed kit). Original.",
+    [V(MU.path("main_menu"), trim=False, preloop=True)], vol=0.55, loop=True, pitchVar=0.0)
+add("day_gameplay_loop", MUS, "music", "Daytime gameplay: light Thai-flavoured loop (ranat ek, khim, khaen drone, ching & thon). Original.",
+    [V(MU.path("day_gameplay"), trim=False, preloop=True)], vol=0.4, loop=True, pitchVar=0.0)
+add("night_loop", MUS, "music", "Night loop: eerie drone, sparse detuned ranat notes, ghostly bells. Original.",
+    [V(MU.path("night"), trim=False, preloop=True)], vol=0.45, loop=True, pitchVar=0.0)
+add("casino_lounge", MUS, "music", "Casino lounge (intro): 'Local Forecast - Elevator' by Kevin MacLeod (CC BY 4.0) - credit required.",
+    [V(f"{DL_}/incompetech/Local_Forecast_-_Elevator.mp3" if (DL_ := "/home/user/special-telegram/scripts/_cache/audio_dl") else "",
+       ss=25.0, t=95.66, xfade=2.0, trim=False)], vol=0.5, loop=True, pitchVar=0.0)
+add("slowmo_dramatic", MUS, "music", "Over-dramatic slow-motion choir/strings/timpani (comedic intro celebration). Original.",
+    [V(MU.path("slowmo"), trim=False, preloop=True)], vol=0.55, loop=True, pitchVar=0.0)
+add("skill_tree_dreamy", MUS, "music", "Skill-tree thought cloud: dreamy harp arpeggios, celesta, warm pads. Original.",
+    [V(MU.path("skill_tree"), trim=False, preloop=True)], vol=0.5, loop=True, pitchVar=0.0)
+add("bargaining_tension_loop", MUS, "music", "Bargaining / mad-system tension loop (128 bpm pizzicato ostinato). Original.",
+    [V(MU.path("bargaining"), trim=False, preloop=True)], vol=0.5, loop=True, pitchVar=0.0)
+add("sleep_lullaby", MUS, "music", "Midnight sleep on cardboard: slow khim lullaby over a soft pad. Original.",
+    [V(MU.path("lullaby"), trim=False, preloop=True)], vol=0.45, loop=True, pitchVar=0.0)
+add("shop_upgrade_jingle", MUS, "music", "Shop/restaurant upgrade jingle (ranat run + chord + ching). Original.",
+    [V(MU.path("shop_jingle"), maxlen=3.2, fout=0.8)], vol=0.6, pitchVar=0.0)
+add("day_end_jingle", MUS, "music", "End-of-day jingle (khaen chord, ranat cadence). Original.",
+    [V(MU.path("day_end_jingle"), maxlen=6.5, fout=1.2)], vol=0.6, pitchVar=0.0)
+
+
+# ----------------------------------------------------------------------------------------------- VOICE (Thai)
+def _u(n, pat, occ=0, island=None, **kw):
+    def f():
+        s, e = PX.find(n, pat, occ)
+        y = PX.refine(PX.lesson_audio(n), s, e, island=island, **kw)
+        return A_.fade(A_.hp(y, 80, 2), 0.01, 0.05), [PX.lesson_path(n)]
+    return f
+
+
+def _w(n, s, e, island=None):
+    def f():
+        y = PX.refine(PX.lesson_audio(n), s, e, island=island)
+        return A_.fade(A_.hp(y, 80, 2), 0.01, 0.05), [PX.lesson_path(n)]
+    return f
+
+
+import audiolib as A_
+VO = "voice"
+VD = "Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+add("sawasdee", VO, "voice", "สวัสดีค่ะ / สวัสดีครับ - hello (female, male). " + VD,
+    [V(_u(4, "สวัสดีค่ะ")), V(_u(4, "สวัสดีครับ"))], vol=0.85, pitchVar=0.04)
+add("khob_khun", VO, "voice", "ขอบคุณค่ะ / ขอบคุณครับ - thank you (female, male). " + VD,
+    [V(_u(13, "ขอบคุณค่ะ")), V(_u(13, "ขอบคุณครับ"))], vol=0.85, pitchVar=0.04)
+add("aroi", VO, "voice", "อร่อย! / อร่อยมากครับ - delicious! / very delicious! " + VD,
+    [V(_u(10, "อร่อย", 0)), V(_u(10, "อร่อยมากครับ"))], vol=0.85, pitchVar=0.04)
+add("phet", VO, "voice", "เผ็ด - spicy! " + VD, [V(_u(10, "เผ็ด", 0))], vol=0.85, pitchVar=0.04)
+add("mai", VO, "voice", "ไม่ - no / not. " + VD, [V(_w(10, 91.04, 92.12))], vol=0.85, pitchVar=0.04)
+add("dai", VO, "voice", "ได้ - can / OK (ได้!). " + VD, [V(_w(10, 85.0, 85.7))], vol=0.85, pitchVar=0.04)
+add("im_laew", VO, "voice", "อิ่มแล้วค่ะ / ผมอิ่มแล้วครับ - I'm full. " + VD,
+    [V(_u(10, "อิ่มแล้วค่ะ")), V(_u(13, "ผมอิ่มแล้วครับ"))], vol=0.85, pitchVar=0.04)
+add("por_laew", VO, "voice", "พอแล้วค่ะ / พอแล้วครับ - that's enough! (seasoning, haggling). " + VD,
+    [V(_u(10, "พอแล้วค่ะ")), V(_u(10, "พอแล้วครับ"), maxlen=1.25, fout=0.15)], vol=0.85, pitchVar=0.04)
+add("mai_pen_rai", VO, "voice", "ไม่เป็นไร - never mind / no problem. " + VD,
+    [V(_u(13, "ไม่เป็นไรครับ", island=0))], vol=0.85, pitchVar=0.04)
+add("kho_thot", VO, "voice", "ขอโทษค่ะ / ขอโทษครับ - sorry / excuse me. " + VD,
+    [V(_u(13, "ขอโทษค่ะ")), V(_u(13, "ขอโทษครับ"))], vol=0.85, pitchVar=0.04)
+add("chuay_duay", VO, "voice", "ช่วยด้วย! - help! " + VD,
+    [V(_u(13, "ช่วยด้วย", 0)), V(_u(13, "ช่วยด้วย", 1))], vol=0.85, pitchVar=0.03)
+add("fai_mai", VO, "voice", "ไฟไหม้! - fire! (wok flame-up / burnt food). " + VD,
+    [V(_u(13, "ไฟไหม้", island=0))], vol=0.85, pitchVar=0.03)
+add("tamruat", VO, "voice", "ตำรวจ! - police! " + VD,
+    [V(_u(13, "ตำรวจ", island=0)), V(_u(13, "ตำรวจ", island=1))], vol=0.85, pitchVar=0.03)
+add("nii_arai", VO, "voice", "นี่อะไรครับ - what is this? (customer looking at the menu). " + VD,
+    [V(_u(10, "นี่อะไรครับ", 0))], vol=0.85, pitchVar=0.04)
+add("sabai_dee_mai", VO, "voice", "สบายดีไหม - how are you? " + VD, [V(_u(3, "สบายดีไหม"))], vol=0.85, pitchVar=0.04)

@@ -1,0 +1,45 @@
+y_pharm | thai pharmacy shop front bangkok
+y_noodle | thai noodle shop shophouse signboard
+y_motorepair | motorcycle repair shop bangkok street
+y_massage | thai massage shop front sign bangkok soi
+y_plastic | plastic chair shop thailand street
+y_hardware | thai hardware store shophouse
+y_phone | mobile phone shop thailand shophouse
+y_laundry | laundry shop bangkok soi sign
+y_clinic | clinic shophouse bangkok sign
+y_coffee | old thai coffee shop shophouse sign
+y_lottery | thai lottery seller stall sign
+y_apartment | apartment sign bangkok soi thai text
+y_market | thai fresh market entrance arch sign
+y_halfshutter | half open roller shutter shop front
+y_shutter_th | closed shophouse roller shutters bangkok
+y_woodshutter | old wooden window shutters thailand house
+y_wooddoor | old wooden folding doors shophouse thailand
+y_balcony | wrought iron balcony railing front view
+y_tilefront | old shophouse tiled pillar thailand
+y_blankwood | blank wooden sign board old
+y_blankcard | blank cardboard sign held
+y_blankvinyl | blank white vinyl banner hanging
+y_blanklight | blank light box sign
+y_blankmetal | blank rusty metal sign board
+y_awning | striped awning fabric texture
+y_litter_bag | plastic bag png transparent
+y_litter_bottle | crushed plastic bottle png transparent
+y_litter_cup | plastic cup with straw png transparent
+y_litter_foam | styrofoam food box png transparent
+y_litter_cap | bottle cap png transparent
+y_litter_butt | cigarette butt png transparent
+y_litter_can | crushed soda can png transparent
+y_litter_wrapper | snack wrapper png transparent
+y_gum | chewing gum stains on pavement
+y_puddle_top | puddle on asphalt from above
+y_wet | wet asphalt road texture
+y_yellowline | worn yellow road line asphalt
+y_whiteline | worn white road marking asphalt texture
+y_zebra_worn | worn zebra crossing asphalt
+y_flyer_pole | posters stuck on utility pole asia
+y_torn_poster | torn poster wall texture
+y_sticker_pole | stickers on electric pole asia
+y_wirebundle | tangled electric cables utility pole thailand
+y_spirit | thai spirit house shrine street
+y_poleconcrete | concrete utility pole thailand

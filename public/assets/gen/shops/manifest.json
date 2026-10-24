@@ -1,0 +1,333 @@
+{
+ "files": {
+  "star_blue": {
+   "file": "star_blue.png",
+   "w": 196,
+   "h": 142,
+   "desc": "fluorescent star price tag (blue)",
+   "alpha": true
+  },
+  "star_pink": {
+   "file": "star_pink.png",
+   "w": 197,
+   "h": 142,
+   "desc": "fluorescent star price tag (pink)",
+   "alpha": true
+  },
+  "star_orange": {
+   "file": "star_orange.png",
+   "w": 197,
+   "h": 143,
+   "desc": "fluorescent star price tag (orange)",
+   "alpha": true
+  },
+  "star_green": {
+   "file": "star_green.png",
+   "w": 198,
+   "h": 144,
+   "desc": "fluorescent star price tag (green)",
+   "alpha": true
+  },
+  "star_red": {
+   "file": "star_red.png",
+   "w": 192,
+   "h": 141,
+   "desc": "fluorescent star price tag (red)",
+   "alpha": true
+  },
+  "star_yellow": {
+   "file": "star_yellow.png",
+   "w": 196,
+   "h": 143,
+   "desc": "fluorescent star price tag (yellow)",
+   "alpha": true
+  },
+  "hang_tag": {
+   "file": "hang_tag.png",
+   "w": 256,
+   "h": 176,
+   "desc": "kraft paper hang tag with string",
+   "alpha": true
+  },
+  "card_kraft": {
+   "file": "card_kraft.jpg",
+   "w": 512,
+   "h": 385,
+   "desc": "kraft card (price cards)",
+   "alpha": false
+  },
+  "calculator": {
+   "file": "calculator.jpg",
+   "w": 401,
+   "h": 500,
+   "desc": "Citizen desk calculator (market auntie calculator)",
+   "alpha": false
+  },
+  "scale": {
+   "file": "scale.png",
+   "w": 382,
+   "h": 512,
+   "desc": "blue dial market scale with steel bowl",
+   "alpha": true
+  },
+  "basket_red": {
+   "file": "basket_red.png",
+   "w": 512,
+   "h": 433,
+   "desc": "red plastic shopping basket",
+   "alpha": true
+  },
+  "kradong": {
+   "file": "kradong.png",
+   "w": 512,
+   "h": 423,
+   "desc": "bamboo winnowing tray (kradong)",
+   "alpha": true
+  },
+  "heap_chili": {
+   "file": "heap_chili.jpg",
+   "w": 512,
+   "h": 256,
+   "desc": "pile of bird's-eye chilies",
+   "alpha": false
+  },
+  "heap_garlic": {
+   "file": "heap_garlic.jpg",
+   "w": 512,
+   "h": 256,
+   "desc": "garlic heads",
+   "alpha": false
+  },
+  "heap_onion": {
+   "file": "heap_onion.jpg",
+   "w": 512,
+   "h": 256,
+   "desc": "white onions pile",
+   "alpha": false
+  },
+  "heap_shallot": {
+   "file": "heap_shallot.jpg",
+   "w": 256,
+   "h": 512,
+   "desc": "shallots pile",
+   "alpha": false
+  },
+  "heap_beans": {
+   "file": "heap_beans.jpg",
+   "w": 512,
+   "h": 256,
+   "desc": "yard-long bean bundles",
+   "alpha": false
+  },
+  "heap_eggs": {
+   "file": "heap_eggs.jpg",
+   "w": 512,
+   "h": 128,
+   "desc": "eggs in trays at a Thai egg stall",
+   "alpha": false
+  },
+  "egg_display": {
+   "file": "egg_display.jpg",
+   "w": 1024,
+   "h": 552,
+   "desc": "Thai egg stall with handwritten price cards",
+   "alpha": false
+  },
+  "heap_basil": {
+   "file": "heap_basil.jpg",
+   "w": 512,
+   "h": 256,
+   "desc": "basil bunch leaves",
+   "alpha": false
+  },
+  "pork_table": {
+   "file": "pork_table.jpg",
+   "w": 512,
+   "h": 256,
+   "desc": "pork pieces on a butcher table",
+   "alpha": false
+  },
+  "pork_stall": {
+   "file": "pork_stall.jpg",
+   "w": 780,
+   "h": 585,
+   "desc": "Thai market pork stall",
+   "alpha": false
+  },
+  "veg_backdrop": {
+   "file": "veg_backdrop.jpg",
+   "w": 1024,
+   "h": 768,
+   "desc": "Thai wet-market vegetable stall",
+   "alpha": false
+  },
+  "garlic_backdrop": {
+   "file": "garlic_backdrop.jpg",
+   "w": 1024,
+   "h": 768,
+   "desc": "market garlic & shallot heaps with price cards",
+   "alpha": false
+  },
+  "kitchen_wall": {
+   "file": "kitchen_wall.jpg",
+   "w": 550,
+   "h": 367,
+   "desc": "kitchenware shop rack of pans & spatulas",
+   "alpha": false
+  },
+  "kitchen_plates": {
+   "file": "kitchen_plates.jpg",
+   "w": 474,
+   "h": 975,
+   "desc": "enamel plate display",
+   "alpha": false
+  },
+  "plastic_wall": {
+   "file": "plastic_wall.jpg",
+   "w": 800,
+   "h": 800,
+   "desc": "plastic buckets & basins",
+   "alpha": false
+  },
+  "plastic_wall2": {
+   "file": "plastic_wall2.jpg",
+   "w": 1024,
+   "h": 1024,
+   "desc": "plastic tubs & buckets",
+   "alpha": false
+  },
+  "tub_blue": {
+   "file": "tub_blue.png",
+   "w": 512,
+   "h": 387,
+   "desc": "blue plastic tub",
+   "alpha": true
+  },
+  "basin_navy": {
+   "file": "basin_navy.png",
+   "w": 512,
+   "h": 435,
+   "desc": "navy plastic basin (top)",
+   "alpha": true
+  },
+  "gas_row": {
+   "file": "gas_row.jpg",
+   "w": 1024,
+   "h": 901,
+   "desc": "LPG cylinders row",
+   "alpha": false
+  },
+  "seven_noodles": {
+   "file": "seven_noodles.jpg",
+   "w": 560,
+   "h": 420,
+   "desc": "Thai 7-Eleven cup-noodle shelves",
+   "alpha": false
+  },
+  "seven_snacks": {
+   "file": "seven_snacks.jpg",
+   "w": 736,
+   "h": 981,
+   "desc": "Thai 7-Eleven snack shelves",
+   "alpha": false
+  },
+  "seven_snacks2": {
+   "file": "seven_snacks2.jpg",
+   "w": 1024,
+   "h": 768,
+   "desc": "Thai 7-Eleven snack bags with shelf price labels",
+   "alpha": false
+  },
+  "seven_bottles": {
+   "file": "seven_bottles.jpg",
+   "w": 925,
+   "h": 694,
+   "desc": "Thai 7-Eleven bottled goods shelf",
+   "alpha": false
+  },
+  "seven_fridge": {
+   "file": "seven_fridge.jpg",
+   "w": 822,
+   "h": 1024,
+   "desc": "Thai 7-Eleven drinks fridge",
+   "alpha": false
+  },
+  "seven_fridge2": {
+   "file": "seven_fridge2.jpg",
+   "w": 600,
+   "h": 800,
+   "desc": "Thai 7-Eleven drinks fridge door",
+   "alpha": false
+  },
+  "makro_aisle": {
+   "file": "makro_aisle.jpg",
+   "w": 1024,
+   "h": 682,
+   "desc": "Makro Thailand warehouse aisle",
+   "alpha": false
+  },
+  "lays_green": {
+   "file": "lays_green.png",
+   "w": 512,
+   "h": 510,
+   "desc": "Lay's Thailand (green) bag",
+   "alpha": true
+  },
+  "lays_orange": {
+   "file": "lays_orange.png",
+   "w": 398,
+   "h": 512,
+   "desc": "Lay's Thailand (orange) bag",
+   "alpha": true
+  },
+  "lays_red": {
+   "file": "lays_red.png",
+   "w": 512,
+   "h": 486,
+   "desc": "Lay's Thailand (red-green) bag",
+   "alpha": true
+  },
+  "taro_blue": {
+   "file": "taro_blue.png",
+   "w": 315,
+   "h": 441,
+   "desc": "Taro fish snack (blue)",
+   "alpha": true
+  },
+  "taro_red": {
+   "file": "taro_red.png",
+   "w": 364,
+   "h": 512,
+   "desc": "Taro fish snack (red)",
+   "alpha": true
+  },
+  "taro_yellow": {
+   "file": "taro_yellow.png",
+   "w": 363,
+   "h": 511,
+   "desc": "Taro fish snack (yellow)",
+   "alpha": true
+  },
+  "salapao": {
+   "file": "salapao.jpg",
+   "w": 512,
+   "h": 307,
+   "desc": "salapao buns in a steamer",
+   "alpha": false
+  },
+  "rice_tray": {
+   "file": "rice_tray.png",
+   "w": 286,
+   "h": 468,
+   "desc": "microwave jasmine rice tray",
+   "alpha": true
+  },
+  "water20": {
+   "file": "water20.png",
+   "w": 276,
+   "h": 512,
+   "desc": "20 L drinking water bottle",
+   "alpha": true
+  }
+ }
+}

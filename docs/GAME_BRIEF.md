@@ -32,8 +32,12 @@ Look references (on disk, view them with the Read tool):
    labels or signs). Procedural noise is only for shaders (smoke, clouds, wear masks).
 4. **Realistic shader for PC**: PBR materials, HDRI env lighting, soft shadows, SSAO, bloom,
    tone mapping, color grading, subtle film grain/vignette, haze/fog, wet/dirty surfaces.
-5. **Faces never move** — characters use static photo-textured faces (Chilla's Art style).
-   Bodies animate (procedurally); faces are fixed images.
+5. **Real sculpted, rigged models** (client rule): people, animals, ghosts are ACTUAL sculpted
+   models with proper rigs (sourced from the internet — Quaternius CC0, Objaverse, OpenGameArt,
+   glTF samples — converted/fixed with headless Blender, see scripts/_cache/blender). Animals
+   (dog, cat…) get real FUR (shell texturing + fur photos) and FACIAL ANIMATION (blink, ears,
+   jaw/pant/tongue, bark). Human faces stay static photo textures (Chilla's Art style) with
+   texture-swapped expressions.
 6. **No first-person hands.** First-person camera; the held item floats in the lower right of
    the view (like ref2). Other players see items physically on your body.
 7. **Almost no 2D UI.** Use floating 3D text clouds, speech bubbles, physical objects

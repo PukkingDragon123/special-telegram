@@ -68,26 +68,6 @@
   "license": "CC0",
   "resolution": 2048
  },
- "stainless_brushed": {
-  "albedo": "stainless_brushed/albedo.jpg",
-  "normal": "stainless_brushed/normal.jpg",
-  "orm": "stainless_brushed/orm.jpg",
-  "tileMeters": 0.6,
-  "tint": false,
-  "tags": [
-   "metal",
-   "stainless",
-   "brushed",
-   "kitchen",
-   "cart",
-   "counter"
-  ],
-  "source": "ambientcg:Metal009",
-  "sourceUrl": "https://ambientcg.com/a/Metal009",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
  "asphalt_cracked": {
   "albedo": "asphalt_cracked/albedo.jpg",
   "normal": "asphalt_cracked/normal.jpg",
@@ -105,26 +85,6 @@
   "source": "polyhaven:asphalt_02",
   "sourceUrl": "https://polyhaven.com/a/asphalt_02",
   "author": "Rob Tuytel",
-  "license": "CC0",
-  "resolution": 1024
- },
- "asphalt_patched": {
-  "albedo": "asphalt_patched/albedo.jpg",
-  "normal": "asphalt_patched/normal.jpg",
-  "orm": "asphalt_patched/orm.jpg",
-  "tileMeters": 5.0,
-  "tint": false,
-  "tags": [
-   "ground",
-   "road",
-   "asphalt",
-   "patched",
-   "repairs",
-   "outdoor"
-  ],
-  "source": "ambientcg:Road015B",
-  "sourceUrl": "https://ambientcg.com/a/Road015B",
-  "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
  },
@@ -193,7 +153,7 @@
   "albedo": "sidewalk_pavers_interlocking/albedo.jpg",
   "normal": "sidewalk_pavers_interlocking/normal.jpg",
   "orm": "sidewalk_pavers_interlocking/orm.jpg",
-  "tileMeters": 1.0,
+  "tileMeters": 1.92,
   "tint": false,
   "tags": [
    "ground",
@@ -203,9 +163,9 @@
    "uni-paver",
    "outdoor"
   ],
-  "source": "ambientcg:PavingStones072",
-  "sourceUrl": "https://ambientcg.com/a/PavingStones072",
-  "author": "ambientCG (Lennart Demes)",
+  "source": "polyhaven:concrete_pavers",
+  "sourceUrl": "https://polyhaven.com/a/concrete_pavers",
+  "author": "Amal Kumar",
   "license": "CC0",
   "resolution": 1024
  },
@@ -213,7 +173,7 @@
   "albedo": "sidewalk_tactile_yellow/albedo.jpg",
   "normal": "sidewalk_tactile_yellow/normal.jpg",
   "orm": "sidewalk_tactile_yellow/orm.jpg",
-  "tileMeters": 1.2,
+  "tileMeters": 0.9,
   "tint": false,
   "tags": [
    "ground",
@@ -222,11 +182,12 @@
    "yellow",
    "outdoor"
   ],
-  "source": "ambientcg:TactilePaving003",
-  "sourceUrl": "https://ambientcg.com/a/TactilePaving003",
+  "source": "ambientcg:TactilePaving006",
+  "sourceUrl": "https://ambientcg.com/a/TactilePaving006",
   "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
-  "resolution": 1024
+  "resolution": 1024,
+  "note": "Photogrammetry tactile tiles re-coloured to Thai safety yellow."
  },
  "gravel_crushed": {
   "albedo": "gravel_crushed/albedo.jpg",
@@ -329,7 +290,7 @@
   "albedo": "grass_lush/albedo.jpg",
   "normal": "grass_lush/normal.jpg",
   "orm": "grass_lush/orm.jpg",
-  "tileMeters": 1.4,
+  "tileMeters": 2.0,
   "tint": false,
   "tags": [
    "ground",
@@ -339,9 +300,9 @@
    "rainy-season",
    "rural"
   ],
-  "source": "ambientcg:Grass004",
-  "sourceUrl": "https://ambientcg.com/a/Grass004",
-  "author": "ambientCG (Lennart Demes)",
+  "source": "polyhaven:leafy_grass",
+  "sourceUrl": "https://polyhaven.com/a/leafy_grass",
+  "author": "Charlotte Baglioni",
   "license": "CC0",
   "resolution": 1024
  },
@@ -467,7 +428,7 @@
   "albedo": "plaster_broken_brick/albedo.jpg",
   "normal": "plaster_broken_brick/normal.jpg",
   "orm": "plaster_broken_brick/orm.jpg",
-  "tileMeters": 2.0,
+  "tileMeters": 1.85,
   "tint": false,
   "tags": [
    "wall",
@@ -476,9 +437,9 @@
    "exposed-brick",
    "old"
   ],
-  "source": "ambientcg:PaintedPlaster014",
-  "sourceUrl": "https://ambientcg.com/a/PaintedPlaster014",
-  "author": "ambientCG (Lennart Demes)",
+  "source": "polyhaven:damaged_plaster",
+  "sourceUrl": "https://polyhaven.com/a/damaged_plaster",
+  "author": "Amal Kumar",
   "license": "CC0",
   "resolution": 1024
  },
@@ -525,7 +486,7 @@
   "albedo": "tiles_wall_white_dirty/albedo.jpg",
   "normal": "tiles_wall_white_dirty/normal.jpg",
   "orm": "tiles_wall_white_dirty/orm.jpg",
-  "tileMeters": 1.0,
+  "tileMeters": 1.6,
   "tint": false,
   "tags": [
    "wall",
@@ -536,8 +497,8 @@
    "dirty",
    "shophouse"
   ],
-  "source": "ambientcg:Tiles133B",
-  "sourceUrl": "https://ambientcg.com/a/Tiles133B",
+  "source": "ambientcg:Tiles039",
+  "sourceUrl": "https://ambientcg.com/a/Tiles039",
   "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
@@ -546,7 +507,7 @@
   "albedo": "terrazzo_floor/albedo.jpg",
   "normal": "terrazzo_floor/normal.jpg",
   "orm": "terrazzo_floor/orm.jpg",
-  "tileMeters": 1.2,
+  "tileMeters": 0.65,
   "tint": false,
   "tags": [
    "floor",
@@ -554,8 +515,8 @@
    "shophouse",
    "interior"
   ],
-  "source": "ambientcg:Tiles043",
-  "sourceUrl": "https://ambientcg.com/a/Tiles043",
+  "source": "ambientcg:Terrazzo019M",
+  "sourceUrl": "https://ambientcg.com/a/Terrazzo019M",
   "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
@@ -631,27 +592,8 @@
    "temple",
    "whitewash"
   ],
-  "source": "ambientcg:Plaster003",
-  "sourceUrl": "https://ambientcg.com/a/Plaster003",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
- "galvanized_steel": {
-  "albedo": "galvanized_steel/albedo.jpg",
-  "normal": "galvanized_steel/normal.jpg",
-  "orm": "galvanized_steel/orm.jpg",
-  "tileMeters": 1.0,
-  "tint": false,
-  "tags": [
-   "metal",
-   "galvanized",
-   "zinc",
-   "sheet",
-   "pipe"
-  ],
-  "source": "ambientcg:Metal014",
-  "sourceUrl": "https://ambientcg.com/a/Metal014",
+  "source": "ambientcg:PaintedPlaster017",
+  "sourceUrl": "https://ambientcg.com/a/PaintedPlaster017",
   "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
@@ -689,9 +631,9 @@
    "roof",
    "fence"
   ],
-  "source": "ambientcg:CorrugatedSteel003",
-  "sourceUrl": "https://ambientcg.com/a/CorrugatedSteel003",
-  "author": "ambientCG (Lennart Demes)",
+  "source": "polyhaven:box_profile_metal_sheet",
+  "sourceUrl": "https://polyhaven.com/a/box_profile_metal_sheet",
+  "author": "Amal Kumar",
   "license": "CC0",
   "resolution": 1024
  },
@@ -729,11 +671,12 @@
    "grille",
    "cart"
   ],
-  "source": "ambientcg:PaintedMetal012",
-  "sourceUrl": "https://ambientcg.com/a/PaintedMetal012",
-  "author": "ambientCG (Lennart Demes)",
+  "source": "polyhaven:green_metal_rust",
+  "sourceUrl": "https://polyhaven.com/a/green_metal_rust",
+  "author": "Rob Tuytel",
   "license": "CC0",
-  "resolution": 1024
+  "resolution": 1024,
+  "note": "Real scan; green paint neutralised to grey so it can be tinted, rust spots keep their colour."
  },
  "shutter_roller_rusty": {
   "albedo": "shutter_roller_rusty/albedo.jpg",
@@ -785,64 +728,8 @@
    "seasoned",
    "dark"
   ],
-  "source": "ambientcg:Metal046B",
-  "sourceUrl": "https://ambientcg.com/a/Metal046B",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
- "chrome": {
-  "albedo": "chrome/albedo.jpg",
-  "normal": "chrome/normal.jpg",
-  "orm": "chrome/orm.jpg",
-  "tileMeters": 0.5,
-  "tint": false,
-  "tags": [
-   "metal",
-   "chrome",
-   "polished",
-   "mirror"
-  ],
-  "source": "ambientcg:Metal049A",
-  "sourceUrl": "https://ambientcg.com/a/Metal049A",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
- "brass_gold": {
-  "albedo": "brass_gold/albedo.jpg",
-  "normal": "brass_gold/normal.jpg",
-  "orm": "brass_gold/orm.jpg",
-  "tileMeters": 0.5,
-  "tint": false,
-  "tags": [
-   "metal",
-   "brass",
-   "gold",
-   "casino",
-   "fingerprints"
-  ],
-  "source": "ambientcg:Metal048B",
-  "sourceUrl": "https://ambientcg.com/a/Metal048B",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
- "aluminium_scratched": {
-  "albedo": "aluminium_scratched/albedo.jpg",
-  "normal": "aluminium_scratched/normal.jpg",
-  "orm": "aluminium_scratched/orm.jpg",
-  "tileMeters": 0.5,
-  "tint": false,
-  "tags": [
-   "metal",
-   "aluminium",
-   "pot",
-   "scratched",
-   "kitchen"
-  ],
-  "source": "ambientcg:Metal050C",
-  "sourceUrl": "https://ambientcg.com/a/Metal050C",
+  "source": "ambientcg:Metal063",
+  "sourceUrl": "https://ambientcg.com/a/Metal063",
   "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
@@ -1059,50 +946,11 @@
   "license": "CC0",
   "resolution": 1024
  },
- "plastic_rough": {
-  "albedo": "plastic_rough/albedo.jpg",
-  "normal": "plastic_rough/normal.jpg",
-  "orm": "plastic_rough/orm.jpg",
-  "tileMeters": 0.5,
-  "tint": true,
-  "tags": [
-   "plastic",
-   "rough",
-   "chair",
-   "stool",
-   "basin",
-   "crate"
-  ],
-  "source": "ambientcg:Plastic013B",
-  "sourceUrl": "https://ambientcg.com/a/Plastic013B",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
- "plastic_glossy": {
-  "albedo": "plastic_glossy/albedo.jpg",
-  "normal": "plastic_glossy/normal.jpg",
-  "orm": "plastic_glossy/orm.jpg",
-  "tileMeters": 0.5,
-  "tint": true,
-  "tags": [
-   "plastic",
-   "glossy",
-   "bottle",
-   "bucket",
-   "sign"
-  ],
-  "source": "ambientcg:Plastic010",
-  "sourceUrl": "https://ambientcg.com/a/Plastic010",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
  "rubber_black": {
   "albedo": "rubber_black/albedo.jpg",
   "normal": "rubber_black/normal.jpg",
   "orm": "rubber_black/orm.jpg",
-  "tileMeters": 0.75,
+  "tileMeters": 2.0,
   "tint": false,
   "tags": [
    "rubber",
@@ -1110,9 +958,9 @@
    "mat",
    "tyre"
   ],
-  "source": "ambientcg:Rubber004",
-  "sourceUrl": "https://ambientcg.com/a/Rubber004",
-  "author": "ambientCG (Lennart Demes)",
+  "source": "polyhaven:rubber_tiles",
+  "sourceUrl": "https://polyhaven.com/a/rubber_tiles",
+  "author": "Amal Kumar",
   "license": "CC0",
   "resolution": 1024
  },
@@ -1129,8 +977,8 @@
    "sleeping-mat",
    "box"
   ],
-  "source": "ambientcg:Cardboard003",
-  "sourceUrl": "https://ambientcg.com/a/Cardboard003",
+  "source": "ambientcg:Paper005",
+  "sourceUrl": "https://ambientcg.com/a/Paper005",
   "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
@@ -1158,7 +1006,8 @@
   "albedo": "canvas_tarp/albedo.jpg",
   "normal": "canvas_tarp/normal.jpg",
   "orm": "canvas_tarp/orm.jpg",
-  "tileMeters": 0.4,
+  "opacity": "canvas_tarp/opacity.jpg",
+  "tileMeters": 0.5,
   "tint": true,
   "tags": [
    "fabric",
@@ -1167,8 +1016,8 @@
    "awning",
    "umbrella"
   ],
-  "source": "ambientcg:Fabric061",
-  "sourceUrl": "https://ambientcg.com/a/Fabric061",
+  "source": "ambientcg:Fabric044",
+  "sourceUrl": "https://ambientcg.com/a/Fabric044",
   "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
@@ -1242,46 +1091,8 @@
    "motorbike",
    "sofa"
   ],
-  "source": "ambientcg:Leather026",
-  "sourceUrl": "https://ambientcg.com/a/Leather026",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
- "leather_red_quilted": {
-  "albedo": "leather_red_quilted/albedo.jpg",
-  "normal": "leather_red_quilted/normal.jpg",
-  "orm": "leather_red_quilted/orm.jpg",
-  "tileMeters": 0.5,
-  "tint": false,
-  "tags": [
-   "leather",
-   "red",
-   "quilted",
-   "casino",
-   "sofa"
-  ],
-  "source": "ambientcg:Leather011",
-  "sourceUrl": "https://ambientcg.com/a/Leather011",
-  "author": "ambientCG (Lennart Demes)",
-  "license": "CC0",
-  "resolution": 1024
- },
- "marble_white": {
-  "albedo": "marble_white/albedo.jpg",
-  "normal": "marble_white/normal.jpg",
-  "orm": "marble_white/orm.jpg",
-  "tileMeters": 1.5,
-  "tint": false,
-  "tags": [
-   "stone",
-   "marble",
-   "white",
-   "casino",
-   "counter"
-  ],
-  "source": "ambientcg:Marble021",
-  "sourceUrl": "https://ambientcg.com/a/Marble021",
+  "source": "ambientcg:Leather037",
+  "sourceUrl": "https://ambientcg.com/a/Leather037",
   "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
@@ -1302,6 +1113,47 @@
   "source": "polyhaven:floor_tiles_06",
   "sourceUrl": "https://polyhaven.com/a/floor_tiles_06",
   "author": "Rob Tuytel",
+  "license": "CC0",
+  "resolution": 1024
+ },
+ "leather_red": {
+  "albedo": "leather_red/albedo.jpg",
+  "normal": "leather_red/normal.jpg",
+  "orm": "leather_red/orm.jpg",
+  "tileMeters": 0.5,
+  "tint": false,
+  "tags": [
+   "leather",
+   "red",
+   "casino",
+   "sofa",
+   "booth"
+  ],
+  "source": "ambientcg:Leather038",
+  "sourceUrl": "https://ambientcg.com/a/Leather038",
+  "author": "ambientCG (Lennart Demes)",
+  "license": "CC0",
+  "resolution": 1024,
+  "note": "Multi-angle photo leather re-coloured to casino red."
+ },
+ "marble_beige_polished": {
+  "albedo": "marble_beige_polished/albedo.jpg",
+  "normal": "marble_beige_polished/normal.jpg",
+  "orm": "marble_beige_polished/orm.jpg",
+  "tileMeters": 1.5,
+  "tint": false,
+  "tags": [
+   "stone",
+   "marble",
+   "beige",
+   "polished",
+   "casino",
+   "counter",
+   "lobby"
+  ],
+  "source": "ambientcg:Marble026",
+  "sourceUrl": "https://ambientcg.com/a/Marble026",
+  "author": "ambientCG (Lennart Demes)",
   "license": "CC0",
   "resolution": 1024
  }

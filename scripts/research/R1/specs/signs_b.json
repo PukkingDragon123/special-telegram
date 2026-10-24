@@ -1,0 +1,20 @@
+[
+ {"out": "street_sign_directional_rama1_green.png", "src": "6b241ced_1920", "quad": [[330,124],[1101,129],[1093,718],[322,702]],
+  "w_m": 2.0, "h_m": 1.5, "px": 1024, "mask": "rect", "wb": 0.3,
+  "th": "ถนนพระราม 1 / ถนนอังรีดูนังต์ / แยกราชประสงค์", "en": "Green bilingual direction sign (Rama 1 Rd / Henri Dunant Rd / Ratchaprasong Junction)", "mount": "standing on two posts at kerb", "kind": "direction sign"},
+ {"out": "street_sign_soi_gate_masjid_banglaung.png", "src": "e3aaecf7_1920", "quad": [[300,392],[1590,392],[1590,1025],[300,1025]],
+  "w_m": 3.6, "h_m": 1.8, "px": 1024, "mask": "poly", "wb": 0.35,
+  "poly": [[330,672],[929,392],[1560,672],[1535,705],[1530,1025],[324,1025],[335,705]],
+  "th": "มัสยิด บางหลวง ชุมชนกุฎีขาว", "en": "White ornamental soi/community gate sign (Bang Luang Mosque, Kudi Khao community)", "mount": "arch over soi entrance on two pillars", "kind": "soi gate sign"},
+ {"out": "street_sign_district_pathumwan_green.png", "src": "0a51c881_1920", "quad": [[1020,578],[1527,671],[1527,843],[1016,771]],
+  "w_m": 1.2, "h_m": 0.4, "px": 1024, "mask": "poly", "wb": 0.35,
+  "poly": [[1020,578],[1414,650],[1527,750],[1477,836],[1016,771]],
+  "th": "พื้นที่เขต ปทุมวัน Pathum Wan District Area", "en": "Green arrow-shaped BMA district sign (Pathum Wan District)", "mount": "pole (fingerpost, 2.5-3 m)", "kind": "district sign"},
+ {"out": "traffic_no_parking_round.png", "src": "a0cd82f7_1920", "quad": [[778,465],[1205,465],[1205,883],[778,883]],
+  "w_m": 0.6, "h_m": 0.6, "px": 512, "mask": "circle", "wb": 0.3,
+  "th": "(ห้ามจอดรถ)", "en": "Thai 'no parking' regulatory sign (blue disc, red ring + slash)", "mount": "pole (bottom edge ~2.0-2.2 m)", "kind": "traffic sign",
+  "notes": "Mount traffic_no_parking_timeplate.png directly underneath on the same pole."},
+ {"out": "traffic_no_parking_timeplate.png", "src": "a0cd82f7_1920", "quad": [[778,912],[1213,872],[1236,1205],[783,1212]],
+  "w_m": 0.6, "h_m": 0.45, "px": 512, "mask": "round:0.05", "wb": 0.3,
+  "th": "06.00-09.00 16.00-20.00 เว้นวันอาทิตย์", "en": "Supplementary plate: no parking 06-09 & 16-20, except Sundays (both directions arrow)", "mount": "pole, under the no-parking disc", "kind": "traffic sign plate"}
+]

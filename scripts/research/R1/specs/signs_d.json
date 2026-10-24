@@ -1,0 +1,438 @@
+[
+ {
+  "out": "shop_barber_noi_lightbox.png",
+  "src": "812a907a",
+  "quad": [
+   [
+    66,
+    50
+   ],
+   [
+    895,
+    50
+   ],
+   [
+    895,
+    168
+   ],
+   [
+    66,
+    168
+   ]
+  ],
+  "w_m": 3.0,
+  "h_m": 0.43,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "น้อย บาร์เบอร์",
+  "en": "Barber shop light-box sign (Noi Barber)",
+  "mount": "wall, above shopfront (2.6-3.0 m)",
+  "kind": "shop sign (barber)"
+ },
+ {
+  "out": "sign_room_for_rent_lightbox.png",
+  "src": "32a1513d",
+  "quad": [
+   [
+    85,
+    32
+   ],
+   [
+    715,
+    173
+   ],
+   [
+    701,
+    465
+   ],
+   [
+    56,
+    310
+   ]
+  ],
+  "w_m": 1.6,
+  "h_m": 0.8,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "มีห้องให้เช่า รายวัน รายเดือน ROOM FOR RENT A DAY, A MONTH 02-2811059",
+  "en": "Room-for-rent light box (daily / monthly) with phone number and arrow",
+  "mount": "projecting from wall / pole",
+  "kind": "rent sign"
+ },
+ {
+  "out": "shop_chicken_rice_hoksuang.png",
+  "src": "7d4e9deb",
+  "quad": [
+   [
+    557,
+    101
+   ],
+   [
+    970,
+    101
+   ],
+   [
+    970,
+    294
+   ],
+   [
+    557,
+    294
+   ]
+  ],
+  "w_m": 1.5,
+  "h_m": 0.7,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "นายฮกซ้วง ข้าวมันไก่",
+  "en": "Chicken-rice shop board (Nai Hok Suang Khao Man Gai)",
+  "mount": "wall / hanging above stall",
+  "kind": "shop sign (khao man gai)"
+ },
+ {
+  "out": "shop_coffee_boran_green_blue.png",
+  "src": "4c2270fc",
+  "quad": [
+   [
+    0,
+    76
+   ],
+   [
+    1024,
+    143
+   ],
+   [
+    1024,
+    650
+   ],
+   [
+    0,
+    690
+   ]
+  ],
+  "w_m": 3.0,
+  "h_m": 1.5,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.25,
+  "th": "กาแฟโบราณ โอเลี้ยง กาแฟเย็น ชาเย็น ชาดำเย็น นมเย็น น้ำหวาน",
+  "en": "Old-style Thai coffee sign (kafae boran) sponsored by a coffee brand",
+  "mount": "wall above stall / standing",
+  "kind": "shop sign (coffee)"
+ },
+ {
+  "out": "menu_coffee_boran_handpainted.png",
+  "src": "e4102264",
+  "quad": [
+   [
+    51,
+    44
+   ],
+   [
+    1024,
+    44
+   ],
+   [
+    1024,
+    680
+   ],
+   [
+    51,
+    680
+   ]
+  ],
+  "w_m": 1.2,
+  "h_m": 0.8,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.35,
+  "th": "กาแฟโบราณ กาแฟร้อน ชาร้อน โกโก้ร้อน ชาดำเย็น โอเลี้ยง ...",
+  "en": "Hand-painted drinks menu board (old-style coffee stall)",
+  "mount": "wall / leaning on stall",
+  "kind": "menu board"
+ },
+ {
+  "out": "banner_private_land_no_dumping.png",
+  "src": "7b5f3a5a",
+  "quad": [
+   [
+    15,
+    129
+   ],
+   [
+    1020,
+    114
+   ],
+   [
+    1016,
+    592
+   ],
+   [
+    18,
+    611
+   ]
+  ],
+  "w_m": 2.4,
+  "h_m": 1.2,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "ที่ดินส่วนบุคคล ห้ามบุกรุก ห้ามทิ้งขยะ ห้ามจอดรถ",
+  "en": "Vinyl banner: private land - no trespassing, no dumping, no parking",
+  "mount": "tied to fence / empty lot",
+  "kind": "warning banner"
+ },
+ {
+  "out": "shop_tamsang_pongpaeng_board.png",
+  "src": "bd1b5414",
+  "quad": [
+   [
+    59,
+    129
+   ],
+   [
+    908,
+    97
+   ],
+   [
+    895,
+    677
+   ],
+   [
+    94,
+    632
+   ]
+  ],
+  "w_m": 1.5,
+  "h_m": 1.0,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "ครัวป่องแป้ง อาหารตามสั่ง โทร.086-9717105 รับทำข้าวกล่อง",
+  "en": "Roadside made-to-order food sign (Krua Pong Paeng, aharn tam sang) with phone",
+  "mount": "standing on post at roadside",
+  "kind": "shop sign (tam sang)"
+ },
+ {
+  "out": "shop_pharmacy_ruamphesatchakon.png",
+  "src": "15d588cd",
+  "quad": [
+   [
+    362,
+    75
+   ],
+   [
+    1218,
+    75
+   ],
+   [
+    1218,
+    290
+   ],
+   [
+    362,
+    290
+   ]
+  ],
+  "w_m": 4.0,
+  "h_m": 1.0,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "ร้านยา รวมเภสัชกร",
+  "en": "Pharmacy sign band (green, Thai)",
+  "mount": "wall above shopfront",
+  "kind": "shop sign (pharmacy)"
+ },
+ {
+  "out": "shop_hardware_leevittaya.png",
+  "src": "82d181ad",
+  "quad": [
+   [
+    33,
+    250
+   ],
+   [
+    754,
+    250
+   ],
+   [
+    754,
+    371
+   ],
+   [
+    33,
+    371
+   ]
+  ],
+  "w_m": 4.0,
+  "h_m": 0.7,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "ลีวิทยาฮาร์ดแวร์ LEE VITTAYA HARDWARE",
+  "en": "Hardware shop sign band (gold letters on dark)",
+  "mount": "wall above shopfront",
+  "kind": "shop sign (hardware)"
+ },
+ {
+  "out": "sign_winmoto_price_list.png",
+  "src": "cbd0e81d",
+  "quad": [
+   [
+    68,
+    28
+   ],
+   [
+    415,
+    28
+   ],
+   [
+    415,
+    545
+   ],
+   [
+    68,
+    545
+   ]
+  ],
+  "w_m": 0.8,
+  "h_m": 1.2,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "สุขุมวิท 53/1 อัตราค่าโดยสาร ทองหล่อ 1-7 ราคา 10 บาท ...",
+  "en": "Motorcycle-taxi stand fare list (Sukhumvit 53/1), crumpled vinyl",
+  "mount": "wall / pole at win stand",
+  "kind": "win price list"
+ },
+ {
+  "out": "market_arch_700rai_sattahip.png",
+  "src": "86d768c6",
+  "quad": [
+   [
+    139,
+    100
+   ],
+   [
+    900,
+    92
+   ],
+   [
+    900,
+    196
+   ],
+   [
+    139,
+    202
+   ]
+  ],
+  "w_m": 6.0,
+  "h_m": 0.8,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.2,
+  "th": "ตลาด 700 ไร่ สัตหีบ",
+  "en": "Market entrance arch banner (lit at night)",
+  "mount": "arch over market entrance (4-5 m)",
+  "kind": "market arch sign"
+ },
+ {
+  "out": "shop_makro_facade_sign.png",
+  "src": "86ebc543",
+  "quad": [
+   [
+    101,
+    173
+   ],
+   [
+    913,
+    83
+   ],
+   [
+    951,
+    497
+   ],
+   [
+    102,
+    500
+   ]
+  ],
+  "w_m": 24.0,
+  "h_m": 7.0,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.2,
+  "th": "makro แม็คโคร",
+  "en": "Makro wholesale store red facade with logo (real brand, per client rule)",
+  "mount": "warehouse facade",
+  "kind": "wholesale store facade"
+ },
+ {
+  "out": "poster_phone_shop_film.png",
+  "src": "715e5df3",
+  "quad": [
+   [
+    0,
+    0
+   ],
+   [
+    1023,
+    0
+   ],
+   [
+    1023,
+    1023
+   ],
+   [
+    0,
+    1023
+   ]
+  ],
+  "w_m": 0.9,
+  "h_m": 0.9,
+  "px": 768,
+  "mask": "rect",
+  "wb": 0.0,
+  "sharp": 0.0,
+  "th": "ติดฟิล์มไฮโดรเจลได้แล้ว! ที่ร้าน ... รองรับทุกรุ่น!",
+  "en": "Phone-shop vinyl poster (hydrogel screen film)",
+  "mount": "wall / shop window",
+  "kind": "shop poster"
+ },
+ {
+  "out": "poster_lottery_results_sheet.png",
+  "src": "f7fadb4a",
+  "quad": [
+   [
+    0,
+    0
+   ],
+   [
+    714,
+    0
+   ],
+   [
+    714,
+    974
+   ],
+   [
+    0,
+    974
+   ]
+  ],
+  "w_m": 0.38,
+  "h_m": 0.52,
+  "px": 768,
+  "mask": "rect",
+  "wb": 0.0,
+  "sharp": 0.0,
+  "th": "ผลการออกรางวัลสลากกินแบ่งรัฐบาล ทวีทรัพย์ ล็อตโต้",
+  "en": "Printed lottery-results sheet (displayed at lottery stalls)",
+  "mount": "pinned on stall / wall",
+  "kind": "lottery poster"
+ }
+]

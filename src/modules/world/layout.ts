@@ -46,6 +46,11 @@ export interface UnitSpec {
   awning?: 'corr' | 'tarp' | 'none' | 'big';
   name?: string;
   far?: boolean;               // background row (lower detail)
+  style?: 'apartment' | 'shophouse';
+  /** skip the ground floor (special buildings build their own) */
+  noGround?: boolean;
+  noCanopy?: boolean;
+  wall?: string;
 }
 
 const R = (face: Face, line: number, start: number, widths: (number | [number, Partial<UnitSpec>])[], dir: 1 | -1, base: Partial<UnitSpec> = {}): UnitSpec[] => {
@@ -101,7 +106,7 @@ export const SPIRIT_LOT = { x0: -20, x1: -6, z0: -158, z1: -146 };
 export const SEVEN = { x0: 6, x1: 20, z0: -15, z1: 0 };              // 8-Twelve corner store
 export const CLOSED_HOUSE = { x0: 13.4, x1: 27, z0: -30.5, z1: -15, apronX: 6 };
 export const ROW_SOI_E1: UnitSpec[] = R('W', 6, -30.5, [
-  [4.0, { shop: 'kitchen', ground: 'open', storeys: 3, name: 'kitchen_shop', sign: 'kitchen' }],
+  [4.0, { shop: 'kitchen', ground: 'open', storeys: 3, name: 'kitchen_shop', sign: 'kitchen', corner: 'right' }],
   [4.0, { shop: 'kitchen', ground: 'open', storeys: 3, noSign: true }],
   [1.5, { name: 'gap' }],
 ], -1, { depth: 14 });

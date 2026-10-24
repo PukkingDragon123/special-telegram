@@ -268,7 +268,6 @@ export function makeProps(w: WB) {
     w.bevelBox(-0.88, 0.45, -2.45, 0.88, 0.95, 2.45, 0.08);      // lower body
     w.bevelBox(-0.86, 0.95, 0.15, 0.86, 1.0, 2.4, 0.12);         // hood base
     // cab
-    w.prismCab = undefined as any;
     w.bevelBox(-0.84, 0.95, -0.55, 0.84, 1.55, 0.6, 0.1);
     w.mat('glass', { tint: 0x101418, uv: 'local' });
     w.quad(-0.8, 1.02, 0.62, 0.8, 1.02, 0.62, 0.72, 1.5, 0.35, -0.72, 1.5, 0.35); // windscreen (slanted)

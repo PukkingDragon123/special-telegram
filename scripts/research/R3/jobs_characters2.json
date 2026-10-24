@@ -1,0 +1,11 @@
+[
+ {"src": "ddg", "q": "Thai construction workers face cloth hat Bangkok site candid", "prefix": "construction_workers", "n": 5},
+ {"src": "ddg", "q": "Thai schoolgirls walking street candid Bangkok uniform", "prefix": "student_girls_candid", "n": 4},
+ {"src": "ddg", "q": "old Thai man tank top sitting street candid Bangkok", "prefix": "uncle_singlet_candid", "n": 5},
+ {"src": "ddg", "q": "Thai farmer pha khao ma waist rice field", "prefix": "uncle_phakhaoma_candid", "n": 4},
+ {"src": "ddg", "q": "Thai grandpa white singlet shorts house front", "prefix": "grandpa_singlet", "n": 4},
+ {"src": "ddg", "q": "Thai street sweeper Bangkok orange uniform", "prefix": "street_sweeper", "n": 3},
+ {"src": "ddg", "q": "Thai lottery ticket seller street Bangkok", "prefix": "lottery_seller", "n": 3},
+ {"src": "ddg", "q": "Thai security guard uniform Bangkok building", "prefix": "security_guard", "n": 3},
+ {"src": "ddg", "q": "Thai housewife market plastic bags shopping candid", "prefix": "housewife_market", "n": 3}
+]

@@ -78,6 +78,8 @@ def load_atlas(key, res_key="2k"):
         a = np.asarray(Image.fromarray((a * 255).astype(np.uint8)).resize((W, H), Image.LANCZOS)).astype(np.float32) / 255
     if n.shape[:2] != (H, W):
         n = np.asarray(Image.fromarray(n).resize((W, H), Image.LANCZOS))
+    # model atlases contain black UV-padding wedges with alpha=1: drop near-black pixels
+    a = np.where(rgb.max(-1) < 30, 0.0, a).astype(np.float32)
     return rgb, a, n
 
 
@@ -123,7 +125,7 @@ class Sprite:
 
 
 def extract_sprites(key, min_area=1500, base="bottom", pad=6, max_sprites=200, normalise=True, res_key="2k",
-                    region=None):
+                    region=None, max_aspect=None, min_fill=None):
     """Connected components of the atlas alpha -> list[Sprite] normalised base-down/tip-up.
     base: 'bottom'|'top'|'left'|'right'|'auto' (auto = thinner end is the base, e.g. a petiole).
     region: optional (x0,y0,x1,y1) fractions of the atlas to restrict the search."""
@@ -142,6 +144,10 @@ def extract_sprites(key, min_area=1500, base="bottom", pad=6, max_sprites=200, n
     for i in order[:max_sprites]:
         x, y, w, h, area = stats[i]
         if area < min_area:
+            continue
+        if max_aspect and max(w, h) / max(1, min(w, h)) > max_aspect:
+            continue
+        if min_fill and area / float(w * h) < min_fill:
             continue
         x0, y0 = max(0, x - pad), max(0, y - pad)
         x1, y1 = min(W, x + w + pad), min(H, y + h + pad)

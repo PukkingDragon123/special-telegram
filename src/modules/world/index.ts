@@ -1,0 +1,236 @@
+import * as THREE from 'three';
+import { defineModule } from '../../game/contracts';
+import type { WorldAPI, AnchorPt } from '../../game/contracts';
+import type { Game } from '../../game/game';
+import { ANCHORS, ZONES, zoneAt } from '../../game/mapplan';
+import { Assets } from '../../core/assets';
+import { RNG } from '../../core/rng';
+import { params } from '../../core/util';
+import { WB, Kind } from './geo';
+import { loadWorldTextures, layerLookup, makeWorldMaterial, makeWorldCutDepth, makeSignMaterial, makeDecalMaterial, makeFoliageMaterial, makeGlassMaterial, U, WorldTex } from './mats';
+import { Atlas } from './atlas';
+import { Atmosphere, preloadHdris } from './sky';
+import { NightLights } from './lights';
+import { buildNav, Nav } from './nav';
+import { buildStreets, buildBaseGround, Ctx } from './streets';
+import { makeProps } from './props';
+import { buildRows, ShopCtx } from './shophouse';
+import { ROWS, groundHeight } from './layout';
+import { loadSigns, SignSys } from './signs';
+import { buildSpecial } from './buildings';
+import { buildPoles } from './wires';
+import { buildMarket } from './market';
+import { buildCanal } from './canal';
+import { buildRural } from './rural';
+import { buildStreetLife } from './dressing';
+import { loadFoliage, FoliageSys } from './foliage';
+import { installDebug, DebugCam } from './debug';
+
+/**
+ * WORLD MODULE — builds ซอยเฮียผัด and its surroundings (see docs/MAP_PLAN.md):
+ * shophouses, streets, market, canal, rural edge, wires, lights, sky & day/night, colliders, nav.
+ */
+
+interface WorldState {
+  game: Game;
+  root: THREE.Group;
+  atmo: Atmosphere;
+  lights: NightLights;
+  details: THREE.Mesh[];
+  nav: Nav;
+  frameN: number;
+  dbg: DebugCam | null;
+  stats: { drawMeshes: number; tris: number; buildMs: number };
+}
+
+let preload: Promise<{ tex: WorldTex; decals: Atlas | null; signs: SignSys | null; fol: FoliageSys | null }> | null = null;
+let S: WorldState | null = null;
+
+function startPreload(game: Game) {
+  if (preload) return preload;
+  preload = (async () => {
+    const tp = performance.now();
+    const worldMan = await Assets.jsonSafe<any>('textures/world/manifest.json', null);
+    const size = game.engine.quality === 'low' ? 256 : 512;
+    const [tex, decals, signs, fol] = await Promise.all([
+      loadWorldTextures(size, worldMan).then((r) => { TIMES.texArrays = Math.round(performance.now() - tp); return r; }),
+      loadDecals(worldMan).then((r) => { TIMES.decals = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] decals', e); return null; }),
+      loadSigns().then((r) => { TIMES.signs = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] signs', e); return null; }),
+      loadFoliage().then((r) => { TIMES.foliage = Math.round(performance.now() - tp); return r; }).catch((e) => { console.warn('[world] foliage', e); return null; }),
+    ]);
+    return { tex, decals, signs, fol };
+  })();
+  return preload;
+}
+
+/** decal atlas from textures/world (+ our gen/world extras) */
+async function loadDecals(man: any): Promise<Atlas | null> {
+  const base = 'textures/world/';
+  const items = [
+    { id: 'decal_puddles', url: base + 'decal_puddles.png', w: 1024, h: 1024 },
+    { id: 'decal_oil_stains', url: base + 'decal_oil_stains.png', w: 1024, h: 1024 },
+    { id: 'decal_asphalt_patches', url: base + 'decal_asphalt_patches.png', w: 1024, h: 1024 },
+    { id: 'decal_gum_spots', url: base + 'decal_gum_spots.png', w: 512, h: 512 },
+    { id: 'manhole_round_drain', url: base + 'manhole_round_drain.png', w: 512, h: 512 },
+    { id: 'manhole_round_electric', url: base + 'manhole_round_electric.png', w: 512, h: 512 },
+    { id: 'roadline_white_worn', url: base + 'roadline_white_worn.png', w: 64, h: 512 },
+    { id: 'roadline_yellow_worn', url: base + 'roadline_yellow_worn.png', w: 64, h: 512 },
+    { id: 'roadline_double_yellow_worn', url: base + 'roadline_double_yellow_worn.png', w: 128, h: 512 },
+    { id: 'roadmark_zebra_worn', url: base + 'roadmark_zebra_worn.png', w: 768, h: 768 },
+    { id: 'roadmark_text_chalong', url: base + 'roadmark_text_chalong.png', w: 384, h: 432 },
+    { id: 'roadmark_text_khet_rongrian', url: base + 'roadmark_text_khet_rongrian.png', w: 384, h: 336 },
+    { id: 'roadmark_text_yut', url: base + 'roadmark_text_yut.png', w: 384, h: 480 },
+  ];
+  // any extra decals listed in the world manifest (png with alpha)
+  if (man) for (const [k, v] of Object.entries<any>(man)) {
+    if (items.some((i) => i.id === k)) continue;
+    const f = v?.file ?? v?.rgba ?? v?.files?.rgba;
+    if (typeof f === 'string' && f.endsWith('.png')) items.push({ id: k, url: f.startsWith('textures') ? f : base + f, w: 512, h: 512 });
+  }
+  // our own real-photo decals (graffiti, stains, posters) from gen/world
+  const gen = await Assets.jsonSafe<any>('gen/world/decals.json', null);
+  if (gen) for (const d of gen.items ?? []) items.push({ id: d.id, url: 'gen/world/' + d.file, w: d.w ?? 512, h: d.h ?? 512 });
+  return Atlas.build(items, 4096, 4);
+}
+
+const TIMES: Record<string, number> = {};
+(window as any).__worldTimes = TIMES;
+async function buildWorld(game: Game) {
+  const t0 = performance.now();
+  const assets = await startPreload(game);
+  TIMES.preloadWait = performance.now() - t0;
+  const tex = assets.tex;
+  const root = new THREE.Group();
+  root.name = 'world';
+  const w = new WB(layerLookup(tex));
+  const seed = 20261018;
+  const rng = new RNG(seed);
+  const phys = { box: (c: number[], s: number[], yaw = 0) => { game.physics.addBox(c, s, yaw); } };
+  const props = makeProps(w);
+  const q = game.engine.quality;
+  const lights = new NightLights(q === 'low' ? 4 : q === 'medium' ? 6 : 8);
+  const anchors: Record<string, AnchorPt> = JSON.parse(JSON.stringify(ANCHORS));
+  const ctx: Ctx = { w, rng, decals: assets.decals, phys };
+  const shopCtx: ShopCtx = { w, props, lights, signs: assets.signs, decals: assets.decals, phys, anchors, managed: new Set(['kitchen_shop', 'plastic_shop', 'gas_shop']) };
+
+  // ---------------------------------------------------------------- build everything
+  const step = (name: string, fn: () => void) => { const t = performance.now(); try { fn(); } catch (e) { console.error('[world] build step failed:', name, e); } const dt = performance.now() - t; TIMES[name] = Math.round(dt); };
+  step('streets', () => buildStreets(ctx));
+  step('rows', () => buildRows(shopCtx, ROWS));
+  const extraHoles: { x0: number; z0: number; x1: number; z1: number }[] = [];
+  step('special', () => buildSpecial({ ...shopCtx, rng, holes: extraHoles, fol: assets.fol }));
+  step('market', () => buildMarket({ ...shopCtx, rng, fol: assets.fol }));
+  step('poles', () => buildPoles({ w, rng, lights, phys, props }));
+  step('canal', () => buildCanal({ ...shopCtx, rng, holes: extraHoles, fol: assets.fol }));
+  step('rural', () => buildRural({ ...shopCtx, rng, holes: extraHoles, fol: assets.fol }));
+  step('life', () => buildStreetLife({ ...shopCtx, rng, fol: assets.fol }));
+  step('ground', () => buildBaseGround(ctx, extraHoles));
+
+  // ---------------------------------------------------------------- materials + meshes
+  const worldMat = makeWorldMaterial(tex);
+  const cutMat = makeWorldMaterial(tex, true);
+  const signMat = makeSignMaterial(assets.signs?.atlas.tex ?? new THREE.Texture());
+  const decalMat = makeDecalMaterial(assets.decals?.tex ?? new THREE.Texture());
+  const fol = makeFoliageMaterial(assets.fol?.atlas.tex ?? new THREE.Texture());
+  const mats: Record<Kind, THREE.Material> = { world: worldMat, cut: cutMat, sign: signMat, decal: decalMat, fol: fol.mat, glass: makeGlassMaterial() };
+  let tf = performance.now();
+  const meshes = w.finalize(mats, { shadows: { world: true, cut: true, sign: true, decal: false, fol: true, glass: false } });
+  TIMES.finalize = Math.round(performance.now() - tf);
+  const details: THREE.Mesh[] = [];
+  let tris = 0;
+  const cutDepth = makeWorldCutDepth(tex);
+  for (const m of meshes) {
+    if (m.kind === 'fol') m.mesh.customDepthMaterial = fol.depth;
+    if (m.kind === 'cut') m.mesh.customDepthMaterial = cutDepth;
+    root.add(m.mesh);
+    if (m.group === 'detail') details.push(m.mesh);
+    tris += (m.mesh.geometry.index?.count ?? 0) / 3;
+  }
+
+  // ---------------------------------------------------------------- atmosphere & lights
+  tf = performance.now();
+  const atmo = new Atmosphere(game);
+  await atmo.loadHdris();
+  TIMES.hdri = Math.round(performance.now() - tf);
+  atmo.attach(game.scene!);
+  lights.build();
+  root.add(lights.root);
+  game.scene!.add(root);
+  if (params.has('time') && game.isHost) {
+    const t = Number(params.get('time'));
+    if (Number.isFinite(t)) game.g.time = Math.min(23.95, Math.max(4, t));
+    if (params.has('freeze')) game.g.freezeTime = true;
+  }
+
+  // ---------------------------------------------------------------- nav + API
+  tf = performance.now();
+  const nav = buildNav(ZONES);
+  TIMES.nav = Math.round(performance.now() - tf);
+  const api: WorldAPI & Record<string, any> = {
+    anchors,
+    anchor: (n: string) => anchors[n] ?? ANCHORS[n] ?? { p: [0, 0, 0] },
+    zones: ZONES,
+    zoneAt,
+    nav,
+    groundY: (x: number, z: number) => groundHeight(x, z),
+    root,
+    addNightLight: (l: THREE.Light | THREE.Object3D, intensity?: number) => {
+      if (!l.parent) root.add(l);
+      lights.addCustom(l, intensity);
+    },
+    /** extra: a virtual light for the night pool (no shader recompiles) */
+    addLightPoint: (p: THREE.Vector3, color: number | THREE.Color = 0xffc080, intensity = 10, range = 10, glow = 0.6) =>
+      lights.add({ p: p.clone(), color: color instanceof THREE.Color ? color : new THREE.Color(color), intensity, range, glow, kind: 'custom' }),
+    /** 0 day … 1 night (smooth), as used for lights */
+    get night() { return atmo.night; },
+    /** set false to stop the world from driving the post-processing grade (skill tree, cutscenes) */
+    get autoLook() { return atmo.autoLook; },
+    set autoLook(v: boolean) { atmo.autoLook = v; },
+    weather: { get rain() { return (game.g as any).rain ?? 0; } },
+    get rain() { return (game.g as any).rain ?? 0; },
+    sunDir: atmo.sunDir,
+    stats: { meshes: meshes.length, tris: Math.round(tris), buildMs: 0 },
+  };
+  game.world = api;
+
+  // debug: anchors, fly camera
+  const dbg = installDebug(game, root, anchors, nav);
+  S = { game, root, atmo, lights, details, nav, frameN: 0, dbg, stats: { drawMeshes: meshes.length, tris, buildMs: performance.now() - t0 } };
+  api.stats.buildMs = Math.round(performance.now() - t0);
+  console.info(`[world] built in ${api.stats.buildMs} ms — ${meshes.length} meshes, ${Math.round(tris / 1000)}k tris, ${lights.points.length} light points`);
+  const off = game.events.on('world:exit', () => { off(); dispose(); });
+}
+
+function dispose() {
+  if (!S) return;
+  S.atmo.dispose();
+  S.dbg?.dispose();
+  S = null;
+}
+
+const _cam = new THREE.Vector3();
+function frame(game: Game, dt: number) {
+  if (!S || S.game.scene !== game.scene || !game.scene) return;
+  U.uTime.value += dt;
+  const cam = game.camera;
+  S.dbg?.update(dt);
+  S.atmo.update(dt, cam);
+  cam.getWorldPosition(_cam);
+  S.lights.update(_cam, S.atmo.night, dt);
+  U.uWet.value += (((game.g as any).rain ?? 0) - U.uWet.value) * Math.min(1, dt * 0.2);
+  // distance-cull small detail meshes
+  if ((S.frameN++ & 7) === 0) {
+    const far = game.engine.quality === 'low' ? 60 : game.engine.quality === 'medium' ? 80 : 110;
+    for (const m of S.details) {
+      const bs = m.geometry.boundingSphere!;
+      m.visible = bs.center.distanceTo(_cam) - bs.radius < far;
+    }
+  }
+}
+
+export default defineModule({
+  id: 'world',
+  init(game) { startPreload(game); preloadHdris(); },
+  async buildWorld(game) { await buildWorld(game); },
+  frame,
+});

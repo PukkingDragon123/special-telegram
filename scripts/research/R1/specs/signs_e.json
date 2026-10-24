@@ -1,0 +1,16 @@
+[
+ {"out": "shop_7eleven_fascia_band.png", "src": "cbf8023d", "quad": [[0,47],[850,47],[850,138],[0,138]], "w_m": 9.0, "h_m": 0.96, "px": 1024, "mask": "rect", "wb": 0.2,
+  "th": "7-ELEVEn", "en": "7-Eleven fascia band (orange/green/red stripes + logo box), real brand per client rule", "mount": "wall above convenience-store glass front (3.0-3.6 m)", "kind": "shop sign (convenience store)"},
+ {"out": "shop_7eleven_fascia_dusk.png", "src": "030012da", "quad": [[0,952],[1400,952],[1400,1075],[0,1075]], "w_m": 10.0, "h_m": 0.88, "px": 1024, "mask": "rect", "wb": 0.1,
+  "th": "7-ELEVEn", "en": "7-Eleven fascia band lit at dusk (use as emissive at night)", "mount": "wall above glass front", "kind": "shop sign (convenience store)"},
+ {"out": "shop_7eleven_front_small.png", "src": "ffaabedc", "quad": [[20,22],[428,22],[428,97],[20,97]], "w_m": 4.4, "h_m": 0.8, "px": 512, "mask": "rect", "wb": 0.2,
+  "th": "7-ELEVEn", "en": "Single-bay 7-Eleven fascia (logo in the middle) for a 1-shophouse-wide branch", "mount": "wall above glass front", "kind": "shop sign (convenience store)"},
+ {"out": "banner_tamsang_paksaep_vinyl.png", "src": "9aa0ae48", "quad": [[30,52],[671,52],[671,401],[30,401]], "w_m": 1.8, "h_m": 1.0, "px": 1024, "mask": "rect", "wb": 0.0, "sharp": 0.0,
+  "th": "ร้านปากแซ่บ ตามสั่ง อาหารตามสั่ง 35-45 รับทำข้าวกล่อง 087-.........", "en": "Vinyl banner for a made-to-order food cart (35-45 baht, delivery app logos) - tier-3 reference for the player's shop", "mount": "tied to cart front / stall frame", "kind": "vinyl banner (tam sang)"},
+ {"out": "shop_chicken_rice_midnight_korat_lightbox.png", "src": "989000d4", "quad": [[7,36],[645,36],[645,262],[7,262]], "w_m": 2.6, "h_m": 0.9, "px": 1024, "mask": "rect", "wb": 0.15,
+  "th": "มิดไนท์ไก่ตอนโคราช ไก่ต้มตุ๋นยาจีน รับสั่งจองทำไก่ในงานพิธีต่างๆ", "en": "Night chicken-rice stall light box (Midnight Kai Ton Korat) with rooster logo", "mount": "hanging above stall / shopfront", "kind": "shop sign (khao man gai)"},
+ {"out": "menu_chicken_rice_photo_strip.png", "src": "989000d4", "quad": [[89,315],[583,315],[583,440],[89,440]], "w_m": 2.0, "h_m": 0.5, "px": 1024, "mask": "rect", "wb": 0.15,
+  "th": "(เมนูภาพ ข้าวมันไก่ ราคา)", "en": "Back-lit food-photo menu strip with prices (chicken rice stall)", "mount": "above the stall counter", "kind": "menu board"},
+ {"out": "sign_no_dog_poop_no_litter.png", "src": "01b6cd71", "quad": [[205,186],[553,186],[553,716],[205,716]], "w_m": 0.45, "h_m": 0.7, "px": 768, "mask": "round:0.05", "wb": 0.3,
+  "th": "ห้ามนำสุนัขมาถ่ายบริเวณนี้", "en": "Warning sign: do not let dogs poop here (crossed-dog symbol)", "mount": "pole / wall", "kind": "warning sign"}
+]

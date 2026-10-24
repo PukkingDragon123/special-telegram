@@ -33,7 +33,7 @@
     1024,
     1024
    ],
-   "notes": "White background removed.",
+   "notes": "White background removed (incl. gaps between leaves).",
    "sources": [
     {
      "file": "basil_leaf/basil_leaf_01.jpg",
@@ -86,23 +86,23 @@
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
   },
   {
-   "name": "burnt_residue_tile",
+   "name": "burnt_char_tile",
    "files": [
-    "burnt_residue_tile.jpg",
-    "burnt_residue_tile_n.jpg"
+    "burnt_char_tile.jpg",
+    "burnt_char_tile_n.jpg"
    ],
-   "purpose": "burnt / charred food residue (wok bottom, overcooked garlic or rice)",
+   "purpose": "charred / burnt stir-fry surface (blend over any food as burnt-ness rises)",
    "alpha": false,
    "size": [
-    512,
-    512
+    1024,
+    1024
    ],
-   "notes": "Real scorched pan residue; multiply over food when burnt-ness is high. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "notes": "Derived from the real kaphrao_pork_tile (same grain structure) charred to black-brown with ember tones. Seamless.",
    "sources": [
     {
-     "file": "char_wok/char_wok_03.jpg",
-     "image_url": "https://ptkss.com/wp-content/uploads/2025/09/%E0%B8%82%E0%B8%88%E0%B8%B1%E0%B8%94%E0%B8%84%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%97%E0%B8%B0%E0%B9%84%E0%B8%AB%E0%B8%A1%E0%B9%89.png",
-     "page_url": "https://ptkss.com/how-to-remove-burnt-stains-from-a-pan-easy-housewife-tips-stain-removal-in-no-time/"
+     "file": "pork_mince_tex/pork_mince_tex_01.jpg",
+     "image_url": "https://img.wongnai.com/p/1920x0/2021/09/07/cec0fe71533d43ec8c1c6e184d1df313.jpg",
+     "page_url": "https://www.wongnai.com/restaurants/487945Ys-%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%9B%E0%B8%87%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%9B%E0%B8%B1%E0%B9%88%E0%B8%99-%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%8A%E0%B8%87%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B8%82%E0%B8%99%E0%B8%A1%E0%B8%9B%E0%B8%B1%E0%B8%87%E0%B8%9B%E0%B8%B4%E0%B9%89%E0%B8%87-%E0%B8%95%E0%B8%A3%E0%B8%87%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A1%E0%B8%95%E0%B8%B6%E0%B8%81%E0%B9%80%E0%B8%82%E0%B8%B5%E0%B8%A2%E0%B8%A7%E0%B9%83%E0%B8%81%E0%B8%A5%E0%B9%89%E0%B9%81%E0%B8%A2%E0%B8%81-4/photos/cec0fe71533d43ec8c1c6e184d1df313"
     }
    ],
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
@@ -145,6 +145,51 @@
      "file": "chili_red/chili_red_04.jpg",
      "image_url": "https://st.bigc-cs.com/cdn-cgi/image/format=webp,quality=90/public/media/catalog/product/92/20/2000000412092/2000000412092_2-20260324154908-.jpg",
      "page_url": "https://www.bigc.co.th/en/product/red-bird-s-eye-chili-no-stem-40-g.83739"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "chili_singles",
+   "files": [
+    "chili_red_single.png",
+    "chili_green_single.png",
+    "chili_singles_atlas.png"
+   ],
+   "purpose": "single bird's-eye chilies (red + green) and a 2x2 atlas (R,R / G,G)",
+   "alpha": true,
+   "size": [
+    512,
+    512
+   ],
+   "notes": "Individually separated from a row photo of fresh Thai chilies (stem up).",
+   "sources": [
+    {
+     "file": "chili_green_white/chili_green_white_02.jpg",
+     "image_url": "https://www.dseedsthailand.com/wp-content/uploads/2022/10/%E0%B8%9E%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B9%80%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C403-227.jpg",
+     "page_url": "https://www.dseedsthailand.com/product/%E0%B8%9E%E0%B8%A3%E0%B8%B4%E0%B8%81%E0%B8%82%E0%B8%B5%E0%B9%89%E0%B8%AB%E0%B8%99%E0%B8%B9-227/"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "cucumber_slices_tile",
+   "files": [
+    "cucumber_slices_tile.jpg",
+    "cucumber_slices_tile_n.jpg"
+   ],
+   "purpose": "overlapping fresh cucumber slices (side garnish heap)",
+   "alpha": false,
+   "size": [
+    768,
+    768
+   ],
+   "notes": "Real cucumber slices. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "cucumber_slices/cucumber_slices_05.jpg",
+     "image_url": "https://krubmachinery.com/wp-content/uploads/2025/11/%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%B1%E0%B9%88%E0%B8%99%E0%B9%81%E0%B8%95%E0%B8%87%E0%B8%81%E0%B8%A7%E0%B8%B2-768x768.jpg",
+     "page_url": "https://krubmachinery.com/product/%E0%B9%80%E0%B8%84%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%B1%E0%B9%88%E0%B8%99%E0%B9%81%E0%B8%95%E0%B8%87%E0%B8%81%E0%B8%A7%E0%B8%B2/"
     }
    ],
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
@@ -202,7 +247,7 @@
     1024,
     1024
    ],
-   "notes": "Top view, white background removed.",
+   "notes": "Top view; background removed with GrabCut.",
    "sources": [
     {
      "file": "egg_top/egg_top_01.jpg",
@@ -218,39 +263,40 @@
     "fried_rice_tile.jpg",
     "fried_rice_tile_n.jpg"
    ],
-   "purpose": "khao phat (fried rice with egg, kale bits)",
+   "purpose": "khao phat (fried rice with egg, pork, kale, spring onion)",
    "alpha": false,
    "size": [
     1024,
     1024
    ],
-   "notes": "Plated fried rice close-up. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "notes": "Full-frame fried rice close-up. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
    "sources": [
     {
-     "file": "friedrice_close/friedrice_close_01.jpg",
-     "image_url": "https://img.wongnai.com/p/1968x0/2018/12/21/9e7a1f12969844c0a1f537c5d95662ac.jpg",
-     "page_url": "https://www.wongnai.com/recipes/ugc/b3a02584ebb1444884f31530e0856d23"
+     "file": "friedrice_top/friedrice_top_05.jpg",
+     "image_url": "https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oMmesTsw5QgAtAM7nSfL6DiIgBGA0fn1fAe8F7~tplv-tej9nj120t-origin.webp",
+     "page_url": "https://www.lemon8-app.com/experience/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B8%97%E0%B9%8D%E0%B8%B2%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B8%9C%E0%B8%B1%E0%B8%94%E0%B8%AB%E0%B8%A1%E0%B8%B9%E0%B9%82%E0%B8%9A%E0%B8%A3%E0%B8%B2%E0%B8%93?region=th"
     }
    ],
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
   },
   {
-   "name": "garlic_crushed",
+   "name": "garlic_cloves_tile",
    "files": [
-    "garlic_crushed.png"
+    "garlic_cloves_tile.jpg",
+    "garlic_cloves_tile_n.jpg"
    ],
-   "purpose": "crushed (smashed) peeled garlic cloves",
-   "alpha": true,
+   "purpose": "unpeeled Thai garlic cloves heap (market basket / prep tray)",
+   "alpha": false,
    "size": [
     1024,
     1024
    ],
-   "notes": "GrabCut from a plate.",
+   "notes": "Thai small purple-skinned cloves. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
    "sources": [
     {
-     "file": "garlic_crushed/garlic_crushed_05.jpg",
-     "image_url": "https://cms.dmpcdn.com/ugcarticle/2025/09/21/e3d76c90-96d2-11f0-abe9-5915688a62ba_webp_original.webp",
-     "page_url": "https://food.trueid.net/detail/KWJ9OaDEmryB"
+     "file": "garlic_clove_iso/garlic_clove_iso_01.jpg",
+     "image_url": "https://down-th.img.susercontent.com/file/th-11134207-7r991-lvsl4xzmyoje29",
+     "page_url": "https://shopee.co.th/%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%97%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%81%E0%B8%97%E0%B9%89-%E0%B9%81%E0%B8%81%E0%B8%B0%E0%B9%80%E0%B8%9B%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81%E0%B8%81%E0%B8%A5%E0%B8%B5%E0%B8%9A%E0%B8%AA%E0%B8%A7%E0%B8%A2-1%E0%B8%81%E0%B8%B4%E0%B9%82%E0%B8%A5-250-%E0%B8%9A%E0%B8%B2%E0%B8%97-i.321227210.25681318581"
     }
    ],
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
@@ -412,18 +458,18 @@
     "oil_frying_tile.jpg",
     "oil_frying_tile_n.jpg"
    ],
-   "purpose": "hot frying oil with bubbles in a black wok (deep-frying eggs / garlic)",
+   "purpose": "hot frying oil with bubbles in a wok (deep-frying eggs / garlic)",
    "alpha": false,
    "size": [
     512,
     512
    ],
-   "notes": "Use with additive blending/emissive tweak for sizzling oil. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "notes": "Use with additive blending / slight emissive for sizzling oil. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
    "sources": [
     {
-     "file": "oil_pan/oil_pan_05.jpg",
-     "image_url": "https://f.ptcdn.info/253/037/000/nxkxzggl7wm6gjgU09H-o.jpg",
-     "page_url": "https://pantip.com/topic/34424421"
+     "file": "oil_bubbles/oil_bubbles_01.jpg",
+     "image_url": "https://www.lemon8-app.com/seo/image?item_id=7110397011479790082&index=2&sign=ed5b5ec5f1414c9834ebad9b6f94cc71",
+     "page_url": "https://www.lemon8-app.com/@chocolekkitchen/7296358493609607682?region=th"
     }
    ],
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
@@ -537,6 +583,28 @@
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"
   },
   {
+   "name": "rat_na_tile",
+   "files": [
+    "rat_na_tile.jpg",
+    "rat_na_tile_n.jpg"
+   ],
+   "purpose": "rat na: wide noodles under glossy translucent gravy with kale/broccoli/carrot and pork",
+   "alpha": false,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Top view of rat na gravy surface. Seamless (wraps in U and V). *_n.jpg = OpenGL normal map.",
+   "sources": [
+    {
+     "file": "radna_top/radna_top_04.jpg",
+     "image_url": "https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oUh022BCPBipA1biANiZJrpAiAoYPkSkInGEY~tplv-tej9nj120t-origin.webp",
+     "page_url": "https://www.lemon8-app.com/@punorn1/7389707448589943313?region=th"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
    "name": "rice_cooked_tile",
    "files": [
     "rice_cooked_tile.jpg",
@@ -596,6 +664,27 @@
      "file": "shallot_sliced/shallot_sliced_03.jpg",
      "image_url": "https://www.gangbeauty.com/uppic/2017-10/17/93de46496.jpg",
      "page_url": "https://www.gangbeauty.com/13ukxzdoyvS"
+    }
+   ],
+   "licence": "unknown (web photo, used per client instruction 2026-10-19)"
+  },
+  {
+   "name": "tomyum_bowl_top",
+   "files": [
+    "tomyum_bowl_top.png"
+   ],
+   "purpose": "tom yum (น้ำข้น-style, orange-red) soup surface with ingredients, circular (alpha)",
+   "alpha": true,
+   "size": [
+    1024,
+    1024
+   ],
+   "notes": "Inner circle of a real bowl photo, rescaled to a circle; place on the soup plane inside a bowl.",
+   "sources": [
+    {
+     "file": "tomyum_surface/tomyum_surface_02.jpg",
+     "image_url": "https://img.wongnai.com/p/1968x0/2021/03/13/85bfa47c19ea48e093d400376ee83412.jpg",
+     "page_url": "https://www.wongnai.com/recipes/ugc/991586bcdfa64ed8a280fb7edd4ed870"
     }
    ],
    "licence": "unknown (web photo, used per client instruction 2026-10-19)"

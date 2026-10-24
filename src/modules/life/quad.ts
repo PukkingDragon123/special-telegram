@@ -658,19 +658,19 @@ function poseTargets(pose: QuadPose, sp: Species, out: EulerArr, root: { y: numb
       set(QB.tail1, cat ? 0.25 : 0.15); set(QB.tail2, cat ? 0.2 : 0.1); set(QB.tail3, cat ? -0.4 : 0.1);
       break;
     case 'sit':
-      root.y = -0.21 * k; root.pitch = 0;
-      set(QB.hips, -0.62); set(QB.spine, 0.05); set(QB.chest, 0.03);
-      set(QB.neck, 0.2); set(QB.head, 0.38);
-      set(QB.sh_l, 0.55); set(QB.sh_r, 0.55); set(QB.el_l, -0.05); set(QB.el_r, -0.05); set(QB.wr_l, 0.05); set(QB.wr_r, 0.05);
-      set(QB.hip_l, -0.75, 0, -0.18); set(QB.hip_r, -0.75, 0, 0.18); set(QB.kn_l, 1.75); set(QB.kn_r, 1.75); set(QB.ho_l, -1.05); set(QB.ho_r, -1.05);
-      set(QB.tail1, -0.65 + (cat ? 0.3 : 0)); set(QB.tail2, cat ? -0.8 : -0.3); set(QB.tail3, cat ? 0.2 : -0.2);
+      root.y = -0.3 * k; root.pitch = 0;
+      set(QB.hips, -0.85); set(QB.spine, 0.04); set(QB.chest, 0.04);
+      set(QB.neck, 0.36); set(QB.head, 0.42);
+      set(QB.sh_l, 0.78); set(QB.sh_r, 0.78); set(QB.el_l, -0.04); set(QB.el_r, -0.04); set(QB.wr_l, 0.06); set(QB.wr_r, 0.06);
+      set(QB.hip_l, -0.55, 0, -0.22); set(QB.hip_r, -0.55, 0, 0.22); set(QB.kn_l, 2.2); set(QB.kn_r, 2.2); set(QB.ho_l, -1.3); set(QB.ho_r, -1.3);
+      set(QB.tail1, -0.75 + (cat ? 0.3 : 0)); set(QB.tail2, cat ? -0.8 : -0.35); set(QB.tail3, cat ? 0.2 : -0.2);
       break;
     case 'beg':
-      root.y = -0.2 * k;
-      set(QB.hips, -1.08); set(QB.spine, -0.08); set(QB.chest, -0.05);
-      set(QB.neck, 0.35); set(QB.head, 0.55);
-      set(QB.sh_l, 0.25, 0, 0.1); set(QB.sh_r, 0.25, 0, -0.1); set(QB.el_l, 1.55); set(QB.el_r, 1.55); set(QB.wr_l, 0.6); set(QB.wr_r, 0.6);
-      set(QB.hip_l, -0.4, 0, -0.2); set(QB.hip_r, -0.4, 0, 0.2); set(QB.kn_l, 1.95); set(QB.kn_r, 1.95); set(QB.ho_l, -1.25); set(QB.ho_r, -1.25);
+      root.y = -0.3 * k;
+      set(QB.hips, -1.12); set(QB.spine, -0.1); set(QB.chest, -0.06);
+      set(QB.neck, 0.6); set(QB.head, 0.62);
+      set(QB.sh_l, 0.15, 0, 0.1); set(QB.sh_r, 0.15, 0, -0.1); set(QB.el_l, 1.6); set(QB.el_r, 1.6); set(QB.wr_l, 0.7); set(QB.wr_r, 0.7);
+      set(QB.hip_l, -0.32, 0, -0.24); set(QB.hip_r, -0.32, 0, 0.24); set(QB.kn_l, 2.2); set(QB.kn_r, 2.2); set(QB.ho_l, -1.32); set(QB.ho_r, -1.32);
       set(QB.tail1, -1.0); set(QB.tail2, -0.3);
       break;
     case 'lie':

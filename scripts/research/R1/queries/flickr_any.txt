@@ -1,0 +1,27 @@
+f_pharm | ร้านขายยา ป้าย
+f_pharm2 | thailand pharmacy
+f_noodle | ร้านก๋วยเตี๋ยว
+f_moto | ร้านซ่อมรถ มอเตอร์ไซค์
+f_massage | นวดแผนไทย
+f_plastic | ร้านพลาสติก
+f_hardware | วัสดุก่อสร้าง
+f_phone | ร้านมือถือ
+f_game | ร้านเกม
+f_laundry | ซักรีด
+f_clinic | คลินิก
+f_coffee | กาแฟโบราณ
+f_lottery | ลอตเตอรี่
+f_apartment | อพาร์ทเม้นท์
+f_rent | ห้องเช่า
+f_nolitter | ห้ามทิ้งขยะ
+f_dog | ระวังสุนัขดุ
+f_noparking | ห้ามจอดรถ
+f_bump | ลูกระนาด
+f_uturn | กลับรถ ป้าย
+f_soi | ซอย ป้าย กรุงเทพ
+f_flyer | รับซื้อของเก่า
+f_loan | เงินด่วน
+f_tutor | เรียนพิเศษ
+f_market | ตลาด ป้าย
+f_tamsang | ตามสั่ง
+f_win | วินมอเตอร์ไซค์

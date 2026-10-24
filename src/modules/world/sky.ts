@@ -130,6 +130,27 @@ void main() { vDir = normalize(position); gl_Position = projectionMatrix * model
 
 interface HdriInfo { key: string; file: string; exp: number; tex?: THREE.DataTexture }
 
+let hdriPromise: Promise<Record<string, HdriInfo>> | null = null;
+/** load the 4 time-of-day HDRIs once (started at boot by the module's init) */
+export function preloadHdris(): Promise<Record<string, HdriInfo>> {
+  if (hdriPromise) return hdriPromise;
+  hdriPromise = (async () => {
+    const out: Record<string, HdriInfo> = {};
+    const man = await Assets.jsonSafe<any>('hdri/manifest.json', {});
+    const want: Record<string, string> = { day: 'day_hazy_street', golden: 'golden_hour_riverside', dusk: 'dusk_blue_hour', night: 'night_street_sodium' };
+    await Promise.all(Object.entries(want).map(async ([k, id]) => {
+      const e = man[id];
+      if (!e) return;
+      try {
+        const tex = await Assets.hdr('hdri/' + e.file1k);
+        out[k] = { key: k, file: e.file1k, exp: e.recommendedExposure ?? 1, tex };
+      } catch (err) { console.warn('[world] hdri', id, err); }
+    }));
+    return out;
+  })();
+  return hdriPromise;
+}
+
 /** time-of-day keyframes */
 interface Key {
   t: number;
@@ -229,16 +250,7 @@ export class Atmosphere {
   }
 
   async loadHdris() {
-    const man = await Assets.jsonSafe<any>('hdri/manifest.json', {});
-    const want: Record<string, string> = { day: 'day_hazy_street', golden: 'golden_hour_riverside', dusk: 'dusk_blue_hour', night: 'night_street_sodium', overcast: 'overcast_day' };
-    await Promise.all(Object.entries(want).map(async ([k, id]) => {
-      const e = man[id];
-      if (!e) return;
-      try {
-        const tex = await Assets.hdr('hdri/' + e.file1k);
-        this.hdris[k] = { key: k, file: e.file1k, exp: e.recommendedExposure ?? 1, tex };
-      } catch (err) { console.warn('[world] hdri', id, err); }
-    }));
+    this.hdris = await preloadHdris();
   }
 
   /** scene hookup */

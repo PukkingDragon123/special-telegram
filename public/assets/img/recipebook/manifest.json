@@ -1,0 +1,2356 @@
+{
+ "page_size": [
+  1024,
+  1448
+ ],
+ "style": "lazy, ugly, human-made notebook (ballpoint, pencil, red pen, marker); real paper scans",
+ "fonts": "handwriting: Sriracha (old man), Itim (friends' pencil notes); printed cover: Taviraj/Sarabun",
+ "cover": "cover.png",
+ "pages": [
+  {
+   "page": 1,
+   "file": "page_01_kaprao_1.png",
+   "dish_id": "kaprao_moo_sap",
+   "dish": "กะเพราหมูสับ",
+   "dish_en": "Stir-fried minced pork with holy basil",
+   "unlock_day": 1,
+   "part": "1/2",
+   "ingredients": [
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียม",
+     "en": "garlic",
+     "amount": "3 กลีบ",
+     "qty": 10,
+     "unit": "g"
+    },
+    {
+     "th": "พริกขี้หนู",
+     "en": "bird's-eye chilli",
+     "amount": "5 เม็ด",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "หมูสับ",
+     "en": "minced pork",
+     "amount": "120 กรัม",
+     "qty": 120,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว",
+     "en": "light soy sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วดำ",
+     "en": "dark soy sauce",
+     "amount": "½ ช้อนชา",
+     "qty": 3,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำปลา",
+     "en": "fish sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "½ ช้อนชา",
+     "qty": 3,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำ",
+     "en": "water",
+     "amount": "2 ช้อนโต๊ะ",
+     "qty": 30,
+     "unit": "ml"
+    },
+    {
+     "th": "ใบกะเพรา",
+     "en": "holy basil",
+     "amount": "1 กำ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ข้าวสวย",
+     "en": "steamed rice",
+     "amount": "1 ทัพพี",
+     "qty": 200,
+     "unit": "g"
+    }
+   ],
+   "tips": [
+    "ห้ามใส่ถั่วฝักยาว!!",
+    "ฝรั่ง/ไม่เผ็ด = พริก 1 เม็ด",
+    "เผ็ดมาก = พริก 10 เม็ด"
+   ]
+  },
+  {
+   "page": 2,
+   "file": "page_02_kaprao_2.png",
+   "dish_id": "kaprao_moo_sap",
+   "dish": "กะเพราหมูสับ",
+   "dish_en": "Stir-fried minced pork with holy basil",
+   "unlock_day": 1,
+   "part": "2/2",
+   "steps": [
+    {
+     "n": 1,
+     "th": "โขลกกระเทียม + พริก หยาบๆ",
+     "en": "Pound garlic + chilli coarsely",
+     "heat": null,
+     "seconds": 0
+    },
+    {
+     "n": 2,
+     "th": "ไฟแรง ผัดกระเทียมพริกจนหอม อย่าให้ไหม้!",
+     "en": "High heat: fry garlic & chilli until fragrant, don't burn it!",
+     "heat": "high",
+     "seconds": 20
+    },
+    {
+     "n": 3,
+     "th": "ใส่หมูสับ ผัดจนสุก",
+     "en": "Add minced pork, stir-fry until cooked",
+     "heat": "high",
+     "seconds": 90
+    },
+    {
+     "n": 4,
+     "th": "ใส่ซอสหอย ซีอิ๊วขาว ซีอิ๊วดำ น้ำปลา น้ำตาล",
+     "en": "Season: oyster, light & dark soy, fish sauce, sugar",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 5,
+     "th": "เติมน้ำ 2 ช้อนโต๊ะ ผัดให้ขลุกขลิก",
+     "en": "Add 2 tbsp water, toss until saucy",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 6,
+     "th": "ใส่ใบกะเพราตอนท้าย แล้วปิดไฟ",
+     "en": "Add holy basil at the end, turn off the heat",
+     "heat": "off",
+     "seconds": 5
+    },
+    {
+     "n": 7,
+     "th": "ตักราดข้าว 1 ทัพพี (+ไข่ดาว)",
+     "en": "Spoon over 1 scoop of rice (+ fried egg)",
+     "heat": null,
+     "seconds": 0
+    }
+   ],
+   "tips": [
+    "ห้ามใส่ถั่วฝักยาว!!",
+    "ฝรั่ง/ไม่เผ็ด = พริก 1 เม็ด",
+    "เผ็ดมาก = พริก 10 เม็ด"
+   ]
+  },
+  {
+   "page": 3,
+   "file": "page_03_khai_dao.png",
+   "dish_id": "khai_dao",
+   "dish": "ไข่ดาว",
+   "dish_en": "Thai crispy fried egg",
+   "unlock_day": 1,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน (เยอะ)",
+     "en": "oil (plenty)",
+     "amount": "60 มล.",
+     "qty": 60,
+     "unit": "ml"
+    },
+    {
+     "th": "ไข่ไก่",
+     "en": "egg",
+     "amount": "1 ฟอง",
+     "qty": 55,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ตั้งน้ำมันเยอะๆ ให้ร้อนจัด (มีควันนิดๆ)",
+     "en": "Heat plenty of oil until very hot (light smoke)",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 2,
+     "th": "ตอกไข่ 1 ฟอง ลงกลางกระทะ",
+     "en": "Crack 1 egg into the middle",
+     "heat": "high",
+     "seconds": 0
+    },
+    {
+     "n": 3,
+     "th": "ทอด 60–90 วิ ให้ขอบกรอบฟู ตักน้ำมันราดไข่ขาว",
+     "en": "Fry 60–90 s until the edges are crispy, baste the white",
+     "heat": "high",
+     "seconds": 75
+    },
+    {
+     "n": 4,
+     "th": "ชอบไข่แดงเยิ้ม = ทอดสั้น (~60 วิ)",
+     "en": "Runny yolk = fry shorter (~60 s)",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 5,
+     "th": "ไข่ดาวไม่สุก = 45 วิ แล้วรีบตัก",
+     "en": "'Not cooked' egg = 45 s then lift out",
+     "heat": "high",
+     "seconds": 45
+    }
+   ],
+   "tips": [
+    "ระวังน้ำมันกระเด็น!",
+    "ไข่ดาวสุก = กลับด้าน 2 นาที"
+   ]
+  },
+  {
+   "page": 4,
+   "file": "page_04_khai_jiao.png",
+   "dish_id": "khai_jiao",
+   "dish": "ไข่เจียว",
+   "dish_en": "Thai omelette",
+   "unlock_day": 2,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "ไข่ไก่",
+     "en": "eggs",
+     "amount": "2 ฟอง",
+     "qty": 110,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำปลา",
+     "en": "fish sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำมะนาว (ให้ฟู)",
+     "en": "lime juice (fluffier)",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "ml"
+    },
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "½ ถ้วย",
+     "qty": 120,
+     "unit": "ml"
+    },
+    {
+     "th": "ข้าวสวย",
+     "en": "steamed rice",
+     "amount": "1 ทัพพี",
+     "qty": 200,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ตีไข่ + น้ำปลา + มะนาว ให้ขึ้นฟอง",
+     "en": "Beat eggs + fish sauce + lime until frothy",
+     "heat": null,
+     "seconds": 30
+    },
+    {
+     "n": 2,
+     "th": "น้ำมันร้อนจัด",
+     "en": "Oil smoking hot",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 3,
+     "th": "เทไข่จากที่สูง ให้ฟู",
+     "en": "Pour the egg in from high up so it puffs",
+     "heat": "high",
+     "seconds": 0
+    },
+    {
+     "n": 4,
+     "th": "ทอดจนขอบเหลืองกรอบ แล้วกลับด้าน",
+     "en": "Fry until golden and crispy, flip",
+     "heat": "high",
+     "seconds": 45
+    },
+    {
+     "n": 5,
+     "th": "ทอดอีกด้าน ตักขึ้นสะเด็ดน้ำมัน",
+     "en": "Fry the other side, drain",
+     "heat": "high",
+     "seconds": 30
+    }
+   ],
+   "tips": [
+    "กินกับซอสพริก",
+    "ไฟอ่อน = ไข่แบน ไม่ฟู"
+   ]
+  },
+  {
+   "page": 5,
+   "file": "page_05_khao_phat.png",
+   "dish_id": "khao_phat",
+   "dish": "ข้าวผัด",
+   "dish_en": "Fried rice (pork)",
+   "unlock_day": 3,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียมสับ",
+     "en": "minced garlic",
+     "amount": "2 กลีบ",
+     "qty": 7,
+     "unit": "g"
+    },
+    {
+     "th": "หมูหั่นชิ้น",
+     "en": "sliced pork",
+     "amount": "100 กรัม",
+     "qty": 100,
+     "unit": "g"
+    },
+    {
+     "th": "ไข่ไก่",
+     "en": "egg",
+     "amount": "1 ฟอง",
+     "qty": 55,
+     "unit": "g"
+    },
+    {
+     "th": "ข้าวสวย (ข้าวค้างคืน)",
+     "en": "day-old rice",
+     "amount": "1 ทัพพีใหญ่",
+     "qty": 220,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว",
+     "en": "light soy sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "½ ช้อนชา",
+     "qty": 3,
+     "unit": "g"
+    },
+    {
+     "th": "หอมใหญ่",
+     "en": "onion",
+     "amount": "¼ หัว",
+     "qty": 30,
+     "unit": "g"
+    },
+    {
+     "th": "มะเขือเทศ",
+     "en": "tomato",
+     "amount": "½ ลูก",
+     "qty": 40,
+     "unit": "g"
+    },
+    {
+     "th": "ต้นหอม",
+     "en": "spring onion",
+     "amount": "1 ต้น",
+     "qty": 5,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "เจียวกระเทียมจนหอม",
+     "en": "Fry garlic until fragrant",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 2,
+     "th": "ใส่หมู ผัดจนสุก",
+     "en": "Add pork, cook through",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 3,
+     "th": "ดันข้าง ตอกไข่ ยีให้สุกครึ่ง",
+     "en": "Push aside, crack egg, scramble half-set",
+     "heat": "high",
+     "seconds": 20
+    },
+    {
+     "n": 4,
+     "th": "ใส่ข้าว ผัดไฟแรงให้ร่วน",
+     "en": "Add rice, toss on high heat",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 5,
+     "th": "ปรุง ซีอิ๊ว ซอสหอย น้ำตาล",
+     "en": "Season",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 6,
+     "th": "ใส่หอมใหญ่ มะเขือเทศ ผัดอีกนิด",
+     "en": "Add onion + tomato, toss",
+     "heat": "high",
+     "seconds": 30
+    },
+    {
+     "n": 7,
+     "th": "ใส่ต้นหอม ปิดไฟ เสิร์ฟกับมะนาว แตงกวา",
+     "en": "Spring onion, heat off, serve with lime + cucumber",
+     "heat": "off",
+     "seconds": 5
+    }
+   ],
+   "tips": [
+    "ข้าวใหม่ = แฉะ! ใช้ข้าวเย็น",
+    "พริกน้ำปลาข้างจาน"
+   ]
+  },
+  {
+   "page": 6,
+   "file": "page_06_phat_phrik_kaeng.png",
+   "dish_id": "phat_phrik_kaeng",
+   "dish": "ผัดพริกแกง",
+   "dish_en": "Red curry paste stir-fry (pork & long beans)",
+   "unlock_day": 4,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "พริกแกงเผ็ด",
+     "en": "red curry paste",
+     "amount": "1 ช้อนโต๊ะพูน",
+     "qty": 20,
+     "unit": "g"
+    },
+    {
+     "th": "หมูหั่นชิ้น",
+     "en": "sliced pork",
+     "amount": "120 กรัม",
+     "qty": 120,
+     "unit": "g"
+    },
+    {
+     "th": "ถั่วฝักยาว (หั่นท่อน)",
+     "en": "long beans",
+     "amount": "1 กำเล็ก",
+     "qty": 60,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำปลา",
+     "en": "fish sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาลปี๊บ",
+     "en": "palm sugar",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำ",
+     "en": "water",
+     "amount": "2 ช้อนโต๊ะ",
+     "qty": 30,
+     "unit": "ml"
+    },
+    {
+     "th": "ใบมะกรูด (ฉีก)",
+     "en": "kaffir lime leaves",
+     "amount": "3 ใบ",
+     "qty": 1,
+     "unit": "g"
+    },
+    {
+     "th": "พริกชี้ฟ้าแดง",
+     "en": "red spur chilli",
+     "amount": "½ เม็ด",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "ข้าวสวย",
+     "en": "steamed rice",
+     "amount": "1 ทัพพี",
+     "qty": 200,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ผัดพริกแกงกับน้ำมัน ไฟกลาง จนหอม",
+     "en": "Fry curry paste in oil, medium heat, until fragrant",
+     "heat": "medium",
+     "seconds": 40
+    },
+    {
+     "n": 2,
+     "th": "ใส่หมู ผัดจนสุก",
+     "en": "Add pork, cook through",
+     "heat": "high",
+     "seconds": 90
+    },
+    {
+     "n": 3,
+     "th": "ใส่ถั่วฝักยาว + น้ำ",
+     "en": "Add long beans + water",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 4,
+     "th": "ปรุงน้ำปลา น้ำตาลปี๊บ",
+     "en": "Season with fish sauce + palm sugar",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 5,
+     "th": "ใบมะกรูด พริกชี้ฟ้า ปิดไฟ",
+     "en": "Kaffir lime leaves + chilli, heat off",
+     "heat": "off",
+     "seconds": 5
+    }
+   ],
+   "tips": [
+    "ถั่วฝักยาวใส่ได้!! (เมนูนี้นะ ไม่ใช่กะเพรา)",
+    "พริกแกงไหม้ = ขม"
+   ]
+  },
+  {
+   "page": 7,
+   "file": "page_07_phat_si_io.png",
+   "dish_id": "phat_si_io",
+   "dish": "ผัดซีอิ๊ว",
+   "dish_en": "Stir-fried wide noodles with dark soy",
+   "unlock_day": 5,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียมสับ",
+     "en": "minced garlic",
+     "amount": "2 กลีบ",
+     "qty": 7,
+     "unit": "g"
+    },
+    {
+     "th": "หมูหมัก",
+     "en": "marinated pork",
+     "amount": "80 กรัม",
+     "qty": 80,
+     "unit": "g"
+    },
+    {
+     "th": "ไข่ไก่",
+     "en": "egg",
+     "amount": "1 ฟอง",
+     "qty": 55,
+     "unit": "g"
+    },
+    {
+     "th": "เส้นใหญ่",
+     "en": "wide rice noodles",
+     "amount": "1 จาน",
+     "qty": 200,
+     "unit": "g"
+    },
+    {
+     "th": "คะน้า",
+     "en": "Chinese kale",
+     "amount": "1 กำเล็ก",
+     "qty": 60,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วดำ",
+     "en": "dark soy sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว",
+     "en": "light soy sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "1 ช้อนชา",
+     "qty": 4,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "แกะเส้น คลุกซีอิ๊วดำไว้ก่อน",
+     "en": "Separate noodles, toss with dark soy first",
+     "heat": null,
+     "seconds": 0
+    },
+    {
+     "n": 2,
+     "th": "เจียวกระเทียม",
+     "en": "Fry garlic",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 3,
+     "th": "ใส่หมู ผัดจนสุก",
+     "en": "Add pork, cook through",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 4,
+     "th": "ตอกไข่ ยีให้กระจาย",
+     "en": "Crack egg, scramble",
+     "heat": "high",
+     "seconds": 20
+    },
+    {
+     "n": 5,
+     "th": "ใส่เส้น ผัดไฟแรง ให้เกรียมนิดๆ",
+     "en": "Add noodles, high heat, let them char a bit",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 6,
+     "th": "ใส่คะน้า + ปรุง ผัดอีกนิด",
+     "en": "Add kale + season, toss",
+     "heat": "high",
+     "seconds": 30
+    }
+   ],
+   "tips": [
+    "กระทะต้องร้อน กลิ่นกระทะ = อร่อย",
+    "โรยพริกไทย"
+   ]
+  },
+  {
+   "page": 8,
+   "file": "page_08_rad_na.png",
+   "dish_id": "rad_na",
+   "dish": "ราดหน้า",
+   "dish_en": "Wide noodles in thick gravy",
+   "unlock_day": 6,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "เส้นใหญ่",
+     "en": "wide rice noodles",
+     "amount": "1 จาน",
+     "qty": 200,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วดำ (คลุกเส้น)",
+     "en": "dark soy (for noodles)",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียมสับ",
+     "en": "minced garlic",
+     "amount": "2 กลีบ",
+     "qty": 7,
+     "unit": "g"
+    },
+    {
+     "th": "หมูหมัก",
+     "en": "marinated pork",
+     "amount": "80 กรัม",
+     "qty": 80,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำซุป",
+     "en": "stock",
+     "amount": "1 ถ้วย",
+     "qty": 250,
+     "unit": "ml"
+    },
+    {
+     "th": "คะน้า",
+     "en": "Chinese kale",
+     "amount": "1 กำเล็ก",
+     "qty": 60,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "เต้าเจี้ยว",
+     "en": "fermented soybean paste",
+     "amount": "1 ช้อนชา",
+     "qty": 6,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว",
+     "en": "light soy sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "1 ช้อนชา",
+     "qty": 4,
+     "unit": "g"
+    },
+    {
+     "th": "แป้งมัน + น้ำ 2 ช้อนโต๊ะ",
+     "en": "tapioca starch + 2 tbsp water",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 10,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ผัดเส้นกับซีอิ๊วดำ ให้เกรียม ตักใส่จาน",
+     "en": "Char the noodles with dark soy, plate them",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 2,
+     "th": "เจียวกระเทียม ใส่หมู",
+     "en": "Fry garlic, add pork",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 3,
+     "th": "เติมน้ำซุป ต้มให้เดือด",
+     "en": "Add stock, bring to a boil",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 4,
+     "th": "ใส่คะน้า ปรุงรส",
+     "en": "Add kale, season",
+     "heat": "medium",
+     "seconds": 30
+    },
+    {
+     "n": 5,
+     "th": "ค่อยๆ เทน้ำแป้ง คนจนข้น",
+     "en": "Slowly pour in the starch water, stir until thick",
+     "heat": "medium",
+     "seconds": 30
+    },
+    {
+     "n": 6,
+     "th": "ราดบนเส้น โรยพริกไทย",
+     "en": "Pour over the noodles, pepper",
+     "heat": "off",
+     "seconds": 0
+    }
+   ],
+   "tips": [
+    "กินกับพริกน้ำส้ม",
+    "เทแป้งทีเดียว = เป็นก้อน!"
+   ]
+  },
+  {
+   "page": 9,
+   "file": "page_09_tom_yam.png",
+   "dish_id": "tom_yam",
+   "dish": "ต้มยำ",
+   "dish_en": "Tom yum (shrimp, clear)",
+   "unlock_day": 7,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "น้ำ / น้ำซุป",
+     "en": "water / stock",
+     "amount": "2 ถ้วย",
+     "qty": 500,
+     "unit": "ml"
+    },
+    {
+     "th": "ข่า",
+     "en": "galangal",
+     "amount": "4 แว่น",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ตะไคร้ (ทุบ)",
+     "en": "lemongrass (bruised)",
+     "amount": "1 ต้น",
+     "qty": 20,
+     "unit": "g"
+    },
+    {
+     "th": "ใบมะกรูด",
+     "en": "kaffir lime leaves",
+     "amount": "4 ใบ",
+     "qty": 2,
+     "unit": "g"
+    },
+    {
+     "th": "เห็ดฟาง",
+     "en": "straw mushrooms",
+     "amount": "6 ดอก",
+     "qty": 60,
+     "unit": "g"
+    },
+    {
+     "th": "กุ้ง",
+     "en": "shrimp",
+     "amount": "5 ตัว",
+     "qty": 120,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำปลา",
+     "en": "fish sauce",
+     "amount": "1½ ช้อนโต๊ะ",
+     "qty": 22,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำมะนาว",
+     "en": "lime juice",
+     "amount": "2 ช้อนโต๊ะ",
+     "qty": 30,
+     "unit": "ml"
+    },
+    {
+     "th": "พริกขี้หนู (บุบ)",
+     "en": "bird's-eye chilli (bruised)",
+     "amount": "5 เม็ด",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "ผักชีฝรั่ง",
+     "en": "sawtooth coriander",
+     "amount": "1 ต้น",
+     "qty": 3,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ต้มน้ำให้เดือด",
+     "en": "Bring water to a boil",
+     "heat": "high",
+     "seconds": 120
+    },
+    {
+     "n": 2,
+     "th": "ใส่ข่า ตะไคร้ ใบมะกรูด",
+     "en": "Add galangal, lemongrass, lime leaves",
+     "heat": "high",
+     "seconds": 120
+    },
+    {
+     "n": 3,
+     "th": "ใส่เห็ด",
+     "en": "Add mushrooms",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 4,
+     "th": "ใส่กุ้ง อย่าต้มนาน",
+     "en": "Add shrimp, don't overcook",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 5,
+     "th": "ปรุงน้ำปลา แล้วปิดไฟ",
+     "en": "Fish sauce, then heat off",
+     "heat": "off",
+     "seconds": 5
+    },
+    {
+     "n": 6,
+     "th": "ใส่มะนาว + พริก หลังปิดไฟ",
+     "en": "Lime + chilli AFTER heat off",
+     "heat": "off",
+     "seconds": 0
+    }
+   ],
+   "tips": [
+    "มะนาวใส่ตอนเดือด = ขม!!",
+    "กุ้งต้มนาน = แข็งเหมือนยาง"
+   ]
+  },
+  {
+   "page": 10,
+   "file": "page_10_moo_krathiam.png",
+   "dish_id": "moo_krathiam",
+   "dish": "หมูกระเทียม",
+   "dish_en": "Garlic pepper pork",
+   "unlock_day": 8,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "หมูหั่นชิ้น",
+     "en": "sliced pork",
+     "amount": "150 กรัม",
+     "qty": 150,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว (หมัก)",
+     "en": "light soy (marinade)",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม (หมัก)",
+     "en": "oyster sauce (marinade)",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "½ ช้อนชา",
+     "qty": 3,
+     "unit": "g"
+    },
+    {
+     "th": "พริกไทยป่น",
+     "en": "ground white pepper",
+     "amount": "½ ช้อนชา",
+     "qty": 1,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียมสับ (เยอะ!)",
+     "en": "minced garlic (lots!)",
+     "amount": "1 หัว",
+     "qty": 35,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "3 ช้อนโต๊ะ",
+     "qty": 45,
+     "unit": "g"
+    },
+    {
+     "th": "ข้าวสวย",
+     "en": "steamed rice",
+     "amount": "1 ทัพพี",
+     "qty": 200,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "หมักหมูไว้ 10 นาที",
+     "en": "Marinate the pork 10 min",
+     "heat": null,
+     "seconds": 600
+    },
+    {
+     "n": 2,
+     "th": "เจียวกระเทียม ไฟกลาง จนเหลืองหอม (เก็บไว้โรยครึ่งนึง)",
+     "en": "Fry garlic, medium heat, until golden (keep half)",
+     "heat": "medium",
+     "seconds": 60
+    },
+    {
+     "n": 3,
+     "th": "ใส่หมู ทอดจนสุก ขอบเกรียม",
+     "en": "Add pork, fry until cooked with crispy edges",
+     "heat": "high",
+     "seconds": 120
+    },
+    {
+     "n": 4,
+     "th": "ตักใส่จาน โรยกระเทียมเจียว",
+     "en": "Plate, top with fried garlic",
+     "heat": "off",
+     "seconds": 0
+    }
+   ],
+   "tips": [
+    "กระเทียมไหม้ = ขม ทิ้งเลย",
+    "+ไข่ดาว ขายดี"
+   ]
+  },
+  {
+   "page": 11,
+   "file": "page_11_phat_phak_bung.png",
+   "dish_id": "phat_phak_bung",
+   "dish": "ผัดผักบุ้ง",
+   "dish_en": "Stir-fried morning glory (red fire)",
+   "unlock_day": 9,
+   "part": "1/1",
+   "ingredients": [
+    {
+     "th": "ผักบุ้ง (หั่นท่อน)",
+     "en": "morning glory",
+     "amount": "1 กำ",
+     "qty": 150,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียม (บุบ)",
+     "en": "garlic (crushed)",
+     "amount": "4 กลีบ",
+     "qty": 12,
+     "unit": "g"
+    },
+    {
+     "th": "พริกขี้หนู (บุบ)",
+     "en": "bird's-eye chilli",
+     "amount": "4 เม็ด",
+     "qty": 4,
+     "unit": "g"
+    },
+    {
+     "th": "เต้าเจี้ยว",
+     "en": "fermented soybean paste",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 18,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "1 ช้อนชา",
+     "qty": 4,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำ",
+     "en": "water",
+     "amount": "2 ช้อนโต๊ะ",
+     "qty": 30,
+     "unit": "ml"
+    },
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ใส่ผัก + เครื่องปรุงทั้งหมดรวมไว้ในจาน",
+     "en": "Put veg + all seasonings together on a plate",
+     "heat": null,
+     "seconds": 0
+    },
+    {
+     "n": 2,
+     "th": "กระทะร้อนจัด ใส่น้ำมัน",
+     "en": "Smoking-hot wok, add oil",
+     "heat": "high",
+     "seconds": 30
+    },
+    {
+     "n": 3,
+     "th": "เทผักลงทีเดียว ไฟลุก!!",
+     "en": "Dump everything in at once: FIRE!",
+     "heat": "high",
+     "seconds": 5
+    },
+    {
+     "n": 4,
+     "th": "ผัดเร็วๆ แล้วตักทันที ผักยังเขียวกรอบ",
+     "en": "Toss fast, plate immediately while still green",
+     "heat": "high",
+     "seconds": 35
+    }
+   ],
+   "tips": [
+    "ไฟลุก = หล่อ (ระวังคิ้ว)",
+    "ผัดนาน = ผักเหี่ยวดำ"
+   ]
+  }
+ ],
+ "recipes": [
+  {
+   "id": "kaprao_moo_sap",
+   "th": "กะเพราหมูสับ",
+   "en": "Stir-fried minced pork with holy basil",
+   "unlock_day": 1,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียม",
+     "en": "garlic",
+     "amount": "3 กลีบ",
+     "qty": 10,
+     "unit": "g"
+    },
+    {
+     "th": "พริกขี้หนู",
+     "en": "bird's-eye chilli",
+     "amount": "5 เม็ด",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "หมูสับ",
+     "en": "minced pork",
+     "amount": "120 กรัม",
+     "qty": 120,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว",
+     "en": "light soy sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วดำ",
+     "en": "dark soy sauce",
+     "amount": "½ ช้อนชา",
+     "qty": 3,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำปลา",
+     "en": "fish sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "½ ช้อนชา",
+     "qty": 3,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำ",
+     "en": "water",
+     "amount": "2 ช้อนโต๊ะ",
+     "qty": 30,
+     "unit": "ml"
+    },
+    {
+     "th": "ใบกะเพรา",
+     "en": "holy basil",
+     "amount": "1 กำ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ข้าวสวย",
+     "en": "steamed rice",
+     "amount": "1 ทัพพี",
+     "qty": 200,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "โขลกกระเทียม + พริก หยาบๆ",
+     "en": "Pound garlic + chilli coarsely",
+     "heat": null,
+     "seconds": 0
+    },
+    {
+     "n": 2,
+     "th": "ไฟแรง ผัดกระเทียมพริกจนหอม อย่าให้ไหม้!",
+     "en": "High heat: fry garlic & chilli until fragrant, don't burn it!",
+     "heat": "high",
+     "seconds": 20
+    },
+    {
+     "n": 3,
+     "th": "ใส่หมูสับ ผัดจนสุก",
+     "en": "Add minced pork, stir-fry until cooked",
+     "heat": "high",
+     "seconds": 90
+    },
+    {
+     "n": 4,
+     "th": "ใส่ซอสหอย ซีอิ๊วขาว ซีอิ๊วดำ น้ำปลา น้ำตาล",
+     "en": "Season: oyster, light & dark soy, fish sauce, sugar",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 5,
+     "th": "เติมน้ำ 2 ช้อนโต๊ะ ผัดให้ขลุกขลิก",
+     "en": "Add 2 tbsp water, toss until saucy",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 6,
+     "th": "ใส่ใบกะเพราตอนท้าย แล้วปิดไฟ",
+     "en": "Add holy basil at the end, turn off the heat",
+     "heat": "off",
+     "seconds": 5
+    },
+    {
+     "n": 7,
+     "th": "ตักราดข้าว 1 ทัพพี (+ไข่ดาว)",
+     "en": "Spoon over 1 scoop of rice (+ fried egg)",
+     "heat": null,
+     "seconds": 0
+    }
+   ],
+   "tips": [
+    "ห้ามใส่ถั่วฝักยาว!!",
+    "ฝรั่ง/ไม่เผ็ด = พริก 1 เม็ด",
+    "เผ็ดมาก = พริก 10 เม็ด"
+   ]
+  },
+  {
+   "id": "khai_dao",
+   "th": "ไข่ดาว",
+   "en": "Thai crispy fried egg",
+   "unlock_day": 1,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน (เยอะ)",
+     "en": "oil (plenty)",
+     "amount": "60 มล.",
+     "qty": 60,
+     "unit": "ml"
+    },
+    {
+     "th": "ไข่ไก่",
+     "en": "egg",
+     "amount": "1 ฟอง",
+     "qty": 55,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ตั้งน้ำมันเยอะๆ ให้ร้อนจัด (มีควันนิดๆ)",
+     "en": "Heat plenty of oil until very hot (light smoke)",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 2,
+     "th": "ตอกไข่ 1 ฟอง ลงกลางกระทะ",
+     "en": "Crack 1 egg into the middle",
+     "heat": "high",
+     "seconds": 0
+    },
+    {
+     "n": 3,
+     "th": "ทอด 60–90 วิ ให้ขอบกรอบฟู ตักน้ำมันราดไข่ขาว",
+     "en": "Fry 60–90 s until the edges are crispy, baste the white",
+     "heat": "high",
+     "seconds": 75
+    },
+    {
+     "n": 4,
+     "th": "ชอบไข่แดงเยิ้ม = ทอดสั้น (~60 วิ)",
+     "en": "Runny yolk = fry shorter (~60 s)",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 5,
+     "th": "ไข่ดาวไม่สุก = 45 วิ แล้วรีบตัก",
+     "en": "'Not cooked' egg = 45 s then lift out",
+     "heat": "high",
+     "seconds": 45
+    }
+   ],
+   "tips": [
+    "ระวังน้ำมันกระเด็น!",
+    "ไข่ดาวสุก = กลับด้าน 2 นาที"
+   ]
+  },
+  {
+   "id": "khai_jiao",
+   "th": "ไข่เจียว",
+   "en": "Thai omelette",
+   "unlock_day": 2,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "ไข่ไก่",
+     "en": "eggs",
+     "amount": "2 ฟอง",
+     "qty": 110,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำปลา",
+     "en": "fish sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำมะนาว (ให้ฟู)",
+     "en": "lime juice (fluffier)",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "ml"
+    },
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "½ ถ้วย",
+     "qty": 120,
+     "unit": "ml"
+    },
+    {
+     "th": "ข้าวสวย",
+     "en": "steamed rice",
+     "amount": "1 ทัพพี",
+     "qty": 200,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ตีไข่ + น้ำปลา + มะนาว ให้ขึ้นฟอง",
+     "en": "Beat eggs + fish sauce + lime until frothy",
+     "heat": null,
+     "seconds": 30
+    },
+    {
+     "n": 2,
+     "th": "น้ำมันร้อนจัด",
+     "en": "Oil smoking hot",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 3,
+     "th": "เทไข่จากที่สูง ให้ฟู",
+     "en": "Pour the egg in from high up so it puffs",
+     "heat": "high",
+     "seconds": 0
+    },
+    {
+     "n": 4,
+     "th": "ทอดจนขอบเหลืองกรอบ แล้วกลับด้าน",
+     "en": "Fry until golden and crispy, flip",
+     "heat": "high",
+     "seconds": 45
+    },
+    {
+     "n": 5,
+     "th": "ทอดอีกด้าน ตักขึ้นสะเด็ดน้ำมัน",
+     "en": "Fry the other side, drain",
+     "heat": "high",
+     "seconds": 30
+    }
+   ],
+   "tips": [
+    "กินกับซอสพริก",
+    "ไฟอ่อน = ไข่แบน ไม่ฟู"
+   ]
+  },
+  {
+   "id": "khao_phat",
+   "th": "ข้าวผัด",
+   "en": "Fried rice (pork)",
+   "unlock_day": 3,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียมสับ",
+     "en": "minced garlic",
+     "amount": "2 กลีบ",
+     "qty": 7,
+     "unit": "g"
+    },
+    {
+     "th": "หมูหั่นชิ้น",
+     "en": "sliced pork",
+     "amount": "100 กรัม",
+     "qty": 100,
+     "unit": "g"
+    },
+    {
+     "th": "ไข่ไก่",
+     "en": "egg",
+     "amount": "1 ฟอง",
+     "qty": 55,
+     "unit": "g"
+    },
+    {
+     "th": "ข้าวสวย (ข้าวค้างคืน)",
+     "en": "day-old rice",
+     "amount": "1 ทัพพีใหญ่",
+     "qty": 220,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว",
+     "en": "light soy sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "½ ช้อนชา",
+     "qty": 3,
+     "unit": "g"
+    },
+    {
+     "th": "หอมใหญ่",
+     "en": "onion",
+     "amount": "¼ หัว",
+     "qty": 30,
+     "unit": "g"
+    },
+    {
+     "th": "มะเขือเทศ",
+     "en": "tomato",
+     "amount": "½ ลูก",
+     "qty": 40,
+     "unit": "g"
+    },
+    {
+     "th": "ต้นหอม",
+     "en": "spring onion",
+     "amount": "1 ต้น",
+     "qty": 5,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "เจียวกระเทียมจนหอม",
+     "en": "Fry garlic until fragrant",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 2,
+     "th": "ใส่หมู ผัดจนสุก",
+     "en": "Add pork, cook through",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 3,
+     "th": "ดันข้าง ตอกไข่ ยีให้สุกครึ่ง",
+     "en": "Push aside, crack egg, scramble half-set",
+     "heat": "high",
+     "seconds": 20
+    },
+    {
+     "n": 4,
+     "th": "ใส่ข้าว ผัดไฟแรงให้ร่วน",
+     "en": "Add rice, toss on high heat",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 5,
+     "th": "ปรุง ซีอิ๊ว ซอสหอย น้ำตาล",
+     "en": "Season",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 6,
+     "th": "ใส่หอมใหญ่ มะเขือเทศ ผัดอีกนิด",
+     "en": "Add onion + tomato, toss",
+     "heat": "high",
+     "seconds": 30
+    },
+    {
+     "n": 7,
+     "th": "ใส่ต้นหอม ปิดไฟ เสิร์ฟกับมะนาว แตงกวา",
+     "en": "Spring onion, heat off, serve with lime + cucumber",
+     "heat": "off",
+     "seconds": 5
+    }
+   ],
+   "tips": [
+    "ข้าวใหม่ = แฉะ! ใช้ข้าวเย็น",
+    "พริกน้ำปลาข้างจาน"
+   ]
+  },
+  {
+   "id": "phat_phrik_kaeng",
+   "th": "ผัดพริกแกง",
+   "en": "Red curry paste stir-fry (pork & long beans)",
+   "unlock_day": 4,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "พริกแกงเผ็ด",
+     "en": "red curry paste",
+     "amount": "1 ช้อนโต๊ะพูน",
+     "qty": 20,
+     "unit": "g"
+    },
+    {
+     "th": "หมูหั่นชิ้น",
+     "en": "sliced pork",
+     "amount": "120 กรัม",
+     "qty": 120,
+     "unit": "g"
+    },
+    {
+     "th": "ถั่วฝักยาว (หั่นท่อน)",
+     "en": "long beans",
+     "amount": "1 กำเล็ก",
+     "qty": 60,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำปลา",
+     "en": "fish sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาลปี๊บ",
+     "en": "palm sugar",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำ",
+     "en": "water",
+     "amount": "2 ช้อนโต๊ะ",
+     "qty": 30,
+     "unit": "ml"
+    },
+    {
+     "th": "ใบมะกรูด (ฉีก)",
+     "en": "kaffir lime leaves",
+     "amount": "3 ใบ",
+     "qty": 1,
+     "unit": "g"
+    },
+    {
+     "th": "พริกชี้ฟ้าแดง",
+     "en": "red spur chilli",
+     "amount": "½ เม็ด",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "ข้าวสวย",
+     "en": "steamed rice",
+     "amount": "1 ทัพพี",
+     "qty": 200,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ผัดพริกแกงกับน้ำมัน ไฟกลาง จนหอม",
+     "en": "Fry curry paste in oil, medium heat, until fragrant",
+     "heat": "medium",
+     "seconds": 40
+    },
+    {
+     "n": 2,
+     "th": "ใส่หมู ผัดจนสุก",
+     "en": "Add pork, cook through",
+     "heat": "high",
+     "seconds": 90
+    },
+    {
+     "n": 3,
+     "th": "ใส่ถั่วฝักยาว + น้ำ",
+     "en": "Add long beans + water",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 4,
+     "th": "ปรุงน้ำปลา น้ำตาลปี๊บ",
+     "en": "Season with fish sauce + palm sugar",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 5,
+     "th": "ใบมะกรูด พริกชี้ฟ้า ปิดไฟ",
+     "en": "Kaffir lime leaves + chilli, heat off",
+     "heat": "off",
+     "seconds": 5
+    }
+   ],
+   "tips": [
+    "ถั่วฝักยาวใส่ได้!! (เมนูนี้นะ ไม่ใช่กะเพรา)",
+    "พริกแกงไหม้ = ขม"
+   ]
+  },
+  {
+   "id": "phat_si_io",
+   "th": "ผัดซีอิ๊ว",
+   "en": "Stir-fried wide noodles with dark soy",
+   "unlock_day": 5,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียมสับ",
+     "en": "minced garlic",
+     "amount": "2 กลีบ",
+     "qty": 7,
+     "unit": "g"
+    },
+    {
+     "th": "หมูหมัก",
+     "en": "marinated pork",
+     "amount": "80 กรัม",
+     "qty": 80,
+     "unit": "g"
+    },
+    {
+     "th": "ไข่ไก่",
+     "en": "egg",
+     "amount": "1 ฟอง",
+     "qty": 55,
+     "unit": "g"
+    },
+    {
+     "th": "เส้นใหญ่",
+     "en": "wide rice noodles",
+     "amount": "1 จาน",
+     "qty": 200,
+     "unit": "g"
+    },
+    {
+     "th": "คะน้า",
+     "en": "Chinese kale",
+     "amount": "1 กำเล็ก",
+     "qty": 60,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วดำ",
+     "en": "dark soy sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว",
+     "en": "light soy sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "1 ช้อนชา",
+     "qty": 4,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "แกะเส้น คลุกซีอิ๊วดำไว้ก่อน",
+     "en": "Separate noodles, toss with dark soy first",
+     "heat": null,
+     "seconds": 0
+    },
+    {
+     "n": 2,
+     "th": "เจียวกระเทียม",
+     "en": "Fry garlic",
+     "heat": "high",
+     "seconds": 15
+    },
+    {
+     "n": 3,
+     "th": "ใส่หมู ผัดจนสุก",
+     "en": "Add pork, cook through",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 4,
+     "th": "ตอกไข่ ยีให้กระจาย",
+     "en": "Crack egg, scramble",
+     "heat": "high",
+     "seconds": 20
+    },
+    {
+     "n": 5,
+     "th": "ใส่เส้น ผัดไฟแรง ให้เกรียมนิดๆ",
+     "en": "Add noodles, high heat, let them char a bit",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 6,
+     "th": "ใส่คะน้า + ปรุง ผัดอีกนิด",
+     "en": "Add kale + season, toss",
+     "heat": "high",
+     "seconds": 30
+    }
+   ],
+   "tips": [
+    "กระทะต้องร้อน กลิ่นกระทะ = อร่อย",
+    "โรยพริกไทย"
+   ]
+  },
+  {
+   "id": "rad_na",
+   "th": "ราดหน้า",
+   "en": "Wide noodles in thick gravy",
+   "unlock_day": 6,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "เส้นใหญ่",
+     "en": "wide rice noodles",
+     "amount": "1 จาน",
+     "qty": 200,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วดำ (คลุกเส้น)",
+     "en": "dark soy (for noodles)",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียมสับ",
+     "en": "minced garlic",
+     "amount": "2 กลีบ",
+     "qty": 7,
+     "unit": "g"
+    },
+    {
+     "th": "หมูหมัก",
+     "en": "marinated pork",
+     "amount": "80 กรัม",
+     "qty": 80,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำซุป",
+     "en": "stock",
+     "amount": "1 ถ้วย",
+     "qty": 250,
+     "unit": "ml"
+    },
+    {
+     "th": "คะน้า",
+     "en": "Chinese kale",
+     "amount": "1 กำเล็ก",
+     "qty": 60,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "เต้าเจี้ยว",
+     "en": "fermented soybean paste",
+     "amount": "1 ช้อนชา",
+     "qty": 6,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว",
+     "en": "light soy sauce",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "1 ช้อนชา",
+     "qty": 4,
+     "unit": "g"
+    },
+    {
+     "th": "แป้งมัน + น้ำ 2 ช้อนโต๊ะ",
+     "en": "tapioca starch + 2 tbsp water",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 10,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ผัดเส้นกับซีอิ๊วดำ ให้เกรียม ตักใส่จาน",
+     "en": "Char the noodles with dark soy, plate them",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 2,
+     "th": "เจียวกระเทียม ใส่หมู",
+     "en": "Fry garlic, add pork",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 3,
+     "th": "เติมน้ำซุป ต้มให้เดือด",
+     "en": "Add stock, bring to a boil",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 4,
+     "th": "ใส่คะน้า ปรุงรส",
+     "en": "Add kale, season",
+     "heat": "medium",
+     "seconds": 30
+    },
+    {
+     "n": 5,
+     "th": "ค่อยๆ เทน้ำแป้ง คนจนข้น",
+     "en": "Slowly pour in the starch water, stir until thick",
+     "heat": "medium",
+     "seconds": 30
+    },
+    {
+     "n": 6,
+     "th": "ราดบนเส้น โรยพริกไทย",
+     "en": "Pour over the noodles, pepper",
+     "heat": "off",
+     "seconds": 0
+    }
+   ],
+   "tips": [
+    "กินกับพริกน้ำส้ม",
+    "เทแป้งทีเดียว = เป็นก้อน!"
+   ]
+  },
+  {
+   "id": "tom_yam",
+   "th": "ต้มยำ",
+   "en": "Tom yum (shrimp, clear)",
+   "unlock_day": 7,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "น้ำ / น้ำซุป",
+     "en": "water / stock",
+     "amount": "2 ถ้วย",
+     "qty": 500,
+     "unit": "ml"
+    },
+    {
+     "th": "ข่า",
+     "en": "galangal",
+     "amount": "4 แว่น",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ตะไคร้ (ทุบ)",
+     "en": "lemongrass (bruised)",
+     "amount": "1 ต้น",
+     "qty": 20,
+     "unit": "g"
+    },
+    {
+     "th": "ใบมะกรูด",
+     "en": "kaffir lime leaves",
+     "amount": "4 ใบ",
+     "qty": 2,
+     "unit": "g"
+    },
+    {
+     "th": "เห็ดฟาง",
+     "en": "straw mushrooms",
+     "amount": "6 ดอก",
+     "qty": 60,
+     "unit": "g"
+    },
+    {
+     "th": "กุ้ง",
+     "en": "shrimp",
+     "amount": "5 ตัว",
+     "qty": 120,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำปลา",
+     "en": "fish sauce",
+     "amount": "1½ ช้อนโต๊ะ",
+     "qty": 22,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำมะนาว",
+     "en": "lime juice",
+     "amount": "2 ช้อนโต๊ะ",
+     "qty": 30,
+     "unit": "ml"
+    },
+    {
+     "th": "พริกขี้หนู (บุบ)",
+     "en": "bird's-eye chilli (bruised)",
+     "amount": "5 เม็ด",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "ผักชีฝรั่ง",
+     "en": "sawtooth coriander",
+     "amount": "1 ต้น",
+     "qty": 3,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ต้มน้ำให้เดือด",
+     "en": "Bring water to a boil",
+     "heat": "high",
+     "seconds": 120
+    },
+    {
+     "n": 2,
+     "th": "ใส่ข่า ตะไคร้ ใบมะกรูด",
+     "en": "Add galangal, lemongrass, lime leaves",
+     "heat": "high",
+     "seconds": 120
+    },
+    {
+     "n": 3,
+     "th": "ใส่เห็ด",
+     "en": "Add mushrooms",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 4,
+     "th": "ใส่กุ้ง อย่าต้มนาน",
+     "en": "Add shrimp, don't overcook",
+     "heat": "high",
+     "seconds": 60
+    },
+    {
+     "n": 5,
+     "th": "ปรุงน้ำปลา แล้วปิดไฟ",
+     "en": "Fish sauce, then heat off",
+     "heat": "off",
+     "seconds": 5
+    },
+    {
+     "n": 6,
+     "th": "ใส่มะนาว + พริก หลังปิดไฟ",
+     "en": "Lime + chilli AFTER heat off",
+     "heat": "off",
+     "seconds": 0
+    }
+   ],
+   "tips": [
+    "มะนาวใส่ตอนเดือด = ขม!!",
+    "กุ้งต้มนาน = แข็งเหมือนยาง"
+   ]
+  },
+  {
+   "id": "moo_krathiam",
+   "th": "หมูกระเทียม",
+   "en": "Garlic pepper pork",
+   "unlock_day": 8,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "หมูหั่นชิ้น",
+     "en": "sliced pork",
+     "amount": "150 กรัม",
+     "qty": 150,
+     "unit": "g"
+    },
+    {
+     "th": "ซีอิ๊วขาว (หมัก)",
+     "en": "light soy (marinade)",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม (หมัก)",
+     "en": "oyster sauce (marinade)",
+     "amount": "1 ช้อนชา",
+     "qty": 5,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "½ ช้อนชา",
+     "qty": 3,
+     "unit": "g"
+    },
+    {
+     "th": "พริกไทยป่น",
+     "en": "ground white pepper",
+     "amount": "½ ช้อนชา",
+     "qty": 1,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียมสับ (เยอะ!)",
+     "en": "minced garlic (lots!)",
+     "amount": "1 หัว",
+     "qty": 35,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "3 ช้อนโต๊ะ",
+     "qty": 45,
+     "unit": "g"
+    },
+    {
+     "th": "ข้าวสวย",
+     "en": "steamed rice",
+     "amount": "1 ทัพพี",
+     "qty": 200,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "หมักหมูไว้ 10 นาที",
+     "en": "Marinate the pork 10 min",
+     "heat": null,
+     "seconds": 600
+    },
+    {
+     "n": 2,
+     "th": "เจียวกระเทียม ไฟกลาง จนเหลืองหอม (เก็บไว้โรยครึ่งนึง)",
+     "en": "Fry garlic, medium heat, until golden (keep half)",
+     "heat": "medium",
+     "seconds": 60
+    },
+    {
+     "n": 3,
+     "th": "ใส่หมู ทอดจนสุก ขอบเกรียม",
+     "en": "Add pork, fry until cooked with crispy edges",
+     "heat": "high",
+     "seconds": 120
+    },
+    {
+     "n": 4,
+     "th": "ตักใส่จาน โรยกระเทียมเจียว",
+     "en": "Plate, top with fried garlic",
+     "heat": "off",
+     "seconds": 0
+    }
+   ],
+   "tips": [
+    "กระเทียมไหม้ = ขม ทิ้งเลย",
+    "+ไข่ดาว ขายดี"
+   ]
+  },
+  {
+   "id": "phat_phak_bung",
+   "th": "ผัดผักบุ้ง",
+   "en": "Stir-fried morning glory (red fire)",
+   "unlock_day": 9,
+   "serving": "1",
+   "ingredients": [
+    {
+     "th": "ผักบุ้ง (หั่นท่อน)",
+     "en": "morning glory",
+     "amount": "1 กำ",
+     "qty": 150,
+     "unit": "g"
+    },
+    {
+     "th": "กระเทียม (บุบ)",
+     "en": "garlic (crushed)",
+     "amount": "4 กลีบ",
+     "qty": 12,
+     "unit": "g"
+    },
+    {
+     "th": "พริกขี้หนู (บุบ)",
+     "en": "bird's-eye chilli",
+     "amount": "4 เม็ด",
+     "qty": 4,
+     "unit": "g"
+    },
+    {
+     "th": "เต้าเจี้ยว",
+     "en": "fermented soybean paste",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 18,
+     "unit": "g"
+    },
+    {
+     "th": "ซอสหอยนางรม",
+     "en": "oyster sauce",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำตาล",
+     "en": "sugar",
+     "amount": "1 ช้อนชา",
+     "qty": 4,
+     "unit": "g"
+    },
+    {
+     "th": "น้ำ",
+     "en": "water",
+     "amount": "2 ช้อนโต๊ะ",
+     "qty": 30,
+     "unit": "ml"
+    },
+    {
+     "th": "น้ำมัน",
+     "en": "oil",
+     "amount": "1 ช้อนโต๊ะ",
+     "qty": 15,
+     "unit": "g"
+    }
+   ],
+   "steps": [
+    {
+     "n": 1,
+     "th": "ใส่ผัก + เครื่องปรุงทั้งหมดรวมไว้ในจาน",
+     "en": "Put veg + all seasonings together on a plate",
+     "heat": null,
+     "seconds": 0
+    },
+    {
+     "n": 2,
+     "th": "กระทะร้อนจัด ใส่น้ำมัน",
+     "en": "Smoking-hot wok, add oil",
+     "heat": "high",
+     "seconds": 30
+    },
+    {
+     "n": 3,
+     "th": "เทผักลงทีเดียว ไฟลุก!!",
+     "en": "Dump everything in at once: FIRE!",
+     "heat": "high",
+     "seconds": 5
+    },
+    {
+     "n": 4,
+     "th": "ผัดเร็วๆ แล้วตักทันที ผักยังเขียวกรอบ",
+     "en": "Toss fast, plate immediately while still green",
+     "heat": "high",
+     "seconds": 35
+    }
+   ],
+   "tips": [
+    "ไฟลุก = หล่อ (ระวังคิ้ว)",
+    "ผัดนาน = ผักเหี่ยวดำ"
+   ]
+  }
+ ],
+ "notes": {
+  "phone_number": "page 3 has a grease-smudged, deliberately incomplete number (no real number)",
+  "lottery": "page 2 + cover: lottery doodles 58 / 85 / 471",
+  "friends_notes": "pencil notes in a different hand (Itim) = the four guys' later comments"
+ }
+}
