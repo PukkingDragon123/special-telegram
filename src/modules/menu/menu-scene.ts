@@ -421,7 +421,7 @@ export class MenuScene implements SceneDef {
     // squash at the end of the bob, stretch on the way out
     const sq = 1 + Math.cos(ph) * 0.08;
     a.scale.set((1 + this.hoverMe * 0.2) / Math.sqrt(sq), (1 + this.hoverMe * 0.2) * sq, 1 + this.hoverMe * 0.2);
-    a.rotation.set(0, Math.sin(this.t * 1.3) * 0.45 + this.t * this.hoverMe * 4, rot + Math.sin(this.t * 2.1) * 0.08, 'YXZ');
+    a.rotation.set(0, Math.sin(this.t * 1.3) * 0.45 + this.t * this.hoverMe * 4, rot + Math.sin(this.t * 2.1) * 0.08, 'ZYX');
     if (!this.arrowTag) {
       this.arrowTag = this.ui.add({ lines: [{ text: 'คุณ', size: 30, font: F.looped, weight: 900 }], follow: () => { const p = this.project(this.arrow.position.clone().add(new THREE.Vector3(0, 0.13, 0))); return p; }, onClick: () => this.openCustomize(), bob: 0, tilt: -4, delay: 0.9 });
     }

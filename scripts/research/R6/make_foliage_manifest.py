@@ -17,12 +17,7 @@ ORDER = ["type", "albedo", "normal", "pixelSize", "widthMeters", "heightMeters",
 
 def main():
     man = F.load_manifest()
-    out = {"_conventions": {
-        "albedo": "PNG RGBA, sRGB colour; straight (non-premultiplied) alpha; colour bled into transparent pixels (no halos). Use alphaTest (~0.5) or alphaToCoverage.",
-        "normal": "JPG, OpenGL tangent space (+Y up), linear. Flat (128,128,255) outside the cutout.",
-        "pivot": "[u, v] in 0..1 with v up (0 = bottom edge): where the card attaches to the ground / stem.",
-        "size": "widthMeters/heightMeters = real-world size of the whole card.",
-        "doubleSided": "All cards are meant to be rendered double-sided (THREE.DoubleSide)."}}
+    out = {}
     for cid in sorted(man):
         d = os.path.join(F.FOL_OUT, cid)
         if not os.path.isdir(d):
@@ -37,7 +32,7 @@ def main():
         e["pixelSize"] = list(im.size)
         out[cid] = {k: e[k] for k in ORDER if k in e and e[k] is not None}
     json.dump(out, open(os.path.join(F.FOL_OUT, "manifest.json"), "w"), indent=1, ensure_ascii=False)
-    print("foliage cards:", len(out) - 1)
+    print("foliage cards:", len(out))
 
 
 if __name__ == "__main__":
