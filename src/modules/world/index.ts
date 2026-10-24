@@ -203,6 +203,7 @@ async function buildWorld(game: Game) {
     game.engine.renderer.compile(game.scene!, game.camera);
   } catch (e) { console.warn('[world] precompile', e); }
   TIMES.compile = Math.round(performance.now() - tf);
+  releaseCpuCopies(game, assets);
   // debug: anchors, fly camera
   const dbg = installDebug(game, root, anchors, nav);
   const weather = new Weather(game, root);
@@ -211,6 +212,29 @@ async function buildWorld(game: Game) {
   api.stats.buildMs = Math.round(performance.now() - t0);
   console.info(`[world] built in ${api.stats.buildMs} ms — ${meshes.length} meshes, ${Math.round(tris / 1000)}k tris, ${lights.points.length} light points`);
   const off = game.events.on('world:exit', () => { off(); dispose(); });
+}
+
+/** After the first GPU upload, drop the CPU-side pixel copies of the big textures (~350 MB at high):
+ *  texture-array data and the 4096² atlas canvases. The GPU textures stay alive (never disposed). */
+let released = false;
+function releaseCpuCopies(game: Game, assets: any) {
+  if (released) return;
+  released = true;
+  const R = game.engine.renderer;
+  try {
+    for (const t of [assets.tex?.alb, assets.tex?.nra]) {
+      if (!t) continue;
+      R.initTexture(t);
+      t.onUpdate = null;
+      (t.image as any).data = null;
+    }
+    for (const a of [assets.decals, assets.signs?.atlas, assets.fol?.atlas]) {
+      if (!a?.tex) continue;
+      R.initTexture(a.tex);
+      const cv = a.canvas ?? a.tex.image;
+      if (cv && 'width' in cv) { cv.width = 1; cv.height = 1; }
+    }
+  } catch (e) { console.warn('[world] release', e); }
 }
 
 function dispose() {

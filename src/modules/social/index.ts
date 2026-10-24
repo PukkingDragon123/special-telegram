@@ -72,7 +72,7 @@ export default defineModule({
     sleep = installSleep(game, sparks, () => saveApi.save());
     (game as any).social = {
       skills: SKILLS, skillIds: SKILL_IDS, levels: (pl: Ent) => levels(pl), money: (amount: number) => buildMoney(amount),
-      recipesFor: (day: number) => recipesFor(game, day), think: () => think.active,
+      recipesFor: (day: number) => recipesFor(game, day), think: () => think.active, _thinkDebug: () => (think as any).debug,
     };
     game.events.on('world:exit', () => { think.dispose(); sleep.dispose(); closeRadial(); clearDecals(); localTimers.clear(); });
   },

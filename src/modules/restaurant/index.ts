@@ -286,6 +286,7 @@ export default defineModule({
         if (d) game.items.putInInventory(pl, d);
         return d;
       },
+      openMenu: () => openMenu(game, 0),
       seats: SEAT_KINDS, tables: TABLE_KINDS,
     };
     (game as any).restaurant = api;

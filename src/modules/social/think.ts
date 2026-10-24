@@ -614,6 +614,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
 
   return {
     get active() { return !!local && !local.leaving; },
+    get debug() { return local ? { t: local.t, leaving: local.leaving, camDir: local.camDir, lookK: local.lookK } : null; },
     stop,
     onUnlock(d: { id: number; skill: string }) {
       if (!local || d.id !== game.localPlayerId) return;
