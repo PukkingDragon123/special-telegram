@@ -138,6 +138,7 @@ export const SHOPS: ShopDef[] = [
       { id: 'egg', kinds: ['egg'], fb: 'sfb_egg', price: 5, unit: 'ฟองละ', qty: 40, show: 4 },
       { id: 'beans', kinds: ['long_beans'], fb: 'sfb_long_beans', price: 15, unit: 'กำละ', qty: 8, show: 2 },
       { id: 'onion', kinds: ['onion'], fb: 'sfb_onion', price: 15, unit: 'ถุงละ', qty: 8, show: 2 },
+      { id: 'garland', kinds: ['garland'], fb: 'sfb_garland', price: 20, unit: 'พวงละ', qty: 6, show: 2, label: { th: 'พวงมาลัย', en: 'jasmine garland' } },
     ],
   },
   {
@@ -272,6 +273,8 @@ export const SHOPS: ShopDef[] = [
       { id: 'fanta', kinds: ['soda_fanta_can', 'soda_orange', 'soda_red'], fb: 'sfb_fanta', price: 15, unit: '', qty: 12, show: 2 },
       { id: 'm150', kinds: ['energy_drink', 'm150'], fb: 'sfb_m150', price: 12, unit: '', qty: 10, show: 2 },
       { id: 'beer', kinds: ['beer_can', 'beer_chang'], fb: 'sfb_beer', price: 45, unit: '', qty: 8, show: 2, alcohol: true },
+      { id: 'dogfood', kinds: ['dog_food'], fb: 'sfb_dog_food', price: 59, unit: '', qty: 6, show: 1, label: { th: 'อาหารหมา', en: 'dog food' } },
+      { id: 'flashlight', kinds: ['flashlight'], fb: 'sfb_flashlight', price: 89, unit: '', qty: 4, show: 1, label: { th: 'ไฟฉาย', en: 'flashlight' } },
     ],
   },
   // ------------------------------------------------------------------ แม็กโคร่ง WHOLESALE (Day 3, cheap bulk, far away)
@@ -299,6 +302,7 @@ export const SHOPS: ShopDef[] = [
       { id: 'plates', kinds: ['plate'], fb: 'sfb_plate', price: 29, unit: 'ใบละ', qty: 24, show: 2 },
       { id: 'cups', kinds: ['cup_plastic', 'cup_water', 'cup'], fb: 'sfb_cup', price: 5, unit: 'ใบละ', qty: 50, show: 2 },
       { id: 'cola', kinds: ['soda_cola_can', 'soda_cola', 'soda_can'], fb: 'sfb_cola', price: 13, unit: 'กระป๋องละ', qty: 24, show: 2 },
+      { id: 'dogfood', kinds: ['dog_food'], fb: 'sfb_dog_food', price: 49, unit: 'ถุงละ', qty: 6, show: 1, label: { th: 'อาหารหมา (ราคาส่ง)', en: 'dog food (wholesale)' } },
     ],
   },
 ];

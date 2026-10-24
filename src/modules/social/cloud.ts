@@ -81,8 +81,8 @@ void main() {
   float fluff = fbm(vW * 7.0 + vec3(0.0, uTime * 0.05, vSeed));
   float ao = mix(0.55, 1.0, crease) * (0.9 + 0.2 * fluff);
   // inward-facing back wall glows like the inside of a dream
-  float inner = smoothstep(0.1, -0.6, vL.z) * smoothstep(1.6, 0.2, length(vL.xy * vec2(0.7, 1.0)));
-  vec3 col = base * (0.42 + 0.68 * dif) * ao;
+  float inner = smoothstep(-0.3, -1.0, vL.z) * smoothstep(1.7, 0.2, length(vL.xy * vec2(0.7, 1.0)));
+  vec3 col = base * (0.62 + 0.72 * dif) * ao;
   col += uInner * inner * 0.35 * (0.8 + 0.4 * fluff);
   col += uRim * fres * 0.55;
   col += uGlow * sss * 0.6;
@@ -108,36 +108,36 @@ function layout(o: Required<CloudOpts>): Puff[] {
   const rnd = new RNG(o.seed);
   const out: Puff[] = [];
   const { rx, ry, rz } = o;
-  // rim ring (the silhouette of the cloud)
-  const ring = 18;
+  // rim ring (the silhouette of the cloud) — leaves the middle open
+  const ring = 22;
   for (let i = 0; i < ring; i++) {
-    const a = (i / ring) * Math.PI * 2 + rnd.range(-0.08, 0.08);
-    const bottom = Math.sin(a) < -0.55;
-    const r = (bottom ? 0.3 : 0.38) + rnd.range(0, 0.16) + (Math.sin(a) > 0.4 ? 0.08 : 0);
-    out.push({ c: new THREE.Vector3(Math.cos(a) * rx * 0.92, Math.sin(a) * ry * 0.88, rnd.range(-0.05, 0.18) * rz), r, delay: 0.25 + 0.4 * ((i / ring + 0.25) % 1) * 0.5 });
+    const a = (i / ring) * Math.PI * 2 + rnd.range(-0.06, 0.06);
+    const s = Math.sin(a);
+    const r = (s < -0.5 ? 0.24 : 0.3) + rnd.range(0, 0.1) + (s > 0.4 ? 0.06 : 0);
+    out.push({ c: new THREE.Vector3(Math.cos(a) * rx * 1.02, s * ry * 1.0, rnd.range(-0.12, 0.05) * rz), r, delay: 0.25 + 0.4 * ((i / ring + 0.25) % 1) * 0.5 });
   }
-  // secondary ring slightly behind, bigger: gives depth to the silhouette
+  // outer second ring, behind: fluffy depth to the silhouette
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 14) * Math.PI * 2 + 0.22;
+    out.push({ c: new THREE.Vector3(Math.cos(a) * rx * 0.98, Math.sin(a) * ry * 0.92, -0.62 * rz), r: 0.4 + rnd.range(0, 0.12), delay: 0.3 + rnd.range(0, 0.2) });
+  }
+  // back wall (the dream backdrop), far behind the tree
   for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * Math.PI * 2 + 0.26;
-    out.push({ c: new THREE.Vector3(Math.cos(a) * rx * 0.72, Math.sin(a) * ry * 0.7, -0.38 * rz), r: 0.48 + rnd.range(0, 0.14), delay: 0.3 + rnd.range(0, 0.2) });
-  }
-  // back wall (the dream backdrop)
-  for (let i = 0; i < 9; i++) {
-    const x = (i % 3 - 1) * rx * 0.55 + rnd.range(-0.1, 0.1), y = (Math.floor(i / 3) - 1) * ry * 0.55 + rnd.range(-0.08, 0.08);
-    out.push({ c: new THREE.Vector3(x, y, -0.95 * rz - rnd.range(0, 0.1)), r: 0.55 + rnd.range(0, 0.15), delay: 0.35 + rnd.range(0, 0.2) });
+    const x = ((i % 4) - 1.5) * rx * 0.48 + rnd.range(-0.08, 0.08), y = (Math.floor(i / 4) - 1) * ry * 0.58 + rnd.range(-0.06, 0.06);
+    out.push({ c: new THREE.Vector3(x, y, -1.55 * rz - rnd.range(0, 0.1)), r: 0.45 + rnd.range(0, 0.12), delay: 0.35 + rnd.range(0, 0.2) });
   }
   if (!o.open) for (let i = 0; i < 7; i++) {
     const a = (i / 7) * Math.PI * 2;
-    out.push({ c: new THREE.Vector3(Math.cos(a) * rx * 0.35, Math.sin(a) * ry * 0.3, 0.45 * rz), r: 0.45 + rnd.range(0, 0.1), delay: 0.5 });
+    out.push({ c: new THREE.Vector3(Math.cos(a) * rx * 0.35, Math.sin(a) * ry * 0.3, 0.3 * rz), r: 0.45 + rnd.range(0, 0.1), delay: 0.5 });
   }
   // little top bumps for a classic cumulus silhouette
   for (let i = 0; i < 5; i++) {
     const x = (i - 2) * rx * 0.36 + rnd.range(-0.06, 0.06);
-    out.push({ c: new THREE.Vector3(x, ry * (0.98 - Math.abs(i - 2) * 0.12), -0.1 * rz + rnd.range(-0.05, 0.05)), r: 0.3 + rnd.range(0, 0.12), delay: 0.45 + i * 0.03 });
+    out.push({ c: new THREE.Vector3(x, ry * (1.12 - Math.abs(i - 2) * 0.1), -0.3 * rz + rnd.range(-0.05, 0.05)), r: 0.3 + rnd.range(0, 0.1), delay: 0.45 + i * 0.03 });
   }
   // trailing puffs toward the head
   const head = o.head;
-  const bottom = new THREE.Vector3(rx * 0.12, -ry * 0.95, 0.1 * rz);
+  const bottom = new THREE.Vector3(rx * 0.1, -ry * 1.05, 0.0);
   const trail = [0.25, 0.5, 0.75];
   trail.forEach((t, i) => {
     const p = head.clone().lerp(bottom, t);
@@ -196,7 +196,7 @@ export class ThoughtCloud {
       uniforms: {
         uTime: { value: 0 }, uAppear: { value: 0 }, uChurn: { value: 1 }, uPop: { value: 1 },
         uLight: { value: new THREE.Vector3(0.4, 0.9, 0.5) },
-        uTop: { value: new THREE.Color(0xfff6ea) }, uBottom: { value: new THREE.Color(0xc9bde6) },
+        uTop: { value: new THREE.Color(0xfff9f0) }, uBottom: { value: new THREE.Color(0xd8cdf2) },
         uRim: { value: new THREE.Color(0xfff0c8) }, uGlow: { value: new THREE.Color(0xffd6b0) }, uInner: { value: new THREE.Color(0xffe7ff) },
         uOpacity: { value: 1 }, uNight: { value: 0 },
       },

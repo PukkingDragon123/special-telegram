@@ -242,7 +242,7 @@ export class Rig implements CharacterRig {
 
   private setAtlas(v: FaceVariant) {
     const prev = this.atlasKey;
-    const { key, e } = acquireAtlas(this.look, this.atlasSize, v, this.opts.lod === 'high');
+    const { key, e } = acquireAtlas(this.look, this.atlasSize, v, this.opts.lod === 'high', this.root);
     this.atlasKey = key;
     this.mat.map = e.tex;
     this.mat.needsUpdate = true;

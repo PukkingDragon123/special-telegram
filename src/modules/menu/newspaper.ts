@@ -271,6 +271,9 @@ export class Newspaper {
     const pl = game.player;
     const prevMode = pl?.mode;
     if (pl && prevMode === 'play') pl.setMode('frozen');
+    // the menu's sticker UI (if any) steps aside while reading
+    const muis = Array.from(document.querySelectorAll<HTMLElement>('.hp-mui'));
+    for (const el of muis) el.style.visibility = 'hidden';
     const post = game.engine.post;
     const dofWas = !!(post as any).dofPass?.enabled;
     post.setDOF(true, 0.45, 3.5);
@@ -319,6 +322,7 @@ export class Newspaper {
         scene.remove(holder);
         geo.dispose(); mf.dispose(); mb.dispose(); tf.dispose(); tb.dispose();
         hideHint(hint);
+        for (const el of muis) el.style.visibility = '';
         if (!dofWas) post.setDOF(false);
         if (pl && prevMode === 'play' && game.player === pl) pl.setMode('play');
         resolve();

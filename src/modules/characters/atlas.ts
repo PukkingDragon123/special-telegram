@@ -611,10 +611,15 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
   const col = look.top?.color ?? top.color;
   const c2 = top.color2 ?? '#f2efe8';
   const T = R.torso, A = R.arm;
-  const tHem = top.hem <= 0.8 ? 1 : torsoT(top.hem);
+  // sculpted bodies wear plane-cut shells (glb.ts topShell): end the painted shirt at the shell hem, never below it
+  const shellHem = top.sleeve === 'none' && top.collar !== 'robe' && top.loose < 0.02 ? 0 : top.collar === 'suit' || top.loose >= 0.028 ? 0.78 : top.hem >= 0.95 ? 0.975 : top.loose >= 0.018 ? 0.82 : 0.86;
+  const tHem = top.hem <= 0.8 ? 1 : torsoT(Math.max(top.hem, shellHem + 0.004));
   const se = sleeveEnd(top);
   const tSleeve = se > 0 ? armT(se) : -1;
   baseTopFabric(P, top, 'torso', T, 0, tHem, col, c2, r);
+  // hip vertices skinned to the thighs live in the leg region: continue an untucked shirt there so the hem stays a straight line
+  const hemY = Math.max(top.hem, shellHem + 0.004);
+  if (top.hem > 0.8 && hemY < 1.0 && !isTube(bot)) baseTopFabric(P, top, 'leg', R.leg, 0, legT(hemY), col, c2, r);
   if (tSleeve > 0) baseTopFabric(P, top, 'arm', A, 0, tSleeve, col, c2, r);
   // collar strip (geometry)
   baseTopFabric(P, top, 'collar', R.collar, 0, 1, top.pattern === 'polo_stripe' ? c2 : col, c2, r);

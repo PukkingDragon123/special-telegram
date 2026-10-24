@@ -301,6 +301,9 @@ export const FALLBACKS: Record<string, FbSpec> = {
   sfb_fanta: { name: L('แฟนต้าน้ำส้ม', 'Fanta orange'), shape: 'can', tex: 'soda_fanta_orange_can.png', size: [0.066, 0.12, 0.066], weight: 0.35, tags: ['drink', 'soda'] },
   sfb_m150: { name: L('เครื่องดื่มชูกำลัง', 'energy drink'), shape: 'bottle', tex: 'energy_m150.png', size: [0.05, 0.13, 0.05], color: 0xd4b22a, body: 0x6a3a0a, weight: 0.2, tags: ['drink'] },
   sfb_beer: { name: L('เบียร์ช้าง', 'Chang beer'), shape: 'can', tex: 'beer_chang_can.png', size: [0.066, 0.122, 0.066], weight: 0.36, tags: ['drink', 'alcohol'] },
+  sfb_dog_food: { name: L('อาหารหมา', 'dog food'), shape: 'pillow', tex: 'heap_garlic', color: 0xb8742a, size: [0.2, 0.28, 0.07], weight: 1.2, tags: ['food', 'pet'] },
+  sfb_flashlight: { name: L('ไฟฉาย', 'flashlight'), shape: 'can', size: [0.04, 0.17, 0.04], color: 0x202020, weight: 0.3, tags: ['light', 'tool'] },
+  sfb_garland: { name: L('พวงมาลัย', 'jasmine garland'), shape: 'bunch', tex: 'heap_onion', color: 0xfff8ee, size: [0.08, 0.16, 0.08], weight: 0.08, tags: ['offering'] },
   instant_rice: { name: L('ข้าวสวยพร้อมทาน', 'ready-to-eat jasmine rice'), shape: 'box', tex: 'gen/shops/rice_tray.png', size: [0.15, 0.045, 0.11], weight: 0.22, tags: ['ingredient', 'rice'], data: () => ({ g: 200 }) },
   // furniture & tools
   sfb_stool: { name: L('เก้าอี้พลาสติกสีแดง', 'red plastic stool'), shape: 'stool', size: [0.32, 0.46, 0.32], color: 0xc42a22, weight: 0.9, carry: 'head', tags: ['furniture', 'seat'] },

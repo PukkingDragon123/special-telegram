@@ -178,7 +178,7 @@ export function buildCasino(): CasinoSet {
   // ---------------------------------------------------------------- lights
   const hemi = new THREE.HemisphereLight(0xffe2b8, 0x3a0d0a, 1.1);
   root.add(hemi);
-  const key = new THREE.SpotLight(0xffd7a0, 520, 14, 0.62, 0.55, 1.4);
+  const key = new THREE.SpotLight(0xffd7a0, 260, 14, 0.62, 0.55, 1.4);
   key.position.set(0.2, H - 0.4, 0.4);
   key.target.position.set(0, TABLE_Y, 0.15);
   key.castShadow = true;
@@ -186,7 +186,7 @@ export function buildCasino(): CasinoSet {
   key.shadow.bias = -0.0004;
   key.shadow.camera.near = 1; key.shadow.camera.far = 8;
   root.add(key, key.target);
-  const rouletteSpot = new THREE.SpotLight(0xffd7a0, 420, 12, 0.6, 0.6, 1.4);
+  const rouletteSpot = new THREE.SpotLight(0xffd7a0, 170, 12, 0.6, 0.6, 1.4);
   rouletteSpot.position.set(ROULETTE.x, H - 0.4, ROULETTE.z + 0.2);
   rouletteSpot.target.position.set(ROULETTE.x, ROULETTE.y, ROULETTE.z);
   root.add(rouletteSpot, rouletteSpot.target);
@@ -256,7 +256,7 @@ function buildCardTable(teak: THREE.Material) {
   shape.moveTo(-1.35, 0.55);
   shape.lineTo(1.35, 0.55);
   shape.absellipse(0, 0.55, 1.35, 1.3, 0, Math.PI, true);
-  const felt = Assets.pbr('felt_casino_green', { repeat: 2.2 });
+  const felt = Assets.pbr('felt_casino_green', { repeat: 2.2, color: '#8a9a8a' });
   const top = new THREE.ExtrudeGeometry(shape, { depth: 0.04, bevelEnabled: true, bevelSize: 0.01, bevelThickness: 0.01, bevelSegments: 1, curveSegments: 36 });
   top.rotateX(-Math.PI / 2).translate(0, TABLE_Y - 0.04, 0);
   g.add(mesh(top, felt));
@@ -285,7 +285,7 @@ function buildCardTable(teak: THREE.Material) {
 function buildRoulette(teak: THREE.Material, brass: THREE.Material) {
   const group = new THREE.Group();
   group.position.set(ROULETTE.x, 0, ROULETTE.z);
-  const felt = Assets.pbr('felt_casino_green', { repeat: [5, 2.5] });
+  const felt = Assets.pbr('felt_casino_green', { repeat: [5, 2.5], color: '#8a9a8a' });
   const top = new THREE.Mesh(new RoundedBoxGeometry(2.8, 0.08, 1.3, 2, 0.03), felt);
   top.position.set(0.25, ROULETTE.y - 0.04, 0); top.receiveShadow = true;
   group.add(top);
@@ -305,7 +305,7 @@ function buildRoulette(teak: THREE.Material, brass: THREE.Material) {
   const wheel = new THREE.Group();
   wheel.position.set(wx, ROULETTE.y + 0.06, 0);
   const discG = new THREE.CylinderGeometry(0.42, 0.4, 0.03, 48, 1);
-  const discMat = new THREE.MeshStandardMaterial({ map: tex('roulette.jpg'), roughness: 0.35, metalness: 0.15 });
+  const discMat = new THREE.MeshStandardMaterial({ map: tex('roulette.jpg'), roughness: 0.45, metalness: 0.1, color: 0xb8b0a8 });
   const discSide = Assets.pbr('wood_teak', { repeat: [4, 0.2] });
   const disc = new THREE.Mesh(discG, [discSide, discMat, discSide]);
   disc.receiveShadow = true;

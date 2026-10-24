@@ -119,7 +119,7 @@ export class CasinoScene implements SceneDef {
         pm.dispose();
         (hdr as THREE.Texture).dispose();
         s.environment = this.envTex;
-        (s as any).environmentIntensity = 0.9;
+        (s as any).environmentIntensity = 0.7;
       }
     } catch (e) { console.warn('[intro] casino hdri', e); }
 
@@ -139,6 +139,7 @@ export class CasinoScene implements SceneDef {
     this.t = Math.max(0, Number(params.get('casinoT')) || 0); this.bi = -1;
     this.ready = true;
     this.frame(0);
+    if (params.get('intro') && game.isHost) setTimeout(() => this.finish(), 50); // ?intro=<step>: test the world part
   }
 
   exit() {
@@ -493,8 +494,8 @@ export class CasinoScene implements SceneDef {
           if (k > 0.78) this.slowTarget = 0.4;
         },
         cam: (k) => {
-          if (k < 0.28) this.shot(V(R.x + 0.4, 1.45, R.z - 1.75), V(R.x + 0.2, 1.4, R.z - 1.6), V(R.x, 1.1, R.z + 0.9), V(R.x, 1.15, R.z + 0.9), 46, 42)(k / 0.28);
-          else this.shot(V(wc.x + 0.5, wc.y + 0.4, wc.z + 0.55), V(wc.x + 0.22, wc.y + 0.2, wc.z + 0.26), wc.clone(), wc.clone().add(V(0.02, 0, 0.02)), 34, 30)((k - 0.28) / 0.72);
+          if (k < 0.28) this.shot(V(R.x + 1.9, 1.55, R.z - 1.3), V(R.x + 1.7, 1.5, R.z - 1.15), V(R.x - 0.2, 1.05, R.z + 0.8), V(R.x - 0.2, 1.1, R.z + 0.8), 46, 42)(k / 0.28);
+          else this.shot(V(wc.x + 0.85, wc.y + 0.6, wc.z + 0.75), V(wc.x + 0.55, wc.y + 0.36, wc.z + 0.45), wc.clone().add(V(0.12, 0, 0.1)), wc.clone().add(V(0.18, 0, 0.14)), 32, 28)((k - 0.28) / 0.72);
           this.dof = k > 0.28 ? 1 : 0;
         },
       },
@@ -689,7 +690,7 @@ export class CasinoScene implements SceneDef {
     this.done = true;
     if (!game.isHost) return;
     game.engine.post.fade = 1;
-    game.g.introStep = 'wake';
+    game.g.introStep = params.get('intro') ? undefined : 'wake';
     game.g.introT0 = game.g.time;
     game.setScene('world', 'intro');
   }

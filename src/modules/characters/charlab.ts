@@ -171,7 +171,7 @@ export class CharLab implements SceneDef {
     const perRow = 7;
     ANIM_NAMES.forEach((a, i) => {
       const row = Math.floor(i / perRow), col = i % perRow;
-      const e = this.add(look, new THREE.Vector3((col - (perRow - 1) / 2) * 1.5, 0, row * 1.9), 0, a, a);
+      const e = this.add(look, new THREE.Vector3((col - (perRow - 1) / 2) * 1.5, 0, row * 1.9), Math.PI, a, a);
       if (a === 'walk' || a === 'run' || a === 'scream_run' || a === 'push_cart' || a === 'carry_heavy' || a === 'drunk') e.rig.setMove(a === 'run' || a === 'scream_run' ? 4.8 : 1.3);
       if (a === 'sit' || a === 'jenga_pull') { const st = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.19, a === 'sit' ? 0.45 : 0.42, 12), new THREE.MeshStandardMaterial({ color: 0xc8322a, roughness: 0.5 })); st.position.set(e.base.x, (a === 'sit' ? 0.225 : 0.21), e.base.z - 0.08); st.castShadow = true; this.scene.add(st); }
       if (a === 'eat' || a === 'drink' || a === 'count_coins') e.rig.setPosture('stand');

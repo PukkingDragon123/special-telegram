@@ -399,10 +399,10 @@ export class MenuScene implements SceneDef {
   private arrowPos(i: number): { p: THREE.Vector3; rot: number } {
     const P = SLOTS[i].pos;
     switch (i) {
-      case 0: return { p: new THREE.Vector3(P.x - 0.42, 1.08, P.z + 0.05), rot: Math.PI / 2 };
-      case 1: return { p: new THREE.Vector3(P.x - 0.45, 1.5, P.z + 0.1), rot: Math.PI / 2 };
+      case 0: return { p: new THREE.Vector3(P.x - 0.55, 1.14, P.z + 0.1), rot: Math.PI / 2 };
+      case 1: return { p: new THREE.Vector3(P.x - 0.5, 1.5, P.z + 0.1), rot: Math.PI / 2 };
       case 2: return { p: new THREE.Vector3(P.x + 0.02, 1.42, P.z), rot: 0 };
-      default: return { p: new THREE.Vector3(P.x + 0.45, 1.12, P.z + 0.05), rot: -Math.PI / 2 };
+      default: return { p: new THREE.Vector3(P.x + 0.62, 1.18, P.z + 0.1), rot: -Math.PI / 2 };
     }
   }
 

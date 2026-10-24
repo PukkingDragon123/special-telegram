@@ -49,14 +49,14 @@ function releaseGeo(key: string) {
   if (--e.refs <= 0) { e.geo.dispose(); geoCache.delete(key); }
 }
 
-interface AtlasEntry { tex: THREE.CanvasTexture; cv: HTMLCanvasElement; refs: number; painted: boolean; look: Look; variant: FaceVariant; size: number }
+interface AtlasEntry { tex: THREE.CanvasTexture; cv: HTMLCanvasElement; refs: number; painted: boolean; look: Look; variant: FaceVariant; size: number; at?: THREE.Object3D }
 const atlasCache = new Map<string, AtlasEntry>();
 const queue: AtlasEntry[] = [];
 const PLACEHOLDER = (() => { const c = document.createElement('canvas'); c.width = c.height = 4; return c; })();
 
 function atlasKey(look: Look, size: number, v: FaceVariant) { return lookKey(look) + '|' + size + '|' + v; }
 
-function acquireAtlas(look: Look, size: number, v: FaceVariant, sync = false): { key: string; e: AtlasEntry } {
+function acquireAtlas(look: Look, size: number, v: FaceVariant, sync = false, at?: THREE.Object3D): { key: string; e: AtlasEntry } {
   const key = atlasKey(look, size, v);
   let e = atlasCache.get(key);
   if (!e) {
@@ -72,6 +72,7 @@ function acquireAtlas(look: Look, size: number, v: FaceVariant, sync = false): {
     atlasCache.set(key, e);
     if (sync) paintEntry(e); else queue.push(e);
   }
+  if (at && !e.at) e.at = at;
   e.refs++;
   return { key, e };
 }
@@ -107,11 +108,19 @@ function paintEntry(e: AtlasEntry) {
 }
 
 /** Paint queued atlases within the per-frame budget (call every frame). */
+const _qp = new THREE.Vector3();
 export function processAtlasQueue() {
   if (!queue.length) return;
   const t0 = performance.now();
   while (queue.length && performance.now() - t0 < RigWorld.budgetMs) {
-    const e = queue.shift()!;
+    // nearest character first
+    let bi = 0, bd = Infinity;
+    for (let i = 0; i < queue.length; i++) {
+      const o = queue[i].at;
+      const d = o ? o.getWorldPosition(_qp).distanceToSquared(RigWorld.cam) : 1e6 + i;
+      if (d < bd) { bd = d; bi = i; }
+    }
+    const e = queue.splice(bi, 1)[0];
     try { paintEntry(e); } catch (err) { console.error('[characters] atlas paint failed', err); e.painted = true; }
   }
 }

@@ -158,7 +158,7 @@ export function buildRug() {
   geo.computeVertexNormals();
   const mat = new THREE.MeshStandardMaterial({
     map: tex('rug_albedo.jpg', 1), normalMap: tex('rug_normal.jpg', 1, false),
-    roughnessMap: tex('rug_orm.jpg', 1, false), aoMap: tex('rug_orm.jpg', 1, false), roughness: 1, color: 0x6c7d4c,
+    roughnessMap: tex('rug_orm.jpg', 1, false), aoMap: tex('rug_orm.jpg', 1, false), roughness: 1, color: 0x8fac5e,
   });
   mat.normalScale.set(1.2, 1.2);
   // ORM: R = AO, G = roughness
@@ -203,7 +203,7 @@ export function buildSofa() {
   g.name = 'album_sofa';
   const leather = new THREE.MeshPhysicalMaterial({
     map: tex('sofa_leather_albedo.jpg', [2, 2]), normalMap: tex('sofa_leather_normal.jpg', [2, 2], false),
-    roughnessMap: tex('sofa_leather_rough.jpg', [2, 2], false), roughness: 0.75, color: 0xa8927e, clearcoat: 0.25, clearcoatRoughness: 0.45, sheen: 0.2, sheenColor: new THREE.Color(0xf8c48a),
+    roughnessMap: tex('sofa_leather_rough.jpg', [2, 2], false), roughness: 0.75, color: 0xa0946c, clearcoat: 0.25, clearcoatRoughness: 0.45, sheen: 0.2, sheenColor: new THREE.Color(0xf8c48a),
   });
   const add = (geo: THREE.BufferGeometry, x: number, y: number, z: number, rx = 0) => {
     const m = new THREE.Mesh(geo, leather);

@@ -492,6 +492,9 @@ function payAndGo(c: Ent, takeaway: boolean) {
   const d: DishData = it?.data ?? { recipe: c.ord?.r ?? 'kaphrao_moo', taste: 0.5, issues: [] } as any;
   const v = judge(G, c, d, c.ord ?? { r: d.recipe, req: [] }, ctxOf(c));
   if (c._half) v.pay = Math.round(v.pay * 0.5 / 5) * 5;
+  // homeless-man karma (life module) multiplies tips
+  const tipMul = (G as any).life?.tipMul?.() ?? 1;
+  if (v.tip) v.tip = Math.max(0, Math.round(v.tip * tipMul));
   const server = G.state.get(c._by) ?? G.nearestPlayer(c.p!, 50);
   anim(c, 'give');
   G.sfx('banknote', c.p, { vol: 0.6 });

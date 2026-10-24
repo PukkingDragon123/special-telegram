@@ -254,8 +254,8 @@ function flyMoney(game: Game, by: number, to: number, amount: number, sparks: Sp
   const spin = (Math.random() < 0.5 ? -1 : 1) * (isCoin ? 14 : 5);
   Sound.play(isCoin ? 'coin_clink' : 'banknote', { pos: p0, vol: 0.7 });
   game.engine.tween(0.8, (k) => {
-    const a = handPos(game, by, new THREE.Vector3()) ?? p0;
-    const b = handPos(game, to, new THREE.Vector3()) ?? a;
+    const a = handPos(game, by, 'r', new THREE.Vector3()) ?? p0;
+    const b = handPos(game, to, 'r', new THREE.Vector3()) ?? a;
     obj.position.copy(a).lerp(b, k);
     obj.position.y += Math.sin(k * Math.PI) * 0.55;
     if (isCoin) { obj.rotation.set(Math.PI / 2 + k * spin, 0, 0); }

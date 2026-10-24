@@ -113,9 +113,9 @@ function nodePos(s: SkillDef): THREE.Vector3 {
     return new THREE.Vector3(0, 0.4, 0.05);
   }
   const sign = BR_ANG[s.branch] < 0 ? -1 : 1;
-  const r = 0.36 + 0.185 * s.tier;
+  const r = 0.34 + 0.17 * s.tier;
   const a = BR_ANG[s.branch] - sign * s.tier * 0.06 + Math.sin(s.tier * 1.7) * 0.05;
-  return new THREE.Vector3(Math.sin(a) * r * 1.22, Math.cos(a) * r * 0.86 - 0.04, 0.2 - s.tier * 0.045 + Math.sin(s.tier * 2.3) * 0.03);
+  return new THREE.Vector3(Math.sin(a) * r * 1.14, Math.cos(a) * r * 0.86 - 0.04, 0.2 - s.tier * 0.045 + Math.sin(s.tier * 2.3) * 0.03);
 }
 
 /** tapered tube along a curve, with aT (0..1 along) for grow & glow */
@@ -518,6 +518,21 @@ class RemoteCloud {
 
 // ------------------------------------------------------------------ controller
 
+/** yaw (camera-direction convention) of the freest direction around the thinker, preferring the front-side */
+function pickCamDir(game: Game, look: THREE.Vector3, yaw: number): number {
+  const tries = [0.35, -0.35, 0.8, -0.8, 1.3, -1.3, 1.9, -1.9, 2.5, -2.5, Math.PI];
+  let best = yaw + 0.35, bestD = -1;
+  for (const o of tries) {
+    const a = yaw + o;
+    const dir = new THREE.Vector3(-Math.sin(a), 0.14, -Math.cos(a)).normalize();
+    const hit = game.physics?.raycast(look, dir, 4.6, G.STATIC);
+    const d = hit ? hit.toi : 4.6;
+    if (d >= 4.2) return a;
+    if (d > bestD) { bestD = d; best = a; }
+  }
+  return best;
+}
+
 export function installThink(game: Game, sparks: Sparkles, canStart: () => boolean) {
   game.onIntent('think.set', (pl, d: { on: boolean }) => {
     if (d?.on) {
@@ -538,7 +553,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
 
   let local: {
     tree: SkillTree; t: number; leaving: boolean; camPos: THREE.Vector3; camLook: THREE.Vector3; prevMusic: string; fov0: number; bloom0: number;
-    cloudPos: THREE.Vector3; cloudYaw: number; lookK: number; startPos: THREE.Vector3; startQ: THREE.Quaternion;
+    cloudPos: THREE.Vector3; cloudYaw: number; lookK: number; startPos: THREE.Vector3; startQ: THREE.Quaternion; camDir: number | null;
   } | null = null;
   const remotes = new Map<number, RemoteCloud>();
   const ray = new THREE.Raycaster();
@@ -556,7 +571,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     const post = game.engine.post;
     local = {
       tree, t: 0, leaving: false, camPos: cam.position.clone(), camLook: new THREE.Vector3(), prevMusic: (Sound as any).musicKey ?? '', fov0: cam.fov, bloom0: post.bloom.intensity,
-      cloudPos: new THREE.Vector3(), cloudYaw: pl.yaw, lookK: 0, startPos: cam.position.clone(), startQ: cam.quaternion.clone(),
+      cloudPos: new THREE.Vector3(), cloudYaw: pl.yaw, lookK: 0, startPos: cam.position.clone(), startQ: cam.quaternion.clone(), camDir: null,
     };
     pl.setMode('external');
     Sound.music('skill_tree_dreamy', 1.5);
@@ -624,28 +639,28 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
         local.t += dt;
         const cam = game.camera;
         const head = headPos(game, me.id) ?? pl.pos.clone().add(new THREE.Vector3(0, 1.75, 0));
-        const yaw = local.cloudYaw;
-        const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
-        const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+        const look = head.clone().add(new THREE.Vector3(0, 1.0, 0));
+        // choose the freest viewing direction once (front-side first; walls behind the camera are common)
+        if (local.camDir == null) local.camDir = pickCamDir(game, look, pl.yaw);
+        const baseA = local.camDir;
+        const orbit = Math.sin(local.t * 0.25) * 0.16;
+        const dist = 3.75;
+        const dirV = new THREE.Vector3(-Math.sin(baseA + orbit), 0, -Math.cos(baseA + orbit));
+        local.cloudYaw = baseA + Math.PI;  // cloud opening (+Z) faces the camera
         local.cloudPos.copy(head).add(new THREE.Vector3(0, CLOUD_UP, 0));
         const g = local.tree.group;
         g.position.copy(local.cloudPos);
-        g.rotation.set(0, yaw, 0);
+        g.rotation.set(0, local.cloudYaw, 0);
+        const yaw = local.cloudYaw;
         const night = game.clock.nightFactor;
         local.tree.update(dt, cam.quaternion, night);
-        // camera: swing from first person to the front-side of the character, slow orbit
-        const orbit = Math.sin(local.t * 0.25) * 0.18 + 0.32;
-        const dist = 3.75;
-        const off = fwd.clone().multiplyScalar(Math.cos(orbit) * dist).addScaledVector(right, Math.sin(orbit) * dist);
-        let want = head.clone().add(off).add(new THREE.Vector3(0, 0.55 + Math.sin(local.t * 0.33) * 0.06, 0));
-        const look = head.clone().add(new THREE.Vector3(0, 1.0, 0));
-        // keep the camera out of walls
+        let want = head.clone().addScaledVector(dirV, dist).add(new THREE.Vector3(0, 0.55 + Math.sin(local.t * 0.33) * 0.06, 0));
         if (game.physics) {
           const dir = want.clone().sub(look);
           const L = dir.length();
           dir.normalize();
           const hit = game.physics.raycast(look, dir, L, G.STATIC);
-          if (hit) want = look.clone().addScaledVector(dir, Math.max(1.2, hit.toi - 0.25));
+          if (hit) want = look.clone().addScaledVector(dir, Math.max(1.4, hit.toi - 0.3));
         }
         const inK = local.leaving ? 1 - clamp(local.t / 0.55) : clamp(local.t / 1.1);
         const e = Ease.inOutCubic(inK);
