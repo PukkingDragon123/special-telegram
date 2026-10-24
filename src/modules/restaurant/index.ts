@@ -287,6 +287,8 @@ export default defineModule({
         return d;
       },
       openMenu: () => openMenu(game, 0),
+      /** HOST tests: advance the restaurant simulation synchronously */
+      _tick: (dt = 0.1, n = 1) => { for (let i = 0; i < n; i++) { customersHost(dt); serviceHost(dt); } },
       seats: SEAT_KINDS, tables: TABLE_KINDS,
     };
     (game as any).restaurant = api;

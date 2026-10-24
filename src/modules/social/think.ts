@@ -5,7 +5,7 @@ import { Assets } from '../../core/assets';
 import { Input } from '../../core/input';
 import { Sound } from '../../core/audio';
 import { F } from '../../core/fonts';
-import { Ease, clamp, damp, tl } from '../../core/util';
+import { Ease, clamp, damp, tl, params } from '../../core/util';
 import { G } from '../../sim/physics';
 import { ThoughtCloud, dreamGlow } from './cloud';
 import { FlyText, FlySlot } from './flytext';
@@ -258,7 +258,7 @@ class SkillTree {
   private flash: { text: string; t: number } | null = null;
 
   constructor(private game: Game, private me: Ent) {
-    this.cloud = new ThoughtCloud({ rx: RX, ry: RY, rz: RZ, head: new THREE.Vector3(0, -CLOUD_UP + 0.12, 0.25), seed: 7, detail: 5 });
+    this.cloud = new ThoughtCloud({ rx: RX, ry: RY, rz: RZ, head: new THREE.Vector3(0, -CLOUD_UP + 0.12, 0.25), seed: 7, detail: 4 });
     this.group.add(this.cloud.group);
     this.glowBack = dreamGlow(RX * 2.2, RY * 2.1, 0xffe9f6);
     this.glowBack.position.set(0, 0, -0.35);
@@ -556,6 +556,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     cloudPos: THREE.Vector3; cloudYaw: number; lookK: number; startPos: THREE.Vector3; startQ: THREE.Quaternion; camDir: number | null;
   } | null = null;
   const remotes = new Map<number, RemoteCloud>();
+  let dbgFrames = 0; let dbgErr = '';
   const ray = new THREE.Raycaster();
   let lateOff: (() => void) | null = null;
 
@@ -614,7 +615,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
 
   return {
     get active() { return !!local && !local.leaving; },
-    get debug() { return local ? { t: local.t, leaving: local.leaving, camDir: local.camDir, lookK: local.lookK } : null; },
+    get debug() { return local ? { t: local.t, leaving: local.leaving, camDir: local.camDir, lookK: local.lookK, frames: dbgFrames, err: dbgErr } : null; },
     stop,
     onUnlock(d: { id: number; skill: string }) {
       if (!local || d.id !== game.localPlayerId) return;
@@ -622,7 +623,8 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
       Sound.play('level_up_fanfare', { vol: 0.7 });
       Sound.play('sparkle_chime', { vol: 0.7, delay: 0.1 });
     },
-    frame(dt: number) {
+    frame(dt: number) { dbgFrames++; try { this.frame2(dt); } catch (e: any) { dbgErr = String(e?.stack ?? e).slice(0, 400); throw e; } },
+    frame2(dt: number) {
       const me = game.me;
       const pl = game.player;
       // ---- toggle
@@ -673,7 +675,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
         cam.updateMatrixWorld();
         local.lookK = e;
         const post = game.engine.post;
-        if (!local.leaving && local.t > 0.3) { post.setDOF(true, want.distanceTo(local.cloudPos), 2.2); post.focusOn(local.cloudPos.clone().add(new THREE.Vector3(0, -0.1, 0.3).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw))); }
+        if (!local.leaving && local.t > 0.3 && !params.has('nodof')) { post.setDOF(true, want.distanceTo(local.cloudPos), 2.2); post.focusOn(local.cloudPos.clone().add(new THREE.Vector3(0, -0.1, 0.3).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw))); }
         post.bloom.intensity = local.bloom0 + 0.25 * e;
         const rig = rigOf(game, me.id);
         if (!local.leaving) rig?.setFace?.('think');

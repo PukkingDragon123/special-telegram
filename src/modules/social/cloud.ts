@@ -20,6 +20,7 @@ float vn(vec3 x) {
              mix(mix(h3(i + vec3(0,0,1)), h3(i + vec3(1,0,1)), f.x), mix(h3(i + vec3(0,1,1)), h3(i + vec3(1,1,1)), f.x), f.y), f.z);
 }
 float fbm(vec3 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * vn(p); p = p * 2.07 + 3.1; a *= 0.5; } return s; }
+float fbm2(vec3 p) { return 0.62 * vn(p) + 0.38 * vn(p * 2.3 + 1.7); }
 `;
 
 const vert = /* glsl */ `
@@ -78,7 +79,7 @@ void main() {
   float hgt = smoothstep(-1.1, 1.1, vL.y);
   vec3 base = mix(uBottom, uTop, hgt);
   float crease = smoothstep(0.72, 1.12, vCrease);
-  float fluff = fbm(vW * 7.0 + vec3(0.0, uTime * 0.05, vSeed));
+  float fluff = fbm2(vW * 7.0 + vec3(0.0, uTime * 0.05, vSeed));
   float ao = mix(0.55, 1.0, crease) * (0.9 + 0.2 * fluff);
   // inward-facing back wall glows like the inside of a dream
   float inner = smoothstep(-0.3, -1.0, vL.z) * smoothstep(1.7, 0.2, length(vL.xy * vec2(0.7, 1.0)));
@@ -240,7 +241,7 @@ ${NOISE}
 void main() {
   vec2 p = vUv * 2.0 - 1.0;
   float r = length(p * vec2(0.8, 1.0));
-  float n = fbm(vec3(p * 2.2, uTime * 0.07));
+  float n = fbm2(vec3(p * 2.2, uTime * 0.07));
   float a = smoothstep(1.0, 0.0, r + (n - 0.5) * 0.45) * uK;
   gl_FragColor = vec4(uCol * a, a);
 }`;
