@@ -4,7 +4,7 @@ import { cachedMat, pbr, lateTex, speckle, labelTex } from './assets';
 /** Shared materials (one instance per look → batched shader programs, few uploads). */
 export const M = {
   steel: () => pbr('stainless_brushed', { repeat: 1, roughness: 0.9, metalness: 0.6 }),
-  steelDent: () => pbr('stainless_dented_greasy', { repeat: 1, metalness: 0.55 }),
+  steelDent: () => pbr('stainless_dented_greasy', { repeat: 1, metalness: 0.85, roughness: 0.75, color: 0xdfe4ea }),
   steelDark: () => pbr('stainless_dented_greasy', { repeat: 1, color: 0x8a8580, metalness: 0.6 }),
   wok: () => pbr('cast_iron_wok', { repeat: 1, metalness: 0.5 }),
   wood: () => pbr('wood_teak', { repeat: 1, color: 0xb08a68 }),
