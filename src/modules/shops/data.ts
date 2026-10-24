@@ -213,7 +213,13 @@ export const SHOPS: ShopDef[] = [
       { id: 'tub', kinds: ['wash_tub', 'tub', 'basin'], fb: 'sfb_tub', price: 60, unit: 'ใบละ', qty: 6, show: 1 },
       { id: 'rack', kinds: ['dish_rack'], fb: 'sfb_dish_rack', price: 180, unit: 'อันละ', qty: 4, show: 1, day: 2 },
       { id: 'cup', kinds: ['cup_plastic', 'cup_water', 'cup'], fb: 'sfb_cup', price: 8, unit: 'ใบละ', qty: 40, show: 3 },
-      { id: 'bin', kinds: ['trash_bin', 'bin'], fb: 'sfb_trash_bin', price: 120, unit: 'ใบละ', qty: 4, show: 1, day: 2 },
+      { id: 'bin', kinds: ['trash_bin', 'bin'], fb: 'sfb_trash_bin', price: 120, unit: 'ใบละ', qty: 4, show: 1, day: 2 },      // restaurant service gear (kinds defined by the restaurant module)
+      { id: 'stool_blue', kinds: ['stool_blue'], fb: 'sfb_stool', price: 65, unit: 'ตัวละ', qty: 24, show: 2, label: { th: 'เก้าอี้พลาสติกสีน้ำเงิน', en: 'blue plastic stool' } },
+      { id: 'sponge', kinds: ['sponge'], fb: 'sponge', price: 15, unit: 'อันละ', qty: 12, show: 2 },
+      { id: 'tissue', kinds: ['tissue_box'], fb: 'tissue_box', price: 25, unit: 'ม้วนละ', qty: 12, show: 2 },
+      { id: 'bus_tub', kinds: ['bus_tub'], fb: 'bus_tub', price: 55, unit: 'ใบละ', qty: 6, show: 1 },
+      { id: 'ice_bucket', kinds: ['ice_bucket'], fb: 'ice_bucket', price: 90, unit: 'ใบละ', qty: 4, show: 1 },
+      { id: 'water_dispenser', kinds: ['water_dispenser'], fb: 'water_dispenser', price: 1290, unit: 'เครื่องละ', qty: 2, show: 1, big: true, day: 2 },
     ],
   },
   {
@@ -271,6 +277,8 @@ export const SHOPS: ShopDef[] = [
       { id: 'water', kinds: ['water_bottle', 'water_small'], fb: 'sfb_water_bottle', price: 7, unit: '', qty: 20, show: 2 },
       { id: 'cola', kinds: ['soda_cola_can', 'soda_cola', 'soda_can'], fb: 'sfb_cola', price: 17, unit: '', qty: 12, show: 2 },
       { id: 'fanta', kinds: ['soda_fanta_can', 'soda_orange', 'soda_red'], fb: 'sfb_fanta', price: 15, unit: '', qty: 12, show: 2 },
+      { id: 'fanta_green', kinds: ['soda_fanta_green'], fb: 'sfb_fanta', price: 15, unit: '', qty: 12, show: 2 },
+      { id: 'soda_red', kinds: ['soda_red'], fb: 'sfb_fanta', price: 15, unit: '', qty: 12, show: 2 },
       { id: 'm150', kinds: ['energy_drink', 'm150'], fb: 'sfb_m150', price: 12, unit: '', qty: 10, show: 2 },
       { id: 'beer', kinds: ['beer_can', 'beer_chang'], fb: 'sfb_beer', price: 45, unit: '', qty: 8, show: 2, alcohol: true },
       { id: 'dogfood', kinds: ['dog_food'], fb: 'sfb_dog_food', price: 59, unit: '', qty: 6, show: 1, label: { th: 'อาหารหมา', en: 'dog food' } },

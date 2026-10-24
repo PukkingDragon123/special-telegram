@@ -39,7 +39,10 @@ export class IntroHost {
     game.onIntent('intro.skip', () => this.skipAll());
     game.events.on('player:joined', (pl: Ent) => this.onJoin(pl));
     game.events.on('player:left', (pl: Ent) => this.onLeave(pl));
+    game.events.on('world:ready', () => { this.worldReady = true; this.waitCart = 0; });
+    game.events.on('world:exit', () => { this.worldReady = false; });
   }
+  private worldReady = false;
 
   get g() { return this.game.g; }
   cart(): Ent | null { return this.game.state.all('cart')[0] ?? null; }
@@ -184,8 +187,10 @@ export class IntroHost {
   update(dt: number) {
     const game = this.game;
     const g = this.g;
-    if (g.scene !== 'world' || !game.scene) return;
+    if (g.scene !== 'world' || !game.scene || !this.worldReady) return;
     this.waitCart += dt;
+    // cooking spawns its cart on world:ready; give it a moment before starting any step that needs it
+    if (!this.cart() && this.cooking() && this.waitCart < 3) return;
     if (this.skipPending || (params.has('skipintro') && g.introStep !== 'done' && this.lastStep === undefined && !g.introStep)) {
       if (this.doSkip()) { this.skipPending = false; this.lastStep = 'done'; }
       else this.skipPending = true;
