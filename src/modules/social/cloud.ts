@@ -80,12 +80,12 @@ void main() {
   vec3 base = mix(uBottom, uTop, hgt);
   float crease = smoothstep(0.72, 1.12, vCrease);
   float fluff = fbm2(vW * 7.0 + vec3(0.0, uTime * 0.05, vSeed));
-  float ao = mix(0.55, 1.0, crease) * (0.9 + 0.2 * fluff);
+  float ao = mix(0.42, 1.0, crease) * (0.88 + 0.24 * fluff);
   // inward-facing back wall glows like the inside of a dream
   float inner = smoothstep(-0.3, -1.0, vL.z) * smoothstep(1.7, 0.2, length(vL.xy * vec2(0.7, 1.0)));
   vec3 col = base * (0.62 + 0.72 * dif) * ao;
   col += uInner * inner * 0.35 * (0.8 + 0.4 * fluff);
-  col += uRim * fres * 0.55;
+  col += uRim * fres * 0.75;
   col += uGlow * sss * 0.6;
   col = mix(col, col * vec3(0.78, 0.8, 1.0) + vec3(0.02, 0.025, 0.05), uNight * 0.45);
   gl_FragColor = vec4(col, uOpacity);
@@ -197,7 +197,7 @@ export class ThoughtCloud {
       uniforms: {
         uTime: { value: 0 }, uAppear: { value: 0 }, uChurn: { value: 1 }, uPop: { value: 1 },
         uLight: { value: new THREE.Vector3(0.4, 0.9, 0.5) },
-        uTop: { value: new THREE.Color(0xfff9f0) }, uBottom: { value: new THREE.Color(0xd8cdf2) },
+        uTop: { value: new THREE.Color(0xfffaf0) }, uBottom: { value: new THREE.Color(0xd2c6f0) },
         uRim: { value: new THREE.Color(0xfff0c8) }, uGlow: { value: new THREE.Color(0xffd6b0) }, uInner: { value: new THREE.Color(0xffe7ff) },
         uOpacity: { value: 1 }, uNight: { value: 0 },
       },

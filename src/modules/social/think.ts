@@ -151,7 +151,7 @@ function taperTube(curve: THREE.Curve<THREE.Vector3>, r0: number, r1: number, se
 }
 
 function branchMaterial() {
-  const m = Assets.pbr('bamboo_poles', { color: 0xb8d68a }).clone();
+  const m = Assets.pbr('bamboo_poles', { color: 0xe6f2b8 }).clone();
   m.emissive = new THREE.Color(0xffd27a);
   m.emissiveIntensity = 0;
   const u = { uGrow: { value: 0 }, uLit: { value: 0 }, uTime: { value: 0 } };
@@ -161,7 +161,7 @@ function branchMaterial() {
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvT = aT;');
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform float uGrow, uLit, uTime;\nvarying float vT;')
       .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif (vT > uGrow) discard;')
-      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n float lit = smoothstep(uLit + 0.02, uLit - 0.02, vT);\n float pulse = 0.5 + 0.5 * sin(vT * 30.0 - uTime * 4.0);\n totalEmissiveRadiance = vec3(1.0, 0.82, 0.45) * (lit * (0.55 + 0.35 * pulse) + smoothstep(uGrow - 0.06, uGrow, vT) * 1.2);');
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n float lit = smoothstep(uLit + 0.02, uLit - 0.02, vT);\n float pulse = 0.5 + 0.5 * sin(vT * 30.0 - uTime * 4.0);\n totalEmissiveRadiance = vec3(1.0, 0.82, 0.45) * (0.16 + lit * (0.55 + 0.35 * pulse) + smoothstep(uGrow - 0.06, uGrow, vT) * 1.2);');
   };
   m.customProgramCacheKey = () => 'social-branch';
   (m as any).userData.u = u;
@@ -203,7 +203,7 @@ function floaters(game: Game, n: number) {
   const items: { o: THREE.Object3D; base: THREE.Vector3; sp: THREE.Vector3; ph: number }[] = [];
   const leafTex = Assets.texture('textures/food/basil_sprig_fresh.png', { wrap: false });
   const leafMat = new THREE.MeshStandardMaterial({ map: leafTex, transparent: true, alphaTest: 0.35, side: THREE.DoubleSide, roughness: 0.6, emissive: 0x1a3010, emissiveIntensity: 0.3 });
-  const leafGeo = new THREE.PlaneGeometry(0.2, 0.2, 4, 4);
+  const leafGeo = new THREE.PlaneGeometry(0.34, 0.34, 4, 4);
   const lp = leafGeo.attributes.position as THREE.BufferAttribute;
   for (let i = 0; i < lp.count; i++) { const x = lp.getX(i), y = lp.getY(i); lp.setZ(i, (x * x + y * y) * 1.2); }
   leafGeo.computeVertexNormals();
@@ -215,12 +215,12 @@ function floaters(game: Game, n: number) {
     items.push({ o: m, base, sp: new THREE.Vector3(0.3 + Math.random() * 0.5, 0.4 + Math.random() * 0.6, 0.3 + Math.random()), ph: Math.random() * 10 });
   }
   for (const k of [['spatula'], ['spatula'], ['ladle', 'spatula']]) {
-    const o = normalize(buildIcon(game, k), 0.3);
+    const o = normalize(buildIcon(game, k), 0.42);
     const base = new THREE.Vector3((Math.random() - 0.5) * RX * 1.5, (Math.random() - 0.5) * RY * 1.1, 0.0 + Math.random() * 0.3);
     group.add(o);
     items.push({ o, base, sp: new THREE.Vector3(0.2 + Math.random() * 0.3, 0.3 + Math.random() * 0.3, 0.2), ph: Math.random() * 10 });
   }
-  const egg = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.26), new THREE.MeshStandardMaterial({ map: Assets.texture('textures/food/egg_fried_runny.png', { wrap: false }), transparent: true, alphaTest: 0.3, side: THREE.DoubleSide, roughness: 0.4 }));
+  const egg = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4), new THREE.MeshStandardMaterial({ map: Assets.texture('textures/food/egg_fried_runny.png', { wrap: false }), transparent: true, alphaTest: 0.3, side: THREE.DoubleSide, roughness: 0.4 }));
   group.add(egg);
   items.push({ o: egg, base: new THREE.Vector3(RX * 0.55, RY * 0.62, -0.1), sp: new THREE.Vector3(0.25, 0.2, 0.15), ph: 0 });
   return {
@@ -288,9 +288,9 @@ class SkillTree {
       const root = new THREE.Group();
       const pos = nodePos(s);
       root.position.copy(pos);
-      const icon = normalize(buildIcon(game, s.icon), s.branch === 'life' ? 0.17 : 0.2);
+      const icon = normalize(buildIcon(game, s.icon), s.branch === 'life' ? 0.24 : 0.28);
       icon.traverse((o: any) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; o.material = Array.isArray(o.material) ? o.material.map((m: any) => m.clone()) : o.material.clone(); } });
-      const glow = dreamGlow(0.46, 0.46, 0xffd88a);
+      const glow = dreamGlow(0.62, 0.62, 0xffd88a);
       glow.position.z = -0.05;
       root.add(glow, icon);
       root.scale.setScalar(0.001);
@@ -298,7 +298,7 @@ class SkillTree {
       const appearAt = 0.55 + (s.branch === 'life' ? 0.2 + s.tier * 0.1 : 0.15 + s.tier * 0.17);
       this.nodes.push({ s, root, icon, glow, pos, hover: 0, bounce: 0, shake: 0, state: '', appearAt });
     });
-    this.info.group.position.set(0, RY * 0.73, 0.42);
+    this.info.group.position.set(0, RY * 0.7, 0.45);
     this.group.add(this.info.group);
     this.refreshStates(true);
     this.cloud.show(true);
@@ -327,8 +327,12 @@ class SkillTree {
         for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
           if (!m.color) continue;
           m.userData.baseColor ??= m.color.clone();
-          m.color.copy(m.userData.baseColor).multiplyScalar(owned || ready ? 1 : 0.42);
-          if (m.emissive) { m.emissive.set(owned ? 0x302010 : 0x000000); }
+          m.color.copy(m.userData.baseColor).multiplyScalar(owned || ready ? 1 : 0.62);
+          if (m.emissive) {
+            m.emissive.set(owned ? 0xfff0d0 : ready ? 0xffe6b0 : 0xb8c0ff);
+            if (m.map && !m.emissiveMap) { m.emissiveMap = m.map; m.needsUpdate = true; }
+            m.emissiveIntensity = owned ? 0.5 : ready ? 0.4 : 0.14;
+          }
         }
       });
       if (prev && owned && prev !== 'owned') n.bounce = 1;
@@ -359,7 +363,7 @@ class SkillTree {
       const ft = new FlyText([
         { text: `${BRANCH_NAME[b].th}  Lv.${p.lv}`, style: { font: F.bubbly, size: 46, weight: 700, color: '#5a3d1e', stroke: '#fff8ea', strokeWidth: 6 } },
         { text: p.lv >= 15 ? 'MAX' : `${p.cur}/${p.need} xp`, style: { font: F.body, size: 26, weight: 600, color: '#7a6250', stroke: '#fff8ea', strokeWidth: 4 } },
-      ], { px: 0.00085, stagger: 0.02, depthTest: false });
+      ], { px: 0.0021, stagger: 0.02, depthTest: false });
       const tip = nodePos(SKILLS.find((s) => s.branch === b && s.tier === 0)!);
       const ang = BR_ANG[b as Exclude<Branch, 'life'>];
       ft.mesh.position.set(tip.x * 0.55 + Math.sign(ang) * 0.02, tip.y * 0.5 + (Math.abs(ang) > 1.5 ? -0.13 : 0.14), 0.32);
@@ -387,7 +391,7 @@ class SkillTree {
     const me = this.game.state.get(this.me.id) ?? this.me;
     if (this.flash && this.t - this.flash.t < 1.6) {
       const key = 'flash:' + this.flash.text;
-      this.info.set(key, () => new FlyText([{ text: this.flash!.text, style: { font: F.heavy, size: 50, weight: 800, color: '#c0392b', stroke: '#fff7ea', strokeWidth: 7 } }], { px: 0.0009, depthTest: false, stagger: 0.012 }));
+      this.info.set(key, () => new FlyText([{ text: this.flash!.text, style: { font: F.heavy, size: 50, weight: 800, color: '#c0392b', stroke: '#fff7ea', strokeWidth: 7 } }], { px: 0.0024, depthTest: false, stagger: 0.012 }));
       return;
     }
     if (n) {
@@ -399,7 +403,7 @@ class SkillTree {
         { text: n.s.desc.th, style: { font: F.ui, size: 34, weight: 600, color: '#4a3424', stroke: '#fff9ee', strokeWidth: 6, maxWidth: 1300 } },
         { text: `${n.s.name.en} — ${n.s.desc.en}`, style: { font: F.body, size: 24, weight: 500, color: '#6e5a48', stroke: '#fff9ee', strokeWidth: 4, maxWidth: 1400 } },
         { text: status, style: { font: F.ui, size: 30, weight: 700, color: st.st === 'ready' ? '#b36b00' : st.st === 'owned' ? '#3c7d2e' : '#7a5a8a', stroke: '#fff9ee', strokeWidth: 6 } },
-      ], { px: 0.00078, depthTest: false, stagger: 0.012, dur: 0.45 }));
+      ], { px: 0.0021, depthTest: false, stagger: 0.012, dur: 0.45 }));
       return;
     }
     if (this.t - this.lastThought > 6 || !this.info.key.startsWith('thought')) {
@@ -411,7 +415,7 @@ class SkillTree {
         { text: th.th, style: { font: F.hand, size: 52, weight: 400, color: '#4a3424', stroke: '#fff9ee', strokeWidth: 7, maxWidth: 1400 } },
         ...(th.en ? [{ text: th.en, style: { font: F.body, size: 24, weight: 500, color: '#7a6654', stroke: '#fff9ee', strokeWidth: 4 } }] : []),
         { text: `แต้มสกิล ${me.sp ?? 0} แต้ม · เลเวลรวม ${totalLevel(me)}`, style: { font: F.ui, size: 30, weight: 700, color: (me.sp ?? 0) > 0 ? '#b36b00' : '#6e5a48', stroke: '#fff9ee', strokeWidth: 6 } },
-      ], { px: 0.00078, depthTest: false, stagger: 0.016 }));
+      ], { px: 0.0021, depthTest: false, stagger: 0.016 }));
     }
   }
 
