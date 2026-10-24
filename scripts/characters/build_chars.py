@@ -286,43 +286,81 @@ def build_body(src, sex):
             info.append((part_of_bone(best), yref(p.z), interp(dmap, abs(p.x)), p))
         return info
 
-    def make_shell(name, src, pick, off, rim=0.004, arm_off=None, part_off=None):
+    zof = lambda yr: interp([(b, a) for a, b in zmap], yr)
+    xof = lambda d: interp([(b, a) for a, b in dmap], d)
+
+    def make_shell(name, src, zlo, zhi, xin=None, xout=None, off=0.01, rim=0.004):
+        """slab of the body between planes (clean hems), pushed out along normals"""
         select_only([src]); bpy.ops.object.duplicate()
         o = bpy.context.active_object; o.name = name; o.data.name = name
-        info = part_y_arm(o)
         bm = bmesh.new(); bm.from_mesh(o.data)
-        bm.verts.ensure_lookup_table(); bm.faces.ensure_lookup_table()
         bm.normal_update()
-        kill = [f for f in bm.faces if not pick([info[v.index] for v in f.verts])]
-        for v in bm.verts:
-            pt = info[v.index][0]
-            k = off
-            if part_off and pt in part_off: k = part_off[pt]
-            v.co = v.co + v.normal * k
+        nrm = {v.index: v.normal.copy() for v in bm.verts}
+        for v in bm.verts: v.co = v.co + v.normal * off
+        cuts = []
+        if zlo is not None: cuts.append(((0, 0, zlo), (0, 0, 1)))
+        if zhi is not None: cuts.append(((0, 0, zhi), (0, 0, 1)))
+        for xv in (xin, xout):
+            if xv is not None: cuts += [((xv, 0, 0), (1, 0, 0)), ((-xv, 0, 0), (1, 0, 0))]
+        for co, no in cuts:
+            geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
+            bmesh.ops.bisect_plane(bm, geom=geom, plane_co=co, plane_no=no, dist=0.0005)
+        def keep(f):
+            c = f.calc_center_median()
+            if zlo is not None and c.z < zlo: return False
+            if zhi is not None and c.z > zhi: return False
+            ax = abs(c.x)
+            if xin is not None and ax < xin: return False
+            if xout is not None and ax > xout: return False
+            return True
+        kill = [f for f in bm.faces if not keep(f)]
         bmesh.ops.delete(bm, geom=kill, context='FACES')
+        loose = [v for v in bm.verts if not v.link_faces]
+        bmesh.ops.delete(bm, geom=loose, context='VERTS')
         bm.to_mesh(o.data); bm.free()
-        if rim:
+        if rim and len(o.data.polygons):
             mm = o.modifiers.new('rim', 'SOLIDIFY'); mm.thickness = rim; mm.offset = -1; mm.use_rim = True; mm.use_rim_only = True
             apply_mod(o, mm)
         return o
 
-    _inf = part_y_arm(hi)
-    _h = {}
-    for it in _inf: _h[it[0]] = _h.get(it[0], 0) + 1
-    print('PARTS', sex, _h)
     shells = []
+    z_neck = zof(1.452)
+    sh_edge = sh_x + 0.012
     TOPS = {'u': (0.86, 0.010), 't': (0.975, 0.008), 'l': (0.82, 0.022), 'j': (0.78, 0.03)}
     for key, (hem, off) in TOPS.items():
-        shells.append(make_shell('shell_top_' + key, hi, lambda vs, hem=hem: all(v[0] == 'torso' for v in vs) and min(v[1] for v in vs) >= hem - 0.005, off))
+        shells.append(make_shell('shell_top_' + key, hi, zof(hem), z_neck, None, sh_edge, off))
     SLEEVES = {'cap': 0.065, 'short': 0.15, 'rolled': 0.335, 'long': 0.535}
     for key, end in SLEEVES.items():
-        so = 0.012 if key in ('short', 'cap') else 0.009
-        shells.append(make_shell('shell_sleeve_' + key, hi, lambda vs, end=end: all(v[0] == 'arm' for v in vs) and max(v[2] for v in vs) <= end + 0.004, so))
+        so = 0.013 if key in ('short', 'cap') else 0.009
+        shells.append(make_shell('shell_sleeve_' + key, hi, zof(1.2), None, sh_x - 0.03, xof(end), so))
     BOTS = {'shorts': (0.66, 0.02), 'knee': (0.52, 0.026), 'trousers': (0.05, 0.011), 'loose': (0.07, 0.03)}
     for key, (hem, off) in BOTS.items():
-        shells.append(make_shell('shell_bot_' + key, hi, lambda vs, hem=hem: (all(v[0] == 'leg' for v in vs) and min(v[1] for v in vs) >= hem - 0.004) or (all(v[0] == 'torso' for v in vs) and max(v[1] for v in vs) <= 1.0), off))
-    shells.append(make_shell('shell_shoe', hi, lambda vs: all(v[0] == 'foot' for v in vs), 0.008, rim=0.0))
+        shells.append(make_shell('shell_bot_' + key, hi, zof(hem), zof(1.0), None, sh_x - 0.03, off))
+    shells.append(make_shell('shell_shoe', hi, None, zof(0.125), None, None, 0.008, rim=0.0))
     for o in shells: layout_uvs(o)
+
+    # ---- measured tables for the JS generators (three.js frame: y up, z forward)
+    bvh0 = BVHTree.FromObject(hi, bpy.context.evaluated_depsgraph_get())
+    def radii_at(z, yc, angles, rmax=0.5):
+        out = []
+        for a in angles:
+            d = Vector((math.sin(math.radians(a)), -math.cos(math.radians(a)), 0.0))
+            hit = bvh0.ray_cast(Vector((0.0, yc, z)) + d * rmax, -d, rmax)
+            out.append(round(rmax - hit[3], 4) if hit[0] is not None else 0.0)
+        return out
+    torso_tab = []
+    for yr in [0.8, 0.84, 0.88, 0.92, 0.96, 1.0, 1.05, 1.1, 1.16, 1.22, 1.27, 1.31, 1.35, 1.39, 1.42, 1.445, 1.47, 1.49]:
+        z = zof(yr)
+        # body centre (front/back midpoint) at this height
+        fr = radii_at(z, 0.0, [0, 180], 0.4)
+        yc = (( -fr[0]) + fr[1]) * 0.5 * -1 if fr[0] and fr[1] else 0.0
+        yc = (fr[1] - fr[0]) * 0.5
+        rr = radii_at(z, yc, [0, 45, 90, 135, 180], 0.4 if yr < 1.43 else 0.25)
+        torso_tab.append([yr] + rr + [round(-yc, 4)])
+    neck_tab = []
+    for yr in [1.43, 1.46, 1.5, 1.54, 1.58]:
+        z = zof(yr)
+        neck_tab.append([yr] + radii_at(z, 0.01, [0, 45, 90, 135, 180], 0.15))
 
     # ---- skirts / wraps (cones with weights transferred from the body)
     def make_skirt(name, hem, flare, narrow=0.0):
@@ -419,7 +457,8 @@ def build_body(src, sex):
     info = {
         'sex': sex, 'height': round(top_z, 4), 'eyes': [to3(eye_l), to3(eye_r)], 'iod': round(iod, 4),
         'bones': {n: to3(W(n)) for n in B.keys()}, 'zmap': [[round(a, 4), b] for a, b in zmap], 'headTable': table,
-        'headCenterZ': round(-head_c.y, 4), 'tris': {o.name: sum(len(p.vertices) - 2 for p in o.data.polygons) for o in [hi, lo] + shells + skirts},
+        'headCenterZ': round(-head_c.y, 4), 'torsoTable': torso_tab, 'neckTable': neck_tab,
+        'armMap': [[round(a, 4), b] for a, b in dmap], 'tris': {o.name: sum(len(p.vertices) - 2 for p in o.data.polygons) for o in [hi, lo] + shells + skirts},
     }
     json.dump(info, open(os.path.join(OUT, f'body_{sex}.json'), 'w'), indent=1)
     print('BUILT', out, info['tris'])
