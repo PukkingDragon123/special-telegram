@@ -246,8 +246,8 @@ export class Creature implements QuadRigLike {
               float redness = diffuseColor.r - max(diffuseColor.g, diffuseColor.b);
               if (lumF < uMinLum || redness > 0.22) discard;
             ` : ''}
-            diffuseColor.rgb *= uTint * (0.78 + 0.44 * det);
-            ${shell ? 'diffuseColor.rgb *= mix(0.55, 1.12, uH);' : ''}`);
+            diffuseColor.rgb *= uTint * (0.86 + 0.28 * det);
+            ${shell ? 'diffuseColor.rgb *= mix(0.74, 1.08, uH);' : ''}`);
       };
       m.customProgramCacheKey = () => 'life_fur_' + (shell ? 's' : 'b');
       m.needsUpdate = true;
@@ -292,7 +292,7 @@ export class Creature implements QuadRigLike {
 
   update(dt: number, inp: QuadInput, camPos: THREE.Vector3 | null) {
     this.t += dt;
-    // reset bones to rest, then let clips write
+    // restore last frame's CLIP output (the mixer only re-applies values that changed), let clips write, snapshot
     for (let i = 0; i < this.bl.length; i++) { this.bl[i].quaternion.copy(this.restQ[i]); this.bl[i].position.copy(this.restP[i]); }
     // clip weights from pose weights + one-shot
     const W = this.anim.poseW;
@@ -312,6 +312,7 @@ export class Creature implements QuadRigLike {
       if (n && this.actions[n]) this.actions[n].setEffectiveWeight(this.oneShot?.name === n ? osW : 0);
     }
     this.mixer.update(dt);
+    for (let i = 0; i < this.bl.length; i++) { this.restQ[i].copy(this.bl[i].quaternion); this.restP[i].copy(this.bl[i].position); }
     // procedural layers (QuadAnimator → apply())
     this.oneShotW = osW;
     this.anim.update(dt, inp);

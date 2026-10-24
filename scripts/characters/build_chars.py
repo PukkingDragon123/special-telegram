@@ -289,14 +289,17 @@ def build_body(src, sex):
     zof = lambda yr: interp([(b, a) for a, b in zmap], yr)
     xof = lambda d: interp([(b, a) for a, b in dmap], d)
 
-    def make_shell(name, src, zlo, zhi, xin=None, xout=None, off=0.01, rim=0.004):
+    def make_shell(name, src, zlo, zhi, xin=None, xout=None, off=0.01, rim=0.004, off_waist=None):
         """slab of the body between planes (clean hems), pushed out along normals"""
         select_only([src]); bpy.ops.object.duplicate()
         o = bpy.context.active_object; o.name = name; o.data.name = name
         bm = bmesh.new(); bm.from_mesh(o.data)
         bm.normal_update()
         nrm = {v.index: v.normal.copy() for v in bm.verts}
-        for v in bm.verts: v.co = v.co + v.normal * off
+        for v in bm.verts:
+            k = off
+            if off_waist is not None: k = off + (off_waist - off) * smooth(0.84, 0.94, yref((src.matrix_world @ v.co).z))
+            v.co = v.co + v.normal * k
         cuts = []
         if zlo is not None: cuts.append(((0, 0, zlo), (0, 0, 1)))
         if zhi is not None: cuts.append(((0, 0, zhi), (0, 0, 1)))
@@ -326,7 +329,7 @@ def build_body(src, sex):
     shells = []
     z_neck = zof(1.452)
     sh_edge = sh_x + 0.05
-    TOPS = {'u': (0.86, 0.010), 't': (0.975, 0.008), 'l': (0.82, 0.022), 'j': (0.78, 0.03)}
+    TOPS = {'u': (0.86, 0.012), 't': (0.975, 0.009), 'l': (0.82, 0.022), 'j': (0.78, 0.03)}
     for key, (hem, off) in TOPS.items():
         shells.append(make_shell('shell_top_' + key, hi, zof(hem), z_neck, None, sh_edge, off))
     SLEEVES = {'cap': 0.065, 'short': 0.15, 'rolled': 0.335, 'long': 0.535}
@@ -335,7 +338,7 @@ def build_body(src, sex):
         shells.append(make_shell('shell_sleeve_' + key, hi, zof(1.2), None, sh_x - 0.03, xof(end), so))
     BOTS = {'shorts': (0.66, 0.02), 'knee': (0.52, 0.026), 'trousers': (0.05, 0.011), 'loose': (0.07, 0.03)}
     for key, (hem, off) in BOTS.items():
-        shells.append(make_shell('shell_bot_' + key, hi, zof(hem), zof(1.0), None, sh_x - 0.03, off))
+        shells.append(make_shell('shell_bot_' + key, hi, zof(hem), zof(1.0), None, sh_x - 0.03, off, off_waist=0.005))
     shells.append(make_shell('shell_shoe', hi, None, zof(0.125), None, None, 0.008, rim=0.0))
     for o in shells: layout_uvs(o)
 

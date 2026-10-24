@@ -76,6 +76,24 @@ export class Geo {
     for (let g = 0; g < 2; g++) for (const i of o.I[g]) this.I[g].push(i + off);
   }
 
+  /** one indexed geometry per material group (atlas, accessory); null when empty */
+  buildSplit(): [THREE.BufferGeometry | null, THREE.BufferGeometry | null] {
+    const mk = (I: number[]) => {
+      if (!I.length) return null;
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(this.P, 3));
+      g.setAttribute('normal', new THREE.Float32BufferAttribute(this.N, 3));
+      g.setAttribute('uv', new THREE.Float32BufferAttribute(this.UV, 2));
+      g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(this.SI, 4));
+      g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(this.SW, 4));
+      g.setAttribute('color', new THREE.Float32BufferAttribute(this.C, 3));
+      g.setAttribute('afat', new THREE.Float32BufferAttribute(new Float32Array(this.count), 1));
+      g.setIndex(I.slice());
+      return g;
+    };
+    return [mk(this.I[0]), mk(this.I[1])];
+  }
+
   build(): THREE.BufferGeometry {
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(this.P, 3));
@@ -236,4 +254,31 @@ export function frame(axis: V3, pref: V3, sideRef?: V3): { f: V3; s: V3 } {
   let s = v3norm(v3cross(a, f));
   if (sideRef && v3dot(s, sideRef) < 0) s = v3mul(s, -1);
   return { f, s };
+}
+
+/** Concatenate indexed geometries with identical attribute sets; optional one group per input. */
+export function mergeGeos(list: THREE.BufferGeometry[], groups = false): THREE.BufferGeometry {
+  const out = new THREE.BufferGeometry();
+  const names = Object.keys(list[0].attributes);
+  let vcount = 0, icount = 0;
+  for (const g of list) { vcount += g.attributes.position.count; icount += g.index ? g.index.count : g.attributes.position.count; }
+  for (const n of names) {
+    const a0 = list[0].attributes[n] as THREE.BufferAttribute;
+    const Arr = (a0.array as any).constructor;
+    const arr = new Arr(vcount * a0.itemSize);
+    let off = 0;
+    for (const g of list) { const a = g.attributes[n] as THREE.BufferAttribute; if (a) arr.set(a.array as any, off); off += g.attributes.position.count * a0.itemSize; }
+    out.setAttribute(n, new THREE.BufferAttribute(arr, a0.itemSize, a0.normalized));
+  }
+  const idx = new (vcount > 65535 ? Uint32Array : Uint16Array)(icount);
+  let io = 0, vo = 0;
+  for (const g of list) {
+    const n = g.index ? g.index.count : g.attributes.position.count;
+    if (g.index) { const src = g.index.array; for (let i = 0; i < n; i++) idx[io + i] = src[i] + vo; }
+    else for (let i = 0; i < n; i++) idx[io + i] = i + vo;
+    if (groups) out.addGroup(io, n, out.groups.length);
+    io += n; vo += g.attributes.position.count;
+  }
+  out.setIndex(new THREE.BufferAttribute(idx, 1));
+  return out;
 }

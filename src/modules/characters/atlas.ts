@@ -167,13 +167,14 @@ class Painter {
   fill(reg: Region, color: string, s0 = 0, t0 = 0, s1 = 1, t1 = 1) { const [x, y, w, h] = this.rect(reg, s0, t0, s1, t1); this.g.fillStyle = color; this.g.fillRect(x, y, w, h); }
 
   /** Fill a rect with a real-photo fabric, tinted to `color`. mode: overlay (detail on colour), color (keep photo luminance), photo (as is). */
-  fabric(regName: string, reg: Region, s0: number, t0: number, s1: number, t1: number, fab: string, color: string, o: { contrast?: number; mode?: 'overlay' | 'color' | 'photo' | 'multiply'; rot?: number; scale?: number; ppm?: [number, number] } = {}) {
+  fabric(regName: string, reg: Region, s0: number, t0: number, s1: number, t1: number, fab: string, color: string, o: { contrast?: number; mode?: 'overlay' | 'color' | 'photo' | 'multiply'; rot?: number; scale?: number; ppm?: [number, number]; noFill?: boolean } = {}) {
     const g = this.g;
     const [x, y, w, h] = this.rect(reg, s0, t0, s1, t1);
     if (w <= 0 || h <= 0) return;
     g.save();
     g.beginPath(); g.rect(x, y, w, h); g.clip();
-    g.fillStyle = color; g.fillRect(x, y, w, h);
+    const noFill = o.noFill ?? color === '#808080';
+    if (!noFill) { g.fillStyle = color; g.fillRect(x, y, w, h); }
     const f = FABRICS[fab];
     if (f?.det) {
       const ppm = o.ppm ?? PPM[regName] ?? [500, 500];

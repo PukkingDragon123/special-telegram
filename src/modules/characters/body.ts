@@ -177,23 +177,27 @@ export const HEAD: number[][] = [
   [0.21, -0.002, 0.05, 0.05, 0.05, 0.049, 0.049, 0.054, 0.058, 0.059, 0.06],
   [0.222, -0.005, 0.028, 0.028, 0.028, 0.028, 0.028, 0.03, 0.032, 0.033, 0.033],
 ];
-export const HEAD_TOP = 0.229;
+export let HEAD_TOP = 0.229;
+let HEADT: number[][] = HEAD;
+let HSCALE: number | null = null;
+/** Use a measured head (rows like HEAD, reference units) for hair/hat fitting; null restores the procedural head. */
+export function setHeadModel(table: number[][] | null, top: number | null, scale: number | null) { HEADT = table ?? HEAD; HEAD_TOP = top ?? 0.229; HSCALE = scale; }
 
 /** head size factor per sex/build (multiplies radii) */
-export function headScale(sex: 'm' | 'f', build: number) { return (sex === 'f' ? 0.955 : 1) * (0.97 + build * 0.06); }
+export function headScale(sex: 'm' | 'f', build: number) { return HSCALE ?? (sex === 'f' ? 0.955 : 1) * (0.97 + build * 0.06); }
 
 /** head radius at (θ from front, symmetric; ry relative to head bone) and ring centre z */
 export function headAt(th: number, ry: number, hs = 1): { r: number; cz: number } {
   const a = Math.abs(((th + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI); // 0..π
-  let row0 = HEAD[0], row1 = HEAD[0], t = 0;
-  if (ry <= HEAD[0][0]) { row0 = row1 = HEAD[0]; }
-  else if (ry >= HEAD[HEAD.length - 1][0]) { row0 = row1 = HEAD[HEAD.length - 1]; }
-  else for (let i = 0; i < HEAD.length - 1; i++) if (ry <= HEAD[i + 1][0]) { row0 = HEAD[i]; row1 = HEAD[i + 1]; t = (ry - row0[0]) / (row1[0] - row0[0]); break; }
+  let row0 = HEADT[0], row1 = HEADT[0], t = 0;
+  if (ry <= HEADT[0][0]) { row0 = row1 = HEADT[0]; }
+  else if (ry >= HEADT[HEADT.length - 1][0]) { row0 = row1 = HEADT[HEADT.length - 1]; }
+  else for (let i = 0; i < HEADT.length - 1; i++) if (ry <= HEADT[i + 1][0]) { row0 = HEADT[i]; row1 = HEADT[i + 1]; t = (ry - row0[0]) / (row1[0] - row0[0]); break; }
   const k = (a / Math.PI) * 8;
   const i0 = Math.min(7, Math.floor(k)), f = k - i0;
   const r0 = lerp(row0[2 + i0], row0[3 + i0], f), r1 = lerp(row1[2 + i0], row1[3 + i0], f);
   let r = lerp(r0, r1, t);
-  if (ry > HEAD[HEAD.length - 1][0]) r *= clamp01((HEAD_TOP - ry) / (HEAD_TOP - HEAD[HEAD.length - 1][0]));
+  if (ry > HEADT[HEADT.length - 1][0]) r *= clamp01((HEAD_TOP - ry) / (HEAD_TOP - HEADT[HEADT.length - 1][0]));
   return { r: r * hs, cz: lerp(row0[1], row1[1], t) * hs };
 }
 
@@ -225,6 +229,18 @@ export function buildBody(spec: BodySpec, lod: Lod): BodyResult {
     else if (a.kind === 'towel') buildTowel(ctx);
   }
   return { geo: G, skel: sk, spec };
+}
+
+/** Clothing/accessory extras (collar, apron, backpack, towel) for an externally provided body
+ *  (sculpted GLB): torsoR/torsoC give radii/centre at reference heights. Positions use reference y. */
+export function buildBodyExtras(G: Geo, spec: BodySpec, lod: Lod, torsoR: (y: number, th: number) => number, torsoC: (y: number) => number, sk: RestSkel) {
+  const ctx: Ctx = { G, sk, s: spec, lod, hi: lod === 'high', torsoR, torsoC };
+  buildCollar(ctx);
+  for (const a of spec.acc) {
+    if (a.kind === 'apron') buildApron(ctx);
+    else if (a.kind === 'backpack') buildBackpack(ctx);
+    else if (a.kind === 'towel') buildTowel(ctx);
+  }
 }
 
 // ------------------------------------------------------------------ torso

@@ -10,6 +10,11 @@ import type { AccSpec } from './defs';
  * ========================================================================================== */
 
 const N3 = new Noise('hair');
+/** fitting hooks for sculpted bodies (reference height → model height, torso centre z, eye half-distance) */
+let REFY = (y: number) => y;
+let REFC: ((y: number) => number) | null = null;
+let EYEX: number | null = null;
+export function setFitHooks(refY: ((y: number) => number) | null, refC: ((y: number) => number) | null, eyeX: number | null) { REFY = refY ?? ((y) => y); REFC = refC; EYEX = eyeX; }
 
 interface Style {
   /** hairline ry (reference head units) at |θ| degrees (0 = front, 180 = back) */
@@ -459,7 +464,7 @@ function buildGlasses(c: HCtx, a: AccSpec) {
   const frameCol = hexRGB(sun ? (a.color === '#b0642a' ? '#c9a24a' : '#1d1d1f') : a.color);
   const lensCol = hexRGB(sun ? a.color : '#d8e4ea');
   for (const side of [1, -1]) {
-    const ex = side * EYE_X * hs, ey = EYE_Y * hs;
+    const ex = side * (EYEX ?? EYE_X * hs), ey = EYE_Y * hs;
     const fz = headAt(Math.asin(Math.min(0.9, (EYE_X * hs) / 0.09)), ey / hs, hs);
     const zf = Hd[2] + fz.cz + Math.cos(Math.asin(Math.min(0.9, (EYE_X * hs) / 0.09))) * fz.r + 0.016 * hs;
     const ctr: V3 = [Hd[0] + ex, Hd[1] + ey - (sun ? 0.003 : 0), zf];
@@ -508,9 +513,9 @@ function buildChain(c: HCtx, a: AccSpec) {
   for (let i = 0; i < M; i++) {
     const t = (i / M) * Math.PI * 2; // 0 = front
     const front = Math.max(0, Math.cos(t));
-    const y = 1.445 - front * front * 0.085 - (s.build - 0.4) * 0.01 * front;
+    const yr = 1.445 - front * front * 0.085 - (s.build - 0.4) * 0.01 * front;
     const rx = (0.074 + front * 0.02) * k, rz = (0.07 + front * 0.03 + s.build * 0.02 * front) * k;
-    path.push([Math.sin(t) * rx, y, -0.014 + Math.cos(t) * rz]);
+    path.push([Math.sin(t) * rx, REFY(yr), (REFC ? REFC(yr) : -0.014) + Math.cos(t) * rz]);
   }
   const rings: Ring[] = [];
   for (let i = 0; i <= M; i++) {

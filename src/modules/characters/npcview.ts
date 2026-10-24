@@ -4,7 +4,7 @@ import type { Ent } from '../../sim/state';
 import type { CarryPose, CharacterFactory } from '../../game/contracts';
 import { followEnt } from '../../game/views';
 import { tl } from '../../core/util';
-import { Rig } from './rig';
+import type { AnyRig } from './rigglb';
 import { ARCHETYPES, resolveArchetype } from './defs';
 import { RNG } from '../../core/rng';
 
@@ -23,7 +23,7 @@ export function npcView(game: Game, factory: CharacterFactory) {
     const root = new THREE.Group();
     root.name = 'npc:' + e.id;
     const look = e.look ?? factory.randomLook(e.role, e.id);
-    const rig = factory.create(look) as Rig;
+    const rig = factory.create(look) as AnyRig;
     root.add(rig.root);
     root.userData.headHeight = rig.height + 0.25;
     const roleName = () => {

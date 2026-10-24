@@ -221,7 +221,9 @@ def puddles():
         big = 1 + int(np.argmax(st[1:, cv2.CC_STAT_AREA]))
         al = al * (lab == big)
     al = feather(al, 3.0)
-    rgb = np.clip(c * 0.35 + np.array([0.07, 0.065, 0.06]) * 0.65, 0, 1)
+    lv = lum(c)
+    lv = (lv - lv.min()) / max(lv.max() - lv.min(), 1e-3)
+    rgb = np.array([0.075, 0.07, 0.062], np.float32) * (0.75 + 0.5 * lv)[..., None]
     out = trim(np.dstack([rgb, al]), 8, 0.02)
     out = rs(out, 1024, int(1024 * out.shape[0] / out.shape[1]) // 4 * 4)
     save_rgba(decontaminate(out), f"{OUT}/decal_puddles_photo.png")
@@ -295,7 +297,7 @@ def moss():
 
 def posters():
     items = []
-    for cid in ("8927c0fd", "a83167f6", "9962382a", "8927c0fd#b"):
+    for cid in ("8927c0fd", "9962382a#b", "9962382a", "8927c0fd#b"):
         try:
             a = src(cid.split("#")[0])
         except Exception:
@@ -342,6 +344,10 @@ def wires():
         except Exception:
             continue
         al, sky = sky_key(a, 31, 0.12, 0.5)
+        # drop solid masses (buildings, billboards, pole bodies): keep only thin structures
+        thick = cv2.morphologyEx(al, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (13, 13)))
+        thick = cv2.dilate(thick, np.ones((5, 5), np.uint8))
+        al = np.clip(al - thick, 0, 1)
         rgb = np.clip(a * 0.5, 0, 0.25) * 0 + np.array([0.06, 0.06, 0.065])
         rgb = rgb * (0.7 + 0.6 * lum(a))[..., None]
         items.append((cid, np.dstack([rgb, feather(al, 0.6)])))

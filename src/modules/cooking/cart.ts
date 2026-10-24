@@ -136,9 +136,10 @@ export function buildCartModel() {
     for (const z of zs) { p.push(bar([Gb.x0, Gb.y1, z], [Gb.x1, Gb.y1, z], 0.009, 5)); p.push(bar([Gb.x0, Gb.shelf, z], [Gb.x1, Gb.shelf, z], 0.007, 5)); }
     for (const x of xs) p.push(bar([x, Gb.y1, Gb.z0], [x, Gb.y1, Gb.z1], 0.009, 5));
     // roof poles (vendor side taller → sloped roof)
-    const poles: [number, number, number][] = [[-0.78, -0.37, 1.98], [0.78, -0.37, 1.98], [-0.78, 0.37, 2.1], [0.78, 0.37, 2.1]];
+    // (the vendor-side pole near the burner sits inboard so it never blocks the cook's view of the wok)
+    const poles: [number, number, number][] = [[-0.78, -0.37, 1.98], [0.78, -0.37, 1.98], [-0.32, 0.37, 2.1], [0.78, 0.37, 2.1]];
     for (const [x, z, h] of poles) p.push(bar([x, t, z], [x, h, z], 0.014, 6));
-    p.push(bar([-0.78, 2.08, 0.37], [0.78, 2.08, 0.37], 0.012, 6), bar([-0.78, 1.96, -0.37], [0.78, 1.96, -0.37], 0.012, 6));
+    p.push(bar([-0.78, 2.08, 0.37], [0.78, 2.08, 0.37], 0.012, 6), bar([-0.78, 1.96, -0.37], [0.78, 1.96, -0.37], 0.012, 6), bar([-0.78, 1.96, -0.37], [-0.78, 2.08, 0.37], 0.012, 6));
     // push handle: U-tube off the flap end
     p.push(tube([[1.08, 0.78, -0.27], [1.22, 0.86, -0.27], [1.28, 0.92, -0.2], [1.28, 0.92, 0.2], [1.22, 0.86, 0.27], [1.08, 0.78, 0.27]], 0.014, 24, 7));
     // condiment caddy rails

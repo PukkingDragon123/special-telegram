@@ -96,7 +96,7 @@ export class CustomizeView {
     // ---- magazine in front of the camera
     this.mag = new Magazine(game, cur, () => this.look, (it) => this.apply(it));
     this.magRoot.add(this.mag.group);
-    this.magRoot.position.set(0.035, -0.006, -0.425);
+    this.magRoot.position.set(0.02, -0.004, -0.5);
     this.camera.add(this.magRoot);
     const ml = new THREE.SpotLight(0xfff6e8, 4.5, 3, 0.9, 0.7, 1.5);
     ml.position.set(-0.25, 0.35, 0.15);
@@ -256,7 +256,7 @@ export class CustomizeView {
   private makeWalker(arch: string, pos: THREE.Vector3, yaw: number, speed: number, female = false): Walker {
     let look = this.game.chars.randomLook(arch, Math.floor(Math.random() * 1e6));
     if (female && look.sex !== 'f') look = { ...look, sex: 'f' };
-    const rig = this.game.chars.create(look, { lod: 'high', castShadow: true });
+    const rig = this.game.chars.create(look, { lod: 'low', castShadow: true });
     rig.root.position.copy(pos);
     rig.root.rotation.y = yaw;
     this.scene.add(rig.root);
@@ -348,8 +348,8 @@ export class CustomizeView {
     c.lookAt(this.camLook.x + mx * 0.5, this.camLook.y + my * 0.5, this.camLook.z);
     c.rotateZ(Math.sin(this.t * 25) * k * 0.012);
     // magazine hand-held sway
-    this.magRoot.position.set(0.035 + Math.sin(this.t * 0.8) * 0.0025, -0.006 + Math.sin(this.t * 1.1) * 0.002, -0.425);
-    this.magRoot.rotation.set(-0.03 + Math.sin(this.t * 0.6) * 0.008, -0.16 + Math.sin(this.t * 0.5) * 0.01, 0.025 + Math.sin(this.t * 0.7) * 0.006);
+    this.magRoot.position.set(0.02 + Math.sin(this.t * 0.8) * 0.0025, -0.004 + Math.sin(this.t * 1.1) * 0.002, -0.5);
+    this.magRoot.rotation.set(-0.03 + Math.sin(this.t * 0.6) * 0.008, -0.1 + Math.sin(this.t * 0.5) * 0.01, 0.025 + Math.sin(this.t * 0.7) * 0.006);
     this.mag.update(dt);
     // the T-posing guy: squash pop on change, tiny wobble of pride
     if (this.pop > 0) this.pop = Math.max(0, this.pop - dt);

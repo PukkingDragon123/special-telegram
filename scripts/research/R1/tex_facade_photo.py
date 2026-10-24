@@ -180,6 +180,8 @@ def walls():
 
 def tarp_awning():
     a = src("018fbbfc")
+    h0, w0 = a.shape[:2]
+    a = a[int(h0 * 0.1):int(h0 * 0.9), int(w0 * 0.1):int(w0 * 0.9)]
     s = min(a.shape[:2])
     a = rs(even_light(a[:s, :s], 0.3, 0.5), 1024, 1024)
     a = make_seamless(a, 0.2)
@@ -245,7 +247,21 @@ def save_manifest_part():
     json.dump(old, open(p, "w"), ensure_ascii=False, indent=1)
 
 
-JOBS = {"shutters": shutters, "gate": gate_grille, "ac": ac_units, "walls": walls, "tarp": tarp_awning,
+def trench():
+    a = src("c2649936")
+    r = rectify(a, [[556, 40], [650, 40], [1150, 1395], [868, 1395]], 192, 1024)
+    r = even_light(r, 0.3, 0.5)
+    r = seamless_y(r, 0.12)
+    l = lum(r)
+    metal = np.clip(smoothstep(0.15, 0.35, l) * 0.6, 0, 0.6)
+    write_pbr("trench_grate_cast_iron_photo", r, height_from_lum(r, 2), np.clip(0.6 - metal * 0.3, 0.2, 0.9), metal, nstr=4,
+              ao=np.clip(0.3 + l * 1.4, 0.2, 1))
+    meta("trench_grate_cast_iron_photo", "Cast-iron trench drain grate strip (real photo, rectified from a "
+         "perspective view, tiles along V). Kerb gutters, market drains, shop-front channels.", "192x1024",
+         False, "V only", [0.3, 1.6], ["c2649936"])
+
+
+JOBS = {"trench": trench, "shutters": shutters, "gate": gate_grille, "ac": ac_units, "walls": walls, "tarp": tarp_awning,
         "corrugated": corrugated}
 
 if __name__ == "__main__":

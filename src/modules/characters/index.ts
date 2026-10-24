@@ -3,7 +3,9 @@ import { defineModule } from '../../game/contracts';
 import type { CharacterFactory, Look } from '../../game/contracts';
 import { Assets } from '../../core/assets';
 import { params } from '../../core/util';
-import { Rig, RigWorld, processAtlasQueue } from './rig';
+import { RigWorld, processAtlasQueue } from './rig';
+import { createRig } from './rigglb';
+import { loadTemplates } from './glb';
 import { randomLook, playerLook, catalogue, ingestFaceManifest, archetypeIds, ARCHETYPES } from './defs';
 import { preloadFabrics } from './atlas';
 import { npcView } from './npcview';
@@ -20,7 +22,7 @@ import { ANIM_NAMES } from './anims';
  * ========================================================================================== */
 
 const factory: CharacterFactory & { archetypes(): string[]; archetypeName(id: string): any; anims(): string[] } = {
-  create: (look: Look, opts?: { lod?: 'high' | 'low'; castShadow?: boolean }) => new Rig(look ?? randomLook(), opts ?? {}),
+  create: (look: Look, opts?: { lod?: 'high' | 'low'; castShadow?: boolean }) => createRig(look ?? randomLook(), opts ?? {}),
   randomLook: (archetype?: string, seed?: number) => randomLook(archetype, seed),
   playerLook: (slot: number) => playerLook(slot),
   catalogue: () => catalogue(),
@@ -37,6 +39,7 @@ export default defineModule({
     await Promise.all([
       Assets.jsonSafe<any>('textures/faces/manifest.json', null).then((m) => ingestFaceManifest(m)),
       preloadFabrics(),
+      loadTemplates(),
     ]);
     game.chars = factory;
     game.registerView('npc', npcView(game, factory));

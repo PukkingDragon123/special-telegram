@@ -15,6 +15,9 @@ keep = [k for k in argv[5].split(',') if k] if len(argv) > 5 and argv[5] else []
 max_tex = int(argv[6]) if len(argv) > 6 else 1024
 FRAME_STEP = int(argv[7]) if len(argv) > 7 else 2
 ROT_Z = float(argv[8]) if len(argv) > 8 else 0.0
+DEL_BONES = argv[9] if len(argv) > 9 else ''
+MERGE_BONES = argv[10] if len(argv) > 10 else ''
+RESET_BONES = argv[11] if len(argv) > 11 else ''
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=src)
@@ -31,6 +34,43 @@ arms = [o for o in scene.objects if o.type == 'ARMATURE']
 for a in arms:
     a.data.pose_position = 'REST'
 bpy.context.view_layer.update()
+
+# delete geometry bound to unwanted bones (e.g. whiskers rigged to bones at the origin)
+if DEL_BONES:
+    import re, bmesh
+    rx = re.compile(DEL_BONES)
+    for m in meshes:
+        idx = {g.index for g in m.vertex_groups if rx.search(g.name)}
+        if not idx: continue
+        bm = bmesh.new(); bm.from_mesh(m.data)
+        dl = bm.verts.layers.deform.active
+        kill = [v for v in bm.verts if dl and sum(w for gi, w in v[dl].items() if gi in idx) > 0.3]
+        bmesh.ops.delete(bm, geom=kill, context='VERTS')
+        bm.to_mesh(m.data); bm.free()
+        print('DELETED', m.name, len(kill), 'verts bound to', DEL_BONES)
+
+# merge weights of broken bones (e.g. toe joints sitting at the origin) into their parents
+if MERGE_BONES:
+    import re
+    rx = re.compile(MERGE_BONES)
+    arm = arms[0] if arms else None
+    for m in meshes:
+        for gname in [g.name for g in m.vertex_groups]:
+            g = m.vertex_groups.get(gname)
+            if g is None or not rx.search(g.name) or not arm: continue
+            b = arm.data.bones.get(g.name)
+            par = b.parent if b else None
+            while par and rx.search(par.name): par = par.parent
+            if not par: continue
+            pg = m.vertex_groups.get(par.name) or m.vertex_groups.new(name=par.name)
+            n = 0
+            for v in m.data.vertices:
+                for ge in v.groups:
+                    if ge.group == g.index and ge.weight > 0:
+                        pg.add([v.index], ge.weight, 'ADD'); n += 1
+            nm = g.name
+            m.vertex_groups.remove(g)
+            print('MERGED', nm, '->', par.name, n)
 
 tris_before = sum(sum(len(p.vertices) - 2 for p in m.data.polygons) for m in meshes)
 for m in meshes:
@@ -96,15 +136,26 @@ def strip(act):
     removed = 0
     for fc in list(act.fcurves):
         dp = fc.data_path
-        if dp.endswith('.scale') or dp == 'scale':
+        vals = [k.co[1] for k in fc.keyframe_points]
+        if not vals:
+            continue
+        if dp.endswith('.scale') and all(abs(v - 1.0) < 1e-4 for v in vals):
             act.fcurves.remove(fc); removed += 1; continue
-        if dp.endswith('.location'):
-            vals = [k.co[1] for k in fc.keyframe_points]
-            if vals and (max(vals) - min(vals)) < 0.02:
-                act.fcurves.remove(fc); removed += 1
+        if dp.endswith('.location') and all(abs(v) < 1e-4 for v in vals):
+            act.fcurves.remove(fc); removed += 1
     return removed
 for act in bpy.data.actions:
     print('STRIP', act.name, strip(act))
+if RESET_BONES:
+    import re
+    rr = re.compile(RESET_BONES)
+    for act in bpy.data.actions:
+        n = 0
+        for fc in list(act.fcurves):
+            mm = re.match(r'pose\.bones\["(.+?)"\]', fc.data_path)
+            if mm and rr.search(mm.group(1)):
+                act.fcurves.remove(fc); n += 1
+        print('RESET', act.name, n)
 
 # make every action available to the exporter (push to NLA tracks)
 for a in arms:

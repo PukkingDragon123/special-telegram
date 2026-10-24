@@ -4,7 +4,8 @@ import type { SceneDef } from '../../game/scenes';
 import type { AnimName, FaceVariant, Look } from '../../game/contracts';
 import { Assets } from '../../core/assets';
 import { params } from '../../core/util';
-import { Rig, RigWorld, atlasQueueLength } from './rig';
+import { RigWorld, atlasQueueLength } from './rig';
+import { createRig, AnyRig } from './rigglb';
 import { ANIM_NAMES } from './anims';
 import { ARCHETYPES, HAIRS, TOPS, BOTTOMS, playerLook, randomLook } from './defs';
 
@@ -16,7 +17,7 @@ import { ARCHETYPES, HAIRS, TOPS, BOTTOMS, playerLook, randomLook } from './defs
  * window.__charlab = { rigs, setAnim, setFace, cam, focus }
  * ========================================================================================== */
 
-interface Entry { rig: Rig; label?: THREE.Sprite; anim?: AnimName; base: THREE.Vector3; yaw: number; walk?: { r: number; a: number; sp: number; c: THREE.Vector3 } }
+interface Entry { rig: AnyRig; label?: THREE.Sprite; anim?: AnimName; base: THREE.Vector3; yaw: number; walk?: { r: number; a: number; sp: number; c: THREE.Vector3 } }
 
 export class CharLab implements SceneDef {
   scene = new THREE.Scene();
@@ -124,8 +125,8 @@ export class CharLab implements SceneDef {
     return sp;
   }
 
-  private add(look: Look, pos: THREE.Vector3, yaw = 0, anim: AnimName = 'idle', label?: string, sub?: string, lod?: 'high' | 'low') {
-    const rig = new Rig(look, { lod: lod ?? (params.has('hq') ? 'high' : undefined) });
+  private add(look: Look, pos: THREE.Vector3, yaw = Math.PI, anim: AnimName = 'idle', label?: string, sub?: string, lod?: 'high' | 'low') {
+    const rig = createRig(look, { lod: lod ?? (params.has('hq') ? 'high' : undefined) });
     rig.root.position.copy(pos);
     rig.root.rotation.y = yaw;
     this.scene.add(rig.root);
@@ -144,17 +145,17 @@ export class CharLab implements SceneDef {
     ids.forEach((id, i) => {
       const row = Math.floor(i / perRow), col = i % perRow;
       const x = (col - (perRow - 1) / 2) * 1.05, z = row * 1.6;
-      this.add(randomLook(id, 7 + i * 13), new THREE.Vector3(x, 0, z), 0, 'idle', ARCHETYPES[id].name.th, id);
+      this.add(randomLook(id, 7 + i * 13), new THREE.Vector3(x, 0, z), Math.PI, 'idle', ARCHETYPES[id].name.th, id);
     });
     const rows = Math.ceil(ids.length / perRow);
-    for (let s = 0; s < 4; s++) this.add(playerLook(s), new THREE.Vector3((s - 1.5) * 1.1, 0, rows * 1.6), 0, 'idle', 'ผู้เล่น ' + (s + 1), 'player ' + s);
+    for (let s = 0; s < 4; s++) this.add(playerLook(s), new THREE.Vector3((s - 1.5) * 1.1, 0, rows * 1.6), Math.PI, 'idle', 'ผู้เล่น ' + (s + 1), 'player ' + s);
     this.camera.position.set(0, 3.2, rows * 1.6 + 7.5);
     this.camTarget.set(0, 0.9, rows * 0.8 - 0.3);
     if (params.has('cycle')) this.cycleAll = true;
   }
 
   private players() {
-    for (let s = 0; s < 4; s++) this.add(playerLook(s), new THREE.Vector3((s - 1.5) * 0.9, 0, 0), 0, 'idle', undefined, undefined, 'high');
+    for (let s = 0; s < 4; s++) this.add(playerLook(s), new THREE.Vector3((s - 1.5) * 0.9, 0, 0), Math.PI, 'idle', undefined, undefined, 'high');
     this.camera.position.set(0, 1.45, 4.6);
     this.camTarget.set(0, 1.05, 0);
   }
@@ -184,7 +185,7 @@ export class CharLab implements SceneDef {
     const variants: FaceVariant[] = ['neutral', 'think', 'drunk', 'sleep', 'shock', 'scream'];
     const looks = [playerLook(0), playerLook(1), playerLook(2), playerLook(3), randomLook('auntie_vendor', 3), randomLook('student_f', 4), randomLook('grandpa', 5), randomLook('sexy_girl_who_screams', 6)];
     looks.forEach((lk, r) => variants.forEach((v, c) => {
-      const e = this.add(lk, new THREE.Vector3((c - 2.5) * 0.42, 0, r * 0.6), 0, 'idle', undefined, undefined, 'high');
+      const e = this.add(lk, new THREE.Vector3((c - 2.5) * 0.42, 0, r * 0.6), Math.PI, 'idle', undefined, undefined, 'high');
       e.rig.setFace(v);
       (e.rig as any).fidgetWait = 1e9;
     }));
@@ -201,7 +202,7 @@ export class CharLab implements SceneDef {
       lk.hair = { style: h, color: ['#141110', '#2a1d16', '#5c2c1c', '#8f8b86'][i % 4] };
       lk.acc = [];
       const col = i % 9, row = Math.floor(i / 9);
-      const e = this.add(lk, new THREE.Vector3((col - 4) * 0.62, 0, row * 1.2), 0, 'idle', h, undefined, 'high');
+      const e = this.add(lk, new THREE.Vector3((col - 4) * 0.62, 0, row * 1.2), Math.PI, 'idle', h, undefined, 'high');
       (e.rig as any).fidgetWait = 1e9;
     });
     this.camera.position.set(0, 2.0, 5.2);
@@ -217,7 +218,7 @@ export class CharLab implements SceneDef {
       lk.bottom = { id: bots[i % bots.length] };
       lk.acc = [];
       const col = i % 11, row = Math.floor(i / 11);
-      this.add(lk, new THREE.Vector3((col - 5) * 0.95, 0, row * 1.6), 0, 'idle', tops[i % tops.length], bots[i % bots.length]);
+      this.add(lk, new THREE.Vector3((col - 5) * 0.95, 0, row * 1.6), Math.PI, 'idle', tops[i % tops.length], bots[i % bots.length]);
     }
     this.camera.position.set(0, 3.0, 9.5);
     this.camTarget.set(0, 0.9, 1.4);
@@ -237,7 +238,7 @@ export class CharLab implements SceneDef {
   }
 
   private tpose() {
-    const me = this.add(playerLook(0), new THREE.Vector3(0, 0, 2), 0, 'tpose', undefined, undefined, 'high');
+    const me = this.add(playerLook(0), new THREE.Vector3(0, 0, 2), Math.PI, 'tpose', undefined, undefined, 'high');
     me.rig.setFace('neutral');
     const girl = this.add(randomLook('sexy_girl_who_screams', 9), new THREE.Vector3(-3, 0, 3), -Math.PI / 2, 'scream_run', undefined, undefined, 'high');
     girl.walk = { r: 0, a: 0, sp: 3.6, c: new THREE.Vector3() };

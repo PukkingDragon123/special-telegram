@@ -1,0 +1,1037 @@
+{
+ "note": "all posters use looped Thai fonts; photos are real (see sources); regions in px of each file",
+ "files": {
+  "menu_laminated_photo.png": {
+   "w": 1500,
+   "h": 1076,
+   "note": "laminated อาหารตามสั่ง photo menu (10 dishes). Game draws prices in regions.slots[].price (yellow circles)",
+   "regions": {
+    "slots": [
+     {
+      "dish": "กะเพราหมูสับ",
+      "price": {
+       "x": 213,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 257,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 56,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ไข่ดาว",
+      "price": {
+       "x": 494,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 538,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 337,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ไข่เจียว",
+      "price": {
+       "x": 775,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 819,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 618,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ข้าวผัด",
+      "price": {
+       "x": 1056,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 1100,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 899,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ผัดพริกแกง",
+      "price": {
+       "x": 1338,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 1382,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 1180,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ผัดซีอิ๊ว",
+      "price": {
+       "x": 213,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 257,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 56,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ราดหน้า",
+      "price": {
+       "x": 494,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 538,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 337,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ต้มยำกุ้ง",
+      "price": {
+       "x": 775,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 819,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 618,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "หมูกระเทียม",
+      "price": {
+       "x": 1056,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 1100,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 899,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ผัดผักบุ้ง",
+      "price": {
+       "x": 1338,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 1382,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 1180,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     }
+    ]
+   },
+   "sources": [
+    {
+     "file": "photos/flickr_3369547949.jpg",
+     "url": "https://www.flickr.com/photos/97844767@N00/3369547949/",
+     "author": "WordRidden",
+     "license": "CC BY 2.0"
+    },
+    {
+     "file": "photos/flickr_54642751606.jpg",
+     "url": "https://www.flickr.com/photos/194424926@N05/54642751606/",
+     "author": "Pattaya Patrol",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "file": "posters/dish_khai_jiao.jpg",
+     "url": "https://www.flickr.com/photos/8334416@N06/53552741943/",
+     "author": "Bharat Vohra",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_khao_phat.jpg",
+     "url": "https://www.flickr.com/photos/194424926@N05/55179679384/",
+     "author": "Pattaya Patrol",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "file": "posters/dish_phrik_kaeng.jpg",
+     "url": "https://www.flickr.com/photos/30284908@N08/14828375248/",
+     "author": "Michelle Hooton",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_phat_si_io.jpg",
+     "url": "https://www.flickr.com/photos/15780852@N04/3350164827/",
+     "author": "djdnice01",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_rad_na.jpg",
+     "url": "https://www.flickr.com/photos/18244673@N00/2884267290/",
+     "author": "pointnshoot",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_tom_yam.jpg",
+     "url": "https://www.flickr.com/photos/74174644@N00/6486678627/",
+     "author": "reuptake",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_moo_krathiam.jpg",
+     "url": "https://www.flickr.com/photos/35034346243@N01/157680735/",
+     "author": "stu_spivack",
+     "license": "CC BY-SA 2.0"
+    },
+    {
+     "file": "posters/dish_phak_bung.jpg",
+     "url": "https://www.flickr.com/photos/39138472@N08/31018460811/",
+     "author": "Ryo Tezuka",
+     "license": "All Rights Reserved"
+    }
+   ],
+   "kind": "menu_photo"
+  },
+  "menu_cardboard_handwritten.png": {
+   "w": 1200,
+   "h": 1500,
+   "note": "hand-written marker menu on real corrugated cardboard; game writes prices with Sriracha + jitter",
+   "regions": {
+    "slots": [
+     {
+      "dish": "กะเพราหมูสับ",
+      "price": {
+       "x": 840,
+       "y": 290,
+       "w": 300,
+       "h": 110,
+       "baseline": 380,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "+ ไข่ดาว",
+      "price": {
+       "x": 840,
+       "y": 450,
+       "w": 300,
+       "h": 110,
+       "baseline": 540,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "ไข่เจียว",
+      "price": {
+       "x": 840,
+       "y": 610,
+       "w": 300,
+       "h": 110,
+       "baseline": 700,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "ข้าวผัด",
+      "price": {
+       "x": 840,
+       "y": 770,
+       "w": 300,
+       "h": 110,
+       "baseline": 860,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "ผัดพริกแกง",
+      "price": {
+       "x": 840,
+       "y": 930,
+       "w": 300,
+       "h": 110,
+       "baseline": 1020,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "ต้มยำ",
+      "price": {
+       "x": 840,
+       "y": 1090,
+       "w": 300,
+       "h": 110,
+       "baseline": 1180,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     }
+    ]
+   },
+   "sources": [],
+   "kind": "menu_cardboard"
+  },
+  "aframe_chalkboard.jpg": {
+   "w": 900,
+   "h": 1300,
+   "note": "A-frame chalkboard face (real chalkboard photo); game writes chalk prices",
+   "regions": {
+    "slots": [
+     {
+      "dish": "กะเพราหมูสับ",
+      "price": {
+       "x": 620,
+       "y": 300,
+       "w": 230,
+       "h": 100,
+       "baseline": 380,
+       "font": "Sriracha-Regular",
+       "size": 80,
+       "color": "#F2EFE6",
+       "style": "chalk: draw then apply chalk texture (alpha noise)"
+      }
+     },
+     {
+      "dish": "ไข่ดาว",
+      "price": {
+       "x": 620,
+       "y": 450,
+       "w": 230,
+       "h": 100,
+       "baseline": 530,
+       "font": "Sriracha-Regular",
+       "size": 80,
+       "color": "#F2EFE6",
+       "style": "chalk: draw then apply chalk texture (alpha noise)"
+      }
+     },
+     {
+      "dish": "ข้าวผัด",
+      "price": {
+       "x": 620,
+       "y": 600,
+       "w": 230,
+       "h": 100,
+       "baseline": 680,
+       "font": "Sriracha-Regular",
+       "size": 80,
+       "color": "#F2EFE6",
+       "style": "chalk: draw then apply chalk texture (alpha noise)"
+      }
+     },
+     {
+      "dish": "ต้มยำ",
+      "price": {
+       "x": 620,
+       "y": 750,
+       "w": 230,
+       "h": 100,
+       "baseline": 830,
+       "font": "Sriracha-Regular",
+       "size": 80,
+       "color": "#F2EFE6",
+       "style": "chalk: draw then apply chalk texture (alpha noise)"
+      }
+     }
+    ]
+   },
+   "sources": [
+    {
+     "file": "posters/chalkboard_real.jpg",
+     "url": "https://www.flickr.com/photos/18965083@N00/106226535/",
+     "author": "Monika Hoinkis",
+     "license": "CC BY-NC-ND 2.0"
+    }
+   ],
+   "kind": "menu_chalkboard"
+  },
+  "menu_laminated_photo_example.png": {
+   "w": 1500,
+   "h": 1076,
+   "note": "laminated อาหารตามสั่ง photo menu (10 dishes). Game draws prices in regions.slots[].price (yellow circles)",
+   "regions": {
+    "slots": [
+     {
+      "dish": "กะเพราหมูสับ",
+      "price": {
+       "x": 213,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 257,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 56,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ไข่ดาว",
+      "price": {
+       "x": 494,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 538,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 337,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ไข่เจียว",
+      "price": {
+       "x": 775,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 819,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 618,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ข้าวผัด",
+      "price": {
+       "x": 1056,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 1100,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 899,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ผัดพริกแกง",
+      "price": {
+       "x": 1338,
+       "y": 340,
+       "w": 88,
+       "h": 50,
+       "cx": 1382,
+       "cy": 372,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 1180,
+       "y": 212,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ผัดซีอิ๊ว",
+      "price": {
+       "x": 213,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 257,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 56,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ราดหน้า",
+      "price": {
+       "x": 494,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 538,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 337,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ต้มยำกุ้ง",
+      "price": {
+       "x": 775,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 819,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 618,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "หมูกระเทียม",
+      "price": {
+       "x": 1056,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 1100,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 899,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     },
+     {
+      "dish": "ผัดผักบุ้ง",
+      "price": {
+       "x": 1338,
+       "y": 716,
+       "w": 88,
+       "h": 50,
+       "cx": 1382,
+       "cy": 748,
+       "font": "NotoSansThaiLooped@900w75",
+       "size": 46,
+       "color": "#D41E2A"
+      },
+      "hit": {
+       "x": 1180,
+       "y": 588,
+       "w": 263,
+       "h": 352
+      }
+     }
+    ]
+   },
+   "sources": [
+    {
+     "file": "photos/flickr_3369547949.jpg",
+     "url": "https://www.flickr.com/photos/97844767@N00/3369547949/",
+     "author": "WordRidden",
+     "license": "CC BY 2.0"
+    },
+    {
+     "file": "photos/flickr_54642751606.jpg",
+     "url": "https://www.flickr.com/photos/194424926@N05/54642751606/",
+     "author": "Pattaya Patrol",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "file": "posters/dish_khai_jiao.jpg",
+     "url": "https://www.flickr.com/photos/8334416@N06/53552741943/",
+     "author": "Bharat Vohra",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_khao_phat.jpg",
+     "url": "https://www.flickr.com/photos/194424926@N05/55179679384/",
+     "author": "Pattaya Patrol",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "file": "posters/dish_phrik_kaeng.jpg",
+     "url": "https://www.flickr.com/photos/30284908@N08/14828375248/",
+     "author": "Michelle Hooton",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_phat_si_io.jpg",
+     "url": "https://www.flickr.com/photos/15780852@N04/3350164827/",
+     "author": "djdnice01",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_rad_na.jpg",
+     "url": "https://www.flickr.com/photos/18244673@N00/2884267290/",
+     "author": "pointnshoot",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_tom_yam.jpg",
+     "url": "https://www.flickr.com/photos/74174644@N00/6486678627/",
+     "author": "reuptake",
+     "license": "All Rights Reserved"
+    },
+    {
+     "file": "posters/dish_moo_krathiam.jpg",
+     "url": "https://www.flickr.com/photos/35034346243@N01/157680735/",
+     "author": "stu_spivack",
+     "license": "CC BY-SA 2.0"
+    },
+    {
+     "file": "posters/dish_phak_bung.jpg",
+     "url": "https://www.flickr.com/photos/39138472@N08/31018460811/",
+     "author": "Ryo Tezuka",
+     "license": "All Rights Reserved"
+    }
+   ],
+   "kind": "menu_photo"
+  },
+  "menu_cardboard_handwritten_example.png": {
+   "w": 1200,
+   "h": 1500,
+   "note": "hand-written marker menu on real corrugated cardboard; game writes prices with Sriracha + jitter",
+   "regions": {
+    "slots": [
+     {
+      "dish": "กะเพราหมูสับ",
+      "price": {
+       "x": 840,
+       "y": 290,
+       "w": 300,
+       "h": 110,
+       "baseline": 380,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "+ ไข่ดาว",
+      "price": {
+       "x": 840,
+       "y": 450,
+       "w": 300,
+       "h": 110,
+       "baseline": 540,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "ไข่เจียว",
+      "price": {
+       "x": 840,
+       "y": 610,
+       "w": 300,
+       "h": 110,
+       "baseline": 700,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "ข้าวผัด",
+      "price": {
+       "x": 840,
+       "y": 770,
+       "w": 300,
+       "h": 110,
+       "baseline": 860,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "ผัดพริกแกง",
+      "price": {
+       "x": 840,
+       "y": 930,
+       "w": 300,
+       "h": 110,
+       "baseline": 1020,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     },
+     {
+      "dish": "ต้มยำ",
+      "price": {
+       "x": 840,
+       "y": 1090,
+       "w": 300,
+       "h": 110,
+       "baseline": 1180,
+       "font": "Sriracha-Regular",
+       "size": 96,
+       "color": "#121214",
+       "style": "marker, jitter + rotate -4..4 deg, then '.-'"
+      }
+     }
+    ]
+   },
+   "sources": [],
+   "kind": "menu_cardboard"
+  },
+  "aframe_chalkboard_example.jpg": {
+   "w": 900,
+   "h": 1300,
+   "note": "A-frame chalkboard face (real chalkboard photo); game writes chalk prices",
+   "regions": {
+    "slots": [
+     {
+      "dish": "กะเพราหมูสับ",
+      "price": {
+       "x": 620,
+       "y": 300,
+       "w": 230,
+       "h": 100,
+       "baseline": 380,
+       "font": "Sriracha-Regular",
+       "size": 80,
+       "color": "#F2EFE6",
+       "style": "chalk: draw then apply chalk texture (alpha noise)"
+      }
+     },
+     {
+      "dish": "ไข่ดาว",
+      "price": {
+       "x": 620,
+       "y": 450,
+       "w": 230,
+       "h": 100,
+       "baseline": 530,
+       "font": "Sriracha-Regular",
+       "size": 80,
+       "color": "#F2EFE6",
+       "style": "chalk: draw then apply chalk texture (alpha noise)"
+      }
+     },
+     {
+      "dish": "ข้าวผัด",
+      "price": {
+       "x": 620,
+       "y": 600,
+       "w": 230,
+       "h": 100,
+       "baseline": 680,
+       "font": "Sriracha-Regular",
+       "size": 80,
+       "color": "#F2EFE6",
+       "style": "chalk: draw then apply chalk texture (alpha noise)"
+      }
+     },
+     {
+      "dish": "ต้มยำ",
+      "price": {
+       "x": 620,
+       "y": 750,
+       "w": 230,
+       "h": 100,
+       "baseline": 830,
+       "font": "Sriracha-Regular",
+       "size": 80,
+       "color": "#F2EFE6",
+       "style": "chalk: draw then apply chalk texture (alpha noise)"
+      }
+     }
+    ]
+   },
+   "sources": [
+    {
+     "file": "posters/chalkboard_real.jpg",
+     "url": "https://www.flickr.com/photos/18965083@N00/106226535/",
+     "author": "Monika Hoinkis",
+     "license": "CC BY-NC-ND 2.0"
+    }
+   ],
+   "kind": "menu_chalkboard"
+  },
+  "poster_sawasdee_wan_jan.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "auntie LINE-style 'Happy Monday' flower greeting, printed and taped up",
+   "regions": {},
+   "sources": [
+    {
+     "file": "posters/roses_yellow.jpg",
+     "url": "https://www.flickr.com/photos/54885636@N07/22044567602/",
+     "author": "Gina M.K.",
+     "license": "All Rights Reserved"
+    }
+   ],
+   "kind": "community_poster"
+  },
+  "poster_missing_dog.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "photocopied missing-dog poster with tear-off tabs (2 torn)",
+   "regions": {},
+   "sources": [
+    {
+     "file": "photos/flickr_2754634061.jpg",
+     "url": "https://www.flickr.com/photos/29443624@N05/2754634061/",
+     "author": "Thai Dogs",
+     "license": "CC BY 2.0"
+    }
+   ],
+   "kind": "community_poster"
+  },
+  "poster_room_for_rent.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "ห้องว่างให้เช่า poster with tear-off tabs",
+   "regions": {},
+   "sources": [
+    {
+     "file": "ads/apartment_facade.jpg",
+     "url": "https://www.flickr.com/photos/100818627@N02/28773281922/",
+     "author": "Herr S. Loeffler",
+     "license": "Public Domain Mark 1.0"
+    }
+   ],
+   "kind": "community_poster"
+  },
+  "poster_lottery.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "lottery seller poster",
+   "regions": {},
+   "sources": [
+    {
+     "file": "ads/lottery_tickets.jpg",
+     "url": "https://www.flickr.com/photos/26266059@N06/14080460030/",
+     "author": "Erik Pronske, M.D.",
+     "license": "All Rights Reserved"
+    }
+   ],
+   "kind": "community_poster"
+  },
+  "poster_temple_fair.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "งานวัด temple fair poster (respectful)",
+   "regions": {},
+   "sources": [
+    {
+     "file": "posters/night_fair.jpg",
+     "url": "https://www.flickr.com/photos/194424926@N05/55607282093/",
+     "author": "Pattaya Patrol",
+     "license": "CC BY-SA 4.0"
+    }
+   ],
+   "kind": "community_poster"
+  },
+  "poster_molam_concert.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "mo lam concert poster, made-up troupe & singers",
+   "regions": {},
+   "sources": [
+    {
+     "file": "posters/concert_stage.jpg",
+     "url": "https://www.flickr.com/photos/127999739@N03/15342197428/",
+     "author": "Mitchell Martin",
+     "license": "All Rights Reserved"
+    }
+   ],
+   "kind": "community_poster"
+  },
+  "poster_hippo_moodueng.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "cute pygmy-hippo poster, parody name 'น้องหมูดึ๋ง'",
+   "regions": {},
+   "sources": [
+    {
+     "file": "photos/flickr_5061983744.jpg",
+     "url": "https://www.flickr.com/photos/49236322@N06/5061983744/",
+     "author": "Roanish",
+     "license": "CC BY 2.0"
+    }
+   ],
+   "kind": "community_poster"
+  },
+  "promo_8twelve_sausage.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "8-Twelve in-store promo (sausage)",
+   "regions": {},
+   "sources": [
+    {
+     "file": "posters/sausages_grill.jpg",
+     "url": "https://www.flickr.com/photos/97282739@N07/29001521497/",
+     "author": "Dominic Gentilcore",
+     "license": "All Rights Reserved"
+    }
+   ],
+   "kind": "store_promo"
+  },
+  "promo_8twelve_thai_tea.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "8-Twelve in-store promo (thai_tea)",
+   "regions": {},
+   "sources": [
+    {
+     "file": "posters/thai_tea.jpg",
+     "url": "https://www.flickr.com/photos/36113732@N07/16794180556/",
+     "author": "mol Do",
+     "license": "All Rights Reserved"
+    }
+   ],
+   "kind": "store_promo"
+  },
+  "promo_8twelve_kaprao.png": {
+   "w": 1024,
+   "h": 1448,
+   "note": "8-Twelve in-store promo (kaprao)",
+   "regions": {},
+   "sources": [
+    {
+     "file": "photos/flickr_3369547949.jpg",
+     "url": "https://www.flickr.com/photos/97844767@N00/3369547949/",
+     "author": "WordRidden",
+     "license": "CC BY 2.0"
+    }
+   ],
+   "kind": "store_promo"
+  }
+ }
+}

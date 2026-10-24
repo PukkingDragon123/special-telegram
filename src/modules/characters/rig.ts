@@ -22,7 +22,7 @@ export const RigWorld = {
   lodDist: 26,
   /** ms of atlas painting allowed per frame */
   budgetMs: 9,
-  rigs: new Set<Rig>(),
+  rigs: new Set<any>(),
 };
 
 // ------------------------------------------------------------------ shared caches
@@ -134,6 +134,7 @@ const proxyMat = new THREE.MeshBasicMaterial({ visible: false });
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _v3 = new THREE.Vector3();
 const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
 const _m = new THREE.Matrix4();
+export { acquireAtlas, releaseAtlas, accessoryMaterial, silMat, proxyGeo, proxyMat, ATTACH, FOLLOW, estimateAge, QY_PI };
 const QY_PI = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
 
 const ATTACH: AttachPoint[] = ['hand_r', 'hand_l', 'arm_r', 'arm_l', 'head', 'back', 'mouth', 'chest', 'hip'];
@@ -143,7 +144,8 @@ export interface RigOpts { lod?: 'high' | 'low'; castShadow?: boolean }
 
 let rigSeq = 0;
 
-export class Rig implements CharacterRig {
+/** Fallback: fully procedural low-poly body (used if the sculpted GLB assets fail to load). */
+export class ProcRig implements CharacterRig {
   readonly root = new THREE.Group();
   private inner = new THREE.Group();
   look: Look;

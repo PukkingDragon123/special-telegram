@@ -42,7 +42,7 @@ export interface ShopRT {
   idleNext: number;
   zapAt: number;
   now: number;
-  chase: { pid: number; until: number; slapped: boolean } | null;
+  chase: { pid: number; until: number; slapped: boolean } | null; // until = engine (game) time
   march: { phase: 'go' | 'wait' | 'back'; next: number } | null;
   inside: Map<number, boolean>;
   avail: Set<string>;
@@ -311,7 +311,7 @@ function creditAllowed(rt: ShopRT) {
 
 function ask(rt: ShopRT, pid: number, options: TL[], colors: number[] | undefined, extra: Partial<Session> & { kind: Session['kind'] }, seconds = 3) {
   const tk = token++;
-  rt.session = { ...(extra as any), pid, token: tk, deadline: rt.now + seconds + 2.5 };
+  rt.session = { ...(extra as any), pid, token: tk, deadline: rt.now + seconds * 3 + 12 };
   G.emit('shop:choose', { pid, sid: rt.def.id, token: tk, options, colors, seconds });
 }
 
@@ -577,7 +577,7 @@ function madReply(rt: ShopRT, pl: Ent, s: Extract<Session, { kind: 'mad' }>, i: 
   rt.ent.deal = { ...rt.ent.deal, [pl.id]: 0 };
   bumpRel(rt, pl, -2);
   G.events.emit('shop:banned', { shop: rt.def.id, player: pl.id, until: rt.ent.ban[pl.id] });
-  if (rt.pers.chases) { rt.chase = { pid: pl.id, until: rt.now + 6, slapped: false }; k.kst = 'chase'; setAnim(G, k, 'run', true); }
+  if (rt.pers.chases) { rt.chase = { pid: pl.id, until: G.engine.time + 6, slapped: false }; k.kst = 'chase'; setAnim(G, k, 'run', true); }
   else endTalk(rt, 3);
 }
 
@@ -590,7 +590,7 @@ function chaseTick(rt: ShopRT) {
   if (!c || !k) return;
   const pl = G.state.get(c.pid);
   const post = rt.fix!.keeper;
-  if (!pl?.p || rt.now > c.until || dist2D(k.p!, post.p) > 22) {
+  if (!pl?.p || G.engine.time > c.until || dist2D(k.p!, post.p) > 22) {
     rt.chase = null;
     if (pl) rt.say(tl('แฮ่กๆ… อย่าให้เห็นหน้าอีกนะ!', 'Huff… never come back!'));
     k.kst = 'return';
@@ -607,7 +607,7 @@ function chaseTick(rt: ShopRT) {
     G.sfx(sndKey('shop_dazzle'), pl.p, { vol: 0.6, delay: 0.15 } as any);
     G.popup([pl.p[0], pl.p[1] + 1.9, pl.p[2]], Lines.SLAP_POP);
     G.emit('shop:slapped', { pid: pl.id });
-    c.until = Math.min(c.until, rt.now + 1.2);
+    c.until = Math.min(c.until, G.engine.time + 1.2);
   } else if (!c.slapped) G.npcs.go(k, pl.p, { speed: 4.3, direct: true });
 }
 

@@ -1,0 +1,3099 @@
+{
+ "_meta": {
+  "language": "Thai (spoken, casual street register) + English gloss",
+  "address_terms": {
+   "เฮีย": "older brother (Sino-Thai) — customers call the cook this; the shop is named after it",
+   "เจ๊": "older sister (Sino-Thai) — female shopkeepers / auntie vendors",
+   "พี่": "older sibling, polite default for strangers older than you",
+   "น้อง": "younger sibling — vendors call young customers / staff this",
+   "ป้า / ลุง": "auntie / uncle (older than your parents)",
+   "หลวงพี่ / หลวงพ่อ": "how laypeople address a monk (young / old); monks call themselves อาตมา",
+   "ครับ / ค่ะ / คะ / จ้ะ / จ้า": "polite particles: ครับ (male), ค่ะ statement / คะ question (female), จ้ะ/จ้า friendly"
+  },
+  "placeholders": "{dish} {price} {money} {customers} {rating} {day} {name} {total} {change} {item}",
+  "guardrails": "No royals, politicians, real celebrities or brands. Monks/temples respectful. Ghost folklore OK."
+ },
+ "customer_greet": [
+  {
+   "th": "เฮีย! เปิดยังครับ",
+   "en": "Hia! Are you open yet?"
+  },
+  {
+   "th": "สวัสดีค่ะ ขอดูเมนูหน่อยค่ะ",
+   "en": "Hello, can I see the menu?"
+  },
+  {
+   "th": "มีที่นั่งไหมพี่",
+   "en": "Got a seat, bro?"
+  },
+  {
+   "th": "พี่ๆ ร้านใหม่เหรอ ไม่เคยเห็นเลย",
+   "en": "Hey, is this a new shop? Never seen it before"
+  },
+  {
+   "th": "หิวมาก ขออะไรเร็วๆ หน่อย",
+   "en": "Starving. Something quick, please"
+  },
+  {
+   "th": "ได้ยินว่ากะเพราร้านนี้เด็ดนะ",
+   "en": "Heard your kaprao is legit"
+  },
+  {
+   "th": "น้องๆ นั่งตรงไหนก็ได้ใช่ไหม",
+   "en": "Kid, I can sit anywhere, right?"
+  },
+  {
+   "th": "เฮียยังจำผมได้ไหม มาอีกแล้ว",
+   "en": "Hia, remember me? I'm back again"
+  },
+  {
+   "th": "เพื่อนบอกให้มาลอง",
+   "en": "My friend told me to try this place"
+  },
+  {
+   "th": "ร้อนจัง ขอน้ำแข็งเปล่าก่อนได้ไหม",
+   "en": "So hot. Can I get a cup of ice first?"
+  }
+ ],
+ "customer_order": {
+  "kaprao_moo_sap": [
+   {
+    "th": "กะเพราหมูสับจานนึงครับ",
+    "en": "One minced-pork kaprao, please"
+   },
+   {
+    "th": "เอากะเพราหมูสับ ราดข้าวค่ะ",
+    "en": "Kaprao pork over rice"
+   },
+   {
+    "th": "กะเพราหมูสับ ใส่กล่องกลับบ้านครับ",
+    "en": "Minced-pork kaprao to take away"
+   },
+   {
+    "th": "ขอกะเพราหมูสับ ไม่ใส่ถั่วฝักยาวนะ",
+    "en": "Kaprao pork — no long beans, OK?"
+   },
+   {
+    "th": "กะเพราหมูสับ พิเศษครับ",
+    "en": "Kaprao pork, large (พิเศษ)"
+   },
+   {
+    "th": "เหมือนเดิมครับเฮีย กะเพราหมูสับ",
+    "en": "The usual, hia — kaprao pork"
+   },
+   {
+    "th": "กะเพราหมูสับสองจาน แยกข้าวนะคะ",
+    "en": "Two kaprao pork, rice on the side"
+   },
+   {
+    "th": "กะเพราหมูสับ ข้าวเยอะๆ นะพี่",
+    "en": "Kaprao pork, lots of rice please"
+   }
+  ],
+  "plus_khai_dao": [
+   {
+    "th": "กะเพราหมูสับไข่ดาวครับ",
+    "en": "Kaprao pork with a fried egg"
+   },
+   {
+    "th": "เพิ่มไข่ดาวด้วยค่ะ",
+    "en": "Add a fried egg too"
+   },
+   {
+    "th": "ไข่ดาวกรอบๆ นะ ขอบไหม้ๆ",
+    "en": "Crispy fried egg, burnt lacy edges"
+   },
+   {
+    "th": "ไข่ดาวสองฟองเลยเฮีย วันนี้รวย",
+    "en": "Two fried eggs, hia — I'm rich today"
+   },
+   {
+    "th": "ไข่ดาวสุกๆ นะครับ ไม่เอาเยิ้ม",
+    "en": "Egg well done, not runny"
+   },
+   {
+    "th": "กะเพราไข่ดาว เมนูสิ้นคิดประจำชาติ",
+    "en": "Kaprao + fried egg, the national 'no-idea' dish"
+   },
+   {
+    "th": "ไข่ดาวแยกจานนะ จะได้ไม่เละ",
+    "en": "Egg on a separate plate so it doesn't get soggy"
+   },
+   {
+    "th": "มีไข่เป็ดไหม ขอไข่ดาวไข่เป็ด",
+    "en": "Got duck eggs? Fried duck egg please"
+   }
+  ],
+  "khai_dao_mai_suk": [
+   {
+    "th": "ไข่ดาวไม่สุกนะครับ",
+    "en": "Fried egg, not cooked (runny)"
+   },
+   {
+    "th": "ไข่ดาวเยิ้มๆ ไข่แดงไหลๆ",
+    "en": "Runny yolk, flowing"
+   },
+   {
+    "th": "ไข่ดาวไม่สุก แต่ไข่ขาวต้องสุกนะ",
+    "en": "Runny yolk but the white must be cooked"
+   },
+   {
+    "th": "ไข่แดงเยิ้มนะเฮีย ถ้าแข็งไม่จ่าย",
+    "en": "Runny yolk, hia — if it's hard I'm not paying"
+   },
+   {
+    "th": "ไม่สุกค่ะ เอาไว้จิ้มข้าว",
+    "en": "Runny, so I can dip the rice"
+   },
+   {
+    "th": "ไข่ดาวไม่สุกกกก ย้ำสามรอบ",
+    "en": "Not cooked — I'm saying it three times"
+   },
+   {
+    "th": "แบบเยิ้มๆ ที่เจาะแล้วไหลอะ",
+    "en": "The kind that oozes when you poke it"
+   },
+   {
+    "th": "ไข่ดาวไม่สุก กรอบนอกนิ่มใน",
+    "en": "Runny egg: crispy outside, soft inside"
+   }
+  ],
+  "mai_phet": [
+   {
+    "th": "ไม่เผ็ดนะครับ",
+    "en": "Not spicy please"
+   },
+   {
+    "th": "ไม่เผ็ดเลยค่ะ พริกเม็ดเดียวก็ไม่เอา",
+    "en": "Not spicy at all — not even one chilli"
+   },
+   {
+    "th": "เผ็ดน้อยๆ นะ ท้องไม่ดี",
+    "en": "Only a little spicy, my stomach's bad"
+   },
+   {
+    "th": "ไม่เผ็ด... แต่ขอพริกน้ำปลาข้างนอก",
+    "en": "Not spicy... but give me chilli fish sauce on the side"
+   },
+   {
+    "th": "ลูกกินด้วย ไม่เผ็ดนะคะ",
+    "en": "My kid's eating too, not spicy"
+   },
+   {
+    "th": "No spicy! ไม่เผ็ดๆ",
+    "en": "No spicy! (backpacker)"
+   },
+   {
+    "th": "เผ็ดนิดเดียว นิดเดียวจริงๆ",
+    "en": "Just a tiny bit spicy, really tiny"
+   },
+   {
+    "th": "ไม่เผ็ดครับ เดี๋ยวปรุงเอง",
+    "en": "Not spicy, I'll season it myself"
+   }
+  ],
+  "phet_mak": [
+   {
+    "th": "เผ็ดมากครับ",
+    "en": "Very spicy"
+   },
+   {
+    "th": "เผ็ดๆ เลยเฮีย พริกสิบเม็ด",
+    "en": "Spicy, hia — ten chillies"
+   },
+   {
+    "th": "เผ็ดแบบคนอีสานนะ",
+    "en": "Isan-level spicy"
+   },
+   {
+    "th": "เผ็ดจนหูอื้อเลย",
+    "en": "So spicy my ears ring"
+   },
+   {
+    "th": "เอาเผ็ดแบบร้องไห้",
+    "en": "Make me cry spicy"
+   },
+   {
+    "th": "พริกเยอะๆ ไม่เผ็ดไม่กิน",
+    "en": "Lots of chilli, I don't eat it if it isn't spicy"
+   },
+   {
+    "th": "เผ็ดสะใจครับ วันนี้อกหัก",
+    "en": "Satisfyingly spicy, I just got dumped"
+   },
+   {
+    "th": "ขอเผ็ดๆ ค่ะ แต่ถ้าเผ็ดเกินจะด่านะ",
+    "en": "Spicy please — but if it's too spicy I'll complain"
+   }
+  ],
+  "arai_ko_dai": [
+   {
+    "th": "อะไรก็ได้ครับ",
+    "en": "Whatever"
+   },
+   {
+    "th": "อะไรก็ได้ที่อร่อย",
+    "en": "Whatever's tasty"
+   },
+   {
+    "th": "เฮียทำอะไรเก่งสุด เอาอันนั้น",
+    "en": "What are you best at? That one"
+   },
+   {
+    "th": "อะไรก็ได้... แต่ไม่เอาไข่เจียวนะ",
+    "en": "Whatever... but not omelette"
+   },
+   {
+    "th": "อะไรก็ได้ ไม่เผ็ด ไม่มัน ไม่เค็ม ไม่หวาน",
+    "en": "Whatever — not spicy, not oily, not salty, not sweet"
+   },
+   {
+    "th": "แล้วแต่เฮียเลย",
+    "en": "Up to you, hia"
+   },
+   {
+    "th": "อะไรก็ได้ที่เร็วที่สุด",
+    "en": "Whatever's fastest"
+   },
+   {
+    "th": "อะไรก็ได้ค่ะ เดี๋ยวแฟนเลือก... แฟนก็บอกอะไรก็ได้",
+    "en": "Whatever — my partner will pick... they also said whatever"
+   }
+  ],
+  "khai_jiao": [
+   {
+    "th": "ข้าวไข่เจียวครับ",
+    "en": "Rice with omelette"
+   },
+   {
+    "th": "ไข่เจียวฟูๆ ราดซอสพริก",
+    "en": "Fluffy omelette with chilli sauce"
+   },
+   {
+    "th": "ไข่เจียวหมูสับค่ะ",
+    "en": "Minced-pork omelette"
+   },
+   {
+    "th": "ไข่เจียวกรอบๆ นะ",
+    "en": "Crispy omelette please"
+   }
+  ],
+  "khao_phat": [
+   {
+    "th": "ข้าวผัดหมูครับ",
+    "en": "Pork fried rice"
+   },
+   {
+    "th": "ข้าวผัดไข่ ใส่มะนาวเยอะๆ",
+    "en": "Egg fried rice, lots of lime"
+   },
+   {
+    "th": "ข้าวผัดพิเศษ ไม่ใส่ต้นหอม",
+    "en": "Large fried rice, no spring onion"
+   },
+   {
+    "th": "ข้าวผัดกุ้งได้ไหม",
+    "en": "Can I get shrimp fried rice?"
+   }
+  ],
+  "other_dishes": [
+   {
+    "th": "ผัดพริกแกงหมูราดข้าว",
+    "en": "Red curry stir-fry pork over rice"
+   },
+   {
+    "th": "ผัดซีอิ๊วหมู ใส่ไข่",
+    "en": "Pad see ew pork with egg"
+   },
+   {
+    "th": "ราดหน้าหมูหมัก",
+    "en": "Rad na with marinated pork"
+   },
+   {
+    "th": "ต้มยำกุ้งน้ำใส ถ้วยนึง",
+    "en": "One clear tom yum shrimp"
+   },
+   {
+    "th": "หมูกระเทียมไข่ดาว",
+    "en": "Garlic pork with fried egg"
+   },
+   {
+    "th": "ผัดผักบุ้งไฟแดง ไม่ใส่พริก",
+    "en": "Red-fire morning glory, no chilli"
+   }
+  ],
+  "drinks": [
+   {
+    "th": "น้ำเปล่าขวดนึง",
+    "en": "One bottle of water"
+   },
+   {
+    "th": "โอเลี้ยงมีไหม",
+    "en": "Got Thai iced black coffee?"
+   },
+   {
+    "th": "น้ำแข็งเปล่าแก้วนึงครับ",
+    "en": "A cup of plain ice"
+   },
+   {
+    "th": "โค้กก็ได้... เอ้ย น้ำดำอะ",
+    "en": "Soda... I mean the black fizzy one"
+   }
+  ]
+ },
+ "customer_wait_long": [
+  {
+   "th": "เฮีย อีกนานไหม",
+   "en": "Hia, how much longer?"
+  },
+  {
+   "th": "ของผมได้ยังครับ",
+   "en": "Is mine ready yet?"
+  },
+  {
+   "th": "รอจนหิวรอบสองแล้วนะ",
+   "en": "I've waited so long I'm hungry again"
+  },
+  {
+   "th": "ลืมของหนูหรือเปล่าคะ",
+   "en": "Did you forget mine?"
+  },
+  {
+   "th": "โต๊ะนู้นมาทีหลังได้ก่อนอีก",
+   "en": "That table came after me and got served first"
+  },
+  {
+   "th": "ยกเลิกได้ไหม ไม่ทันแล้ว",
+   "en": "Can I cancel? I'm late"
+  },
+  {
+   "th": "ผัดอยู่หรือปลูกกะเพราอยู่",
+   "en": "Are you cooking it or growing the basil?"
+  },
+  {
+   "th": "ข้าวเย็นหมดแล้ว รอกับข้าวอยู่",
+   "en": "My rice is cold, still waiting on the topping"
+  },
+  {
+   "th": "พักเที่ยงหมดแล้วเนี่ย",
+   "en": "My lunch break is over"
+  },
+  {
+   "th": "โทษนะ คิวผมที่เท่าไหร่",
+   "en": "Excuse me, what number am I in the queue?"
+  }
+ ],
+ "customer_review_good": {
+  "taste": [
+   {
+    "th": "อร่อยมากเฮีย!",
+    "en": "So good, hia!"
+   },
+   {
+    "th": "ถึงเครื่องจริงๆ",
+    "en": "Properly seasoned — the real deal"
+   },
+   {
+    "th": "กลิ่นกระทะหอมมาก",
+    "en": "Love the wok smell"
+   },
+   {
+    "th": "กะเพราหอมฟุ้ง อร่อยกว่าร้านเดิมอีก",
+    "en": "Fragrant basil, better than the old place"
+   },
+   {
+    "th": "ไข่ดาวกรอบกำลังดี",
+    "en": "The egg is perfectly crispy"
+   },
+   {
+    "th": "รสชาติกลมกล่อม",
+    "en": "Well-rounded flavour"
+   },
+   {
+    "th": "อร่อยจนต้องถ่ายรูปลงสตอรี่",
+    "en": "So good I'm posting it on my story"
+   },
+   {
+    "th": "ชีเสิร์ฟ! (เขาเสิร์ฟ)",
+    "en": "It serves! (slang)"
+   }
+  ],
+  "portion": [
+   {
+    "th": "ให้เยอะดี อิ่มมาก",
+    "en": "Generous, I'm full"
+   },
+   {
+    "th": "ข้าวพูนจานเลย",
+    "en": "Rice piled up high"
+   },
+   {
+    "th": "คุ้มสุดๆ",
+    "en": "Super worth it"
+   }
+  ],
+  "price_cheap": [
+   {
+    "th": "ราคาเป็นกันเอง",
+    "en": "Friendly price"
+   },
+   {
+    "th": "ถูกขนาดนี้ อยู่ได้ไง",
+    "en": "This cheap? How do you survive?"
+   },
+   {
+    "th": "ห้าสิบบาทอิ่มท้อง",
+    "en": "Full for fifty baht"
+   }
+  ],
+  "wait": [
+   {
+    "th": "ได้ไวมาก",
+    "en": "Super fast"
+   },
+   {
+    "th": "สั่งปุ๊บได้ปั๊บ",
+    "en": "Ordered and boom, here it is"
+   },
+   {
+    "th": "เร็วกว่าเดลิเวอรี่อีก",
+    "en": "Faster than delivery"
+   }
+  ],
+  "clean": [
+   {
+    "th": "ร้านสะอาดดี",
+    "en": "Clean shop"
+   },
+   {
+    "th": "โต๊ะเช็ดสะอาด นั่งสบาย",
+    "en": "Tables wiped, comfy"
+   },
+   {
+    "th": "จานช้อนสะอาด",
+    "en": "Clean plates and spoons"
+   }
+  ]
+ },
+ "customer_review_ok": {
+  "taste": [
+   {
+    "th": "ก็โอเคนะ",
+    "en": "It's OK"
+   },
+   {
+    "th": "กินได้ ไม่ได้ว้าว",
+    "en": "Edible, not wow"
+   },
+   {
+    "th": "ธรรมดาๆ",
+    "en": "Ordinary"
+   },
+   {
+    "th": "รสชาติพอใช้",
+    "en": "Decent"
+   },
+   {
+    "th": "อร่อยแหละ แต่ร้านป้าข้างๆ ก็อร่อย",
+    "en": "Tasty, but auntie's next door is too"
+   },
+   {
+    "th": "ขาดอะไรไปนิดนึง",
+    "en": "Missing a little something"
+   }
+  ],
+  "portion": [
+   {
+    "th": "น้อยไปนิด",
+    "en": "A bit small"
+   },
+   {
+    "th": "ข้าวพอดี กับข้าวน้อยไปหน่อย",
+    "en": "Rice fine, topping a bit little"
+   }
+  ],
+  "price": [
+   {
+    "th": "ราคาก็แล้วแต่ร้านแหละ",
+    "en": "Price is... the shop's call"
+   },
+   {
+    "th": "แพงนิดๆ แต่โอเค",
+    "en": "Slightly pricey but OK"
+   }
+  ],
+  "wait": [
+   {
+    "th": "รอนานนิดนึง",
+    "en": "Waited a bit"
+   },
+   {
+    "th": "ได้ช้าแต่ก็ได้",
+    "en": "Slow but it came"
+   }
+  ]
+ },
+ "customer_review_bad": {
+  "taste": [
+   {
+    "th": "ไม่อร่อยเลย",
+    "en": "Not tasty at all"
+   },
+   {
+    "th": "อิหยังวะเนี่ย",
+    "en": "What the heck is this"
+   },
+   {
+    "th": "กินไปสองคำพอ",
+    "en": "Two bites was enough"
+   }
+  ],
+  "too_salty": [
+   {
+    "th": "เค็มปี๋!",
+    "en": "Way too salty!"
+   },
+   {
+    "th": "ใส่น้ำปลาทั้งขวดเหรอ",
+    "en": "Did you pour in the whole bottle of fish sauce?"
+   },
+   {
+    "th": "เค็มจนไตร้อง",
+    "en": "So salty my kidneys are crying"
+   },
+   {
+    "th": "กินเสร็จต้องซื้อน้ำสามขวด",
+    "en": "I'll need three bottles of water after this"
+   }
+  ],
+  "too_bland": [
+   {
+    "th": "จืดสนิท",
+    "en": "Totally bland"
+   },
+   {
+    "th": "ลืมใส่ซอสหรือเปล่า",
+    "en": "Did you forget the sauce?"
+   },
+   {
+    "th": "จืดเหมือนชีวิตผม",
+    "en": "Bland as my life"
+   },
+   {
+    "th": "ต้องปรุงเองทั้งจาน",
+    "en": "I had to season the whole plate myself"
+   }
+  ],
+  "too_spicy": [
+   {
+    "th": "เผ็ดมาก! บอกแล้วว่าไม่เผ็ด",
+    "en": "Too spicy! I said not spicy"
+   },
+   {
+    "th": "ปากพังแล้ว",
+    "en": "My mouth is destroyed"
+   },
+   {
+    "th": "น้ำตาไหลเลยเนี่ย",
+    "en": "I'm literally crying"
+   },
+   {
+    "th": "เผ็ดจนเห็นแม่นาค",
+    "en": "So spicy I saw Mae Nak"
+   }
+  ],
+  "burnt": [
+   {
+    "th": "ไหม้!",
+    "en": "Burnt!"
+   },
+   {
+    "th": "ขมเลย กระเทียมไหม้",
+    "en": "Bitter — the garlic's burnt"
+   },
+   {
+    "th": "ดำปี๋อย่างกับถ่าน",
+    "en": "Black as charcoal"
+   },
+   {
+    "th": "กลิ่นไหม้ทั้งซอย",
+    "en": "The whole soi smells burnt"
+   }
+  ],
+  "portion": [
+   {
+    "th": "น้อยมาก กินสองคำหมด",
+    "en": "Tiny — gone in two bites"
+   },
+   {
+    "th": "หมูสับนับเม็ดได้",
+    "en": "I can count the pieces of pork"
+   },
+   {
+    "th": "แมวยังกินไม่อิ่ม",
+    "en": "Even a cat wouldn't be full"
+   }
+  ],
+  "price_too_high": [
+   {
+    "th": "แพงไป!",
+    "en": "Too expensive!"
+   },
+   {
+    "th": "แพงกว่าในห้างอีก",
+    "en": "Pricier than the mall"
+   },
+   {
+    "th": "ราคานี้ต้องมีกุ้งมังกร",
+    "en": "At this price there'd better be lobster"
+   },
+   {
+    "th": "ร้อยนึงจานนึง? บ้าไปแล้ว",
+    "en": "A hundred a plate? Insane"
+   }
+  ],
+  "wait": [
+   {
+    "th": "รอนานมาก",
+    "en": "Waited forever"
+   },
+   {
+    "th": "รอจนหิวรอบสอง",
+    "en": "Waited till I got hungry twice"
+   },
+   {
+    "th": "ไม่มาอีกแล้ว",
+    "en": "Never coming back"
+   }
+  ],
+  "dirty_table": [
+   {
+    "th": "โต๊ะสกปรก",
+    "en": "Dirty table"
+   },
+   {
+    "th": "แมลงวันเต็มโต๊ะ",
+    "en": "Flies all over the table"
+   },
+   {
+    "th": "จานคนก่อนยังไม่เก็บเลย",
+    "en": "Last person's plates are still here"
+   },
+   {
+    "th": "โต๊ะเหนียวหนึบ",
+    "en": "The table is sticky"
+   }
+  ],
+  "served_wrong_dish": [
+   {
+    "th": "ผมสั่งไข่เจียว ไม่ใช่ไข่ดาว",
+    "en": "I ordered omelette, not fried egg"
+   },
+   {
+    "th": "อันนี้ไม่ใช่ของหนู",
+    "en": "This isn't mine"
+   },
+   {
+    "th": "บอกไม่เผ็ด ได้เผ็ดมาก",
+    "en": "Said not spicy, got very spicy"
+   },
+   {
+    "th": "ไข่ดาวสุก บอกไม่สุก!",
+    "en": "Egg's cooked, I said runny!"
+   }
+  ],
+  "no_spoon": [
+   {
+    "th": "ไม่มีช้อนจะกินยังไง",
+    "en": "No spoon, how do I eat?"
+   },
+   {
+    "th": "ขอช้อนส้อมด้วย",
+    "en": "Spoon and fork please"
+   },
+   {
+    "th": "ต้องกินด้วยมือเหรอ",
+    "en": "Do I eat with my hands?"
+   }
+  ]
+ },
+ "customer_pay": [
+  {
+   "th": "เก็บเงินด้วยครับ",
+   "en": "Check please"
+  },
+  {
+   "th": "เท่าไหร่คะ",
+   "en": "How much?"
+  },
+  {
+   "th": "เฮีย ตังค์วางไว้ที่โต๊ะนะ",
+   "en": "Hia, money's on the table"
+  },
+  {
+   "th": "สแกนจ่ายได้ไหม",
+   "en": "Can I pay by QR scan?"
+  },
+  {
+   "th": "แบงค์พันทอนได้ไหม",
+   "en": "Got change for a thousand?"
+  },
+  {
+   "th": "ไม่ต้องทอนครับ",
+   "en": "Keep the change"
+  },
+  {
+   "th": "ขอเหรียญสิบนะ จะเอาไปหยอดตู้",
+   "en": "Give me ten-baht coins, I need them for the machine"
+  },
+  {
+   "th": "{total} บาทใช่ไหม นี่ครับ",
+   "en": "{total} baht right? Here"
+  },
+  {
+   "th": "ติดไว้ก่อนได้ไหม เดี๋ยวพรุ่งนี้จ่าย",
+   "en": "Can I owe you till tomorrow?"
+  },
+  {
+   "th": "อร่อยมาก ไว้มาใหม่นะ",
+   "en": "Delicious, I'll come again"
+  }
+ ],
+ "customer_angry": [
+  {
+   "th": "นี่มันอะไรเนี่ย!",
+   "en": "What on earth is this!"
+  },
+  {
+   "th": "เรียกเจ้าของร้านมาคุยเลย",
+   "en": "Get me the owner"
+  },
+  {
+   "th": "จะรีวิวหนึ่งดาว!",
+   "en": "I'm giving one star!"
+  },
+  {
+   "th": "ไม่จ่าย!",
+   "en": "I'm not paying!"
+  },
+  {
+   "th": "โพสต์ลงกลุ่มแน่!",
+   "en": "I'm posting this in the neighbourhood group!"
+  },
+  {
+   "th": "เสียเวลามาก!",
+   "en": "What a waste of time!"
+  },
+  {
+   "th": "ลูกค้าคือพระเจ้านะ!",
+   "en": "The customer is god!"
+  },
+  {
+   "th": "บริการแบบนี้ไม่ต้องขายแล้ว",
+   "en": "With service like this, quit selling"
+  }
+ ],
+ "mad_system_choices": [
+  {
+   "id": "too_salty",
+   "who": "customer",
+   "trigger": "dish salt > threshold",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "เค็มขนาดนี้ จะให้กินยังไง!",
+    "en": "How am I supposed to eat something this salty!"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับ เดี๋ยวทำให้ใหม่ ไม่คิดเงินเพิ่ม",
+     "en": "Sorry, I'll remake it at no extra cost",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "customer calms down, waits for remake",
+     "mood_delta": 2,
+     "money_delta": 0
+    },
+    {
+     "th": "ก็กินกับข้าวเยอะๆ สิ",
+     "en": "Then eat it with more rice",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "customer leaves without paying",
+     "mood_delta": -3,
+     "money_delta": 0
+    },
+    {
+     "th": "เค็มแปลว่ารักนะครับ",
+     "en": "Salty means love, you know",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "50% laughs and pays half, 50% storms off",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "not_spicy_got_spicy",
+   "who": "customer",
+   "trigger": "ordered mai phet, chilli > 2",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "บอกแล้วว่าไม่เผ็ด! ปากพังหมดแล้ว!",
+    "en": "I said NOT spicy! My mouth is wrecked!"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับ เอาน้ำแข็งกับน้ำหวานไปก่อน เดี๋ยวผัดใหม่",
+     "en": "Sorry — ice and a sweet drink first, I'll cook a new one",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "mood recovers, drink costs you 10",
+     "mood_delta": 2,
+     "money_delta": -10
+    },
+    {
+     "th": "แค่นี้เผ็ดเหรอ",
+     "en": "You call that spicy?",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "1-star review",
+     "mood_delta": -3,
+     "money_delta": 0
+    },
+    {
+     "th": "ลองคิดซะว่าซาวน่าปากฟรี",
+     "en": "Think of it as a free mouth sauna",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "backpackers laugh; Thai aunties don't",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "waited_too_long",
+   "who": "customer",
+   "trigger": "wait > 6 min",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "รอมาครึ่งชั่วโมงแล้วนะ!",
+    "en": "I've been waiting half an hour!"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับ จานต่อไปของพี่เลย แถมไข่ดาวฟรี",
+     "en": "Sorry, yours is next — free fried egg",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "waits happily, egg costs you",
+     "mood_delta": 2,
+     "money_delta": -5
+    },
+    {
+     "th": "คนเยอะอะ รอไปก่อน",
+     "en": "It's busy, just wait",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "leaves, tells friends",
+     "mood_delta": -2,
+     "money_delta": 0
+    },
+    {
+     "th": "รอเป็นมิตรภาพ ได้เป็นความทรงจำ",
+     "en": "The waiting is friendship, the food is memories",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "confused silence, waits 1 more minute",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "wrong_dish",
+   "who": "customer",
+   "trigger": "served wrong dish",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "ผมสั่งไข่เจียว นี่มันไข่ดาว!",
+    "en": "I ordered an omelette, this is a fried egg!"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับ เดี๋ยวเปลี่ยนให้ทันที",
+     "en": "Sorry, I'll swap it right away",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "OK, waits",
+     "mood_delta": 1,
+     "money_delta": 0
+    },
+    {
+     "th": "ไข่เหมือนกันแหละพี่",
+     "en": "Egg is egg, bro",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "angry, -1 star",
+     "mood_delta": -2,
+     "money_delta": 0
+    },
+    {
+     "th": "ไข่ดาวคือไข่เจียวที่ยังไม่ได้ตี",
+     "en": "A fried egg is just an omelette that hasn't been beaten yet",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "customer thinks... accepts it and pays",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "dirty_table",
+   "who": "customer",
+   "trigger": "table dirt > threshold",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "โต๊ะสกปรกขนาดนี้ จะให้นั่งตรงไหน",
+    "en": "The table's this filthy — where do I sit?"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับ เช็ดให้เดี๋ยวนี้เลย",
+     "en": "Sorry, wiping it right now",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "sits after the wipe minigame",
+     "mood_delta": 1,
+     "money_delta": 0
+    },
+    {
+     "th": "นั่งพื้นก็ได้นะ",
+     "en": "You can sit on the floor",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "leaves",
+     "mood_delta": -3,
+     "money_delta": 0
+    },
+    {
+     "th": "แมลงวันเขาจองไว้ก่อนครับ",
+     "en": "The flies reserved it first",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "laughs, but wants a discount",
+     "mood_delta": 0,
+     "money_delta": -5
+    }
+   ]
+  },
+  {
+   "id": "price_too_high",
+   "who": "customer",
+   "trigger": "price > area fair price * 1.4",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "จานละ {price}? ปล้นกันเหรอ!",
+    "en": "{price} a plate? Is this a robbery!"
+   },
+   "options": [
+    {
+     "th": "ของดีครับพี่ หมูสด ไข่เป็ด ลองก่อนได้ ไม่อร่อยไม่เอาเงิน",
+     "en": "Quality stuff: fresh pork, duck egg. Try it — not good, no charge",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "pays if taste >= good",
+     "mood_delta": 1,
+     "money_delta": 0
+    },
+    {
+     "th": "ไม่มีตังค์ก็ไปกินที่อื่น",
+     "en": "No money? Eat somewhere else",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "leaves, area reputation -",
+     "mood_delta": -3,
+     "money_delta": 0
+    },
+    {
+     "th": "ราคานี้รวมค่าความหล่อเชฟแล้ว",
+     "en": "Price includes the chef's handsomeness",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "aunties pay and giggle; men leave",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "no_spoon",
+   "who": "customer",
+   "trigger": "served without spoon",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "ไม่มีช้อน จะให้กินด้วยมือเหรอ",
+    "en": "No spoon — eat with my hands?"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับ นี่ครับช้อนส้อม",
+     "en": "Sorry, here's a spoon and fork",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "fine",
+     "mood_delta": 1,
+     "money_delta": 0
+    },
+    {
+     "th": "ใช้ตะเกียบไปก่อน",
+     "en": "Use chopsticks for now",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "annoyed, -tip",
+     "mood_delta": -1,
+     "money_delta": 0
+    },
+    {
+     "th": "กินมือแบบอินเดีย ได้บุญด้วย",
+     "en": "Eat with your hand like in India, good karma too",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "customer stares, then laughs",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "burnt",
+   "who": "customer",
+   "trigger": "burnt > threshold",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "ไหม้ดำขนาดนี้ เอาถ่านมาให้กินเหรอ",
+    "en": "Burnt this black — are you serving me charcoal?"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับ ทำใหม่ให้ครับ",
+     "en": "Sorry, I'll make a new one",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "waits",
+     "mood_delta": 1,
+     "money_delta": 0
+    },
+    {
+     "th": "ไหม้นิดเดียวเอง",
+     "en": "It's only a little burnt",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "refuses to pay",
+     "mood_delta": -2,
+     "money_delta": 0
+    },
+    {
+     "th": "สูตรใหม่ครับ กะเพราถ่านกัมมันต์ ดีท็อกซ์",
+     "en": "New recipe: activated-charcoal detox kaprao",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "health nut customer buys it",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "hair_in_food",
+   "who": "customer",
+   "trigger": "random 2% when cleanliness low",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "มีเส้นผมในข้าว!",
+    "en": "There's a hair in my rice!"
+   },
+   "options": [
+    {
+     "th": "ขอโทษจริงๆ ครับ เปลี่ยนจานใหม่ และไม่คิดเงิน",
+     "en": "Truly sorry — new plate, on the house",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "forgives",
+     "mood_delta": 1,
+     "money_delta": -50
+    },
+    {
+     "th": "ผมใคร ผมผมเหรอ ผมผมไม่ยาวขนาดนั้น",
+     "en": "Whose hair? Mine? My hair isn't that long",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "a friend gets accused, slap minigame",
+     "mood_delta": 0,
+     "money_delta": 0
+    },
+    {
+     "th": "แค่เส้นเดียวเอง",
+     "en": "It's just one",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "leaves, posts in group",
+     "mood_delta": -3,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "drunk_uncle",
+   "who": "customer",
+   "trigger": "night, random",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "ไอ้หนู! ขอเหล้าขาวกับกับแกล้มหน่อย!",
+    "en": "Kid! Bring me white liquor and some drinking snacks!"
+   },
+   "options": [
+    {
+     "th": "ร้านไม่มีเหล้าครับลุง ขอเป็นต้มยำร้อนๆ ไหม",
+     "en": "No liquor here, uncle — how about a hot tom yum?",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "orders tom yum, sobers up a bit",
+     "mood_delta": 1,
+     "money_delta": 0
+    },
+    {
+     "th": "ลุงเมาแล้ว กลับบ้านไป",
+     "en": "You're drunk, go home",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "uncle sings loudly, scares customers",
+     "mood_delta": -2,
+     "money_delta": 0
+    },
+    {
+     "th": "เหล้าหมด แต่มีน้ำปลาครับ",
+     "en": "Out of liquor, but we've got fish sauce",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "uncle laughs, leaves a 20 tip",
+     "mood_delta": 0,
+     "money_delta": 20
+    }
+   ]
+  },
+  {
+   "id": "auntie_haggle_fail",
+   "who": "shopkeeper",
+   "trigger": "lowball offer at market",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "สามสิบ? นี่พริกนะไม่ใช่ใบไม้! ป้าขายมายี่สิบปีแล้ว",
+    "en": "Thirty? These are chillies, not leaves! I've sold here twenty years"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับป้า เอาสี่สิบห้า แถมกะเพราสักกำได้ไหมครับ",
+     "en": "Sorry auntie — forty-five, and maybe throw in some basil?",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "deal + free basil",
+     "mood_delta": 2,
+     "money_delta": 0
+    },
+    {
+     "th": "ร้านอื่นถูกกว่านี้อีก",
+     "en": "Other stalls are cheaper",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "auntie refuses to sell today",
+     "mood_delta": -3,
+     "money_delta": 0
+    },
+    {
+     "th": "ป้าสวยจัง ยังไม่ถึงสิบแปดเลย",
+     "en": "Auntie, you look under eighteen",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "auntie blushes, gives 10% off",
+     "mood_delta": 1,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "wholesale_short_change",
+   "who": "shopkeeper",
+   "trigger": "you count change wrong",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "เงินไม่ครบนะน้อง ขาดอีกยี่สิบ",
+    "en": "That's short, kid — you're twenty missing"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับเจ๊ นี่ครับยี่สิบ",
+     "en": "Sorry, sister, here's twenty",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "fine",
+     "mood_delta": 1,
+     "money_delta": -20
+    },
+    {
+     "th": "ครบแล้ว เจ๊นับผิด",
+     "en": "It's all there, you counted wrong",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "shop prices +10% for you",
+     "mood_delta": -2,
+     "money_delta": 0
+    },
+    {
+     "th": "ยี่สิบนั้นผมเก็บไว้ทำบุญให้เจ๊",
+     "en": "I kept that twenty to make merit for you",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "she laughs, lets it go once",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "motorbike_taxi_overcharge",
+   "who": "shopkeeper",
+   "trigger": "motorbike taxi ride",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "ไปตลาด ร้อยนึง",
+    "en": "To the market — one hundred"
+   },
+   "options": [
+    {
+     "th": "ปกติสี่สิบนี่พี่ ขอสี่สิบห้าละกัน",
+     "en": "It's usually forty, bro — forty-five OK?",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "pay 45",
+     "mood_delta": 0,
+     "money_delta": -45
+    },
+    {
+     "th": "โอเค ร้อยนึง",
+     "en": "OK, a hundred",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "you overpay",
+     "mood_delta": 0,
+     "money_delta": -100
+    },
+    {
+     "th": "ร้อยนึงผมขับเองดีกว่า พี่ซ้อนไหม",
+     "en": "For a hundred I'll drive — want to ride pillion?",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "he laughs, 40 baht",
+     "mood_delta": 1,
+     "money_delta": -40
+    }
+   ]
+  },
+  {
+   "id": "convenience_no_bag",
+   "who": "shopkeeper",
+   "trigger": "checkout at 8-Twelve",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "รับถุงไหมคะ ถุงละสองบาทนะคะ",
+    "en": "Want a bag? Two baht each"
+   },
+   "options": [
+    {
+     "th": "ไม่รับครับ ถือเอง",
+     "en": "No thanks, I'll carry it",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "items go to inventory",
+     "mood_delta": 0,
+     "money_delta": 0
+    },
+    {
+     "th": "ทำไมต้องเสียเงินค่าถุง!",
+     "en": "Why should I pay for a bag!",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "clerk sighs, queue glares",
+     "mood_delta": -1,
+     "money_delta": 0
+    },
+    {
+     "th": "ใส่หัวกลับบ้านก็ได้ครับ",
+     "en": "I'll carry them home on my head",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "items stack on your head (physical gag)",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "landlord_cart_spot",
+   "who": "shopkeeper",
+   "trigger": "you park the cart in front of a shophouse",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "ใครให้มาจอดหน้าร้านฉัน!",
+    "en": "Who said you could park in front of my shop!"
+   },
+   "options": [
+    {
+     "th": "ขอโทษครับเจ๊ ขอจอดแค่เย็นนี้ เดี๋ยวเอากะเพรามาฝาก",
+     "en": "Sorry, sister — just this evening, I'll bring you some kaprao",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "allowed; owes 1 free plate",
+     "mood_delta": 1,
+     "money_delta": 0
+    },
+    {
+     "th": "ทางสาธารณะ ใครก็จอดได้",
+     "en": "It's public, anyone can park",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "she calls the เทศกิจ (city inspectors)",
+     "mood_delta": -3,
+     "money_delta": 0
+    },
+    {
+     "th": "ร้านเจ๊จะได้มีกลิ่นกะเพราฟรีไงครับ",
+     "en": "Your shop gets free kaprao aroma!",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "50/50",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "customer_wants_free_refill",
+   "who": "customer",
+   "trigger": "random",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "เฮีย ข้าวเติมฟรีป่ะ",
+    "en": "Hia, free rice refills?"
+   },
+   "options": [
+    {
+     "th": "ได้ครับ ทัพพีนึง",
+     "en": "Sure, one scoop",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "happy, -rice",
+     "mood_delta": 1,
+     "money_delta": 0
+    },
+    {
+     "th": "เติมสิบบาท",
+     "en": "Refill is ten baht",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "grumbles but pays",
+     "mood_delta": -1,
+     "money_delta": 10
+    },
+    {
+     "th": "เติมฟรี ถ้าร้องเพลงให้ฟังหนึ่งเพลง",
+     "en": "Free if you sing me a song",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "customer sings (audio gag)",
+     "mood_delta": 1,
+     "money_delta": 0
+    }
+   ]
+  },
+  {
+   "id": "ghost_customer",
+   "who": "customer",
+   "trigger": "after midnight, ghost visits",
+   "time_limit_s": 3,
+   "prompt": {
+    "th": "ขอ... กะเพรา... ไม่ใส่... หัวหอม...",
+    "en": "One... kaprao... no... onion..."
+   },
+   "options": [
+    {
+     "th": "ได้ครับ ไม่ใส่หัวหอม (ขาสั่น)",
+     "en": "Yes, no onion (legs shaking)",
+     "type": "correct",
+     "correct": true,
+     "funny": false,
+     "outcome": "ghost pays with a mysterious old coin",
+     "mood_delta": 0,
+     "money_delta": 30
+    },
+    {
+     "th": "ผีีีีี!!",
+     "en": "GHOOOST!!",
+     "type": "incorrect",
+     "correct": false,
+     "funny": false,
+     "outcome": "everyone drops what they carry",
+     "mood_delta": -1,
+     "money_delta": 0
+    },
+    {
+     "th": "ร้านปิดแล้ว... เปิดใหม่ชาติหน้าครับ",
+     "en": "We're closed... reopening next life",
+     "type": "funny",
+     "correct": false,
+     "funny": true,
+     "outcome": "ghost giggles and vanishes",
+     "mood_delta": 0,
+     "money_delta": 0
+    }
+   ]
+  }
+ ],
+ "bargaining": {
+  "shopkeeper_opening": [
+   {
+    "th": "กิโลละแปดสิบจ้า",
+    "en": "Eighty a kilo, dear"
+   },
+   {
+    "th": "หมูสดๆ เพิ่งมาเมื่อเช้า กิโลละร้อยหกสิบ",
+    "en": "Fresh pork, came in this morning — 160 a kilo"
+   },
+   {
+    "th": "กะเพรากำละสิบ สามกำยี่สิบห้า",
+    "en": "Basil ten a bunch, three for twenty-five"
+   },
+   {
+    "th": "ไข่แผงละร้อยสิบ ไข่ใหญ่นะ",
+    "en": "A tray of eggs 110, big ones"
+   },
+   {
+    "th": "ราคานี้ถูกที่สุดในตลาดแล้วจ้า",
+    "en": "This is the cheapest in the market"
+   },
+   {
+    "th": "เอาไปเลยสองร้อย ป้าไม่ได้กำไรหรอก",
+    "en": "Take it for two hundred, I'm not making a profit"
+   },
+   {
+    "th": "โต๊ะพลาสติกตัวละสามร้อย เก้าอี้ร้อยนึง",
+    "en": "Plastic table 300, stools 100"
+   },
+   {
+    "th": "กระทะเหล็กใบนี้ หกร้อยห้าสิบ ใช้ได้สิบปี",
+    "en": "This iron wok 650, lasts ten years"
+   }
+  ],
+  "player_options": {
+   "polite": [
+    {
+     "th": "ลดหน่อยได้ไหมครับป้า",
+     "en": "Could you give a little discount, auntie?"
+    },
+    {
+     "th": "ซื้อเยอะ ลดให้หน่อยนะครับ",
+     "en": "I'm buying a lot, a little off please?"
+    },
+    {
+     "th": "ลูกค้าประจำแล้วนะครับ",
+     "en": "I'm a regular now"
+    },
+    {
+     "th": "ขอราคาพ่อค้าแม่ค้าได้ไหมครับ",
+     "en": "Vendor price, please?"
+    },
+    {
+     "th": "ถ้าเอาสองโล ลดเหลือเท่าไหร่ครับ",
+     "en": "If I take two kilos, how much?"
+    },
+    {
+     "th": "ปัดเศษให้หน่อยนะครับ",
+     "en": "Round it down for me?"
+    }
+   ],
+   "rude": [
+    {
+     "th": "แพงจัง ปล้นกันชัดๆ",
+     "en": "So expensive, daylight robbery"
+    },
+    {
+     "th": "ร้านข้างๆ ถูกกว่าตั้งเยอะ",
+     "en": "Next stall's way cheaper"
+    },
+    {
+     "th": "ห้าสิบ ไม่ขายก็ไม่เอา",
+     "en": "Fifty, take it or leave it"
+    },
+    {
+     "th": "ของเหี่ยวแบบนี้ยังกล้าขาย",
+     "en": "Wilted stuff and you still sell it?"
+    }
+   ],
+   "funny": [
+    {
+     "th": "ป้าครับ ผมหล่อ ลดได้ไหม",
+     "en": "Auntie, I'm handsome — discount?"
+    },
+    {
+     "th": "ลดให้หน่อย เดี๋ยวผมไปขอหวยให้",
+     "en": "Discount and I'll ask the spirits for lottery numbers for you"
+    },
+    {
+     "th": "ผมนอนลังกระดาษอยู่นะป้า",
+     "en": "Auntie, I sleep on cardboard"
+    },
+    {
+     "th": "ลดสิบบาท ผมร้องเพลงให้ฟัง",
+     "en": "Ten off and I'll sing for you"
+    },
+    {
+     "th": "ซื้อป้าแล้วแถมพริกได้ไหม",
+     "en": "Buy from you and get chillies free?"
+    },
+    {
+     "th": "ราคานี้ขอแถมรอยยิ้มป้าด้วย",
+     "en": "At this price, throw in your smile"
+    }
+   ]
+  },
+  "auntie_success": [
+   {
+    "th": "เอ้า! เอาไปๆ ป้าใจดี",
+    "en": "Fine! Take it, auntie's kind"
+   },
+   {
+    "th": "แถมกะเพราให้กำนึงนะ",
+    "en": "Here's a free bunch of basil"
+   },
+   {
+    "th": "น่ารักอย่างนี้ ลดให้",
+    "en": "Since you're cute, discount"
+   },
+   {
+    "th": "ครั้งนี้ครั้งเดียวนะ ห้ามบอกใคร",
+    "en": "Just this once, don't tell anyone"
+   },
+   {
+    "th": "หล่ออย่างนี้ เอาไปห้าสิบ",
+    "en": "Handsome like that, fifty"
+   },
+   {
+    "th": "ขายดีนะลูก ซื้อเยอะๆ มาบ่อยๆ",
+    "en": "Sell well, dear — buy lots, come often"
+   }
+  ],
+  "auntie_counter": [
+   {
+    "th": "ไม่ได้หรอก ต่ำสุดเจ็ดสิบ",
+    "en": "Can't, seventy is the lowest"
+   },
+   {
+    "th": "เอางี้ ลดห้าบาทพอ",
+    "en": "Tell you what, five off"
+   },
+   {
+    "th": "ซื้อสองกิโลค่อยลด",
+    "en": "Buy two kilos then I'll discount"
+   },
+   {
+    "th": "ป้าขาดทุนแล้วนะเนี่ย",
+    "en": "Auntie's losing money here"
+   }
+  ],
+  "auntie_fail": [
+   {
+    "th": "ไม่ขาย! ไปซื้อร้านอื่นเลย",
+    "en": "Not selling! Go buy elsewhere"
+   },
+   {
+    "th": "ต่อเก่งนักก็ไปปลูกเองสิ",
+    "en": "If you haggle that well, grow it yourself"
+   },
+   {
+    "th": "หนุ่มสมัยนี้ ไม่รู้จักราคาของ",
+    "en": "Young men these days don't know what things cost"
+   },
+   {
+    "th": "วันนี้ป้าไม่ขายให้แล้ว",
+    "en": "Auntie's not selling to you today"
+   },
+   {
+    "th": "ไปๆ ป้าจะขายของ",
+    "en": "Shoo, auntie needs to sell"
+   },
+   {
+    "th": "อย่ามายืนบังร้าน",
+    "en": "Don't stand blocking my stall"
+   }
+  ]
+ },
+ "auntie_market_stall": [
+  {
+   "th": "มาจ้า มาดูก่อนได้ ผักสดๆ",
+   "en": "Come, come, have a look, fresh veggies"
+  },
+  {
+   "th": "กะเพราใบสวยๆ เพิ่งเด็ดเมื่อเช้า",
+   "en": "Pretty basil, picked this morning"
+  },
+  {
+   "th": "พริกขี้หนูสวน เผ็ดจริงไม่จกตา",
+   "en": "Garden chillies, really spicy, no scam"
+  },
+  {
+   "th": "หมูสับบดให้ใหม่ๆ เลยนะ",
+   "en": "I'll mince the pork fresh for you"
+  },
+  {
+   "th": "ไข่เป็ด ไข่ไก่ ไข่ใหญ่ ไข่เล็ก มีหมด",
+   "en": "Duck eggs, chicken eggs, big, small, got them all"
+  },
+  {
+   "th": "ลูกสาวป้าโสดนะ สนใจไหม",
+   "en": "My daughter's single, interested?"
+  },
+  {
+   "th": "เมื่อวานหนูไปไหนมา ไม่เห็นมาซื้อ",
+   "en": "Where were you yesterday? Didn't see you buy anything"
+  },
+  {
+   "th": "ฝากร้านด้วยนะจ๊ะ",
+   "en": "Please support my stall (ฝากร้าน)"
+  },
+  {
+   "th": "เงินทอนไม่มีนะ มีเหรียญไหม",
+   "en": "No change — got coins?"
+  },
+  {
+   "th": "อันนี้ป้าแถม เอาไปผัดให้อร่อยๆ",
+   "en": "This one's free, go make it tasty"
+  },
+  {
+   "th": "วันนี้ขายไม่ดีเลย ฝนตก",
+   "en": "Selling badly today, it rained"
+  },
+  {
+   "th": "ระวังหมานะ มันชอบมาขโมยหมู",
+   "en": "Watch out for the dog, it steals pork"
+  }
+ ],
+ "old_man_cart": {
+  "catch": [
+   {
+    "th": "เฮ้ย! ไอ้หนู! จะเข็นไปไหน!",
+    "en": "Hey! Boys! Where are you pushing that!"
+   },
+   {
+    "th": "รถเข็นลุงนะนั่น!",
+    "en": "That's my cart!"
+   },
+   {
+    "th": "ตัวโตกันเท่าควาย มาขโมยรถเข็นคนแก่",
+    "en": "Big as buffaloes, stealing an old man's cart"
+   },
+   {
+    "th": "หยุดเลย! ลุงเห็นนะ",
+    "en": "Stop! I saw that"
+   }
+  ],
+  "excuse_options": [
+   {
+    "th": "เปล่าครับลุง แค่... ช่วยเข็นให้",
+    "en": "No uncle, we were just... helping push it"
+   },
+   {
+    "th": "นึกว่าไม่มีเจ้าของครับ",
+    "en": "We thought it had no owner"
+   },
+   {
+    "th": "พวกผมหิวครับลุง",
+    "en": "We're hungry, uncle"
+   },
+   {
+    "th": "ทางลาดครับ มันไหลมาเอง",
+    "en": "It's a slope, it rolled by itself"
+   }
+  ],
+  "offer": [
+   {
+    "th": "ลุงแก่แล้ว ผัดไม่ไหวแล้ว",
+    "en": "I'm old, can't cook anymore"
+   },
+   {
+    "th": "เอางี้ ลุงขายให้ ร้อยบาทพอ",
+    "en": "Tell you what, I'll sell it to you — one hundred baht"
+   },
+   {
+    "th": "ร้อยเดียว ได้ทั้งรถเข็น กระทะ แล้วก็สมุดสูตรลับของลุง",
+    "en": "Just a hundred: the cart, the wok and my secret recipe book"
+   },
+   {
+    "th": "แต่สัญญานะ ต้องผัดให้อร่อย ห้ามใส่ถั่วฝักยาว",
+    "en": "But promise to cook it well — no long beans"
+   }
+  ],
+  "coins_count": [
+   {
+    "th": "ผมมียี่สิบห้า",
+    "en": "I've got twenty-five"
+   },
+   {
+    "th": "สามสิบ... บวกเหรียญห้าที่เจอในรองเท้า",
+    "en": "Thirty... plus a five I found in my shoe"
+   },
+   {
+    "th": "ยี่สิบ... แล้วก็เหรียญบาทอีกห้าเหรียญ",
+    "en": "Twenty... and five one-baht coins"
+   },
+   {
+    "th": "เหลือยี่สิบพอดี! ครบร้อย!!",
+    "en": "Twenty left — exactly a hundred!!"
+   },
+   {
+    "th": "ร้อยพอดีเป๊ะ! ฟ้าลิขิต!",
+    "en": "Exactly a hundred! It's fate!"
+   }
+  ],
+  "handover": [
+   {
+    "th": "เอ้า รับไป ดูแลมันดีๆ นะ",
+    "en": "Here, take good care of her"
+   },
+   {
+    "th": "สมุดอยู่ในลิ้นชัก อ่านดีๆ ลายมือลุงไม่สวย",
+    "en": "The book's in the drawer — read carefully, my handwriting's bad"
+   },
+   {
+    "th": "ข้าว หมูสับ กะเพรา เครื่องปรุง ลุงทิ้งไว้ให้",
+    "en": "I left you rice, minced pork, basil, seasonings"
+   },
+   {
+    "th": "โชคดีนะไอ้หนู",
+    "en": "Good luck, boys"
+   }
+  ],
+  "dog_steals": [
+   {
+    "th": "เฮ้ย! หมา!!",
+    "en": "Hey! The dog!!"
+   },
+   {
+    "th": "มันกินข้าวกับหมูหมดเลย!",
+    "en": "It ate all the rice and the pork!"
+   },
+   {
+    "th": "ไล่มันไป! เอ้ย ไม่ทันแล้ว",
+    "en": "Chase it! ...too late"
+   },
+   {
+    "th": "ฮ่าๆ หมาตัวนั้นมันขโมยของลุงทุกวัน ไปตลาดป้าเลย",
+    "en": "Haha, that dog robs me every day. Go to auntie's market"
+   }
+  ],
+  "later_visits": [
+   {
+    "th": "ขายดีไหมไอ้หนู",
+    "en": "Selling well, boys?"
+   },
+   {
+    "th": "ไหนลองผัดให้ลุงชิมซิ",
+    "en": "Cook one for me to taste"
+   },
+   {
+    "th": "เค็มไปนิด แต่ใช้ได้",
+    "en": "A bit salty, but not bad"
+   },
+   {
+    "th": "ลุงคิดถูกที่ขายให้พวกแก",
+    "en": "I was right to sell it to you"
+   }
+  ]
+ },
+ "stray_dog": {
+  "sounds": [
+   "โฮ่ง!",
+   "โฮ่งๆ!",
+   "งื้ด...",
+   "แฮ่!",
+   "หงิงๆ",
+   "ฮื่ออ..."
+  ],
+  "thought_bubbles": [
+   {
+    "th": "หมูสับ...",
+    "en": "Minced pork..."
+   },
+   {
+    "th": "ข้าว...",
+    "en": "Rice..."
+   },
+   {
+    "th": "ให้หน่อยดิ",
+    "en": "Gimme some"
+   },
+   {
+    "th": "รักนะ (ถ้ามีหมู)",
+    "en": "Love you (if there's pork)"
+   },
+   {
+    "th": "คนนี้ใจดี",
+    "en": "This one's kind"
+   },
+   {
+    "th": "ขอนอนตรงนี้",
+    "en": "I'm sleeping here"
+   }
+  ],
+  "npc_reactions": [
+   {
+    "th": "หมาใครเนี่ย",
+    "en": "Whose dog is this?"
+   },
+   {
+    "th": "อย่าให้อาหารมันนะ เดี๋ยวมาทุกวัน",
+    "en": "Don't feed it, it'll come every day"
+   },
+   {
+    "th": "น่ารักจัง เจ้าตูบ",
+    "en": "So cute, little doggo"
+   },
+   {
+    "th": "ระวังมันกัดนะ",
+    "en": "Careful, it bites"
+   }
+  ],
+  "player_feed": [
+   {
+    "th": "มาๆ กินนี่",
+    "en": "Here, eat this"
+   },
+   {
+    "th": "เอาไป แต่อย่าขโมยหมูอีกนะ",
+    "en": "Take it, but don't steal pork again"
+   },
+   {
+    "th": "ตั้งชื่อว่าอะไรดี... ไอ้ด่าง",
+    "en": "What should we call you... Spotty"
+   },
+   {
+    "th": "ตามมาสิ ไปอยู่ด้วยกัน",
+    "en": "Come on, live with us"
+   }
+  ],
+  "adopted": [
+   {
+    "th": "ไอ้ด่างเฝ้าร้านให้เฮีย",
+    "en": "Spotty guards the shop for Hia"
+   },
+   {
+    "th": "หมาร้านเฮียผัด ดังกว่าเจ้าของ",
+    "en": "Hia Phat's dog is more famous than the owners"
+   }
+  ]
+ },
+ "homeless_man": {
+  "ask": [
+   {
+    "th": "พ่อหนุ่ม มีเศษตังค์ไหม",
+    "en": "Young man, any spare change?"
+   },
+   {
+    "th": "ขอข้าวกินสักมื้อนะ",
+    "en": "Could you spare a meal?"
+   },
+   {
+    "th": "หิวตั้งแต่เมื่อวานแล้ว",
+    "en": "Haven't eaten since yesterday"
+   }
+  ],
+  "thanks": [
+   {
+    "th": "ขอบใจมากนะลูก",
+    "en": "Thank you so much, son"
+   },
+   {
+    "th": "ใจบุญจริงๆ",
+    "en": "Such a generous heart"
+   },
+   {
+    "th": "พระคุณนี้ไม่ลืม",
+    "en": "I won't forget this kindness"
+   },
+   {
+    "th": "อร่อยที่สุดในชีวิตเลย",
+    "en": "Best meal of my life"
+   },
+   {
+    "th": "ขอบคุณที่ไม่ไล่",
+    "en": "Thanks for not chasing me away"
+   },
+   {
+    "th": "แจกคนอื่นด้วยนะ ใจดีแบบนี้",
+    "en": "Share with others too, kind like that"
+   }
+  ],
+  "blessings": [
+   {
+    "th": "ขอให้ขายดีเป็นเทน้ำเทท่านะ",
+    "en": "May your shop sell like pouring water"
+   },
+   {
+    "th": "ขอให้ถูกหวย",
+    "en": "May you win the lottery"
+   },
+   {
+    "th": "ขอให้ลูกค้าเต็มร้าน",
+    "en": "May your shop be full of customers"
+   },
+   {
+    "th": "ขอให้รวยๆ เฮงๆ",
+    "en": "May you be rich and lucky"
+   },
+   {
+    "th": "ขอให้หล่อขึ้นทุกวัน",
+    "en": "May you get more handsome every day"
+   },
+   {
+    "th": "ขอให้ผีไม่หลอก",
+    "en": "May ghosts never haunt you"
+   }
+  ],
+  "wisdom": [
+   {
+    "th": "เงินหายได้ แต่กะเพราต้องหอม",
+    "en": "Money can be lost, but the kaprao must be fragrant"
+   },
+   {
+    "th": "ชีวิตก็เหมือนไข่ดาว ไฟแรงไปก็ไหม้ ไฟอ่อนไปก็ไม่กรอบ",
+    "en": "Life is like a fried egg: too hot it burns, too low it's never crispy"
+   },
+   {
+    "th": "ลุงก็เคยมีรถเบนซ์ ตอนนี้มีลังกระดาษ ลังกระดาษหลับสบายกว่า",
+    "en": "I once had a Benz; now I have cardboard. Cardboard sleeps better"
+   },
+   {
+    "th": "อย่าเล่นการพนัน... พวกแกรู้ดีแล้วนี่",
+    "en": "Don't gamble... but you boys already know"
+   },
+   {
+    "th": "คนรวยกินข้าวจานละพัน คนจนกินจานละสี่สิบ อิ่มเท่ากัน",
+    "en": "Rich eat thousand-baht plates, poor eat forty-baht ones — equally full"
+   },
+   {
+    "th": "หมาจรมันรู้ว่าใครใจดี",
+    "en": "Stray dogs know who's kind"
+   },
+   {
+    "th": "ฝนตกเดี๋ยวก็หยุด หนี้ไม่หยุด",
+    "en": "Rain stops eventually; debt doesn't"
+   },
+   {
+    "th": "รีบผัด รีบรวย รีบตาย",
+    "en": "Cook fast, get rich fast, die fast"
+   }
+  ],
+  "refused": [
+   {
+    "th": "ไม่เป็นไรลูก",
+    "en": "It's alright, son"
+   },
+   {
+    "th": "พรุ่งนี้ค่อยว่ากัน",
+    "en": "Maybe tomorrow"
+   },
+   {
+    "th": "เข้าใจๆ ทุกคนก็ลำบาก",
+    "en": "I understand, everyone's struggling"
+   }
+  ]
+ },
+ "ghosts": {
+  "motorcycle_ghost": [
+   {
+    "th": "(เสียงเครื่องยนต์บิดลั่นซอย ไม่มีหัว)",
+    "en": "(engine revving down the soi — no head)"
+   },
+   {
+    "th": "...ไปไหน...",
+    "en": "...where to..."
+   },
+   {
+    "th": "ซื้อกะเพรากลับบ้าน... หัวผมอยู่ไหน",
+    "en": "Kaprao to go... where's my head"
+   },
+   {
+    "th": "ใส่หมวกกันน็อกด้วยนะ",
+    "en": "Wear a helmet, OK?"
+   }
+  ],
+  "krasue": [
+   {
+    "th": "หิว... อยากกินของคาว",
+    "en": "Hungry... craving something raw"
+   },
+   {
+    "th": "ไส้ฉันลอยได้ ไม่ต้องห่วง",
+    "en": "My guts float, don't worry about them"
+   },
+   {
+    "th": "ไข่ดาวไม่สุกมีไหม",
+    "en": "Got a runny fried egg?"
+   },
+   {
+    "th": "ปิดไฟทำไม ฉันเรืองแสงเองได้",
+    "en": "Why turn off the light, I glow by myself"
+   }
+  ],
+  "phi_pop": [
+   {
+    "th": "กลิ่นตับหอมจัง...",
+    "en": "Liver smells so good..."
+   },
+   {
+    "th": "อยู่ในร่างยายข้างบ้านนะ อย่าบอกใคร",
+    "en": "I'm in the old lady next door, don't tell"
+   },
+   {
+    "th": "ขอกินดิบๆ ไม่ต้องผัด",
+    "en": "Raw please, no need to cook"
+   }
+  ],
+  "nang_tani": [
+   {
+    "th": "ใต้ต้นกล้วยนี่บ้านฉัน",
+    "en": "Under this banana tree is my home"
+   },
+   {
+    "th": "ขอข้าวต้มมัดสักห่อ",
+    "en": "A sticky-rice banana parcel, please"
+   },
+   {
+    "th": "อย่าตัดต้นกล้วยนะ",
+    "en": "Don't cut down the banana tree"
+   },
+   {
+    "th": "เลขเด็ดเหรอ... ลองดูที่ลำต้นสิ",
+    "en": "Lucky numbers? Look at the trunk..."
+   }
+  ],
+  "pret": [
+   {
+    "th": "หิว... หิว...",
+    "en": "Hungry... hungry..."
+   },
+   {
+    "th": "ปากฉันเท่ารูเข็ม กินไม่ได้",
+    "en": "My mouth is a pinhole, I can't eat"
+   },
+   {
+    "th": "ช่วยกรวดน้ำให้หน่อย",
+    "en": "Please pour water for merit for me"
+   },
+   {
+    "th": "สูงสามเมตร หิวสามพันปี",
+    "en": "Three metres tall, hungry for three thousand years"
+   }
+  ],
+  "phi_tai_hong": [
+   {
+    "th": "ซอยนี้... ฉันตายตรงนี้...",
+    "en": "This soi... I died right here..."
+   },
+   {
+    "th": "ขับช้าๆ นะ",
+    "en": "Drive slowly"
+   }
+  ],
+  "player_reactions": [
+   {
+    "th": "ผีีีี!!",
+    "en": "GHOOOST!!"
+   },
+   {
+    "th": "วิ่ง!!",
+    "en": "RUN!!"
+   },
+   {
+    "th": "พระช่วยด้วย!",
+    "en": "Somebody help!"
+   },
+   {
+    "th": "ไม่กลัวๆ... กลัวสุดๆ",
+    "en": "Not scared... SO scared"
+   },
+   {
+    "th": "เอ็งอยู่ข้างหลังข้าใช่ไหม",
+    "en": "You're right behind me, aren't you?"
+   }
+  ]
+ },
+ "girl_scream": [
+  {
+   "th": "ว้ายยย! โรคจิต!!",
+   "en": "Eeek! Pervert!!"
+  },
+  {
+   "th": "กรี๊ดดด! ใส่เสื้อหน่อย!",
+   "en": "Aaah! Put some clothes on!"
+  },
+  {
+   "th": "แม่จ๋า! มีคนยืนกางแขนกลางถนน!",
+   "en": "Mum! There's a guy standing in the road with his arms out!"
+  },
+  {
+   "th": "อี๋! ยืนทำอะไรน่ะ!",
+   "en": "Ew! What are you doing!"
+  },
+  {
+   "th": "ตำรวจ! ตำรวจ!",
+   "en": "Police! Police!"
+  },
+  {
+   "th": "เดี๋ยวโพสต์ลงกลุ่มหมู่บ้านเลย!",
+   "en": "I'm posting you in the village group!"
+  }
+ ],
+ "friends_banter": {
+  "slap": [
+   {
+    "th": "ตื่น!",
+    "en": "Wake up!"
+   },
+   {
+    "th": "ตั้งสติ!",
+    "en": "Get it together!"
+   },
+   {
+    "th": "อันนี้ค่าที่ทำไข่ไหม้",
+    "en": "That's for burning the egg"
+   },
+   {
+    "th": "ตบเบาๆ ด้วยความรัก",
+    "en": "A gentle slap with love"
+   },
+   {
+    "th": "ฝันอะไรอยู่!",
+    "en": "What are you daydreaming!"
+   },
+   {
+    "th": "เพียะ!",
+    "en": "SLAP!"
+   }
+  ],
+  "slapped": [
+   {
+    "th": "โอ๊ย! อะไรของมึง",
+    "en": "Ow! What's your problem"
+   },
+   {
+    "th": "เดี๋ยวเหอะ!",
+    "en": "Just you wait!"
+   },
+   {
+    "th": "ตบหน้าหล่อๆ ของกูทำไม",
+    "en": "Why slap my handsome face"
+   },
+   {
+    "th": "เจ็บนะเว้ย",
+    "en": "That hurt, man"
+   },
+   {
+    "th": "แก้แค้นแน่",
+    "en": "I'll get revenge"
+   }
+  ],
+  "high_five": [
+   {
+    "th": "เยส!",
+    "en": "Yes!"
+   },
+   {
+    "th": "ทีมเวิร์ค!",
+    "en": "Teamwork!"
+   },
+   {
+    "th": "แปะ!",
+    "en": "Slap (high five)!"
+   },
+   {
+    "th": "เก่งมากเพื่อน",
+    "en": "Nice one, buddy"
+   },
+   {
+    "th": "ตึงๆ!",
+    "en": "Hardcore! (ตึง)"
+   }
+  ],
+  "snatch": [
+   {
+    "th": "ขอยืมนะ",
+    "en": "Borrowing this"
+   },
+   {
+    "th": "ของกู!",
+    "en": "Mine!"
+   },
+   {
+    "th": "ช้าไป!",
+    "en": "Too slow!"
+   },
+   {
+    "th": "อ่านจบแล้ว ส่งมา",
+    "en": "You're done reading, hand it over"
+   }
+  ],
+  "snatched": [
+   {
+    "th": "เฮ้ย! คืนมา!",
+    "en": "Hey! Give it back!"
+   },
+   {
+    "th": "กูอ่านอยู่!",
+    "en": "I was reading that!"
+   },
+   {
+    "th": "มาแย่งกันเลยมา!",
+    "en": "Come on then, fight me for it!"
+   }
+  ],
+  "tug_win": [
+   {
+    "th": "ของกูแล้ว!",
+    "en": "It's mine now!"
+   },
+   {
+    "th": "แรงช้างสาร!",
+    "en": "Strength of an elephant!"
+   },
+   {
+    "th": "อ่อนแอก็แพ้ไป",
+    "en": "The weak lose"
+   }
+  ],
+  "tug_lose": [
+   {
+    "th": "มือลื่น!",
+    "en": "My hand slipped!"
+   },
+   {
+    "th": "ปล่อยให้ชนะหรอก",
+    "en": "I let you win"
+   },
+   {
+    "th": "กินข้าวน้อยไป",
+    "en": "Didn't eat enough rice"
+   }
+  ],
+  "give_money": [
+   {
+    "th": "เอาไป ไปซื้อไข่",
+    "en": "Here, go buy eggs"
+   },
+   {
+    "th": "ยืมก่อน เดี๋ยวคืน... มั้ง",
+    "en": "A loan... I'll pay back... maybe"
+   },
+   {
+    "th": "นี่ค่าแรงวันนี้",
+    "en": "Today's wages"
+   }
+  ],
+  "receive_money": [
+   {
+    "th": "ขอบใจเพื่อน!",
+    "en": "Thanks, buddy!"
+   },
+   {
+    "th": "รวยแล้วโว้ย!",
+    "en": "I'm rich, baby!"
+   },
+   {
+    "th": "แค่นี้เองเหรอ",
+    "en": "That's it?"
+   }
+  ],
+  "idle": [
+   {
+    "th": "หิวว่ะ",
+    "en": "I'm hungry"
+   },
+   {
+    "th": "ร้อนชิบ",
+    "en": "Damn it's hot"
+   },
+   {
+    "th": "คิดถึงบ่อน... ไม่! ไม่คิดถึง!",
+    "en": "Miss the casino... no! I don't!"
+   },
+   {
+    "th": "วันนี้ขายได้เท่าไหร่",
+    "en": "How much did we make today?"
+   },
+   {
+    "th": "ใครล้างจาน",
+    "en": "Who's washing dishes?"
+   },
+   {
+    "th": "ไม่ใช่กู",
+    "en": "Not me"
+   },
+   {
+    "th": "อิหยังวะ",
+    "en": "What the heck"
+   },
+   {
+    "th": "555555",
+    "en": "hahahahaha (5 = ha)"
+   }
+  ]
+ },
+ "sleeping_on_cardboard": [
+  {
+   "th": "เที่ยงคืนแล้ว... หาลังกระดาษ",
+   "en": "Midnight... find some cardboard"
+  },
+  {
+   "th": "ลังนี้ของกู ลังมาม่า นุ่มสุด",
+   "en": "This box is mine, the noodle box is the softest"
+  },
+  {
+   "th": "ยุงเยอะชิบ",
+   "en": "So many mosquitoes"
+  },
+  {
+   "th": "ฝันดีนะเพื่อน",
+   "en": "Sweet dreams, buddy"
+  },
+  {
+   "th": "พรุ่งนี้ต้องขายให้ได้สองพัน",
+   "en": "Tomorrow we sell two thousand"
+  },
+  {
+   "th": "ใครกรน!",
+   "en": "Who's snoring!"
+  },
+  {
+   "th": "เมื่อก่อนนอนโรงแรมห้าดาว",
+   "en": "We used to sleep in five-star hotels"
+  },
+  {
+   "th": "หมาจรมานอนด้วย อุ่นดี",
+   "en": "The stray dog's sleeping with us — warm"
+  },
+  {
+   "th": "ได้ยินเสียงมอไซค์ไหม... ไม่มีหัวด้วย",
+   "en": "Hear that motorbike?... it has no head"
+  },
+  {
+   "th": "ลังเปียก ฝนตก ชีวิต",
+   "en": "Wet box, rain, life"
+  }
+ ],
+ "skill_tree_thoughts": [
+  {
+   "th": "ถ้าผัดเร็วขึ้น... จะรวยไหมนะ",
+   "en": "If I cook faster... will I get rich?"
+  },
+  {
+   "th": "ล้างจานด้วยใจ... ใจก็สะอาด",
+   "en": "Wash dishes with heart... the heart gets clean"
+  },
+  {
+   "th": "หั่นกระเทียมเร็วๆ นิ้วยังครบไหมนะ",
+   "en": "Chop garlic fast... do I still have all my fingers?"
+  },
+  {
+   "th": "ถ้ามีแขนสี่แขน จะผัดได้สองกระทะ",
+   "en": "With four arms I could work two woks"
+  },
+  {
+   "th": "ไข่ดาวลอยอยู่ในอวกาศ...",
+   "en": "Fried eggs floating in space..."
+  },
+  {
+   "th": "กะเพรา คือ ชีวิต",
+   "en": "Kaprao. Is. Life."
+  },
+  {
+   "th": "เสิร์ฟเร็ว = ทิปเยอะ = ไข่เยอะ",
+   "en": "Serve fast = more tips = more eggs"
+  },
+  {
+   "th": "ถ้าตะหลิวพูดได้ มันจะพูดว่าอะไร",
+   "en": "If the spatula could talk, what would it say?"
+  },
+  {
+   "th": "อัปสกิลนี้แล้ว... เท่ขึ้นไหม",
+   "en": "If I upgrade this... will I look cooler?"
+  },
+  {
+   "th": "กระทะร้อน ใจเย็น",
+   "en": "Hot wok, cool heart"
+  },
+  {
+   "th": "ลืมไปแล้วว่ามาคิดอะไร",
+   "en": "Forgot what I came here to think about"
+  },
+  {
+   "th": "สกิลนอนลังกระดาษ มีไหม",
+   "en": "Is there a sleeping-on-cardboard skill?"
+  },
+  {
+   "th": "ล้างจาน... หรือจานล้างเรา",
+   "en": "Do I wash the dishes... or do the dishes wash me?"
+  },
+  {
+   "th": "ทำไมไข่ดาวกลม... ทำไมโลกกลม",
+   "en": "Why is a fried egg round... why is the world round"
+  }
+ ],
+ "newspaper_headlines": [
+  {
+   "mood": "day1",
+   "th": "4 หนุ่มหมดตัว! ควักเหรียญซื้อรถเข็น 100 บาท",
+   "en": "4 broke guys pool coins, buy a food cart for 100 baht"
+  },
+  {
+   "mood": "day1",
+   "th": "หมาจรฉกหมูสับเกลี้ยงรถเข็น! วันแรกก็ซวยแล้ว",
+   "en": "Stray dog steals all the minced pork — unlucky on day one"
+  },
+  {
+   "mood": "day1",
+   "th": "เปิดร้านวันแรก! ทุนร้อยเดียว ได้มา {money} บาท",
+   "en": "Opening day: started with 100, made {money} baht"
+  },
+  {
+   "mood": "good",
+   "th": "เฮียผัดฟาดเรียบ! ขาย{dish}ได้ {money} บาท",
+   "en": "Hia Phat slays: {dish} earns {money} baht"
+  },
+  {
+   "mood": "good",
+   "th": "คิวยาวถึงปากซอย! ลูกค้า {customers} คน แห่ชิม{dish}",
+   "en": "Queue to the end of the soi — {customers} customers rush for {dish}"
+  },
+  {
+   "mood": "good",
+   "th": "‘{dish}’ ชีเสิร์ฟ! ลูกค้าให้ {rating} ดาว",
+   "en": "'{dish}' serves! Customers give {rating} stars"
+  },
+  {
+   "mood": "good",
+   "th": "ทุบสถิติซอยเก้า! ลูกค้า {customers} คนในวันเดียว",
+   "en": "Soi 9 record: {customers} customers in a single day"
+  },
+  {
+   "mood": "good",
+   "th": "ยอดขายวันที่ {day} พุ่ง {money} บาท! เตรียมซื้อโต๊ะพลาสติกเพิ่ม",
+   "en": "Day {day} sales jump to {money} baht — more plastic tables coming"
+  },
+  {
+   "mood": "good",
+   "th": "ป้าข้างบ้านฟันธง ‘ไข่ดาวเยิ้มที่สุดในซอย’",
+   "en": "Auntie next door declares: 'runniest fried egg in the soi'"
+  },
+  {
+   "mood": "good",
+   "th": "{rating} ดาว! นักชิมสายโหดยอมรับ ‘ถึงเครื่อง’",
+   "en": "{rating} stars! Hardcore foodie admits it's 'proper'"
+  },
+  {
+   "mood": "good",
+   "th": "ถูกหวยก็ไม่ใช่! แต่ขาย{dish}ได้ {money} บาท",
+   "en": "Didn't win the lottery — but {dish} made {money} baht"
+  },
+  {
+   "mood": "good",
+   "th": "ร้านเฮียผัดได้ฉายา ‘กะเพราสิ้นคิด แต่ติดใจ’",
+   "en": "Hia Phat nicknamed 'the no-idea kaprao you can't stop eating'"
+  },
+  {
+   "mood": "good",
+   "th": "แจกข้าวฟรีคนไร้บ้าน! รับพรเต็มกระเป๋า",
+   "en": "Free rice for the homeless man — pockets full of blessings"
+  },
+  {
+   "mood": "bad",
+   "th": "ไฟลุกท่วมกระทะ! กะเพราไหม้ทั้งซอย",
+   "en": "Wok bursts into flames — the whole soi smells of burnt kaprao"
+  },
+  {
+   "mood": "bad",
+   "th": "เค็มปี๋! ลูกค้าโวย ‘ใส่น้ำปลาทั้งขวดเหรอ’",
+   "en": "Way too salty! 'Did you pour in the whole bottle of fish sauce?'"
+  },
+  {
+   "mood": "bad",
+   "th": "จืดสนิท! ลูกค้าถาม ‘ลืมใส่ซอสหรือเปล่า’",
+   "en": "Totally bland: 'Did you forget the sauce?'"
+  },
+  {
+   "mood": "bad",
+   "th": "สั่ง ‘ไม่เผ็ด’ ได้เผ็ดสิบเม็ด! ฝรั่งน้ำตาไหลพราก",
+   "en": "Ordered 'not spicy', got ten chillies — backpacker in tears"
+  },
+  {
+   "mood": "bad",
+   "th": "ลูกค้าบ่น ‘รอนานจนหิวรอบสอง’",
+   "en": "Customers: 'Waited so long I got hungry twice'"
+  },
+  {
+   "mood": "bad",
+   "th": "จานแตก 7 ใบ! เด็กเสิร์ฟมือลื่นกลางร้าน",
+   "en": "7 plates smashed — butter-fingered server"
+  },
+  {
+   "mood": "bad",
+   "th": "โต๊ะเลอะ! แมลงวันจัดปาร์ตี้ ลูกค้าเมินร้าน",
+   "en": "Dirty tables: flies throw a party, customers walk away"
+  },
+  {
+   "mood": "bad",
+   "th": "เสิร์ฟผิดจาน! สั่งไข่เจียว ได้ไข่ดาว",
+   "en": "Wrong dish served: ordered omelette, got fried egg"
+  },
+  {
+   "mood": "bad",
+   "th": "ลืมช้อน! ลูกค้าต้องกินกะเพราด้วยมือ",
+   "en": "No spoon! Customer eats kaprao with bare hands"
+  },
+  {
+   "mood": "bad",
+   "th": "ขาดทุนยับ! เงินเหลือ {money} บาท สี่หนุ่มหารค่าไข่",
+   "en": "Heavy losses: {money} baht left, four guys split the egg money"
+  },
+  {
+   "mood": "bad",
+   "th": "ฝนถล่มซอยเก้า รถติดยาว ลูกค้ามาแค่ {customers} คน",
+   "en": "Rain hammers Soi 9, traffic jam — only {customers} customers"
+  },
+  {
+   "mood": "bad",
+   "th": "ขึ้นราคาไม่ดูตาม้าตาเรือ! ลูกค้าบ่น ‘แพงกว่าห้าง’",
+   "en": "Reckless price hike: 'more expensive than the mall!'"
+  },
+  {
+   "mood": "event",
+   "th": "หนุ่มเสื้อกล้ามตบหัวกันกลางร้าน ลูกค้างง ‘อิหยังวะ’",
+   "en": "Singlet guys slap each other mid-service; customers: 'what the heck?'"
+  },
+  {
+   "mood": "event",
+   "th": "ผีกระสือโผล่หน้าร้านตีสอง ขอกะเพราไม่เผ็ด!",
+   "en": "Krasue ghost shows up at 2 a.m., orders kaprao, not spicy"
+  },
+  {
+   "mood": "event",
+   "th": "ผีมอไซค์ไร้หัว แวะซื้อกะเพรากลับบ้าน",
+   "en": "Headless motorbike ghost stops for kaprao to go"
+  },
+  {
+   "mood": "event",
+   "th": "นอนลังกระดาษ! เจ้าของร้านดังยังไม่มีบ้านอยู่",
+   "en": "Sleeping on cardboard: the famous shop owners still have no home"
+  },
+  {
+   "mood": "event",
+   "th": "หมาจรสุดฟิน! ย้ายมาเฝ้าหน้าร้านเฮียผัดถาวร",
+   "en": "Happy stray dog moves in to guard Hia Phat for good"
+  },
+  {
+   "mood": "event",
+   "th": "แมวส้มบุกร้าน! นอนบนกระสอบข้าว ลูกค้าแห่ถ่ายรูป",
+   "en": "Orange cat invades, naps on the rice sack, customers take photos"
+  },
+  {
+   "mood": "event",
+   "th": "กะเพราใส่ถั่วฝักยาว!? ชมรมกะเพราแท้บุกประท้วง",
+   "en": "Kaprao with long beans?! Purist kaprao club stages a protest"
+  },
+  {
+   "mood": "event",
+   "th": "แม่ค้าส้มตำเปิดศึก! ตั้งร้านประกบเฮียผัด",
+   "en": "Som tam lady declares war, sets up right next to Hia Phat"
+  },
+  {
+   "mood": "event",
+   "th": "ลุงเจ้าของรถเข็นแอบกลับมาดู ‘ไอ้หนุ่มพวกนี้มันไปได้’",
+   "en": "The old cart owner sneaks back: 'these boys might make it'"
+  },
+  {
+   "mood": "event",
+   "th": "ป้าส่ง ‘สวัสดีวันจันทร์’ ลงกลุ่มไลน์ร้าน 48 รูป",
+   "en": "Auntie posts 48 'Happy Monday' flower images in the shop LINE group"
+  },
+  {
+   "mood": "event",
+   "th": "เลขเด็ดจากก้นกระทะ! ลูกค้าแห่ส่องคราบไหม้หาเลข",
+   "en": "Lucky numbers in the burnt wok — customers read the scorch marks"
+  }
+ ],
+ "shop_names": [
+  {
+   "th": "เฮียผัด",
+   "en": "Hia Phat (Big Bro Stir-fry)"
+  },
+  {
+   "th": "กะเพราสี่สหาย",
+   "en": "Four Friends Kaprao"
+  },
+  {
+   "th": "ตามสั่งหมดตัว",
+   "en": "Broke Made-to-Order"
+  },
+  {
+   "th": "ร้อยบาทสร้างตัว",
+   "en": "100-Baht Comeback"
+  },
+  {
+   "th": "กะเพราลังกระดาษ",
+   "en": "Cardboard Kaprao"
+  },
+  {
+   "th": "ไข่ดาวไม่สุก",
+   "en": "Runny Egg"
+  },
+  {
+   "th": "เฮียผัด สาขาซอยเก้า",
+   "en": "Hia Phat, Soi 9 branch"
+  },
+  {
+   "th": "ครัวคนเคยรวย",
+   "en": "Kitchen of the Formerly Rich"
+  },
+  {
+   "th": "ผัดไปบ่นไป",
+   "en": "Stir and Grumble"
+  },
+  {
+   "th": "ตามสั่งตามใจ",
+   "en": "Order As You Like"
+  }
+ ],
+ "convenience_store_clerk": {
+  "door_chime": "ติ๊งต่อง (two-tone door chime, plays on enter/exit)",
+  "greet": [
+   {
+    "th": "สวัสดีค่ะ ยินดีต้อนรับค่ะ",
+    "en": "Hello, welcome!"
+   },
+   {
+    "th": "สวัสดีครับ ยินดีต้อนรับครับ",
+    "en": "Hello, welcome! (male)"
+   }
+  ],
+  "upsell": [
+   {
+    "th": "รับขนมจีบซาลาเปาเพิ่มไหมคะ",
+    "en": "Would you like dumplings or buns?"
+   },
+   {
+    "th": "ไส้กรอกชิ้นที่สองลดครึ่งราคานะคะ",
+    "en": "Second sausage half price"
+   },
+   {
+    "th": "สะสมแสตมป์ไหมคะ",
+    "en": "Collect stamps?"
+   },
+   {
+    "th": "อุ่นไหมคะ",
+    "en": "Shall I heat it?"
+   },
+   {
+    "th": "รับถุงไหมคะ",
+    "en": "Need a bag?"
+   }
+  ],
+  "checkout": [
+   {
+    "th": "ทั้งหมด {total} บาทค่ะ",
+    "en": "That's {total} baht"
+   },
+   {
+    "th": "รับเงิน {money} บาท ทอน {change} บาทค่ะ",
+    "en": "Received {money}, your change is {change}"
+   },
+   {
+    "th": "มีบัตรสมาชิกไหมคะ",
+    "en": "Do you have a member card?"
+   },
+   {
+    "th": "สแกนจ่ายได้ค่ะ",
+    "en": "You can scan to pay"
+   }
+  ],
+  "bye": [
+   {
+    "th": "ขอบคุณค่ะ",
+    "en": "Thank you"
+   },
+   {
+    "th": "ขอบคุณครับ แล้วแวะมาใหม่นะครับ",
+    "en": "Thanks, come again"
+   }
+  ]
+ },
+ "motorbike_taxi": {
+  "call": [
+   {
+    "th": "ไปไหนครับ",
+    "en": "Where to?"
+   },
+   {
+    "th": "ซ้อนไหมพี่",
+    "en": "Need a ride?"
+   },
+   {
+    "th": "วินครับวิน",
+    "en": "Motorbike taxi!"
+   }
+  ],
+  "price": [
+   {
+    "th": "ปากซอยยี่สิบ",
+    "en": "Soi entrance, twenty"
+   },
+   {
+    "th": "ตลาดสี่สิบ",
+    "en": "Market, forty"
+   },
+   {
+    "th": "ไกลนะนั่น ห้าสิบ",
+    "en": "That's far, fifty"
+   }
+  ],
+  "ride": [
+   {
+    "th": "จับแน่นๆ นะ",
+    "en": "Hold on tight"
+   },
+   {
+    "th": "หมวกไม่มี ไม่เป็นไรใกล้ๆ",
+    "en": "No helmet, it's fine, it's close"
+   },
+   {
+    "th": "ทางลัดครับ",
+    "en": "Shortcut!"
+   },
+   {
+    "th": "รถติดอีกแล้ว ฝนตกทีไรติดทุกที",
+    "en": "Traffic again — every time it rains"
+   }
+  ]
+ },
+ "songthaew": [
+  {
+   "th": "ไปไหน",
+   "en": "Where you going?"
+  },
+  {
+   "th": "ขึ้นเลยๆ ทางเดียวกัน",
+   "en": "Hop on, same way"
+  },
+  {
+   "th": "สิบบาทตลอดสาย",
+   "en": "Ten baht the whole route"
+  },
+  {
+   "th": "กดกริ่งด้วยนะ",
+   "en": "Press the buzzer"
+  }
+ ],
+ "monk": {
+  "note": "Respectful only. No slapping/snatching on monks (interaction disabled). Players should bow (ไหว้) and offer food in the morning; women do not hand items directly to a monk.",
+  "player_offer": [
+   {
+    "th": "นิมนต์ครับหลวงพี่",
+    "en": "Please, venerable brother (inviting to receive alms)"
+   },
+   {
+    "th": "ขอถวายกะเพราครับ",
+    "en": "May I offer this kaprao"
+   },
+   {
+    "th": "กราบนมัสการครับ",
+    "en": "I pay my respects"
+   }
+  ],
+  "monk_lines": [
+   {
+    "th": "เจริญพร",
+    "en": "Blessings (monk's polite greeting/thanks)"
+   },
+   {
+    "th": "ขอให้เจริญในธรรม",
+    "en": "May you prosper in the dhamma"
+   },
+   {
+    "th": "อายุ วัณโณ สุขัง พะลัง",
+    "en": "Long life, beauty, happiness, strength (standard short blessing)"
+   },
+   {
+    "th": "ทำงานสุจริตนะโยม",
+    "en": "Work honestly, layman"
+   },
+   {
+    "th": "ขายดีๆ นะโยม อย่าลืมแบ่งปัน",
+    "en": "May your shop do well; remember to share"
+   },
+   {
+    "th": "อาตมาฉันเพลแล้ว ขอบใจโยม",
+    "en": "I've already had my meal, thank you"
+   }
+  ]
+ },
+ "loudspeaker_vendors": {
+  "junk_buyer_truck": [
+   {
+    "th": "รับซื้อ ทีวีเก่า ตู้เย็นเก่า แอร์เก่า เครื่องซักผ้าเก่า",
+    "en": "Buying old TVs, old fridges, old ACs, old washing machines"
+   },
+   {
+    "th": "ขายได้ค่ะ ของเก่า เสียแล้ว พังแล้ว ขายได้",
+    "en": "Sell them! Old, broken, busted — we buy"
+   }
+  ],
+  "ice_cream_cart": "กริ๊งๆๆ (hand bell) + 'ไอติมจ้า ไอติมกะทิ'",
+  "lottery_seller": [
+   {
+    "th": "หวยจ้า หวย เลขสวยๆ",
+    "en": "Lottery, lottery, pretty numbers"
+   },
+   {
+    "th": "งวดนี้เลขเด็ด เหลือใบสุดท้าย",
+    "en": "Hot numbers this draw, last ticket"
+   }
+  ],
+  "fruit_pickup": [
+   {
+    "th": "มะม่วงจ้า มะม่วง สามกิโลร้อย",
+    "en": "Mangoes, three kilos a hundred"
+   }
+  ]
+ },
+ "ambient_chatter": {
+  "morning": [
+   {
+    "th": "ตักบาตรเสร็จยัง",
+    "en": "Done giving alms?"
+   },
+   {
+    "th": "กาแฟโบราณแก้วนึง",
+    "en": "One old-style coffee"
+   },
+   {
+    "th": "รถติดตั้งแต่หกโมง",
+    "en": "Traffic since six"
+   },
+   {
+    "th": "สวัสดีวันจันทร์จ้า (ป้าส่งรูปดอกไม้ในไลน์)",
+    "en": "Happy Monday! (auntie sends flower pics on LINE)"
+   },
+   {
+    "th": "ไปทำงานสายอีกแล้ว",
+    "en": "Late for work again"
+   }
+  ],
+  "noon": [
+   {
+    "th": "เที่ยงนี้กินอะไรดี",
+    "en": "What's for lunch?"
+   },
+   {
+    "th": "อะไรก็ได้",
+    "en": "Whatever"
+   },
+   {
+    "th": "ร้อนจะตายอยู่แล้ว",
+    "en": "So hot I'm dying"
+   },
+   {
+    "th": "คิวยาวจัง",
+    "en": "Such a long queue"
+   },
+   {
+    "th": "ทักแชทมาได้เลยค่ะ ราคาเป็นกันเอง",
+    "en": "DM us, friendly prices! (online seller)"
+   }
+  ],
+  "afternoon": [
+   {
+    "th": "ฝนจะตกแล้ว เก็บผ้า!",
+    "en": "Rain's coming, bring in the laundry!"
+   },
+   {
+    "th": "รถติดเพราะฝนตก",
+    "en": "Traffic because of the rain"
+   },
+   {
+    "th": "ไลฟ์สดขายของ CF ได้เลยค่ะ",
+    "en": "Live-selling — comment CF to buy!"
+   },
+   {
+    "th": "เด็กนักเรียนเลิกแล้ว",
+    "en": "School's out"
+   }
+  ],
+  "evening": [
+   {
+    "th": "ตลาดนัดเปิดแล้ว",
+    "en": "Night market's open"
+   },
+   {
+    "th": "ส้มตำครกนึง ปูปลาร้า",
+    "en": "One som tam with pickled crab"
+   },
+   {
+    "th": "เล่นบอลกันไหม",
+    "en": "Football, anyone?"
+   },
+   {
+    "th": "ไปกินหมูกระทะกัน",
+    "en": "Let's go eat moo kratha"
+   }
+  ],
+  "night": [
+   {
+    "th": "ดึกแล้ว กลับบ้านเถอะ",
+    "en": "It's late, go home"
+   },
+   {
+    "th": "ได้ยินเสียงอะไรไหม",
+    "en": "Did you hear something?"
+   },
+   {
+    "th": "เซเว่น... เอ้ย 8-Twelve ยังเปิดอยู่",
+    "en": "Seven... I mean 8-Twelve is still open"
+   },
+   {
+    "th": "หมาหอนอีกแล้ว",
+    "en": "The dogs are howling again"
+   }
+  ],
+  "late_night": [
+   {
+    "th": "ซอยนี้ผีดุนะ",
+    "en": "Ghosts in this soi are fierce"
+   },
+   {
+    "th": "อย่าเหลียวหลัง",
+    "en": "Don't look back"
+   },
+   {
+    "th": "ใครมาซื้อกะเพราตอนตีสอง",
+    "en": "Who buys kaprao at 2 a.m.?"
+   }
+  ]
+ },
+ "memes_and_slang_quick": [
+  {
+   "th": "555",
+   "en": "lol (5 = ha)"
+  },
+  {
+   "th": "ตึงๆ",
+   "en": "hardcore / intense"
+  },
+  {
+   "th": "อิหยังวะ",
+   "en": "what the heck (Isan)"
+  },
+  {
+   "th": "ชีเสิร์ฟ",
+   "en": "she serves / slays (2025)"
+  },
+  {
+   "th": "ฉ่ำ",
+   "en": "a lot / very (2023)"
+  },
+  {
+   "th": "เกิดแต่กับกู",
+   "en": "why does this only happen to me (2025)"
+  },
+  {
+   "th": "จึ้ง",
+   "en": "wow, stunning"
+  },
+  {
+   "th": "เกือบตุย",
+   "en": "almost died"
+  },
+  {
+   "th": "ปังมาก",
+   "en": "awesome"
+  },
+  {
+   "th": "นอยด์",
+   "en": "paranoid / upset"
+  },
+  {
+   "th": "เท",
+   "en": "to ghost / dump someone"
+  },
+  {
+   "th": "ตัวตึง",
+   "en": "the hardcore one / big shot"
+  }
+ ]
+}

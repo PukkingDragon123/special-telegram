@@ -207,7 +207,7 @@ function drawRecipeRight(c: CanvasRenderingContext2D, R: Recipe, ok: boolean, se
 
 export class RecipeBook {
   private group: THREE.Group | null = null;
-  private left!: THREE.Mesh; private right!: THREE.Mesh; private flipper!: THREE.Mesh;
+  private left!: THREE.Mesh; private right!: THREE.Mesh; private flipper!: THREE.Mesh; private flipBack!: THREE.Mesh;
   private flipGeo!: THREE.BufferGeometry; private flipBase!: Float32Array;
   private cache = new Map<string, THREE.CanvasTexture>();
   open = false;
@@ -272,7 +272,9 @@ export class RecipeBook {
     // the turning page
     this.flipGeo = pageGeo(1);
     this.flipBase = new Float32Array((this.flipGeo.getAttribute('position') as THREE.BufferAttribute).array);
-    this.flipper = new THREE.Mesh(this.flipGeo, new THREE.MeshBasicMaterial({ color: 0xf4f0e6, side: THREE.DoubleSide }));
+    this.flipper = new THREE.Mesh(this.flipGeo, new THREE.MeshBasicMaterial({ color: 0xf4f0e6, side: THREE.FrontSide }));
+    this.flipBack = new THREE.Mesh(this.flipGeo, new THREE.MeshBasicMaterial({ color: 0xf4f0e6, side: THREE.BackSide }));
+    this.flipper.add(this.flipBack);
     this.flipper.visible = false;
     g.add(this.flipper);
     // cover boards + spiral
@@ -282,7 +284,7 @@ export class RecipeBook {
     const ringG = new THREE.TorusGeometry(0.009, 0.0016, 4, 10);
     const ringM = new THREE.MeshBasicMaterial({ color: 0x9a9a9a });
     for (let i = 0; i < 12; i++) { const ring = new THREE.Mesh(ringG, ringM); ring.rotation.y = Math.PI / 2; ring.position.set(0, -H / 2 + 0.015 + i * 0.022, 0.004); g.add(ring); }
-    g.traverse((o: any) => { if (o.isMesh) { o.renderOrder = 2000; o.material.depthTest = false; o.raycast = () => {}; } });
+    g.traverse((o: any) => { if (o.isMesh) { o.renderOrder = 2000; o.raycast = () => {}; o.frustumCulled = false; } });
     this.group = g;
     return g;
   }
@@ -334,6 +336,14 @@ export class RecipeBook {
     // the page that turns shows the old right page (forward) or new right page (back)
     fm.map = dir > 0 ? this.pageTex(this.spread, 1) : this.pageTex(to, 1);
     fm.needsUpdate = true;
+    // the back of the turning page = the left page it becomes (mirrored UVs so it reads correctly)
+    const backSrc = dir > 0 ? this.pageTex(to, 0) : this.pageTex(this.spread, 0);
+    const bm = this.flipBack.material as THREE.MeshBasicMaterial;
+    bm.map?.dispose();
+    const bt = backSrc.clone();
+    bt.wrapS = THREE.RepeatWrapping; bt.repeat.set(-1, 1); bt.offset.set(1, 0);
+    bm.map = bt;
+    bm.needsUpdate = true;
     if (dir > 0) { (this.right.material as THREE.MeshBasicMaterial).map = this.pageTex(to, 1); }
     else { (this.left.material as THREE.MeshBasicMaterial).map = this.pageTex(to, 0); }
     (this.right.material as THREE.Material).needsUpdate = true;

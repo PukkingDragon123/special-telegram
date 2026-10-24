@@ -1,0 +1,14 @@
+[
+ {"out": "shop_massage_nuat_red.png", "src": "4d5887a3", "quad": [[0,250],[1920,250],[1920,2408],[0,2408]], "w_m": 0.9, "h_m": 1.0, "px": 768, "mask": "rect", "wb": 0.1,
+  "th": "นวด Massage", "en": "Red 'นวด / Massage' sign board (bold white Thai)", "mount": "wall / standing A-board", "kind": "shop sign (massage)"},
+ {"out": "shop_dental_clinic_tooth.png", "src": "45f709d3", "quad": [[848,64],[1160,104],[1160,330],[848,346]], "w_m": 1.4, "h_m": 1.0, "px": 512, "mask": "rect", "wb": 0.25,
+  "th": "DENTAL CLINIC ทำฟัน-ใส่ฟัน ถอนฟัน-อุดฟัน", "en": "Dental-clinic sign with cartoon tooth (Ratchathewi, Bangkok); partial crop", "mount": "projecting box sign / wall", "kind": "shop sign (clinic)"},
+ {"out": "blank_metal_sign_rusty_posts.png", "src": "ee008476", "quad": [[57,97],[642,97],[642,418],[57,418]], "w_m": 1.8, "h_m": 1.0, "px": 1024, "mask": "round:0.04", "wb": 0.15,
+  "th": "(ว่าง)", "en": "BLANK rusty painted-metal sign board (print your own text/image on it; legs not included)", "mount": "standing on 2 posts / wall", "kind": "blank carrier"},
+ {"out": "blank_metal_sign_white_rust_frame.png", "src": "5799351b", "quad": [[26,28],[455,28],[455,295],[26,295]], "w_m": 1.6, "h_m": 1.0, "px": 512, "mask": "rect", "wb": 0.1,
+  "th": "(ว่าง)", "en": "BLANK white enamel/painted board with rust, hung in a dark steel frame", "mount": "frame on pole", "kind": "blank carrier"},
+ {"out": "blank_vinyl_banner_grommets.png", "src": "581dbead", "quad": [[87,121],[617,121],[617,394],[87,394]], "w_m": 2.0, "h_m": 1.0, "px": 1024, "mask": "rect", "wb": 0.1,
+  "th": "(ว่าง)", "en": "BLANK white vinyl banner with metal grommets (print a banner design on it)", "mount": "tied with rope to frame / fence", "kind": "blank carrier"},
+ {"out": "blank_lightbox_vertical.png", "src": "c1af38ec", "quad": [[218,63],[485,63],[485,573],[218,573]], "w_m": 0.6, "h_m": 1.15, "px": 768, "mask": "round:0.06", "wb": 0.05,
+  "th": "(ว่าง)", "en": "BLANK projecting light-box frame (white face = emissive area)", "mount": "projecting from wall on bracket", "kind": "blank carrier"}
+]

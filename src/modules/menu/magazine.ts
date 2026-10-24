@@ -75,6 +75,7 @@ export class Thumbnailer {
   get pending() { return this.queue.length; }
   clear() { this.queue.length = 0; }
 
+  private cool = 30;
   private cur: { job: { look: Look; framing: Framing; cb: (c: HTMLCanvasElement) => void }; rig: any; frames: number; ready: number } | null = null;
 
   /** true when every mesh's atlas texture of the rig has been painted (characters paint them async) */
@@ -91,10 +92,12 @@ export class Thumbnailer {
   /** advance the thumbnail pipeline (call once per frame): create rig → wait for its atlas → render */
   step() {
     if (!this.cur) {
+      if (--this.cool > 0) return;
       const job = this.queue.shift();
       if (!job) return;
+      this.cool = 8; // spread rig builds over frames (each build costs a few ms on 'low' LOD)
       try {
-        const rig: any = this.game.chars.create(job.look, { lod: 'high', castShadow: false });
+        const rig: any = this.game.chars.create(job.look, { lod: 'low', castShadow: false });
         rig.play('idle', { loop: true, fade: 0 });
         rig.setMove(0);
         rig.root.rotation.y = Math.PI + 0.42; // 3/4 view toward the camera

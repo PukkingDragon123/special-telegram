@@ -206,21 +206,28 @@ def rectify(img, quad, out_w, out_h):
     return cv2.warpPerspective(img, M, (out_w, out_h), flags=cv2.INTER_LANCZOS4, borderMode=cv2.BORDER_REPLICATE)
 
 
-def make_seamless(a, border=0.2, seed=7):
-    """Blend with half-offset copy through a noisy cross mask (organic textures)."""
-    h, w = a.shape[:2]
-    off = np.roll(np.roll(a, h // 2, 0), w // 2, 1)
-    yy = np.abs(np.linspace(-1, 1, h))[:, None]
-    xx = np.abs(np.linspace(-1, 1, w))[None, :]
-    m = np.maximum(smoothstep(1 - border * 2, 1.0, yy), smoothstep(1 - border * 2, 1.0, xx))
+def _noisy_ramp(n, m, border, seed):
+    """mask (n x m) rising to 1 at both ends of axis 0 with a wobbly boundary."""
+    t = np.abs(np.linspace(-1, 1, n))[:, None]
     rng = np.random.default_rng(seed)
-    n = rng.standard_normal((h // 24 + 2, w // 24 + 2)).astype(np.float32)
-    n = cv2.resize(n, (w, h), interpolation=cv2.INTER_CUBIC)
-    m = np.clip(m * 1.4 + n * 0.25, 0, 1)
-    m = smoothstep(0.3, 0.7, m)
+    nz = rng.standard_normal((n // 24 + 2, m // 24 + 2)).astype(np.float32)
+    nz = cv2.resize(nz, (m, n), interpolation=cv2.INTER_CUBIC)
+    nz = cv2.GaussianBlur(nz, (0, 0), 3)
+    return smoothstep(1 - border * 2, 1.0 - border * 0.4, t + nz * border * 0.35)
+
+
+def make_seamless(a, border=0.2, seed=7):
+    """Two-pass seam removal: blend with a Y-rolled copy near top/bottom, then with an
+    X-rolled copy near left/right (single-axis rolls -> no cross-shaped seams)."""
+    h, w = a.shape[:2]
+    my = _noisy_ramp(h, w, border, seed)
     if a.ndim == 3:
-        m = m[..., None]
-    return a * (1 - m) + off * m
+        my = my[..., None]
+    b = a * (1 - my) + np.roll(a, h // 2, 0) * my
+    mx = _noisy_ramp(w, h, border, seed + 1).T
+    if a.ndim == 3:
+        mx = mx[..., None]
+    return b * (1 - mx) + np.roll(b, w // 2, 1) * mx
 
 
 def seamless_x(a, border=0.15):
@@ -269,8 +276,11 @@ def gray_world(rgb, strength=0.5):
 
 def even_light(rgb, sigma_frac=0.25, strength=0.7):
     """Remove large-scale lighting gradients (keeps local detail)."""
-    l = lum(rgb)
-    s = max(4, int(min(l.shape) * sigma_frac))
-    big = cv2.GaussianBlur(l, (0, 0), s)
+    l = lum(np.ascontiguousarray(rgb, np.float32)).astype(np.float32)
+    h, w = l.shape
+    f = 128.0 / max(h, w)
+    small = cv2.resize(l, (max(8, int(w * f)), max(8, int(h * f))), interpolation=cv2.INTER_AREA)
+    s = max(1.0, min(small.shape) * sigma_frac)
+    big = cv2.resize(cv2.GaussianBlur(small, (0, 0), s), (w, h), interpolation=cv2.INTER_CUBIC)
     gain = (big.mean() / np.maximum(big, 0.03)) ** strength
     return np.clip(rgb * gain[..., None], 0, 1)

@@ -195,7 +195,7 @@ def photo_menu(filled):
         P.text((x0 + 12, y0 + 280), th, F("NotoSansThaiLooped@800w87", 40), "K", anchor="ls", max_w=cw - 24)
         P.text((x0 + 12, y0 + 310), en, F("Trirong-Bold", 21), (0, 0, 0, 0.6), anchor="ls", contone=True, max_w=cw - 24)
         # price slot: yellow circle sticker printed with "บาท"
-        pcx, pcy, pr = x0 + cw - 62, y0 + 222, 54
+        pcx, pcy, pr = x0 + cw - 62, y0 + 168, 54
         circ = Image.new("L", (2 * pr + 2, 2 * pr + 2), 0)
         ImageDraw.Draw(circ).ellipse((0, 0, 2 * pr, 2 * pr), fill=255)
         P.mask(np.asarray(circ, f32) / 255, (pcx - pr, pcy - pr), "yellow")
@@ -292,8 +292,12 @@ def chalkboard(filled):
     scribble(lay, [(190, 1110), (192, 1112)], width=10, seed=44)
     scribble(lay, [(250, 1110), (252, 1112)], width=10, seed=45)
     scribble(lay, [(180, 1150), (220, 1175), (262, 1150)], width=6, seed=46)
+    lay = lay.filter(ImageFilter.MaxFilter(3))
+    yel = yel.filter(ImageFilter.MaxFilter(3))
     out = ink_composite(base, lay, "#F3F1EA", kind="chalk", seed=7)
+    out = ink_composite(out, lay, "#F3F1EA", kind="chalk", seed=17, opacity=0.6)
     out = ink_composite(out, yel, "#F6E27A", kind="chalk", seed=8)
+    out = ink_composite(out, yel, "#F6E27A", kind="chalk", seed=18, opacity=0.6)
     return to_img(out), regions
 
 
@@ -311,10 +315,10 @@ def poster_monday():
     for dx, dy in ((6, 6),):
         P.text((W / 2 + dx, 210 + dy), "สวัสดี", t1, (0.7, 0.9, 0, 0.5), anchor="mm", contone=True, stroke=10)
     P.text((W / 2, 210), "สวัสดี", t1, "white", anchor="mm", stroke=14)
-    P.text((W / 2, 210), "สวัสดี", t1, "magenta", anchor="mm")
+    P.text((W / 2, 210), "สวัสดี", t1, (0.1, 1, 0.25, 0.15), anchor="mm")
     t2 = F("Charmonman-Bold", 150)
     P.text((W / 2, 400), "วันจันทร์", t2, "white", anchor="mm", stroke=14)
-    P.text((W / 2, 400), "วันจันทร์", t2, (0, 0.2, 1, 0), anchor="mm")
+    P.text((W / 2, 400), "วันจันทร์", t2, (0, 0.55, 1, 0.1), anchor="mm")
     blessings = ["ขอให้มีความสุข สุขภาพแข็งแรง", "ร่ำรวยเงินทอง ค้าขายร่ำรวย", "คิดสิ่งใดสมปรารถนานะคะ"]
     y = H - 330
     for b in blessings:
@@ -380,7 +384,7 @@ def poster_room():
     P.text((W / 2, 160), "ห้องว่าง", F("NotoSansThaiLooped@900w75", 210), "red", anchor="mm")
     P.text((W / 2, 330), "ให้เช่า", F("NotoSansThaiLooped@900w75", 170), "red", anchor="mm")
     P.image((110, 440, W - 110, 860), ph("ads/apartment_facade.jpg"), "cmyk", contrast=1.1)
-    feats = ["✓ แอร์ ✓ เฟอร์ฯ ✓ น้ำอุ่น ✓ WiFi ฟรี", "ใกล้ 8-Twelve ใกล้วินมอไซค์ ปากซอยเก้า", "รายเดือน 3,500.- (น้ำไฟตามมิเตอร์)", "ไม่รับสัตว์เลี้ยง (หมาจรก็ไม่รับ)"]
+    feats = ["แอร์ · เฟอร์ฯ · น้ำอุ่น · WiFi ฟรี", "ใกล้ 8-Twelve ใกล้วินมอไซค์ ปากซอยเก้า", "รายเดือน 3,500.- (น้ำไฟตามมิเตอร์)", "ไม่รับสัตว์เลี้ยง (หมาจรก็ไม่รับ)"]
     y = 940
     for t in feats:
         P.text((W / 2, y), t, F("Sarabun-ExtraBold", 44), "K", anchor="mm", max_w=W - 100)
@@ -437,8 +441,9 @@ def poster_molam():
     P.rect((0, 900, W, H), (0.0, 1.0, 0.2, 0.15))
     P.text((W / 2, 120), "หมอลำซิ่ง!!", F("NotoSansThaiLooped@900w75", 160), "yellow", anchor="mm", stroke=6)
     P.text((W / 2, 120), "หมอลำซิ่ง!!", F("NotoSansThaiLooped@900w75", 160), "red", anchor="mm")
-    P.text((W / 2, 260), "คณะเสียงแคนแสนซิ่ง", F("Pattaya-Regular", 96), None, anchor="mm", stroke=4)
-    P.text((W / 2, 260), "คณะเสียงแคนแสนซิ่ง", F("Pattaya-Regular", 96), "yellow", anchor="mm")
+    P.rect((0, 205, W, 315), (0, 0, 0, 0.85), contone=True)
+    P.text((W / 2, 260), "คณะเสียงแคนแสนซิ่ง", F("Chonburi-Regular", 84), None, anchor="mm", stroke=4)
+    P.text((W / 2, 260), "คณะเสียงแคนแสนซิ่ง", F("Chonburi-Regular", 84), "yellow", anchor="mm")
     singers = [("น้องแพรวพราว ลำซิ่ง", "yellow"), ("บักเสือ สะออน", None), ("พี่แป๋ว แคนทองคำ", "yellow")]
     y = 980
     for t, c in singers:
@@ -446,7 +451,7 @@ def poster_molam():
         y += 92
     P.rect((60, 1250, W - 60, 1330), "yellow")
     P.text((W / 2, 1292), "ลานวัดศรีซอยเก้า · ส. 21 พ.ย. · 2 ทุ่มเป็นต้นไป", F("NotoSansThaiLooped@800w87", 40), "red", anchor="mm", max_w=W - 140)
-    P.text((W / 2, 1395), "บัตรผ่านประตู 100.- · เด็กต่ำกว่า 120 ซม. ฟรี · ม่วนซื่น โฮแซว!", F("Sarabun-ExtraBold", 34), None, anchor="mm", max_w=W - 60)
+    P.text((W / 2, 1395), "บัตรผ่านประตู 100.- · เด็กต่ำกว่า 120 ซม. ฟรี · ม่วนซื่น โฮแซว!", F("Sarabun-ExtraBold", 34), None, anchor="mm", max_w=W - 260)
     out = gloss_print(P, paper, 72, cell=3.0)
     return wall_wear(out, seed=73, fade=0.3, torn=True), ["posters/concert_stage.jpg"]
 
@@ -516,20 +521,32 @@ def promo(kind):
     return img, [photo]
 
 
+ONLY = set(a for a in sys.argv[1:])
+
+
+def want(name):
+    return not ONLY or any(o in name for o in ONLY)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    if ONLY and os.path.exists(OUT + "manifest.json"):
+        MAN["files"].update(json.load(open(OUT + "manifest.json", encoding="utf-8"))["files"])
     for filled in (False, True):
+      if want("menu_laminated"):
         img, reg = photo_menu(filled)
         save(img, f"menu_laminated_photo{'_example' if filled else ''}.png",
              "laminated อาหารตามสั่ง photo menu (10 dishes). Game draws prices in regions.slots[].price (yellow circles)", reg,
              [d[2] for d in DISHES], kind="menu_photo")
+      if want("menu_cardboard"):
         img, reg = cardboard_menu(filled)
         save(img, f"menu_cardboard_handwritten{'_example' if filled else ''}.png",
              "hand-written marker menu on real corrugated cardboard; game writes prices with Sriracha + jitter", reg, [], kind="menu_cardboard")
+      if want("aframe"):
         img, reg = chalkboard(filled)
         save(img, f"aframe_chalkboard{'_example' if filled else ''}.jpg",
              "A-frame chalkboard face (real chalkboard photo); game writes chalk prices", reg, ["posters/chalkboard_real.jpg"], kind="menu_chalkboard")
-        print("menus", filled)
+      print("menus", filled)
     for fn, name, note in [(poster_monday, "poster_sawasdee_wan_jan.png", "auntie LINE-style 'Happy Monday' flower greeting, printed and taped up"),
                            (poster_missing_dog, "poster_missing_dog.png", "photocopied missing-dog poster with tear-off tabs (2 torn)"),
                            (poster_room, "poster_room_for_rent.png", "ห้องว่างให้เช่า poster with tear-off tabs"),
@@ -537,15 +554,19 @@ def main():
                            (poster_temple_fair, "poster_temple_fair.png", "งานวัด temple fair poster (respectful)"),
                            (poster_molam, "poster_molam_concert.png", "mo lam concert poster, made-up troupe & singers"),
                            (poster_hippo, "poster_hippo_moodueng.png", "cute pygmy-hippo poster, parody name 'น้องหมูดึ๋ง'")]:
+        if not want(name):
+            continue
         img, photos = fn()
         save(img, name, note, None, photos, kind="community_poster")
         print(name)
     for k in ("sausage", "thai_tea", "kaprao"):
+        if not want(f"promo_8twelve_{k}"):
+            continue
         img, photos = promo(k)
         save(img, f"promo_8twelve_{k}.png", f"8-Twelve in-store promo ({k})", None, photos, kind="store_promo")
     # web size: palette-quantise big PNGs with alpha kept
     for name in list(MAN["files"]):
-        if name.endswith(".png"):
+        if name.endswith(".png") and want(name):
             p = OUT + name
             im = Image.open(p).convert("RGBA")
             q = im.quantize(colors=256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.FLOYDSTEINBERG)
