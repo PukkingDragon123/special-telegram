@@ -82,31 +82,13 @@
    "h": 428
   },
   {
-   "id": "massage_neon_box",
-   "file": "signs/massage_neon_box.jpg",
-   "cat": "massage",
-   "glow": 1,
-   "aspect": 1.44,
-   "w": 471,
-   "h": 327
-  },
-  {
    "id": "food_birdnest",
    "file": "signs/food_birdnest.jpg",
    "cat": "food,shop,eatery",
    "glow": 0,
-   "aspect": 2.965,
+   "aspect": 2.909,
    "w": 768,
-   "h": 259
-  },
-  {
-   "id": "banner_muaythai",
-   "file": "signs/banner_muaythai.jpg",
-   "cat": "banner,old",
-   "glow": 0,
-   "aspect": 1.757,
-   "w": 768,
-   "h": 437
+   "h": 264
   },
   {
    "id": "neon_coffee_bar",
@@ -118,15 +100,6 @@
    "h": 411
   },
   {
-   "id": "old_roof_billboard",
-   "file": "signs/old_roof_billboard.jpg",
-   "cat": "old",
-   "glow": 0,
-   "aspect": 2.743,
-   "w": 768,
-   "h": 280
-  },
-  {
    "id": "street_dir_pier",
    "file": "signs/street_dir_pier.jpg",
    "cat": "street_dir",
@@ -134,15 +107,6 @@
    "aspect": 2.834,
    "w": 768,
    "h": 271
-  },
-  {
-   "id": "massage_may_neon",
-   "file": "signs/massage_may_neon.jpg",
-   "cat": "massage,salon",
-   "glow": 1,
-   "aspect": 6.095,
-   "w": 768,
-   "h": 126
   },
   {
    "id": "int_conv_shelves",
@@ -233,6 +197,276 @@
    "aspect": 1.681,
    "w": 768,
    "h": 457
+  },
+  {
+   "id": "produce_chili_red",
+   "file": "signs/produce_chili_red.jpg",
+   "cat": "produce:chili,produce",
+   "glow": 0,
+   "aspect": 1.333,
+   "w": 640,
+   "h": 480
+  },
+  {
+   "id": "produce_chili_green",
+   "file": "signs/produce_chili_green.jpg",
+   "cat": "produce:chili,produce:herbs",
+   "glow": 0,
+   "aspect": 0.664,
+   "w": 425,
+   "h": 640
+  },
+  {
+   "id": "produce_limes",
+   "file": "signs/produce_limes.jpg",
+   "cat": "produce:lime,produce",
+   "glow": 0,
+   "aspect": 1.495,
+   "w": 640,
+   "h": 428
+  },
+  {
+   "id": "produce_citrus",
+   "file": "signs/produce_citrus.jpg",
+   "cat": "produce:lime,produce:fruit",
+   "glow": 0,
+   "aspect": 1.502,
+   "w": 640,
+   "h": 426
+  },
+  {
+   "id": "produce_mango_apple",
+   "file": "signs/produce_mango_apple.jpg",
+   "cat": "produce:fruit,produce",
+   "glow": 0,
+   "aspect": 1.502,
+   "w": 640,
+   "h": 426
+  },
+  {
+   "id": "produce_peppers",
+   "file": "signs/produce_peppers.jpg",
+   "cat": "produce:veg,produce",
+   "glow": 0,
+   "aspect": 1.763,
+   "w": 640,
+   "h": 363
+  },
+  {
+   "id": "produce_green_pepper",
+   "file": "signs/produce_green_pepper.jpg",
+   "cat": "produce:veg",
+   "glow": 0,
+   "aspect": 1.465,
+   "w": 640,
+   "h": 437
+  },
+  {
+   "id": "produce_rambutan",
+   "file": "signs/produce_rambutan.jpg",
+   "cat": "produce:fruit",
+   "glow": 0,
+   "aspect": 1.502,
+   "w": 640,
+   "h": 426
+  },
+  {
+   "id": "produce_spice_sacks",
+   "file": "signs/produce_spice_sacks.jpg",
+   "cat": "produce:dried,produce:garlic",
+   "glow": 0,
+   "aspect": 1.333,
+   "w": 640,
+   "h": 480
+  },
+  {
+   "id": "produce_red_pepper",
+   "file": "signs/produce_red_pepper.jpg",
+   "cat": "produce:veg",
+   "glow": 0,
+   "aspect": 0.767,
+   "w": 491,
+   "h": 640
+  },
+  {
+   "id": "produce_mangoes",
+   "file": "signs/produce_mangoes.jpg",
+   "cat": "produce:fruit,produce:banana",
+   "glow": 0,
+   "aspect": 1.139,
+   "w": 500,
+   "h": 439
+  },
+  {
+   "id": "produce_longan",
+   "file": "signs/produce_longan.jpg",
+   "cat": "produce:fruit",
+   "glow": 0,
+   "aspect": 0.666,
+   "w": 426,
+   "h": 640
+  },
+  {
+   "id": "produce_veg_market",
+   "file": "signs/produce_veg_market.jpg",
+   "cat": "produce:veg,produce:herbs",
+   "glow": 0,
+   "aspect": 1.072,
+   "w": 640,
+   "h": 597
+  },
+  {
+   "id": "produce_squid",
+   "file": "signs/produce_squid.jpg",
+   "cat": "produce:fish,produce:shrimp",
+   "glow": 0,
+   "aspect": 2.155,
+   "w": 640,
+   "h": 297
+  },
+  {
+   "id": "produce_dried_shrimp",
+   "file": "signs/produce_dried_shrimp.jpg",
+   "cat": "produce:shrimp,produce:dried",
+   "glow": 0,
+   "aspect": 1.333,
+   "w": 640,
+   "h": 480
+  },
+  {
+   "id": "produce_roses",
+   "file": "signs/produce_roses.jpg",
+   "cat": "produce:flowers",
+   "glow": 0,
+   "aspect": 0.666,
+   "w": 426,
+   "h": 640
+  },
+  {
+   "id": "produce_lotus",
+   "file": "signs/produce_lotus.jpg",
+   "cat": "produce:flowers",
+   "glow": 0,
+   "aspect": 1.228,
+   "w": 640,
+   "h": 521
+  },
+  {
+   "id": "produce_chili_basket",
+   "file": "signs/produce_chili_basket.jpg",
+   "cat": "produce:chili",
+   "glow": 0,
+   "aspect": 1.698,
+   "w": 640,
+   "h": 377
+  },
+  {
+   "id": "produce_chili_mix",
+   "file": "signs/produce_chili_mix.jpg",
+   "cat": "produce:chili",
+   "glow": 0,
+   "aspect": 1.506,
+   "w": 640,
+   "h": 425
+  },
+  {
+   "id": "produce_pomelo",
+   "file": "signs/produce_pomelo.jpg",
+   "cat": "produce:fruit",
+   "glow": 0,
+   "aspect": 2.218,
+   "w": 499,
+   "h": 225
+  },
+  {
+   "id": "produce_fried_snacks",
+   "file": "signs/produce_fried_snacks.jpg",
+   "cat": "produce:dried,produce:meat",
+   "glow": 0,
+   "aspect": 1.667,
+   "w": 640,
+   "h": 384
+  },
+  {
+   "id": "int_jars",
+   "file": "signs/int_jars.jpg",
+   "cat": "interior:pharmacy,interior:grocery",
+   "glow": 0,
+   "aspect": 2.51,
+   "w": 640,
+   "h": 255
+  },
+  {
+   "id": "int_old_pharmacy",
+   "file": "signs/int_old_pharmacy.jpg",
+   "cat": "interior:pharmacy,interior:clinic",
+   "glow": 0,
+   "aspect": 1.485,
+   "w": 640,
+   "h": 431
+  },
+  {
+   "id": "int_shop_shelves",
+   "file": "signs/int_shop_shelves.jpg",
+   "cat": "interior:shop,interior:phone",
+   "glow": 0,
+   "aspect": 1.333,
+   "w": 640,
+   "h": 480
+  },
+  {
+   "id": "int_store_fridges",
+   "file": "signs/int_store_fridges.jpg",
+   "cat": "interior:grocery",
+   "glow": 0,
+   "aspect": 1.502,
+   "w": 640,
+   "h": 426
+  },
+  {
+   "id": "int_fridge_shelves",
+   "file": "signs/int_fridge_shelves.jpg",
+   "cat": "interior:grocery,interior:food",
+   "glow": 0,
+   "aspect": 1.783,
+   "w": 640,
+   "h": 359
+  },
+  {
+   "id": "int_chinese_shop",
+   "file": "signs/int_chinese_shop.jpg",
+   "cat": "interior:gold,interior:shop",
+   "glow": 0,
+   "aspect": 1.458,
+   "w": 640,
+   "h": 439
+  },
+  {
+   "id": "int_ceramics",
+   "file": "signs/int_ceramics.jpg",
+   "cat": "interior:shop,interior:hardware",
+   "glow": 0,
+   "aspect": 1.333,
+   "w": 640,
+   "h": 480
+  },
+  {
+   "id": "int_narrow_shop",
+   "file": "signs/int_narrow_shop.jpg",
+   "cat": "interior:shop,interior:hardware",
+   "glow": 0,
+   "aspect": 0.744,
+   "w": 476,
+   "h": 640
+  },
+  {
+   "id": "int_plates",
+   "file": "signs/int_plates.jpg",
+   "cat": "interior:kitchen,interior:food",
+   "glow": 0,
+   "aspect": 1.855,
+   "w": 640,
+   "h": 345
   }
  ]
 }

@@ -141,6 +141,32 @@ export function buildStreetLife(c: Ctx) {
     if (vs) { w.atlas('sign', { e0: 0, ao: 1 }); w.quad(x - 2.6, SW_H + 1.6, z - 0.88, x - 0.6, SW_H + 1.6, z - 0.88, x - 0.6, SW_H + 2.4, z - 0.88, x - 2.6, SW_H + 2.4, z - 0.88, [vs.u0, vs.v0, vs.u1, vs.v1]); }
     for (let k = 0; k < 4; k++) { w.put(P.motorbike(rng.pick(BIKE_COLS)), x + 2.4 + k * 0.85, SW_H, z + 1.6, Math.PI + rng.range(-0.15, 0.15), 1, { rz: 0.08 }); c.phys.box([x + 2.4 + k * 0.85, 0.6, z + 1.6], [0.4, 1.0, 1.4]); }
   }
+  // ---------------------------------------------------------------- street-name / traffic signs (real photo signs on steel poles)
+  const signPole = (x: number, z: number, yaw: number, cat: string, wd: number, top = 2.9) => {
+    const r = c.signs?.any(cat, rng);
+    if (!r) return;
+    const hh = wd / Math.max(0.3, r.aspect);
+    w.mat('galv', { tint: 0xc8c8c4, ov: 'steel_rust', ovAmt: 0.3, uv: 'local' });
+    w.cyl(x, SW_H, z, 0.035, 0.035, top + 0.1, 6, 1);
+    c.phys.box([x, 1.5, z], [0.08, 3, 0.08]);
+    w.pushT(x, 0, z, yaw);
+    w.mat('metal_paint', { tint: 0x9a9a98, uv: 'local' });
+    w.box(-wd / 2, top - hh, -0.04, wd / 2, top, -0.02, ALL);
+    w.atlas('sign', { e0: 0, ao: 1 });
+    w.quad(-wd / 2, top - hh, -0.015, wd / 2, top - hh, -0.015, wd / 2, top, -0.015, -wd / 2, top, -0.015, [r.u0, r.v0, r.u1, r.v1]);
+    w.atlas('sign', { e0: 0, ao: 0.7, tint: 0x9a9a9a });
+    w.quad(wd / 2, top - hh, -0.045, -wd / 2, top - hh, -0.045, -wd / 2, top, -0.045, wd / 2, top, -0.045, [r.u1, r.v0, r.u0, r.v1]);
+    w.pop();
+  };
+  signPole(-5.6, 1.2, Math.PI, 'soi', 1.1, 3.1);           // soi name at the mouth (faces the main road)
+  signPole(5.6, 1.2, Math.PI, 'street', 1.2, 3.1);
+  signPole(-3.95, -40, -Math.PI / 2, 'traffic', 0.5, 2.6);
+  signPole(3.95, -70, Math.PI / 2, 'traffic', 0.5, 2.6);
+  signPole(-3.95, -120, -Math.PI / 2, 'traffic', 0.5, 2.6);
+  signPole(-20, 1.0, Math.PI, 'street_dir', 1.4, 3.6);
+  signPole(60, 25.2, 0, 'street_dir', 1.4, 3.6);
+  signPole(-6.0, -154.5, 0, 'soigate', 1.2, 3.0);
+  if (c.signs?.any('lot', rng)) { const r = c.signs.any('lot', rng)!; w.atlas('sign', { ao: 0.9 }); w.quad(-6.02, SW_H + 0.4, -88.5, -6.02, SW_H + 0.4, -90.5, -6.02, SW_H + 1.4, -90.5, -6.02, SW_H + 1.4, -88.5, [r.u0, r.v0, r.u1, r.v1]); }
   // ---------------------------------------------------------------- pedestrian overpass at x -45
   overpass(c);
   // phone booth + extra ATM

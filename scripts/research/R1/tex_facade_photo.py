@@ -249,7 +249,7 @@ def save_manifest_part():
 
 def trench():
     a = src("c2649936")
-    r = rectify(a, [[556, 40], [650, 40], [1150, 1395], [868, 1395]], 192, 1024)
+    r = rectify(a, [[534, 30], [655, 30], [942, 1390], [344, 1390]], 192, 1024)
     r = even_light(r, 0.3, 0.5)
     r = seamless_y(r, 0.12)
     l = lum(r)

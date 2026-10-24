@@ -1005,8 +1005,26 @@ export function clientFrame(game: Game, dt: number) {
     // bargaining calculator (diegetic price display in front of the keeper)
     calcFrame(game, rt);
   }
-  if (visAcc > 0.5) { visAcc = 0; updateCards(game); }
+  if (visAcc > 0.5) { visAcc = 0; updateCards(game); cull(game); }
   tagFrame(game, dt);
+}
+
+/** Cheap LOD: hide far fixtures and far display stock (client-local visuals only). */
+function cull(game: Game) {
+  const cam = game.camera?.getWorldPosition(new THREE.Vector3());
+  if (!cam) return;
+  for (const rt of RT.values()) {
+    if (!rt.fix) continue;
+    const c = rt.fix.center;
+    const d = Math.hypot(c[0] - cam.x, c[2] - cam.z);
+    rt.fix.root.visible = d < 75 + rt.fix.radius;
+  }
+  game.state.each('item', (e) => {
+    if (!e.disp || !e.p) return;
+    const obj = game.views.objectOf(e.id);
+    const vis = obj?.children[0];
+    if (vis) vis.visible = Math.hypot(e.p[0] - cam.x, e.p[2] - cam.z) < 38;
+  });
 }
 
 function updateCards(game: Game) {
@@ -1085,22 +1103,21 @@ function tagFrame(game: Game, dt: number) {
   for (const [id, t] of tagViews) if (!live.has(id)) { t.g.removeFromParent(); tagViews.delete(id); }
 }
 
+const zapGeo = new THREE.IcosahedronGeometry(0.06, 0);
 function zapFx(game: Game, p: number[]) {
   if (!game.scene) return;
   const pos = new THREE.Vector3(p[0], p[1], p[2]);
   Sound.play(sndKey('shop_zap'), { pos, vol: 0.7 });
-  const light = new THREE.PointLight(0x9fd8ff, 6, 2.5);
-  light.position.copy(pos);
-  const spark = new THREE.Mesh(new THREE.IcosahedronGeometry(0.05, 0), new THREE.MeshBasicMaterial({ color: 0xcff4ff }));
+  // additive flash (no lights: adding a light would recompile every shader)
+  const spark = new THREE.Mesh(zapGeo, new THREE.MeshBasicMaterial({ color: 0xbfeaff, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
   spark.position.copy(pos);
-  game.scene.add(light, spark);
+  game.scene.add(spark);
   let t = 0;
   const off = game.engine.onFrame((f) => {
-    t += f.dt;
-    light.intensity = Math.max(0, 6 * (1 - t / 0.25)) * (Math.random() > 0.3 ? 1 : 0.2);
-    spark.scale.setScalar(1 + t * 8);
-    (spark.material as THREE.MeshBasicMaterial).opacity = 1 - t / 0.25;
-    if (t > 0.25) { light.removeFromParent(); spark.removeFromParent(); spark.geometry.dispose(); off(); }
+    t += f.rawDt;
+    spark.scale.setScalar(1 + t * 10 + Math.random() * 2);
+    (spark.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 1 - t / 0.25) * (Math.random() > 0.3 ? 1 : 0.3);
+    if (t > 0.25) { spark.removeFromParent(); (spark.material as THREE.Material).dispose(); off(); }
   });
 }
 

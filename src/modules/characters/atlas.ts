@@ -296,15 +296,18 @@ export function paintAtlas(look: Look, size: number, variant: FaceVariant, onFac
   const spec = bodySpec(look);
   const skin = look.skin || '#c69472';
   const r = new RNG(hashStr(lookKey(look)));
-  paintSkin(P, look, spec, skin);
-  paintFace(P, look, skin, variant, onFaceReady);
-  paintScalp(P, look, skin);
-  paintBottom(P, look, spec, skin, r);
-  paintTop(P, look, spec, skin, r);
-  paintShoes(P, look, spec, skin);
-  paintAcc(P, look, spec, skin, r);
-  paintHair(P, look, r);
-  paintGrime(P, look, spec, r);
+  const prof = (window as any).__atlasProf as Record<string, number> | undefined;
+  let t = performance.now();
+  const tick = (k: string) => { if (!prof) return; const n = performance.now(); prof[k] = (prof[k] || 0) + n - t; t = n; };
+  paintSkin(P, look, spec, skin); tick('skin');
+  paintFace(P, look, skin, variant, onFaceReady); tick('face');
+  paintScalp(P, look, skin); tick('scalp');
+  paintBottom(P, look, spec, skin, r); tick('bottom');
+  paintTop(P, look, spec, skin, r); tick('top');
+  paintShoes(P, look, spec, skin); tick('shoes');
+  paintAcc(P, look, spec, skin, r); tick('acc');
+  paintHair(P, look, r); tick('hair');
+  paintGrime(P, look, spec, r); tick('grime');
   return cv;
 }
 

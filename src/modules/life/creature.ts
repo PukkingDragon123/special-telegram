@@ -190,7 +190,7 @@ export class Creature implements QuadRigLike {
     }
     const idle = this.actions[spec.clips.idle];
     if (idle) idle.setEffectiveWeight(1);
-    if (spec.clips.sit && this.actions[spec.clips.sit]) this.clipPoses.add('sit');
+    if (spec.clips.sit && this.actions[spec.clips.sit]) { this.clipPoses.add('sit'); this.clipPoses.add('beg'); }
     for (const k of ['shake', 'roll', 'dead'] as const) {
       const a = this.actions[spec.clips[k] ?? ''];
       if (a) { a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; a.stop(); }
@@ -247,7 +247,7 @@ export class Creature implements QuadRigLike {
               if (lumF < uMinLum || redness > 0.22) discard;
             ` : ''}
             diffuseColor.rgb *= uTint * (0.86 + 0.28 * det);
-            ${shell ? 'diffuseColor.rgb *= mix(0.74, 1.08, uH);' : ''}`);
+            ${shell ? 'diffuseColor.rgb *= mix(mix(0.74, 1.0, smoothstep(0.45, 0.8, lumF)), 1.05, uH);' : ''}`);
       };
       m.customProgramCacheKey = () => 'life_fur_' + (shell ? 's' : 'b');
       m.needsUpdate = true;
@@ -296,7 +296,7 @@ export class Creature implements QuadRigLike {
     for (let i = 0; i < this.bl.length; i++) { this.bl[i].quaternion.copy(this.restQ[i]); this.bl[i].position.copy(this.restP[i]); }
     // clip weights from pose weights + one-shot
     const W = this.anim.poseW;
-    const sitW = this.clipPoses.has('sit') ? W.sit : 0;
+    const sitW = this.clipPoses.has('sit') ? Math.min(1, W.sit + W.beg) : 0;
     let osW = 0;
     if (this.oneShot) {
       this.oneShot.t += dt;
@@ -367,6 +367,16 @@ export class Creature implements QuadRigLike {
         continue;
       }
       add(N[name], x, y, z);
+    }
+    // beg = authored sit clip + forepaws raised, head up
+    const bw = this.clipPoses.has('beg') ? this.anim.poseW.beg * fade : 0;
+    if (bw > 0.01) {
+      const paw = Math.sin(this.t * 3) * 0.12;
+      add(N.chest, -0.25, 0, 0, bw); add(N.spine, -0.15, 0, 0, bw);
+      add(N.sh_l, -1.05 + paw, 0, 0.12, bw); add(N.sh_r, -1.05 - paw, 0, -0.12, bw);
+      add(N.el_l, 1.5, 0, 0, bw); add(N.el_r, 1.5, 0, 0, bw);
+      add(N.wr_l, 0.6, 0, 0, bw); add(N.wr_r, 0.6, 0, 0, bw);
+      add(N.head, 0.15, 0, 0, bw);
     }
     // ---- facial layer
     const F = this.anim.face;

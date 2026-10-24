@@ -25,6 +25,7 @@ import { buildRural } from './rural';
 import { buildStreetLife } from './dressing';
 import { loadFoliage, FoliageSys } from './foliage';
 import { installDebug, DebugCam } from './debug';
+import { Weather } from './weather';
 
 /**
  * WORLD MODULE — builds ซอยเฮียผัด and its surroundings (see docs/MAP_PLAN.md):
@@ -37,9 +38,12 @@ interface WorldState {
   atmo: Atmosphere;
   lights: NightLights;
   details: THREE.Mesh[];
+  bases: THREE.Mesh[];
+  casters: THREE.Mesh[];
   nav: Nav;
   frameN: number;
   dbg: DebugCam | null;
+  weather: Weather;
   stats: { drawMeshes: number; tris: number; buildMs: number };
 }
 
@@ -130,16 +134,17 @@ async function buildWorld(game: Game) {
   const fol = makeFoliageMaterial(assets.fol?.atlas.tex ?? new THREE.Texture());
   const mats: Record<Kind, THREE.Material> = { world: worldMat, cut: cutMat, sign: signMat, decal: decalMat, fol: fol.mat, glass: makeGlassMaterial() };
   let tf = performance.now();
-  const meshes = w.finalize(mats, { shadows: { world: true, cut: true, sign: true, decal: false, fol: true, glass: false } });
+  const meshes = w.finalize(mats, { shadows: { world: true, cut: true, sign: false, decal: false, fol: true, glass: false } });
   TIMES.finalize = Math.round(performance.now() - tf);
   const details: THREE.Mesh[] = [];
+  const bases: THREE.Mesh[] = [];
   let tris = 0;
   const cutDepth = makeWorldCutDepth(tex);
   for (const m of meshes) {
     if (m.kind === 'fol') m.mesh.customDepthMaterial = fol.depth;
     if (m.kind === 'cut') m.mesh.customDepthMaterial = cutDepth;
     root.add(m.mesh);
-    if (m.group === 'detail') details.push(m.mesh);
+    if (m.group === 'detail') details.push(m.mesh); else bases.push(m.mesh);
     tris += (m.mesh.geometry.index?.count ?? 0) / 3;
   }
 
@@ -190,9 +195,18 @@ async function buildWorld(game: Game) {
   };
   game.world = api;
 
+  // bake the environment once and pre-compile every program now (no hitches when walking into new areas)
+  tf = performance.now();
+  try {
+    atmo.update(0.016, game.camera);
+    game.engine.renderer.compile(game.scene!, game.camera);
+  } catch (e) { console.warn('[world] precompile', e); }
+  TIMES.compile = Math.round(performance.now() - tf);
   // debug: anchors, fly camera
   const dbg = installDebug(game, root, anchors, nav);
-  S = { game, root, atmo, lights, details, nav, frameN: 0, dbg, stats: { drawMeshes: meshes.length, tris, buildMs: performance.now() - t0 } };
+  const weather = new Weather(game, root);
+  const casters = meshes.filter((m) => m.mesh.castShadow).map((m) => m.mesh);
+  S = { game, root, atmo, lights, details, bases, casters, nav, frameN: 0, dbg, weather, stats: { drawMeshes: meshes.length, tris, buildMs: performance.now() - t0 } };
   api.stats.buildMs = Math.round(performance.now() - t0);
   console.info(`[world] built in ${api.stats.buildMs} ms — ${meshes.length} meshes, ${Math.round(tris / 1000)}k tris, ${lights.points.length} light points`);
   const off = game.events.on('world:exit', () => { off(); dispose(); });
@@ -201,6 +215,7 @@ async function buildWorld(game: Game) {
 function dispose() {
   if (!S) return;
   S.atmo.dispose();
+  S.weather.dispose();
   S.dbg?.dispose();
   S = null;
 }
@@ -213,6 +228,7 @@ function frame(game: Game, dt: number) {
   S.dbg?.update(dt);
   S.atmo.update(dt, cam);
   cam.getWorldPosition(_cam);
+  S.weather.update(dt, _cam, S.atmo);
   S.lights.update(_cam, S.atmo.night, dt);
   U.uWet.value += (((game.g as any).rain ?? 0) - U.uWet.value) * Math.min(1, dt * 0.2);
   // distance-cull small detail meshes
@@ -222,6 +238,17 @@ function frame(game: Game, dt: number) {
       const bs = m.geometry.boundingSphere!;
       m.visible = bs.center.distanceTo(_cam) - bs.radius < far;
     }
+    // shadow casting only near the player (the sun's shadow box is ~70 m wide anyway)
+    for (const m of S.casters) {
+      const bs = m.geometry.boundingSphere!;
+      m.castShadow = m.visible && bs.center.distanceTo(_cam) - bs.radius < 52;
+    }
+    // big chunks fade into the haze: cull what the fog hides completely
+    const fogFar = Math.min(460, 2.2 / Math.max(0.003, S.atmo.fog.density));
+    for (const m of S.bases) {
+      const bs = m.geometry.boundingSphere!;
+      m.visible = bs.center.distanceTo(_cam) - bs.radius < fogFar;
+    }
   }
 }
 
@@ -230,4 +257,5 @@ export default defineModule({
   init(game) { startPreload(game); preloadHdris(); },
   async buildWorld(game) { await buildWorld(game); },
   frame,
+  hostUpdate(game, dt) { if (S && S.game === game && game.g.scene === 'world') S.weather.host(dt); },
 });

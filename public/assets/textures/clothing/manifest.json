@@ -1,0 +1,1201 @@
+{
+ "textures": {
+  "singlet_rib_white": {
+   "file": "singlet_rib_white.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "white 1x1 rib-knit cotton singlet (เสื้อกล้าม), clean; ribs run along V",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/07/a8/9e/07a89e9c4c93b2ea8ac2ce831734d888.jpg",
+     "page": "https://kr.pinterest.com/pin/cotton-2x1-rib-fabric-48-inches-wide-white--164662930120629305/",
+     "title": "Cotton 2X1 Rib Fabric - 48 Inches Wide, White | FabricLA | White fabric ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "singlet_rib_white_normal.jpg",
+   "avgRGB": "#eeeae3"
+  },
+  "singlet_rib_yellowed": {
+   "file": "singlet_rib_yellowed.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "same singlet, old: yellowed, mottled, washed-out",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/07/a8/9e/07a89e9c4c93b2ea8ac2ce831734d888.jpg",
+     "page": "https://kr.pinterest.com/pin/cotton-2x1-rib-fabric-48-inches-wide-white--164662930120629305/",
+     "title": "Cotton 2X1 Rib Fabric - 48 Inches Wide, White | FabricLA | White fabric ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "singlet_rib_yellowed_normal.jpg",
+   "avgRGB": "#e9dec7"
+  },
+  "singlet_rib_sweaty": {
+   "file": "singlet_rib_sweaty.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "old singlet with yellow sweat stains (real stain photos composited)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/07/a8/9e/07a89e9c4c93b2ea8ac2ce831734d888.jpg",
+     "page": "https://kr.pinterest.com/pin/cotton-2x1-rib-fabric-48-inches-wide-white--164662930120629305/",
+     "title": "Cotton 2X1 Rib Fabric - 48 Inches Wide, White | FabricLA | White fabric ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/white-t-shirt-yellow-sweat-stain-spot-fabric-deodorant-stains-accidents-everyday-life-cleaning-laundering-stains-white-385649866.jpg",
+     "page": "https://www.dreamstime.com/white-t-shirt-yellow-sweat-stain-spot-fabric-deodorant-stains-accidents-everyday-life-cleaning-laundering-stains-white-image385649866",
+     "title": "White T-shirt with Yellow Sweat Stain, Spot on Fabric. Deodorant Stains ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "web photo",
+     "image": "https://thespotlesslife.com/wp-content/uploads/2025/09/yellow-stains-on-white-shirt-collar-1024x536.webp",
+     "page": "https://thespotlesslife.com/how-to-remove-tough-stains-from-clothes/",
+     "title": "How to Remove Tough Stains from Clothes (Easy Visual Guide)",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "web photo",
+     "image": "https://cdn1.homewaresinsider.com/wp-content/uploads/2026/03/yellow-stains-white-shirt.jpg",
+     "page": "https://homewaresinsider.com/that-yellow-stain-on-your-white-shirt-doesnt-stand-a-chance/",
+     "title": "That Yellow Stain on Your White Shirt Doesn't Stand a Chance ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "singlet_rib_sweaty_normal.jpg",
+   "avgRGB": "#e9ddc5"
+  },
+  "sweat_stain_decal": {
+   "file": "sweat_stain_decal.png",
+   "size": 512,
+   "kind": "decal (RGBA)",
+   "desc": "yellow sweat stain decal for armpits/collar/back (multiply-blend)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/white-t-shirt-yellow-sweat-stain-spot-fabric-deodorant-stains-accidents-everyday-life-cleaning-laundering-stains-white-385649866.jpg",
+     "page": "https://www.dreamstime.com/white-t-shirt-yellow-sweat-stain-spot-fabric-deodorant-stains-accidents-everyday-life-cleaning-laundering-stains-white-image385649866",
+     "title": "White T-shirt with Yellow Sweat Stain, Spot on Fabric. Deodorant Stains ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "phakhaoma_blue_white": {
+   "file": "phakhaoma_blue_white.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "ผ้าขาวม้า hand-woven cotton check: white / navy / teal / red (classic)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://image.posttoday.com/uploads/images/contents/w1024/2024/03/2xHJSK0bOQZ9frVbiPVG.webp?x-image-process=style/lg-webp",
+     "page": "https://www.posttoday.com/lifestyle/706805",
+     "title": "ผ้าขาวม้า จากผ้าเช็ดเหงื่อไคลจะเฉิดฉายได้หรือไม่ในยุคเศรษฐา ทวีสิน!",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "phakhaoma_blue_white_normal.jpg",
+   "avgRGB": "#914b48"
+  },
+  "phakhaoma_red_yellow": {
+   "file": "phakhaoma_red_yellow.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "ผ้าขาวม้า red / black / yellow check",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://image.posttoday.com/uploads/images/contents/w1024/2024/03/2xHJSK0bOQZ9frVbiPVG.webp?x-image-process=style/lg-webp",
+     "page": "https://www.posttoday.com/lifestyle/706805",
+     "title": "ผ้าขาวม้า จากผ้าเช็ดเหงื่อไคลจะเฉิดฉายได้หรือไม่ในยุคเศรษฐา ทวีสิน!",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "phakhaoma_red_yellow_normal.jpg",
+   "avgRGB": "#a33030"
+  },
+  "phakhaoma_rainbow": {
+   "file": "phakhaoma_rainbow.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "ผ้าขาวม้า multicolour red-yellow-blue stripes check",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://image.posttoday.com/uploads/images/contents/w1024/2024/03/2xHJSK0bOQZ9frVbiPVG.webp?x-image-process=style/lg-webp",
+     "page": "https://www.posttoday.com/lifestyle/706805",
+     "title": "ผ้าขาวม้า จากผ้าเช็ดเหงื่อไคลจะเฉิดฉายได้หรือไม่ในยุคเศรษฐา ทวีสิน!",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "phakhaoma_rainbow_normal.jpg",
+   "avgRGB": "#b14035"
+  },
+  "phakhaoma_green_yellow": {
+   "file": "phakhaoma_green_yellow.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "ผ้าขาวม้า green / yellow / light-green check",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "http://www.nanosoft.thaiall.com/products/types_2.jpg",
+     "page": "http://nanosoft.thaiall.com/products/",
+     "title": "ผ้าขาวม้า ผ้าพันคอ ผ้าถุง โสร่ง ผ้าห่มถวายพระ เสื้อกางเกง ของขวัญ ราคา ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "phakhaoma_green_yellow_normal.jpg",
+   "avgRGB": "#9fb162"
+  },
+  "cotton_khaki_twill": {
+   "file": "cotton_khaki_twill.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "khaki / beige cotton twill (shorts, chinos, primary-school shorts)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://nationwidefabric.com/cdn/shop/products/CottonTwillKhaki_1024x1024.jpg?v=1628098622",
+     "page": "https://nationwidefabric.com/products/cotton-twill-khaki",
+     "title": "Cotton Twill Khaki - Nationwide Fabric",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "cotton_khaki_twill_normal.jpg",
+   "avgRGB": "#b3a696"
+  },
+  "cotton_black": {
+   "file": "cotton_black.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "black cotton twill (shorts, trousers, school skirts)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://www.ebbets.com/cdn/shop/files/20250923_EBBETS0305.jpg?crop=center&height=938&v=1761250693&width=750",
+     "page": "https://www.ebbets.com/products/osaka-tigers-cotton-twill-jersey-blk",
+     "title": "Osaka Tigers Cotton Twill Baseball Jersey - Ebbets Field",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "cotton_black_normal.jpg",
+   "avgRGB": "#151419"
+  },
+  "denim_dark": {
+   "file": "denim_dark.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "dark worn indigo denim (jeans)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/denim_fabric_06",
+     "page": "https://polyhaven.com/a/denim_fabric_06",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "denim_dark_normal.jpg",
+   "avgRGB": "#1e232e"
+  },
+  "denim_mid_seam": {
+   "file": "denim_mid_seam.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "mid-blue faded denim with a flat-felled seam and fades (jeans panel)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/denim_fabric",
+     "page": "https://polyhaven.com/a/denim_fabric",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "denim_mid_seam_normal.jpg",
+   "avgRGB": "#547590"
+  },
+  "suit_black_wool": {
+   "file": "suit_black_wool.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "black / charcoal suiting wool (cheap suit, casino tux)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/5f/65/97/5f6597827a871826395f88c696a9de5a.jpg",
+     "page": "https://ca.pinterest.com/pin/black-wool-fabric--178666310213913484/",
+     "title": "Black Wool Fabric | Black wool fabric background, Black wool fabric for ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "suit_black_wool_normal.jpg",
+   "avgRGB": "#151615"
+  },
+  "suit_grey_wool": {
+   "file": "suit_grey_wool.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "grey herringbone wool (office trousers, cheap blazer)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/poly_wool_herringbone",
+     "page": "https://polyhaven.com/a/poly_wool_herringbone",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "suit_grey_wool_normal.jpg",
+   "avgRGB": "#7a7671"
+  },
+  "casino_gold_satin": {
+   "file": "casino_gold_satin.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "shiny gold crepe satin (casino suit) — use metalness 0.3, roughness 0.25",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/crepe_satin",
+     "page": "https://polyhaven.com/a/crepe_satin",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "casino_gold_satin_normal.jpg",
+   "avgRGB": "#cc9e3d"
+  },
+  "casino_maroon_velvet": {
+   "file": "casino_maroon_velvet.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "maroon velvet (casino suit) — real photo; low roughness + sheen",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://cdn.kovifabrics.com/img/products/KR-281982.9.0_Main.webp",
+     "page": "https://www.kovifabrics.com/search/product-detail/69553",
+     "title": "Maroon Burgundy Solid Texture Velvet Upholstery Fabric by the Yard",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "casino_maroon_velvet_normal.jpg",
+   "avgRGB": "#320c0c"
+  },
+  "casino_maroon_jacquard": {
+   "file": "casino_maroon_jacquard.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "burgundy quatrefoil jacquard (casino waistcoat / curtains)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/quatrefoil_jacquard_fabric",
+     "page": "https://polyhaven.com/a/quatrefoil_jacquard_fabric",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "casino_maroon_jacquard_normal.jpg",
+   "avgRGB": "#930320"
+  },
+  "shirt_white_poplin": {
+   "file": "shirt_white_poplin.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "white cotton poplin (dress shirts, school shirts)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/stretch_poplin",
+     "page": "https://polyhaven.com/a/stretch_poplin",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "shirt_white_poplin_normal.jpg",
+   "avgRGB": "#edede8"
+  },
+  "school_navy_twill": {
+   "file": "school_navy_twill.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "navy school-shorts / skirt twill (real Thai school shorts photo)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134207-7ras8-mads9jmglp4kef",
+     "page": "https://shopee.co.th/%E0%B8%81%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%81%E0%B8%87%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99-%E0%B8%AA%E0%B8%B5%E0%B8%81%E0%B8%A3%E0%B8%A1%E0%B8%97%E0%B9%88%E0%B8%B2-%E0%B9%80%E0%B8%AD%E0%B8%A7-27-%E0%B8%99%E0%B8%B4%E0%B9%89%E0%B8%A7-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A2%E0%B8%B2%E0%B8%A7-17-%E0%B8%99%E0%B8%B4%E0%B9%89%E0%B8%A7-%E0%B8%A1%E0%B8%B7%E0%B8%AD-2-i.1546404832.41152658824",
+     "title": "กางเกงนักเรียน สีกรมท่า เอว 27 นิ้ว ความยาว 17 นิ้ว #มือ 2 | Shopee ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "school_navy_twill_normal.jpg",
+   "avgRGB": "#1a2331"
+  },
+  "police_khaki_brown": {
+   "file": "police_khaki_brown.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "Thai police khaki-brown (สีกากี): colour sampled from a real uniform photo, weave = Poly Haven terlenka scan",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134207-7r98u-ltl8tdfa4adbf4",
+     "page": "https://shopee.co.th/%E0%B8%8A%E0%B8%B8%E0%B8%94%E0%B8%95%E0%B8%B3%E0%B8%A3%E0%B8%A7%E0%B8%88%E0%B8%AA%E0%B8%B5%E0%B8%AA%E0%B8%99%E0%B8%A7.01-%E0%B8%AA%E0%B8%B5%E0%B8%81%E0%B8%B2%E0%B8%81%E0%B8%B5-%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88-%E0%B8%8A%E0%B8%B8%E0%B8%94%E0%B8%AA%E0%B8%B3%E0%B9%80%E0%B8%A3%E0%B9%87%E0%B8%88%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99%E0%B8%8B%E0%B8%B4%E0%B8%9B%E0%B8%97%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%AB%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%87%E2%80%8B-%E0%B9%80%E0%B8%AA%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%81%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%81%E0%B8%87-i.239484820.21894338011",
+     "title": "ชุดตำรวจสีสนว.01 สีกากี แบบใหม่ ชุดสำเร็จรูปรุ่นซิปทองเหลือง เสื้อพร้อม ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/terlenka",
+     "page": "https://polyhaven.com/a/terlenka",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "police_khaki_brown_normal.jpg",
+   "avgRGB": "#6e593b"
+  },
+  "terry_white_headband": {
+   "file": "terry_white_headband.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "white terry cloth (ref4 afro guy's headband, towels)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/terry_cloth",
+     "page": "https://polyhaven.com/a/terry_cloth",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "terry_white_headband_normal.jpg",
+   "avgRGB": "#eae8e5"
+  },
+  "pique_white": {
+   "file": "pique_white.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "white pique knit (polo shirts; recolour in shader)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/waffle_pique_cotton",
+     "page": "https://polyhaven.com/a/waffle_pique_cotton",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "pique_white_normal.jpg",
+   "avgRGB": "#eaeae5"
+  },
+  "jersey_grey": {
+   "file": "jersey_grey.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "grey cotton jersey (T-shirts; recolour in shader)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/cotton_jersey",
+     "page": "https://polyhaven.com/a/cotton_jersey",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "jersey_grey_normal.jpg",
+   "avgRGB": "#737375"
+  },
+  "khakuay_indigo_cotton": {
+   "file": "khakuay_indigo_cotton.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "indigo rough cotton for กางเกงขาก๊วย (wide Chinese-style trousers)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/rough_linen",
+     "page": "https://polyhaven.com/a/rough_linen",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "khakuay_indigo_cotton_normal.jpg",
+   "avgRGB": "#29334f"
+  },
+  "vest_orange_poly": {
+   "file": "vest_orange_poly.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "moto-taxi vest orange (colour sampled from a real Bangkok วิน vest photo; weave = Poly Haven scan)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134207-7r98q-lq0hq5ls5sys92",
+     "page": "https://shopee.co.th/%E0%B9%80%E0%B8%AA%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%A7%E0%B8%B4%E0%B8%99%E0%B8%A1%E0%B8%AD%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%84%E0%B8%8B%E0%B8%84%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B9%80%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C-420%E0%B8%BF-%E0%B9%80%E0%B8%AA%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%81%E0%B8%B1%E0%B9%8A%E0%B8%81%E0%B8%AA%E0%B8%B5%E0%B8%AA%E0%B9%89%E0%B8%A1-i.431613574.10502049484",
+     "title": "เสื้อวินมอเตอร์ไซค์พร้อมติดเบอร์ 420฿ เสื้อกั๊กสีส้ม | Shopee Thailand",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/bi_stretch",
+     "page": "https://polyhaven.com/a/bi_stretch",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "vest_orange_poly_normal.jpg",
+   "avgRGB": "#fb660f"
+  },
+  "rider_green_poly": {
+   "file": "rider_green_poly.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "green polyester softshell (delivery rider jacket body)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/bi_stretch",
+     "page": "https://polyhaven.com/a/bi_stretch",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "rider_green_poly_normal.jpg",
+   "avgRGB": "#009e4c"
+  },
+  "rider_pink_poly": {
+   "file": "rider_pink_poly.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "hot-pink polyester (delivery rider jacket body)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/bi_stretch",
+     "page": "https://polyhaven.com/a/bi_stretch",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "rider_pink_poly_normal.jpg",
+   "avgRGB": "#db197a"
+  },
+  "sneaker_white_leather": {
+   "file": "sneaker_white_leather.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "white sneaker leather, creased (shoe uppers)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/leather_white",
+     "page": "https://polyhaven.com/a/leather_white",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "sneaker_white_leather_normal.jpg",
+   "avgRGB": "#e5e2db"
+  },
+  "sarong_red_purple": {
+   "file": "sarong_red_purple.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "red / purple / green check (sarong / ผ้าขาวม้า)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://image.posttoday.com/uploads/images/contents/w1024/2024/03/2xHJSK0bOQZ9frVbiPVG.webp?x-image-process=style/lg-webp",
+     "page": "https://www.posttoday.com/lifestyle/706805",
+     "title": "ผ้าขาวม้า จากผ้าเช็ดเหงื่อไคลจะเฉิดฉายได้หรือไม่ในยุคเศรษฐา ทวีสิน!",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "sarong_red_purple_normal.jpg",
+   "avgRGB": "#874b59"
+  },
+  "boxer_plaid_navy_beige": {
+   "file": "boxer_plaid_navy_beige.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "plaid boxer / sleep-shorts shirting: navy, beige, white, rust",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://cdn11.bigcommerce.com/s-2e6e1/images/stencil/1280x1280/products/33343/57876/Fabric_30708__96622.1761347444.jpg?c=2?imbypass=on",
+     "page": "https://califabrics.com/black-tan-peach-and-offwhite-plaid-designer-cotton-shirting-30708/",
+     "title": "Cali Fabrics Black, Tan, Peach, and Offwhite Plaid Designer Cotton ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "boxer_plaid_navy_beige_normal.jpg",
+   "avgRGB": "#8f8477"
+  },
+  "boxer_plaid_black_white": {
+   "file": "boxer_plaid_black_white.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "black / white / olive windowpane check (boxers, uncle shorts)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://fabrics-fabrics.com/cdn/shop/products/CS-5166-Plaid-Cotton-Shirting2.jpg?v=1571709142",
+     "page": "https://fabrics-fabrics.com/products/plaid-cotton-shirting-black-white-designer-fashion-fabrics",
+     "title": "Black/White Plaid Cotton Shirting - Fabrics & Fabrics",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "boxer_plaid_black_white_normal.jpg",
+   "avgRGB": "#cac5b5"
+  },
+  "boxer_plaid_navy_green": {
+   "file": "boxer_plaid_navy_green.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "navy / green / yellow tartan check (boxers)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "http://www.zinmantex.com/cdn/shop/files/4150_Green_Medium_Navy.jpg?v=1732906676",
+     "page": "https://www.zinmantex.com/products/4150",
+     "title": "Plaid Shirting Fabric - Soft, Breathable Cotton Structure - TEXTILES D ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "boxer_plaid_navy_green_normal.jpg",
+   "avgRGB": "#4d5653"
+  },
+  "hawaiian_sage_hibiscus": {
+   "file": "hawaiian_sage_hibiscus.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "Hawaiian shirt print: sage green with white hibiscus & monstera (photo of fabric)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/7d/ee/ca/7deecaddeb5595b6e93c1577e5869971.jpg",
+     "page": "https://www.pinterest.com/pin/487233253445417586/",
+     "title": "Hawaiian Fabric Green and White Floral Print, Tropical Island Plant ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#bbc5ab"
+  },
+  "hawaiian_green_leaf_ref4": {
+   "file": "hawaiian_green_leaf_ref4.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "ref4 standing guy: lime-green Hawaiian shirt with cream leaves (real print, ground recoloured to #86ad55)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/7d/ee/ca/7deecaddeb5595b6e93c1577e5869971.jpg",
+     "page": "https://www.pinterest.com/pin/487233253445417586/",
+     "title": "Hawaiian Fabric Green and White Floral Print, Tropical Island Plant ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#b1bf88"
+  },
+  "hawaiian_palm_sage": {
+   "file": "hawaiian_palm_sage.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "pale sage palm-leaf print (uncle shirt / auntie blouse)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i5.walmartimages.com/seo/Ambesonne-Leaves-Fabric-by-the-Yard-Green-Aloha-Leaf-Botanical-5-Yards-Pastel-Green-White_8ab6eccd-e2db-4f90-a07e-8498040a214e.ea4982b0d54def6f1b4a0e07bbafdbf5.jpeg",
+     "page": "https://www.walmart.com/ip/Ambesonne-Leaves-Fabric-by-the-Yard-Upholstery-Green-Aloha-Leaf-Botanical-5-Yards-Pastel-Green-White/5547420647",
+     "title": "Ambesonne Leaves Fabric by the Yard Upholstery, Green Aloha Leaf ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#d6dad0"
+  },
+  "hawaiian_red_hibiscus": {
+   "file": "hawaiian_red_hibiscus.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "classic red Hawaiian shirt: pink hibiscus, plumeria, monstera",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://hilohattie.com/cdn/shop/files/hibiscusplumeria-AS-DT-373.jpg?v=1714927197",
+     "page": "https://hilohattie.com/products/hibiscus-plumeria-aloha-shirt",
+     "title": "Hibiscus Plumeria Aloha Shirt | Made in Hawaii - Hilo Hattie",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#b67e74"
+  },
+  "hawaiian_blue_floral": {
+   "file": "hawaiian_blue_floral.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "royal-blue tropical floral print (plumeria, palm)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/736x/6b/5d/f1/6b5df13b0d5bf68d954195e1d6e2cf4b.jpg",
+     "page": "https://www.pinterest.com/pin/royal-blue-tropical-cotton-fabric-tropical-hawaiian-floral-45wide-by-the-yard-100-cotton-hawaiian-print-royal-blue-multi-color-etsy-canada--155303888170714381/",
+     "title": "Royal Blue Tropical Cotton Fabric, Tropical Hawaiian Floral 45\"wide ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#899b98"
+  },
+  "thai_songkran_floral": {
+   "file": "thai_songkran_floral.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "Thai Songkran-style floral shirt (เสื้อลายดอก): coral flowers, teal & green leaves",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134207-81zte-mleccib8m6tda8",
+     "page": "https://shopee.co.th/%E0%B9%80%E0%B8%AA%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%A5%E0%B8%B2%E0%B8%A2%E0%B8%94%E0%B8%AD%E0%B8%81-%E0%B8%9C%E0%B8%B9%E0%B9%89%E0%B8%8A%E0%B8%B2%E0%B8%A2-%E0%B8%AE%E0%B8%B2%E0%B8%A7%E0%B8%B2%E0%B8%A2-%E0%B8%8A%E0%B8%B8%E0%B8%94%E0%B9%84%E0%B8%9B%E0%B8%97%E0%B8%B0%E0%B9%80%E0%B8%A5-%E0%B9%81%E0%B8%82%E0%B8%99%E0%B8%AA%E0%B8%B1%E0%B9%89%E0%B8%99%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B8%E0%B8%A1%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2-%E0%B8%A5%E0%B8%B2%E0%B8%A2%E0%B8%94%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%B5%E0%B8%AA%E0%B9%89%E0%B8%A1-%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B9%84%E0%B8%AB%E0%B8%A1%E0%B8%AD%E0%B8%B4%E0%B8%95%E0%B8%B2%E0%B8%A5%E0%B8%B5-%E0%B9%80%E0%B8%AA%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%AA%E0%B8%87%E0%B8%81%E0%B8%A3%E0%B8%B2%E0%B8%99%E0%B8%95%E0%B9%8C-3009-i.484280120.24121398742",
+     "title": "เสื้อลายดอก ผู้ชาย ฮาวาย ชุดไปทะเล แขนสั้นกระดุมหน้า ลายดอกสีส้ม ผ้าไหม ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#c5b6b5"
+  },
+  "stripe_green_white_pique": {
+   "file": "stripe_green_white_pique.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "green / white horizontal stripe polo knit (flat-lay product photo)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.etsystatic.com/34849575/r/il/423928/6458553309/il_1080xN.6458553309_pvt5.jpg",
+     "page": "https://www.etsy.com/listing/1822007351/green-striped-polo-green-white-striped",
+     "title": "Green Striped Polo Green & White Striped Polo Shirt Striped Short ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "stripe_green_white_pique_normal.jpg",
+   "avgRGB": "#a3afa7"
+  },
+  "stripe_green_white_ref4": {
+   "file": "stripe_green_white_ref4.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "ref4 seated guy (centre-right): bottle-green #2a5e48 / off-white stripe polo",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.etsystatic.com/34849575/r/il/423928/6458553309/il_1080xN.6458553309_pvt5.jpg",
+     "page": "https://www.etsy.com/listing/1822007351/green-striped-polo-green-white-striped",
+     "title": "Green Striped Polo Green & White Striped Polo Shirt Striped Short ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "stripe_green_white_ref4_normal.jpg",
+   "avgRGB": "#9da094"
+  },
+  "stripe_white_grey_thin": {
+   "file": "stripe_white_grey_thin.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "white jersey with thin grey horizontal stripes (ref4 left guy's top): stripe profile measured from a real fabric photo x real cotton-jersey scan",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://amtextiles.co.uk/wp-content/uploads/2024/11/IMG_9021-scaled.jpeg",
+     "page": "https://amtextiles.co.uk/product/jersey-yarn-dyed-stripes-off-white-grey/",
+     "title": "Jersey yarn Dyed Stripes Off-White/Grey - A&M Textiles",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/cotton_jersey",
+     "page": "https://polyhaven.com/a/cotton_jersey",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "normal": "stripe_white_grey_thin_normal.jpg",
+   "avgRGB": "#e8e9ea"
+  },
+  "stripe_blue_shirting": {
+   "file": "stripe_blue_shirting.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "fine blue / white pinstripe shirting (office shirt)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/ea/c0/da/eac0da2e2f726cbd84d090cf6f3d0bce.png",
+     "page": "https://www.pinterest.com/pin/light-blue-white-stripe-cotton-shirting-fabric-yarndyed-woven-58-inch-wide-in-2025--4603171471558501888/",
+     "title": "Light Blue White Stripe Cotton Shirting Fabric - Yarn-Dyed Woven - 58 ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "stripe_blue_shirting_normal.jpg",
+   "avgRGB": "#bdc6df"
+  },
+  "paisley_blue_white": {
+   "file": "paisley_blue_white.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "ref4 right guy: white shirt with small periwinkle-blue paisley motifs",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://cdn2.propercloth.com/pic_cs/e8d7dd6ced7b0cd751d88a330fc72fe4_size6.jpg",
+     "page": "https://propercloth.com/fabrics/albini-white-and-light-blue-paisley-print-2834.html",
+     "title": "Albini White and Light Blue Paisley Print Shirts by Proper Cloth",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#d2dbe6"
+  },
+  "auntie_blouse_pink_ditsy": {
+   "file": "auntie_blouse_pink_ditsy.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "เสื้อคุณแม่: pale pink rayon with small brown / blue / white flowers",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://5.imimg.com/data5/ECOM/Default/2022/6/XX/IB/VH/85504720/beigeditsyfloralprintrayonfabric-3-1000x1000.jpg",
+     "page": "https://www.indiamart.com/proddetail/beige-ditsy-pink-floral-print-rayon-fabric-56-inches-tu-4023-1-25937536997.html",
+     "title": "Beige Ditsy Pink Floral Print Rayon Fabric, 56 Inches, Tu 4023-1, Plain ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#d8c8c1"
+  },
+  "win_vest_back_505": {
+   "file": "win_vest_back_505.jpg",
+   "size": 512,
+   "kind": "print / UV panel",
+   "desc": "real back panel of a Bangkok motorcycle-taxi vest: reflective lime bands, yellow district patch (วินอนุสาวรีย์ สมุทรสงคราม), big number 505",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134207-7r98q-lq0hq5ls5sys92",
+     "page": "https://shopee.co.th/%E0%B9%80%E0%B8%AA%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%A7%E0%B8%B4%E0%B8%99%E0%B8%A1%E0%B8%AD%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%84%E0%B8%8B%E0%B8%84%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%95%E0%B8%B4%E0%B8%94%E0%B9%80%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C-420%E0%B8%BF-%E0%B9%80%E0%B8%AA%E0%B8%B7%E0%B9%89%E0%B8%AD%E0%B8%81%E0%B8%B1%E0%B9%8A%E0%B8%81%E0%B8%AA%E0%B8%B5%E0%B8%AA%E0%B9%89%E0%B8%A1-i.431613574.10502049484",
+     "title": "เสื้อวินมอเตอร์ไซค์พร้อมติดเบอร์ 420฿ เสื้อกั๊กสีส้ม | Shopee Thailand",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "reflective_band": {
+   "file": "reflective_band.jpg",
+   "size": [
+    1024,
+    256
+   ],
+   "kind": "tileable strip (U)",
+   "desc": "safety-vest band: orange edges with grey retro-reflective tape (riders, police at night, vests)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://technopackcorp.com/cdn/shop/products/HI-VIS-TWO-TONED-MESH-SLEEVED-SAFETY-VEST-WITH-2-INCHES-REFLECTIVE-STRIPS-AND-POCKETS-S-VL-05-LM-JORESTECH-H_19_1600x1600.jpg?v=1658951093",
+     "page": "https://technopackcorp.com/products/hi-vis-two-toned-mesh-sleeved-safety-vest-with-2-reflective-strips-and-pockets",
+     "title": "2-Toned Reflective Safety Vest with Sleeves & Pockets | ANSI Class 3 ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "vest_mesh_yellow": {
+   "file": "vest_mesh_yellow.jpg",
+   "size": 512,
+   "kind": "tileable",
+   "desc": "fluorescent yellow-green safety-vest mesh",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://technopackcorp.com/cdn/shop/products/HI-VIS-TWO-TONED-MESH-SLEEVED-SAFETY-VEST-WITH-2-INCHES-REFLECTIVE-STRIPS-AND-POCKETS-S-VL-05-LM-JORESTECH-H_19_1600x1600.jpg?v=1658951093",
+     "page": "https://technopackcorp.com/products/hi-vis-two-toned-mesh-sleeved-safety-vest-with-2-reflective-strips-and-pockets",
+     "title": "2-Toned Reflective Safety Vest with Sleeves & Pockets | ANSI Class 3 ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#dfee09"
+  },
+  "apron_stained": {
+   "file": "apron_stained.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "street-cook canvas apron with chili / soy / oil stains (real photo)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://static.vecteezy.com/system/resources/previews/070/866/752/non_2x/chefs-apron-a-close-up-of-culinary-mess-and-dedication-photo.jpg",
+     "page": "https://www.vecteezy.com/photo/70866752-chefs-apron-a-close-up-of-culinary-mess-and-dedication",
+     "title": "Chefs Apron - A Close-Up of Culinary Mess and Dedication. 70866752 ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "apron_stained_normal.jpg",
+   "avgRGB": "#c2b098"
+  },
+  "stripe_heather_wide": {
+   "file": "stripe_heather_wide.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "heather-grey / oatmeal wide stripe jersey (casual tee)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/736x/46/4d/73/464d73ef25e33d29bc2e3b4ce8e4053f.jpg",
+     "page": "https://www.pinterest.com/pin/gray-and-white-striped-jersey-knit-fabric--112378953182281266/",
+     "title": "Gray and White Striped Jersey Knit Fabric",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "stripe_heather_wide_normal.jpg",
+   "avgRGB": "#bfbab4"
+  },
+  "auntie_blouse_mint_ditsy": {
+   "file": "auntie_blouse_mint_ditsy.jpg",
+   "size": 1024,
+   "kind": "tileable",
+   "desc": "เสื้อคุณแม่ second colourway: mint ground, same real ditsy floral print",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://5.imimg.com/data5/ECOM/Default/2022/6/XX/IB/VH/85504720/beigeditsyfloralprintrayonfabric-3-1000x1000.jpg",
+     "page": "https://www.indiamart.com/proddetail/beige-ditsy-pink-floral-print-rayon-fabric-56-inches-tu-4023-1-25937536997.html",
+     "title": "Beige Ditsy Pink Floral Print Rayon Fabric, 56 Inches, Tu 4023-1, Plain ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgRGB": "#cbd3c6"
+  },
+  "flipflop_top_photo": {
+   "file": "flipflop_top_photo.jpg",
+   "size": [
+    256,
+    512
+   ],
+   "kind": "photo decal",
+   "desc": "real top view of a blue-strap / white-sole rubber thong slipper (ช้างดาว style) — sole-top UV decal",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134207-7r98s-lvgxchaks0zt4d",
+     "page": "https://shopee.co.th/(%E0%B8%A2%E0%B8%81%E0%B9%82%E0%B8%AB%E0%B8%A5-12%E0%B8%84%E0%B8%B9%E0%B9%88)%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%9F%E0%B8%AD%E0%B8%87%E0%B8%99%E0%B9%89%E0%B8%B3-%E0%B9%81%E0%B8%95%E0%B8%B0%E0%B8%AB%E0%B8%B9%E0%B8%84%E0%B8%B5%E0%B8%9A-3%E0%B8%AB%E0%B8%B9-%E0%B8%AA%E0%B8%B5%E0%B8%9F%E0%B9%89%E0%B8%B2%E0%B8%82%E0%B8%B2%E0%B8%A7-%E0%B9%81%E0%B8%A5%E0%B8%B0-%E0%B8%84%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%B5-%E0%B8%84%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C-i.69348894.24480963365",
+     "title": "(ยกโหล 12คู่)รองเท้าฟองน้ำ แตะหูคีบ 3หู สีฟ้าขาว และ คละสี คละเบอร์ ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "flipflop_sole_rubber": {
+   "file": "flipflop_sole_rubber.jpg",
+   "size": [
+    256,
+    256
+   ],
+   "kind": "tileable",
+   "desc": "white rubber sole (tileable, from the same photo)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134207-7r98s-lvgxchaks0zt4d",
+     "page": "https://shopee.co.th/(%E0%B8%A2%E0%B8%81%E0%B9%82%E0%B8%AB%E0%B8%A5-12%E0%B8%84%E0%B8%B9%E0%B9%88)%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%9F%E0%B8%AD%E0%B8%87%E0%B8%99%E0%B9%89%E0%B8%B3-%E0%B9%81%E0%B8%95%E0%B8%B0%E0%B8%AB%E0%B8%B9%E0%B8%84%E0%B8%B5%E0%B8%9A-3%E0%B8%AB%E0%B8%B9-%E0%B8%AA%E0%B8%B5%E0%B8%9F%E0%B9%89%E0%B8%B2%E0%B8%82%E0%B8%B2%E0%B8%A7-%E0%B9%81%E0%B8%A5%E0%B8%B0-%E0%B8%84%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%B5-%E0%B8%84%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C-i.69348894.24480963365",
+     "title": "(ยกโหล 12คู่)รองเท้าฟองน้ำ แตะหูคีบ 3หู สีฟ้าขาว และ คละสี คละเบอร์ ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "flipflop_strap_blue": {
+   "file": "flipflop_strap_blue.jpg",
+   "size": [
+    256,
+    256
+   ],
+   "kind": "tileable",
+   "desc": "blue rubber strap (colour sampled from the real slipper's straps, rubber detail from its sole)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134207-7r98s-lvgxchaks0zt4d",
+     "page": "https://shopee.co.th/(%E0%B8%A2%E0%B8%81%E0%B9%82%E0%B8%AB%E0%B8%A5-12%E0%B8%84%E0%B8%B9%E0%B9%88)%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%9F%E0%B8%AD%E0%B8%87%E0%B8%99%E0%B9%89%E0%B8%B3-%E0%B9%81%E0%B8%95%E0%B8%B0%E0%B8%AB%E0%B8%B9%E0%B8%84%E0%B8%B5%E0%B8%9A-3%E0%B8%AB%E0%B8%B9-%E0%B8%AA%E0%B8%B5%E0%B8%9F%E0%B9%89%E0%B8%B2%E0%B8%82%E0%B8%B2%E0%B8%A7-%E0%B9%81%E0%B8%A5%E0%B8%B0-%E0%B8%84%E0%B8%A5%E0%B8%B0%E0%B8%AA%E0%B8%B5-%E0%B8%84%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C-i.69348894.24480963365",
+     "title": "(ยกโหล 12คู่)รองเท้าฟองน้ำ แตะหูคีบ 3หู สีฟ้าขาว และ คละสี คละเบอร์ ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "strapRGB": "#153c76"
+  },
+  "sneaker_white_worn_photo": {
+   "file": "sneaker_white_worn_photo.jpg",
+   "size": [
+    512,
+    728
+   ],
+   "kind": "photo decal",
+   "desc": "real photo of a worn white canvas sneaker (side / front) — decal reference for shoe UVs",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://static.vecteezy.com/system/resources/previews/059/165/464/large_2x/a-pair-of-dirty-white-sneakers-on-a-white-surface-photo.jpeg",
+     "page": "https://www.vecteezy.com/photo/59165464-a-pair-of-dirty-white-sneakers-on-a-white-surface",
+     "title": "A pair of dirty white sneakers on a white surface 59165464 Stock Photo ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "bucket_hat_khaki": {
+   "file": "bucket_hat_khaki.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "washed khaki cotton bucket-hat crown fabric",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://shop.diffusion.jp/cdn/shop/files/GChZRIkqxa3ffHJ3bV6PJ7fFBcSIPJelOQaDSmj4.jpg?v=1771325197&width=1024",
+     "page": "https://shop.diffusion.jp/products/rc_it4aocc0wl9m_piww",
+     "title": "DN CAT BUCKET HAT #KHAKI [DNS26A01] - Diffusion 三重県四日市市のセレクトショップ",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "bucket_hat_khaki_normal.jpg"
+  },
+  "bucket_hat_brim_stitched": {
+   "file": "bucket_hat_brim_stitched.jpg",
+   "size": [
+    512,
+    256
+   ],
+   "kind": "tileable",
+   "desc": "bucket-hat brim with concentric stitch lines (real photo)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://shop.diffusion.jp/cdn/shop/files/GChZRIkqxa3ffHJ3bV6PJ7fFBcSIPJelOQaDSmj4.jpg?v=1771325197&width=1024",
+     "page": "https://shop.diffusion.jp/products/rc_it4aocc0wl9m_piww",
+     "title": "DN CAT BUCKET HAT #KHAKI [DNS26A01] - Diffusion 三重県四日市市のセレクトショップ",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "cap_washed_lilac": {
+   "file": "cap_washed_lilac.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "washed cotton-twill baseball cap fabric (faded lilac)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://static.goldmyk.com/cloud/lkBqrKmrSRilojopnqjq/043904-baseball-cap.jpg",
+     "page": "https://www.goldmyk.com/6-Panel-Special-Brim-100-Cotton-Twill-Fabric-Custom-Logo-Washing-Baseball-Cap-Hat-of-Women-And-Men-pd558763058.html",
+     "title": "6 Panel Special Brim 100% Cotton Twill Fabric Custom Logo Washing ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "cap_washed_navy": {
+   "file": "cap_washed_navy.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "same cap twill recoloured faded navy",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://static.goldmyk.com/cloud/lkBqrKmrSRilojopnqjq/043904-baseball-cap.jpg",
+     "page": "https://www.goldmyk.com/6-Panel-Special-Brim-100-Cotton-Twill-Fabric-Custom-Logo-Washing-Baseball-Cap-Hat-of-Women-And-Men-pd558763058.html",
+     "title": "6 Panel Special Brim 100% Cotton Twill Fabric Custom Logo Washing ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "sunglass_lens_amber": {
+   "file": "sunglass_lens_amber.jpg",
+   "size": [
+    256,
+    256
+   ],
+   "kind": "lens",
+   "desc": "ref4 afro guy: amber-brown tinted lens, darker at the top (real lens photo + gradient); use alpha ~0.75, roughness 0.05",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://images.nexusapp.co/assets/cd/23/9c/205672742.jpg",
+     "page": "https://uk.vicedeal.com/products/amber-color-sunglasses-lenses-base-curve-2-exia-optical-e8-series?variant=UHJvZHVjdFZhcmlhbnQ6Nzg4MDA0MDU5",
+     "title": "Amber Color Sunglasses Lenses Base Curve 2 EXIA OP... - Vicedeal",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "nametag_boy": {
+   "file": "nametag_boy.jpg",
+   "size": [
+    512,
+    256
+   ],
+   "kind": "decal on fabric",
+   "desc": "Thai school-shirt chest embroidery on white poplin: name 'ด.ช. สมชาย ใจดี', parody school initials 'ผ.ว.' (โรงเรียนผัดวิทยา) + class; blue satin stitch = real embroidery photo detail; font Sarabun (looped)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/04/b6/8e/04b68ef124bfd183f5393477ad8cffa5.jpg",
+     "page": "https://www.pinterest.co.uk/pin/satin-stitch-lettering-tutorial--97812623152580209/",
+     "title": "Satin Stitch Lettering Tutorial | Tutorial for beginners | Embroidery ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/stretch_poplin",
+     "page": "https://polyhaven.com/a/stretch_poplin",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "font": "Sarabun Bold (OFL, looped Thai)"
+  },
+  "nametag_boy_alpha": {
+   "file": "nametag_boy_alpha.png",
+   "size": [
+    512,
+    256
+   ],
+   "kind": "decal (RGBA)",
+   "desc": "same embroidery as an RGBA decal (alpha = thread only)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/04/b6/8e/04b68ef124bfd183f5393477ad8cffa5.jpg",
+     "page": "https://www.pinterest.co.uk/pin/satin-stitch-lettering-tutorial--97812623152580209/",
+     "title": "Satin Stitch Lettering Tutorial | Tutorial for beginners | Embroidery ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "nametag_girl": {
+   "file": "nametag_girl.jpg",
+   "size": [
+    512,
+    256
+   ],
+   "kind": "decal on fabric",
+   "desc": "Thai school-shirt chest embroidery on white poplin: name 'ด.ญ. มะลิ ศรีสุข', parody school initials 'ผ.ว.' (โรงเรียนผัดวิทยา) + class; blue satin stitch = real embroidery photo detail; font Sarabun (looped)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/04/b6/8e/04b68ef124bfd183f5393477ad8cffa5.jpg",
+     "page": "https://www.pinterest.co.uk/pin/satin-stitch-lettering-tutorial--97812623152580209/",
+     "title": "Satin Stitch Lettering Tutorial | Tutorial for beginners | Embroidery ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/stretch_poplin",
+     "page": "https://polyhaven.com/a/stretch_poplin",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "font": "Sarabun Bold (OFL, looped Thai)"
+  },
+  "nametag_girl_alpha": {
+   "file": "nametag_girl_alpha.png",
+   "size": [
+    512,
+    256
+   ],
+   "kind": "decal (RGBA)",
+   "desc": "same embroidery as an RGBA decal (alpha = thread only)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/04/b6/8e/04b68ef124bfd183f5393477ad8cffa5.jpg",
+     "page": "https://www.pinterest.co.uk/pin/satin-stitch-lettering-tutorial--97812623152580209/",
+     "title": "Satin Stitch Lettering Tutorial | Tutorial for beginners | Embroidery ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "rider_logo_khunhiw": {
+   "file": "rider_logo_khunhiw.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "print panel",
+   "desc": "PARODY delivery-rider jacket back print 'คุณหิว / KHUN HIW delivery' (original name, no real brand), white plastisol on polyester; font Chonburi (looped Thai)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/bi_stretch",
+     "page": "https://polyhaven.com/a/bi_stretch",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "font": "Chonburi (OFL, looped Thai)"
+  },
+  "rider_logo_pinto": {
+   "file": "rider_logo_pinto.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "print panel",
+   "desc": "PARODY delivery-rider jacket back print 'ปิ่นโต / PINTO food' (original name, no real brand), white plastisol on polyester; font Chonburi (looped Thai)",
+   "sources": [
+    {
+     "type": "photo scan",
+     "image": "https://polyhaven.com/a/bi_stretch",
+     "page": "https://polyhaven.com/a/bi_stretch",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ],
+   "font": "Chonburi (OFL, looped Thai)"
+  },
+  "cap_front_hiaphat": {
+   "file": "cap_front_hiaphat.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "print panel",
+   "desc": "cap front panel with the game's own parody logo 'เฮียผัด / HIA PHAT' in white satin-stitch embroidery (real thread photo detail), font Chonburi",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/04/b6/8e/04b68ef124bfd183f5393477ad8cffa5.jpg",
+     "page": "https://www.pinterest.co.uk/pin/satin-stitch-lettering-tutorial--97812623152580209/",
+     "title": "Satin Stitch Lettering Tutorial | Tutorial for beginners | Embroidery ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    },
+    {
+     "type": "web photo",
+     "image": "https://static.goldmyk.com/cloud/lkBqrKmrSRilojopnqjq/043904-baseball-cap.jpg",
+     "page": "https://www.goldmyk.com/6-Panel-Special-Brim-100-Cotton-Twill-Fabric-Custom-Logo-Washing-Baseball-Cap-Hat-of-Women-And-Men-pd558763058.html",
+     "title": "6 Panel Special Brim 100% Cotton Twill Fabric Custom Logo Washing ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "font": "Chonburi (OFL, looped Thai)"
+  }
+ },
+ "about": "Clothing fabrics / prints built from REAL photos (web photos of real fabrics & garments, Poly Haven CC0 fabric scans). Tileable unless 'kind' says otherwise. Normal maps are OpenGL (+Y) convention, 512 px.",
+ "normalConvention": "OpenGL (+Y up)"
+}

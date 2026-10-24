@@ -143,7 +143,9 @@ def tier2_painted_board():
     lay = text_layer(W, H, lines, wobble=1.2, seed=2)
     wear = grain_wear(H, W, 9, 0.06, 0.2, 10) * np.clip(1 - rust * 1.6, 0, 1)
     out = paint_on(c, lay, absorb=0.4, wear=wear)
-    save("hiaphat_tier2_painted_metal_board.png", out, np.ones((H, W), np.float32))
+    from photodecal import key_background
+    keyed = key_background(np.dstack([c, np.ones((H, W), np.float32)]), tol=0.06, feather_px=1.0, erode=0)
+    save("hiaphat_tier2_painted_metal_board.png", out, keyed[..., 3])
     man("hiaphat_tier2_painted_metal_board.png", "ร้านเฮียผัด / อาหารตามสั่ง / โทร. 08x-xxx-xxxx",
         "Player shop tier 2: hand-painted lettering on an old white enamel board with rust (real photo carrier)",
         1.6, 0.95, "hung in a steel frame on a pole / wired to the cart canopy", "player shop sign", ["5799351b"],

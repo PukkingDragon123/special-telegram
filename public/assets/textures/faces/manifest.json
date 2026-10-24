@@ -1,0 +1,1260 @@
+{
+ "about": "Static photo faces (Chilla's Art style) for low-poly heads. 512x512 sRGB JPG, front planar projection.",
+ "alignment": {
+  "eyeRight_image_left": [
+   0.36,
+   0.44
+  ],
+  "eyeLeft_image_right": [
+   0.64,
+   0.44
+  ],
+  "mouthCentre": [
+   0.5,
+   0.73
+  ],
+  "chinY": "≈0.90 (0.87–0.93 per face)",
+  "uvOrigin": "top-left (image coords); flip V for three.js UVs",
+  "notes": "eye centre = midpoint of the eye corners; outside the face oval the texture is the face's own avgSkinRGB, so the rest of the head uses a flat material of that colour"
+ },
+ "processing": "MediaPipe 478-pt landmarks -> exact 3-point affine; hair/background masked with the MediaPipe multiclass segmenter and refilled with extrapolated skin + the face's own micro-detail; asymmetric low-frequency lighting removed (symmetric form shading partly kept); de-shine; low-frequency colour transfer to avgSkinRGB at the oval edge",
+ "avgSkinRGB": "sRGB 0-255; robust mean (20th–85th luminance percentile) of visible skin with eyes/brows/lips/nose excluded",
+ "detailFormula": {
+  "encode": "detail_srgb = lin2srgb( clamp( K * srgb2lin(face_srgb) / srgb2lin(avgSkinRGB/255), 0, 1 ) ),  K = 0.2158 (= srgb2lin(128/255))",
+  "decode_glsl": "vec3 albedoLin = srgb2lin(texture(detail, uv).rgb) / 0.2158 * srgb2lin(skinTone);",
+  "notes": "skin = mid-grey (≈128) in the detail map; eyes, teeth, lips keep their own relative colour. Use *_mask.png (255 = tintable skin, 0 = eyes / mouth interior) to blend: albedo = mix(faceTexture, detail-tinted, mask) when re-skinning; three.js textures: set detail.colorSpace = SRGBColorSpace and multiply in linear."
+ },
+ "variants": "Expression swaps (faces never animate): dumb_thinking (eyes rolled up/inward, brows uneven, mouth slack-open), drunk (flushed cheeks/nose, heavy half-lids, lopsided grin), sleep (closed eyelids, lips slightly parted), shock (wide eyes, raised brows, O-mouth with real-photo teeth), scream (wide eyes, big open mouth with real-photo teeth). Made by TPS landmark warps + transplanted mouth interiors from other CC0 SFHQ faces (SFHQ_pt2_00078890, SFHQ_pt4_00047693, SFHQ_pt4_00089594).",
+ "faces": [
+  {
+   "id": "m01_young_tan",
+   "file": "m01_young_tan.jpg",
+   "detail": "m01_young_tan_detail.jpg",
+   "mask": "m01_young_tan_mask.png",
+   "sex": "m",
+   "ageGroup": "young",
+   "look": "SE Asian",
+   "roles": [
+    "player",
+    "student",
+    "rider"
+   ],
+   "avgSkinRGB": [
+    199,
+    129,
+    98
+   ],
+   "avgSkinHex": "#c78162",
+   "variants": {
+    "dumb_thinking": {
+     "file": "m01_young_tan_dumb_thinking.jpg",
+     "detail": "m01_young_tan_dumb_thinking_detail.jpg",
+     "mask": "m01_young_tan_dumb_thinking_mask.png"
+    },
+    "drunk": {
+     "file": "m01_young_tan_drunk.jpg",
+     "detail": "m01_young_tan_drunk_detail.jpg",
+     "mask": "m01_young_tan_drunk_mask.png"
+    },
+    "sleep": {
+     "file": "m01_young_tan_sleep.jpg",
+     "detail": "m01_young_tan_sleep_detail.jpg",
+     "mask": "m01_young_tan_sleep_mask.png"
+    },
+    "shock": {
+     "file": "m01_young_tan_shock.jpg",
+     "detail": "m01_young_tan_shock_detail.jpg",
+     "mask": "m01_young_tan_shock_mask.png"
+    }
+   },
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00098472.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m02_young_fair",
+   "file": "m02_young_fair.jpg",
+   "detail": "m02_young_fair_detail.jpg",
+   "mask": "m02_young_fair_mask.png",
+   "sex": "m",
+   "ageGroup": "young",
+   "look": "East/SE Asian",
+   "roles": [
+    "player",
+    "office"
+   ],
+   "avgSkinRGB": [
+    189,
+    152,
+    140
+   ],
+   "avgSkinHex": "#bd988c",
+   "variants": {
+    "dumb_thinking": {
+     "file": "m02_young_fair_dumb_thinking.jpg",
+     "detail": "m02_young_fair_dumb_thinking_detail.jpg",
+     "mask": "m02_young_fair_dumb_thinking_mask.png"
+    },
+    "drunk": {
+     "file": "m02_young_fair_drunk.jpg",
+     "detail": "m02_young_fair_drunk_detail.jpg",
+     "mask": "m02_young_fair_drunk_mask.png"
+    },
+    "sleep": {
+     "file": "m02_young_fair_sleep.jpg",
+     "detail": "m02_young_fair_sleep_detail.jpg",
+     "mask": "m02_young_fair_sleep_mask.png"
+    },
+    "shock": {
+     "file": "m02_young_fair_shock.jpg",
+     "detail": "m02_young_fair_shock_detail.jpg",
+     "mask": "m02_young_fair_shock_mask.png"
+    }
+   },
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00087217.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m03_young_stubble",
+   "file": "m03_young_stubble.jpg",
+   "detail": "m03_young_stubble_detail.jpg",
+   "mask": "m03_young_stubble_mask.png",
+   "sex": "m",
+   "ageGroup": "young",
+   "look": "East/SE Asian",
+   "roles": [
+    "player",
+    "delivery"
+   ],
+   "avgSkinRGB": [
+    212,
+    158,
+    131
+   ],
+   "avgSkinHex": "#d49e83",
+   "variants": {
+    "dumb_thinking": {
+     "file": "m03_young_stubble_dumb_thinking.jpg",
+     "detail": "m03_young_stubble_dumb_thinking_detail.jpg",
+     "mask": "m03_young_stubble_dumb_thinking_mask.png"
+    },
+    "drunk": {
+     "file": "m03_young_stubble_drunk.jpg",
+     "detail": "m03_young_stubble_drunk_detail.jpg",
+     "mask": "m03_young_stubble_drunk_mask.png"
+    },
+    "sleep": {
+     "file": "m03_young_stubble_sleep.jpg",
+     "detail": "m03_young_stubble_sleep_detail.jpg",
+     "mask": "m03_young_stubble_sleep_mask.png"
+    },
+    "shock": {
+     "file": "m03_young_stubble_shock.jpg",
+     "detail": "m03_young_stubble_shock_detail.jpg",
+     "mask": "m03_young_stubble_shock_mask.png"
+    }
+   },
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00109322.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m04_young_mixed",
+   "file": "m04_young_mixed.jpg",
+   "detail": "m04_young_mixed_detail.jpg",
+   "mask": "m04_young_mixed_mask.png",
+   "sex": "m",
+   "ageGroup": "young",
+   "look": "SE Asian (mixed)",
+   "roles": [
+    "player",
+    "vendor"
+   ],
+   "avgSkinRGB": [
+    169,
+    144,
+    126
+   ],
+   "avgSkinHex": "#a9907e",
+   "variants": {
+    "dumb_thinking": {
+     "file": "m04_young_mixed_dumb_thinking.jpg",
+     "detail": "m04_young_mixed_dumb_thinking_detail.jpg",
+     "mask": "m04_young_mixed_dumb_thinking_mask.png"
+    },
+    "drunk": {
+     "file": "m04_young_mixed_drunk.jpg",
+     "detail": "m04_young_mixed_drunk_detail.jpg",
+     "mask": "m04_young_mixed_drunk_mask.png"
+    },
+    "sleep": {
+     "file": "m04_young_mixed_sleep.jpg",
+     "detail": "m04_young_mixed_sleep_detail.jpg",
+     "mask": "m04_young_mixed_sleep_mask.png"
+    },
+    "shock": {
+     "file": "m04_young_mixed_shock.jpg",
+     "detail": "m04_young_mixed_shock_detail.jpg",
+     "mask": "m04_young_mixed_shock_mask.png"
+    }
+   },
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00108574.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m05_young_tough",
+   "file": "m05_young_tough.jpg",
+   "detail": "m05_young_tough_detail.jpg",
+   "mask": "m05_young_tough_mask.png",
+   "sex": "m",
+   "ageGroup": "young",
+   "look": "SE Asian",
+   "roles": [
+    "player",
+    "construction",
+    "moto_taxi"
+   ],
+   "avgSkinRGB": [
+    200,
+    149,
+    128
+   ],
+   "avgSkinHex": "#c89580",
+   "variants": {
+    "dumb_thinking": {
+     "file": "m05_young_tough_dumb_thinking.jpg",
+     "detail": "m05_young_tough_dumb_thinking_detail.jpg",
+     "mask": "m05_young_tough_dumb_thinking_mask.png"
+    },
+    "drunk": {
+     "file": "m05_young_tough_drunk.jpg",
+     "detail": "m05_young_tough_drunk_detail.jpg",
+     "mask": "m05_young_tough_drunk_mask.png"
+    },
+    "sleep": {
+     "file": "m05_young_tough_sleep.jpg",
+     "detail": "m05_young_tough_sleep_detail.jpg",
+     "mask": "m05_young_tough_sleep_mask.png"
+    },
+    "shock": {
+     "file": "m05_young_tough_shock.jpg",
+     "detail": "m05_young_tough_shock_detail.jpg",
+     "mask": "m05_young_tough_shock_mask.png"
+    }
+   },
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00006047.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m06_teen_student",
+   "file": "m06_teen_student.jpg",
+   "detail": "m06_teen_student_detail.jpg",
+   "mask": "m06_teen_student_mask.png",
+   "sex": "m",
+   "ageGroup": "teen",
+   "look": "SE Asian",
+   "roles": [
+    "student"
+   ],
+   "avgSkinRGB": [
+    202,
+    148,
+    126
+   ],
+   "avgSkinHex": "#ca947e",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00012622.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m07_young_pale",
+   "file": "m07_young_pale.jpg",
+   "detail": "m07_young_pale_detail.jpg",
+   "mask": "m07_young_pale_mask.png",
+   "sex": "m",
+   "ageGroup": "young",
+   "look": "East Asian",
+   "roles": [
+    "student",
+    "office"
+   ],
+   "avgSkinRGB": [
+    182,
+    157,
+    151
+   ],
+   "avgSkinHex": "#b69d97",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00065451.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m09_mid_office",
+   "file": "m09_mid_office.jpg",
+   "detail": "m09_mid_office_detail.jpg",
+   "mask": "m09_mid_office_mask.png",
+   "sex": "m",
+   "ageGroup": "middle",
+   "look": "East Asian",
+   "roles": [
+    "office",
+    "boss",
+    "shopkeeper"
+   ],
+   "avgSkinRGB": [
+    222,
+    157,
+    141
+   ],
+   "avgSkinHex": "#de9d8d",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00038987.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m10_mid_moustache",
+   "file": "m10_mid_moustache.jpg",
+   "detail": "m10_mid_moustache_detail.jpg",
+   "mask": "m10_mid_moustache_mask.png",
+   "sex": "m",
+   "ageGroup": "middle",
+   "look": "SE Asian",
+   "roles": [
+    "vendor",
+    "uncle"
+   ],
+   "avgSkinRGB": [
+    196,
+    132,
+    118
+   ],
+   "avgSkinHex": "#c48476",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00066380.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m11_mid_dark",
+   "file": "m11_mid_dark.jpg",
+   "detail": "m11_mid_dark_detail.jpg",
+   "mask": "m11_mid_dark_mask.png",
+   "sex": "m",
+   "ageGroup": "middle",
+   "look": "SE Asian",
+   "roles": [
+    "moto_taxi",
+    "driver"
+   ],
+   "avgSkinRGB": [
+    169,
+    99,
+    78
+   ],
+   "avgSkinHex": "#a9634e",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00029497.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m12_mid_beard",
+   "file": "m12_mid_beard.jpg",
+   "detail": "m12_mid_beard_detail.jpg",
+   "mask": "m12_mid_beard_mask.png",
+   "sex": "m",
+   "ageGroup": "middle",
+   "look": "East/SE Asian",
+   "roles": [
+    "delivery",
+    "hipster"
+   ],
+   "avgSkinRGB": [
+    166,
+    128,
+    118
+   ],
+   "avgSkinHex": "#a68076",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00077276.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m13_mid_labour",
+   "file": "m13_mid_labour.jpg",
+   "detail": "m13_mid_labour_detail.jpg",
+   "mask": "m13_mid_labour_mask.png",
+   "sex": "m",
+   "ageGroup": "middle",
+   "look": "SE Asian",
+   "roles": [
+    "construction",
+    "vendor"
+   ],
+   "avgSkinRGB": [
+    188,
+    105,
+    78
+   ],
+   "avgSkinHex": "#bc694e",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00071004.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m14_mid_shop",
+   "file": "m14_mid_shop.jpg",
+   "detail": "m14_mid_shop_detail.jpg",
+   "mask": "m14_mid_shop_mask.png",
+   "sex": "m",
+   "ageGroup": "middle",
+   "look": "East Asian",
+   "roles": [
+    "shopkeeper",
+    "uncle"
+   ],
+   "avgSkinRGB": [
+    208,
+    161,
+    142
+   ],
+   "avgSkinHex": "#d0a18e",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt2_00051493.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-2",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part2.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m15_old_weathered",
+   "file": "m15_old_weathered.jpg",
+   "detail": "m15_old_weathered_detail.jpg",
+   "mask": "m15_old_weathered_mask.png",
+   "sex": "m",
+   "ageGroup": "old",
+   "look": "mixed",
+   "roles": [
+    "uncle",
+    "homeless"
+   ],
+   "avgSkinRGB": [
+    185,
+    125,
+    110
+   ],
+   "avgSkinHex": "#b97d6e",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00011194.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m16_old_glasses",
+   "file": "m16_old_glasses.jpg",
+   "detail": "m16_old_glasses_detail.jpg",
+   "mask": "m16_old_glasses_mask.png",
+   "sex": "m",
+   "ageGroup": "old",
+   "look": "SE Asian",
+   "roles": [
+    "cart_old_man",
+    "uncle"
+   ],
+   "avgSkinRGB": [
+    107,
+    87,
+    83
+   ],
+   "avgSkinHex": "#6b5753",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00023959.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m17_old_grey",
+   "file": "m17_old_grey.jpg",
+   "detail": "m17_old_grey_detail.jpg",
+   "mask": "m17_old_grey_mask.png",
+   "sex": "m",
+   "ageGroup": "old",
+   "look": "East/SE Asian",
+   "roles": [
+    "cart_old_man",
+    "uncle"
+   ],
+   "avgSkinRGB": [
+    154,
+    126,
+    114
+   ],
+   "avgSkinHex": "#9a7e72",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt2_00032034.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-2",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part2.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "m18_old_longhair",
+   "file": "m18_old_longhair.jpg",
+   "detail": "m18_old_longhair_detail.jpg",
+   "mask": "m18_old_longhair_mask.png",
+   "sex": "m",
+   "ageGroup": "old",
+   "look": "SE Asian",
+   "roles": [
+    "homeless",
+    "fortune_teller"
+   ],
+   "avgSkinRGB": [
+    177,
+    114,
+    95
+   ],
+   "avgSkinHex": "#b1725f",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00109947.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f01_young_natural",
+   "file": "f01_young_natural.jpg",
+   "detail": "f01_young_natural_detail.jpg",
+   "mask": "f01_young_natural_mask.png",
+   "sex": "f",
+   "ageGroup": "young",
+   "look": "East/SE Asian",
+   "roles": [
+    "screaming_girl",
+    "student",
+    "office"
+   ],
+   "avgSkinRGB": [
+    208,
+    174,
+    158
+   ],
+   "avgSkinHex": "#d0ae9e",
+   "variants": {
+    "scream": {
+     "file": "f01_young_natural_scream.jpg",
+     "detail": "f01_young_natural_scream_detail.jpg",
+     "mask": "f01_young_natural_scream_mask.png"
+    }
+   },
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00034925.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f02_young_fair",
+   "file": "f02_young_fair.jpg",
+   "detail": "f02_young_fair_detail.jpg",
+   "mask": "f02_young_fair_mask.png",
+   "sex": "f",
+   "ageGroup": "young",
+   "look": "East Asian",
+   "roles": [
+    "office",
+    "shop_staff"
+   ],
+   "avgSkinRGB": [
+    195,
+    166,
+    159
+   ],
+   "avgSkinHex": "#c3a69f",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00110105.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f03_young_office",
+   "file": "f03_young_office.jpg",
+   "detail": "f03_young_office_detail.jpg",
+   "mask": "f03_young_office_mask.png",
+   "sex": "f",
+   "ageGroup": "young",
+   "look": "East Asian",
+   "roles": [
+    "office",
+    "student"
+   ],
+   "avgSkinRGB": [
+    203,
+    176,
+    170
+   ],
+   "avgSkinHex": "#cbb0aa",
+   "variants": {
+    "scream": {
+     "file": "f03_young_office_scream.jpg",
+     "detail": "f03_young_office_scream_detail.jpg",
+     "mask": "f03_young_office_scream_mask.png"
+    }
+   },
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00121299.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f04_teen_student",
+   "file": "f04_teen_student.jpg",
+   "detail": "f04_teen_student_detail.jpg",
+   "mask": "f04_teen_student_mask.png",
+   "sex": "f",
+   "ageGroup": "teen",
+   "look": "SE Asian",
+   "roles": [
+    "student"
+   ],
+   "avgSkinRGB": [
+    210,
+    163,
+    144
+   ],
+   "avgSkinHex": "#d2a390",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00056147.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f05_young_tan",
+   "file": "f05_young_tan.jpg",
+   "detail": "f05_young_tan_detail.jpg",
+   "mask": "f05_young_tan_mask.png",
+   "sex": "f",
+   "ageGroup": "young",
+   "look": "SE Asian",
+   "roles": [
+    "screaming_girl",
+    "vendor",
+    "rider"
+   ],
+   "avgSkinRGB": [
+    199,
+    130,
+    106
+   ],
+   "avgSkinHex": "#c7826a",
+   "variants": {
+    "scream": {
+     "file": "f05_young_tan_scream.jpg",
+     "detail": "f05_young_tan_scream_detail.jpg",
+     "mask": "f05_young_tan_scream_mask.png"
+    }
+   },
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00051113.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f07_young_se",
+   "file": "f07_young_se.jpg",
+   "detail": "f07_young_se_detail.jpg",
+   "mask": "f07_young_se_mask.png",
+   "sex": "f",
+   "ageGroup": "young",
+   "look": "SE Asian",
+   "roles": [
+    "vendor",
+    "office"
+   ],
+   "avgSkinRGB": [
+    215,
+    157,
+    138
+   ],
+   "avgSkinHex": "#d79d8a",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00092068.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f08_mid_auntie",
+   "file": "f08_mid_auntie.jpg",
+   "detail": "f08_mid_auntie_detail.jpg",
+   "mask": "f08_mid_auntie_mask.png",
+   "sex": "f",
+   "ageGroup": "middle",
+   "look": "SE Asian",
+   "roles": [
+    "market_auntie",
+    "vendor"
+   ],
+   "avgSkinRGB": [
+    216,
+    153,
+    129
+   ],
+   "avgSkinHex": "#d89981",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00123602.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f10_mid_auntie2",
+   "file": "f10_mid_auntie2.jpg",
+   "detail": "f10_mid_auntie2_detail.jpg",
+   "mask": "f10_mid_auntie2_mask.png",
+   "sex": "f",
+   "ageGroup": "middle",
+   "look": "East/SE Asian",
+   "roles": [
+    "market_auntie",
+    "shopkeeper"
+   ],
+   "avgSkinRGB": [
+    201,
+    143,
+    109
+   ],
+   "avgSkinHex": "#c98f6d",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00009492.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f11_mid_auntie3",
+   "file": "f11_mid_auntie3.jpg",
+   "detail": "f11_mid_auntie3_detail.jpg",
+   "mask": "f11_mid_auntie3_mask.png",
+   "sex": "f",
+   "ageGroup": "middle",
+   "look": "East/SE Asian",
+   "roles": [
+    "market_auntie"
+   ],
+   "avgSkinRGB": [
+    218,
+    161,
+    155
+   ],
+   "avgSkinHex": "#daa19b",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00011275.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f12_old_grandma",
+   "file": "f12_old_grandma.jpg",
+   "detail": "f12_old_grandma_detail.jpg",
+   "mask": "f12_old_grandma_mask.png",
+   "sex": "f",
+   "ageGroup": "old",
+   "look": "SE Asian",
+   "roles": [
+    "garland_seller",
+    "grandma"
+   ],
+   "avgSkinRGB": [
+    199,
+    147,
+    125
+   ],
+   "avgSkinHex": "#c7937d",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00032927.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f13_old_auntie",
+   "file": "f13_old_auntie.jpg",
+   "detail": "f13_old_auntie_detail.jpg",
+   "mask": "f13_old_auntie_mask.png",
+   "sex": "f",
+   "ageGroup": "old",
+   "look": "East Asian",
+   "roles": [
+    "market_auntie",
+    "perm_auntie"
+   ],
+   "avgSkinRGB": [
+    206,
+    169,
+    158
+   ],
+   "avgSkinHex": "#cea99e",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00083791.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f14_old_glasses",
+   "file": "f14_old_glasses.jpg",
+   "detail": "f14_old_glasses_detail.jpg",
+   "mask": "f14_old_glasses_mask.png",
+   "sex": "f",
+   "ageGroup": "old",
+   "look": "East Asian",
+   "roles": [
+    "grandma"
+   ],
+   "avgSkinRGB": [
+    199,
+    166,
+    161
+   ],
+   "avgSkinHex": "#c7a6a1",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00097348.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "f15_old_white",
+   "file": "f15_old_white.jpg",
+   "detail": "f15_old_white_detail.jpg",
+   "mask": "f15_old_white_mask.png",
+   "sex": "f",
+   "ageGroup": "old",
+   "look": "SE Asian",
+   "roles": [
+    "grandma",
+    "fortune_teller"
+   ],
+   "avgSkinRGB": [
+    167,
+    123,
+    113
+   ],
+   "avgSkinHex": "#a77b71",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00123424.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "t01_backpacker_m",
+   "file": "t01_backpacker_m.jpg",
+   "detail": "t01_backpacker_m_detail.jpg",
+   "mask": "t01_backpacker_m_mask.png",
+   "sex": "m",
+   "ageGroup": "middle",
+   "look": "European",
+   "roles": [
+    "tourist"
+   ],
+   "avgSkinRGB": [
+    171,
+    129,
+    118
+   ],
+   "avgSkinHex": "#ab8176",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00057917.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "t02_backpacker_f",
+   "file": "t02_backpacker_f.jpg",
+   "detail": "t02_backpacker_f_detail.jpg",
+   "mask": "t02_backpacker_f_mask.png",
+   "sex": "f",
+   "ageGroup": "young",
+   "look": "European",
+   "roles": [
+    "tourist"
+   ],
+   "avgSkinRGB": [
+    203,
+    173,
+    169
+   ],
+   "avgSkinHex": "#cbada9",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00125356.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "t03_redhead_f",
+   "file": "t03_redhead_f.jpg",
+   "detail": "t03_redhead_f_detail.jpg",
+   "mask": "t03_redhead_f_mask.png",
+   "sex": "f",
+   "ageGroup": "young",
+   "look": "European",
+   "roles": [
+    "tourist"
+   ],
+   "avgSkinRGB": [
+    208,
+    153,
+    144
+   ],
+   "avgSkinHex": "#d09990",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00100509.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "t04_tourist_m",
+   "file": "t04_tourist_m.jpg",
+   "detail": "t04_tourist_m_detail.jpg",
+   "mask": "t04_tourist_m_mask.png",
+   "sex": "m",
+   "ageGroup": "middle",
+   "look": "African",
+   "roles": [
+    "tourist"
+   ],
+   "avgSkinRGB": [
+    179,
+    128,
+    111
+   ],
+   "avgSkinHex": "#b3806f",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00081685.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "t05_tourist_m2",
+   "file": "t05_tourist_m2.jpg",
+   "detail": "t05_tourist_m2_detail.jpg",
+   "mask": "t05_tourist_m2_mask.png",
+   "sex": "m",
+   "ageGroup": "young",
+   "look": "South Asian / Middle Eastern",
+   "roles": [
+    "tourist",
+    "trader"
+   ],
+   "avgSkinRGB": [
+    183,
+    124,
+    98
+   ],
+   "avgSkinHex": "#b77c62",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00100856.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  },
+  {
+   "id": "t06_retired_m",
+   "file": "t06_retired_m.jpg",
+   "detail": "t06_retired_m_detail.jpg",
+   "mask": "t06_retired_m_mask.png",
+   "sex": "m",
+   "ageGroup": "old",
+   "look": "European",
+   "roles": [
+    "tourist",
+    "retiree"
+   ],
+   "avgSkinRGB": [
+    174,
+    125,
+    116
+   ],
+   "avgSkinHex": "#ae7d74",
+   "variants": {},
+   "source": {
+    "dataset": "Synthetic Faces High Quality (SFHQ) by David Beniaguev — StyleGAN2-generated faces of people who do not exist",
+    "image": "SFHQ_pt4_00088230.jpg",
+    "page": "https://www.kaggle.com/datasets/selfishgene/synthetic-faces-high-quality-sfhq-part-4",
+    "downloadedFrom": "https://huggingface.co/datasets/bitmind/SyntheticFacesHQ (SFHQ-part4.zip mirror)"
+   },
+   "licence": "CC0 1.0 (Kaggle dataset licence); author: 'no privacy or license issues… use as you see fit'"
+  }
+ ],
+ "bodySkin": {
+  "skin_detail_pores_a": {
+   "file": "skin_detail_pores_a.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "desc": "tileable neutral skin detail: cheek pores (real macro photo). Multiply: albedo = skinRGB * detail / 0.5 (linear: skinLin * srgb2lin(detail) / 0.2158)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://cdn.promptden.com/images/20edb3f6-1819-44d5-bf23-6ce9e5a29dbc.jpg?class=standard",
+     "page": "https://promptden.com/post/close-up-skin-analysis-pores-texture-revealed",
+     "title": "Close-up Skin Analysis: Pores & Texture Revealed • PromptDen",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "kind": "tileable"
+  },
+  "skin_detail_lines_b": {
+   "file": "skin_detail_lines_b.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "desc": "tileable neutral skin detail: fine skin lines / back-of-hand texture (real macro photo). Multiply: albedo = skinRGB * detail / 0.5 (linear: skinLin * srgb2lin(detail) / 0.2158)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/closeup-porous-oily-human-skin-large-pores-skin-background-macro-cosmetology-closeup-porous-oily-human-skin-large-161082799.jpg",
+     "page": "https://www.dreamstime.com/photos-images/pores.html",
+     "title": "11,686 Pores Stock Photos - Free & Royalty-Free Stock Photos from ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "kind": "tileable"
+  },
+  "skin_detail_pores_c": {
+   "file": "skin_detail_pores_c.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "desc": "tileable neutral skin detail: pores + faint freckles (real macro photo). Multiply: albedo = skinRGB * detail / 0.5 (linear: skinLin * srgb2lin(detail) / 0.2158)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/close-up-image-showcases-intricate-details-human-skin-highlighting-pores-natural-texture-ideal-beauty-skincare-390287070.jpg",
+     "page": "https://www.dreamstime.com/close-up-image-showcases-intricate-details-human-skin-highlighting-pores-natural-texture-ideal-beauty-skincare-image390287070",
+     "title": "Close-Up of Human Skin Texture Showing Pores and Natural Features Stock ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "kind": "tileable"
+  },
+  "hand_back": {
+   "file": "hand_back.jpg",
+   "size": [
+    256,
+    512
+   ],
+   "desc": "back of a hand, fingers spread (real photo, background filled with the hand's own skin colour) — planar-project on low-poly hands/feet; use the *_detail map for recolouring",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://as1.ftcdn.net/v2/jpg/06/02/66/20/1000_F_602662011_fQQtchspgwuX0Gaq4UPLUKJUvJZM1lar.jpg",
+     "page": "https://stock.adobe.com/images/top-view-of-a-male-hand-isolated-on-a-transparent-background-png-high-resolution/602662011",
+     "title": "Top view of a male hand isolated on a transparent background, PNG. High ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgSkinRGB": [
+    210,
+    162,
+    145
+   ],
+   "kind": "projection"
+  },
+  "hand_back_detail": {
+   "file": "hand_back_detail.jpg",
+   "size": [
+    256,
+    512
+   ],
+   "desc": "recolourable version (divide by average skin, neutral grey = 128)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://as1.ftcdn.net/v2/jpg/06/02/66/20/1000_F_602662011_fQQtchspgwuX0Gaq4UPLUKJUvJZM1lar.jpg",
+     "page": "https://stock.adobe.com/images/top-view-of-a-male-hand-isolated-on-a-transparent-background-png-high-resolution/602662011",
+     "title": "Top view of a male hand isolated on a transparent background, PNG. High ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "kind": "projection"
+  },
+  "foot_top": {
+   "file": "foot_top.jpg",
+   "size": [
+    256,
+    512
+   ],
+   "desc": "bare foot from above (real photo, background filled with the foot's own skin colour) — planar-project on low-poly hands/feet; use the *_detail map for recolouring",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/barefoot-woman-white-background-barefoot-woman-white-background-top-view-372259228.jpg",
+     "page": "https://www.dreamstime.com/barefoot-woman-white-background-barefoot-woman-white-background-top-view-image372830316",
+     "title": "Barefoot Woman on White Background, Top View Stock Photo - Image of ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "avgSkinRGB": [
+    210,
+    158,
+    138
+   ],
+   "kind": "projection"
+  },
+  "foot_top_detail": {
+   "file": "foot_top_detail.jpg",
+   "size": [
+    256,
+    512
+   ],
+   "desc": "recolourable version (divide by average skin, neutral grey = 128)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/barefoot-woman-white-background-barefoot-woman-white-background-top-view-372259228.jpg",
+     "page": "https://www.dreamstime.com/barefoot-woman-white-background-barefoot-woman-white-background-top-view-image372830316",
+     "title": "Barefoot Woman on White Background, Top View Stock Photo - Image of ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "kind": "projection"
+  }
+ }
+}

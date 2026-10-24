@@ -3,7 +3,7 @@
 Night-time (roughly 22:00–05:00 game time) brings ผี to the neighbourhood. Tone: **funny-scary**
 — real Thai folklore looks (Thai horror films of the 1980s–2000s, temple hell-garden statues,
 spirit-house culture), played for jump-scares and slapstick, never gory for its own sake and never
-mocking Buddhism. Look-only references are in `web/` (`web/index.json` = sources: Thai film
+mocking Buddhism. Look-only references (67 audited images) are in `web/` (`web/index.json` = sources: Thai film
 posters, Wat hell-garden statues, Kuman Thong amulets, Mae Nak shrine at Wat Mahabut, Krahang
 performance photos, Thai ghost-video thumbnails). Game textures (all from real photos) are in
 `public/assets/textures/ghosts/` with a `manifest.json`.
@@ -44,7 +44,7 @@ General rules for every ghost
   wiggle free.
 * **Sounds:** wet slither, high giggle, a sucking slurp when she eats, crackling glow hum.
 * **Low-poly recipe:** head = NPC female head (pale face texture) + long wet hair cards
-  (`hair_wet_black.png`); neck stump with a ragged ring; organs = 3–5 lumpy noise-displaced
+  (`hair/hair_cards_black.png`, glossy material); neck stump with a ragged ring; organs = 3–5 lumpy noise-displaced
   ellipsoids; intestines = a spline tube (8 sides, 40–60 segments, length ~1.2 m) with
   `krasue_entrails_albedo.jpg` + `krasue_entrails_emissive.jpg` (multiply emissive by a pulsing
   0.5–1.5 intensity, bloom on); spring-chain simulation so the guts swing; slight point light.
@@ -192,10 +192,10 @@ General rules for every ghost
 
 * `krasue_entrails_albedo.jpg` + `krasue_entrails_emissive.jpg` — raw pork-intestine photo,
   tileable along U for a tube; emissive = mask of the glistening fatty parts.
-* `hair_wet_black.png` — wet black hair strands with alpha (hair cards for Krasue/Mae Nak).
+* long black hair for Krasue / Mae Nak: use `hair/hair_cards_black.png` (long + long-wispy cards) with a darker, glossier material (roughness 0.25) for the wet look.
 * `ghost_rag_white.png` — tattered white cloth with holes/torn edge (alpha).
-* `nangtani_green_silk.jpg` — green Thai silk with a gold woven border.
-* `banana_leaf.jpg` (+ `banana_leaf_card.png` with alpha) — banana-tree leaves.
+* `nangtani_green_silk.jpg` — real green Thai silk pha sin panel with a woven border (tile U); `nangtani_green_silk_pattern.jpg` — its body pattern, tileable both ways.
+* `banana_leaf.jpg` — banana-tree leaf surface (cut leaf cards from it with an alpha shape in-engine).
 * `pret_grey_skin.jpg` — wrinkled grey skin (elephant/old-skin photo, desaturated).
-* `ghost_moto_burnt.jpg` — burnt / rusty motorbike paint for the headless rider.
+* `ghost_moto_burnt.jpg` — burnt, peeling blue-grey paint over rust for the headless rider's bike.
 * `ghost_mist_a.jpg`, `ghost_mist_b.jpg` — tileable smoke/fog (greyscale, use as alpha).

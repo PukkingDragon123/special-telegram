@@ -73,7 +73,8 @@ void main() {
   vW = w.xyz;
   vN = normalize(mat3(modelMatrix) * normal);
   vV = normalize(uCam - w.xyz);
-  gl_Position = projectionMatrix * viewMatrix * w;
+  vCol.a *= 1.0 - smoothstep(45.0, 70.0, length(uCam - w.xyz));
+  gl_Position = vCol.a <= 0.001 ? vec4(0.0, 0.0, 2.0, 1.0) : projectionMatrix * viewMatrix * w;
 }`;
 const CONE_FRAG = /* glsl */`
 uniform float uTime; uniform float uNight; uniform vec3 uCam;
@@ -84,7 +85,8 @@ float vn3(vec3 x) { vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f)
              mix(mix(h31(i + vec3(0,0,1)), h31(i + vec3(1,0,1)), f.x), mix(h31(i + vec3(0,1,1)), h31(i + vec3(1,1,1)), f.x), f.y), f.z); }
 void main() {
   float edge = pow(abs(dot(normalize(vN), normalize(vV))), 1.6);
-  float dust = 0.6 + 0.4 * vn3(vW * 1.7 + vec3(0.0, -uTime * 0.35, uTime * 0.1)) + 0.25 * vn3(vW * 6.0 + uTime * 0.2);
+  if (vCol.a <= 0.002) discard;
+  float dust = 0.7 + 0.5 * vn3(vW * 2.2 + vec3(0.0, -uTime * 0.35, uTime * 0.1));
   float fall = (1.0 - vT) * (1.0 - vT) * smoothstep(0.0, 0.08, vT);
   float dist = length(uCam - vW);
   float k = edge * dust * fall * uNight * vCol.a * smoothstep(1.5, 6.0, dist) * 0.22;

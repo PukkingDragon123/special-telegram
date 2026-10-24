@@ -99,10 +99,16 @@ function sevenTwelve(c: SpecialCtx) {
   const signR = c.signs?.pick('convenience', 6, c.rng);
   const stripes: [number, number][] = [[0x1e8a4a, 0.34], [0xf08a20, 0.34], [0xd8282a, 0.34]];
   if (signR) {
+    // tile the real fascia photo along both fronts (keeps its aspect ratio)
+    const full = c.signs!.any('convenience', c.rng) ?? signR.r;
     w.atlas('sign', { e0: 0.6, ao: 1 });
-    const r = signR.r;
-    w.quad(x0 - 0.36, fy0 + 0.05, z1 - 0.2, x0 - 0.36, fy0 + 0.05, z0 + 0.2, x0 - 0.36, fy1 - 0.05, z0 + 0.2, x0 - 0.36, fy1 - 0.05, z1 - 0.2, [r.u0, r.v0, r.u1, r.v1]);
-    w.quad(x0 + 0.2, fy0 + 0.05, z1 + 0.36, x1 - 0.2, fy0 + 0.05, z1 + 0.36, x1 - 0.2, fy1 - 0.05, z1 + 0.36, x0 + 0.2, fy1 - 0.05, z1 + 0.36, [r.u0, r.v0, r.u1, r.v1]);
+    const h = fy1 - fy0 - 0.1;
+    const seg = (len: number) => Math.max(1, Math.round(len / (h * full.aspect)));
+    const uv = [full.u0, full.v0, full.u1, full.v1];
+    const LW = (z1 - 0.2) - (z0 + 0.2), nW = seg(LW);
+    for (let i = 0; i < nW; i++) { const za = z1 - 0.2 - (LW * i) / nW, zb = z1 - 0.2 - (LW * (i + 1)) / nW; w.quad(x0 - 0.36, fy0 + 0.05, za, x0 - 0.36, fy0 + 0.05, zb, x0 - 0.36, fy1 - 0.05, zb, x0 - 0.36, fy1 - 0.05, za, uv); }
+    const LS = (x1 - 0.2) - (x0 + 0.2), nS = seg(LS);
+    for (let i = 0; i < nS; i++) { const xa = x0 + 0.2 + (LS * i) / nS, xb = x0 + 0.2 + (LS * (i + 1)) / nS; w.quad(xa, fy0 + 0.05, z1 + 0.36, xb, fy0 + 0.05, z1 + 0.36, xb, fy1 - 0.05, z1 + 0.36, xa, fy1 - 0.05, z1 + 0.36, uv); }
   } else {
     let y = fy0 + 0.12;
     for (const [col, h] of stripes) {
@@ -176,7 +182,7 @@ function apartment(c: SpecialCtx) {
   for (let i = 0; i < n; i++) units.push({
     face: 'E', line: A.x1, a0: A.z0 + i * W, a1: A.z0 + (i + 1) * W, depth: A.x1 - A.x0, storeys: A.storeys, style: 'apartment',
     shop: i === 2 ? 'residence' : 'residence', ground: i === 2 ? 'gate' : 'open', wall: 'plaster', tint: 0xe6d6c0, noSign: i !== 2, sign: 'apartment',
-    corner: i === 0 ? 'left' : i === n - 1 ? 'right' : undefined, awning: 'none',
+    corner: i === 0 ? 'right' : i === n - 1 ? 'left' : undefined, awning: 'none',
   });
   buildRows(c, [units]);
 }

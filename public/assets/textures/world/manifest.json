@@ -1,0 +1,2075 @@
+{
+ "_readme": "R1-streets world textures. Maps: *_albedo (sRGB), *_normal (OpenGL +Y, linear), *_orm (R=AO, G=roughness, B=metalness, linear), *.png = RGBA decal/atlas (sRGB, straight alpha), *_rough = roughness for a decal. real_world_m = [U,V] metres covered by the whole texture. Real-photo derived unless noted; sources in 'sources' and references/credits/R1-streets.md.",
+ "textures": {
+  "ac_outdoor_unit_front_a": {
+   "purpose": "Front face of a real split-type AC outdoor unit (fan grille + side panel), rectified. Map on a bevelled box (sides: tinted plain from the albedo edge colour); hang on wall brackets with a drip stain decal below.",
+   "size": "768x567",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    0.84,
+    0.62
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "ac_outdoor_unit_front_a_albedo.jpg",
+    "ac_outdoor_unit_front_a_normal.jpg",
+    "ac_outdoor_unit_front_a_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "5602e394",
+     "url": "https://scene.com.au/images/airconditionner.jpeg",
+     "image_url": "https://scene.com.au/images/airconditionner.jpeg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "ac_outdoor_unit_front_b": {
+   "purpose": "Front face of a real split-type AC outdoor unit (fan grille + side panel), rectified. Map on a bevelled box (sides: tinted plain from the albedo edge colour); hang on wall brackets with a drip stain decal below.",
+   "size": "768x542",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    0.85,
+    0.6
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "ac_outdoor_unit_front_b_albedo.jpg",
+    "ac_outdoor_unit_front_b_normal.jpg",
+    "ac_outdoor_unit_front_b_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "79430bf1",
+     "url": "https://i.pinimg.com/originals/ce/c8/f0/cec8f09855a45fe67c90fb4182de0c3d.jpg",
+     "image_url": "https://i.pinimg.com/originals/ce/c8/f0/cec8f09855a45fe67c90fb4182de0c3d.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "asphalt_main_worn": {
+   "purpose": "Main-road asphalt: lighter, coarse aggregate, fewer patches, sealed cracks, oil drips in lane centres.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    3.0,
+    3.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "source": "detail from Poly Haven asphalt_04 (CC0)",
+   "files": [
+    "asphalt_main_worn_albedo.jpg",
+    "asphalt_main_worn_normal.jpg",
+    "asphalt_main_worn_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:asphalt_04",
+     "url": "https://polyhaven.com/a/asphalt_04",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "asphalt_soi_patched": {
+   "purpose": "Soi / side-street asphalt: tired, dusty, saw-cut utility patch and square repairs, black sealed cracks, oil and food stains.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    3.0,
+    3.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "source": "detail from Poly Haven worn_asphalt + asphalt_02 (CC0)",
+   "files": [
+    "asphalt_soi_patched_albedo.jpg",
+    "asphalt_soi_patched_normal.jpg",
+    "asphalt_soi_patched_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:worn_asphalt",
+     "url": "https://polyhaven.com/a/worn_asphalt",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    },
+    {
+     "id": "polyhaven:asphalt_02",
+     "url": "https://polyhaven.com/a/asphalt_02",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "awning_stripes_green_white_photo": {
+   "purpose": "Green/white striped awning canvas from a real fabric photo; stripes along V; tileable. Add rain-streak / grime decals (decal_wall_grime_streaks_photo) for the dirty Thai look.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "awning_stripes_green_white_photo_albedo.jpg",
+    "awning_stripes_green_white_photo_normal.jpg",
+    "awning_stripes_green_white_photo_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "466af2ae",
+     "url": "https://i.pinimg.com/736x/eb/21/0c/eb210c5221a0c48cc6b89d942676b63a.jpg",
+     "image_url": "https://i.pinimg.com/736x/eb/21/0c/eb210c5221a0c48cc6b89d942676b63a.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "awning_stripes_red_pink_photo": {
+   "purpose": "Faded red striped awning canvas from a real fabric photo; stripes along V; tileable. Add rain-streak / grime decals (decal_wall_grime_streaks_photo) for the dirty Thai look.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "awning_stripes_red_pink_photo_albedo.jpg",
+    "awning_stripes_red_pink_photo_normal.jpg",
+    "awning_stripes_red_pink_photo_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "26b713dd",
+     "url": "https://i.pinimg.com/736x/18/17/d8/1817d878a6e77125aeedfb0a4a8f82f8.jpg",
+     "image_url": "https://i.pinimg.com/736x/18/17/d8/1817d878a6e77125aeedfb0a4a8f82f8.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "awning_stripes_red_yellow_photo": {
+   "purpose": "Red/yellow striped awning canvas from a real fabric photo; stripes along V; tileable. Add rain-streak / grime decals (decal_wall_grime_streaks_photo) for the dirty Thai look.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "awning_stripes_red_yellow_photo_albedo.jpg",
+    "awning_stripes_red_yellow_photo_normal.jpg",
+    "awning_stripes_red_yellow_photo_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "f927d9b6",
+     "url": "https://i.pinimg.com/736x/45/a0/70/45a0706b50153b6d084ac077865e402c.jpg",
+     "image_url": "https://i.pinimg.com/736x/45/a0/70/45a0706b50153b6d084ac077865e402c.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "cable_black_rubber_photo": {
+   "purpose": "Black rubber cable surface from a real close-up photo of power cables, rotated so cables run along U; tiles along U. Map onto tube geometry (U along the wire).",
+   "size": "1024x128",
+   "alpha": false,
+   "tiling": "U only",
+   "real_world_m": [
+    1.0,
+    0.125
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "cable_black_rubber_photo_albedo.jpg",
+    "cable_black_rubber_photo_normal.jpg",
+    "cable_black_rubber_photo_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "31b1811e",
+     "url": "https://i.pinimg.com/736x/c9/4d/2c/c94d2c46adcd1f3eba59d4f36d4ffc68.jpg",
+     "image_url": "https://i.pinimg.com/736x/c9/4d/2c/c94d2c46adcd1f3eba59d4f36d4ffc68.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "concrete_slab_footpath": {
+   "purpose": "Plain broom-finished concrete slab (provincial footpath, soi surface, shop forecourt, market floor) with sawn joints every 1 m, cracks, a patch, stains, gum.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    2.0,
+    2.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "concrete_slab_footpath_albedo.jpg",
+    "concrete_slab_footpath_normal.jpg",
+    "concrete_slab_footpath_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:concrete_floor_worn_001",
+     "url": "https://polyhaven.com/a/concrete_floor_worn_001",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "corrugated_zinc_rusty": {
+   "purpose": "Rusty galvanised corrugated sheet (สังกะสี) - albedo from a real photo, corrugation normal from Poly Haven rusty_corrugated_iron (CC0). Corrugations run along V. Back alleys, lean-to roofs, stall roofs, empty-lot fences.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "corrugated_zinc_rusty_albedo.jpg",
+    "corrugated_zinc_rusty_normal.jpg",
+    "corrugated_zinc_rusty_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "2e4aaa82",
+     "url": "https://www.flickr.com/photos/johnshortland/5293881120/",
+     "image_url": "https://live.staticflickr.com/65535/5293881120_683f150879_b.jpg",
+     "author": "john shortland",
+     "licence": "CC BY 2.0"
+    },
+    {
+     "id": "polyhaven:rusty_corrugated_iron",
+     "url": "https://polyhaven.com/a/rusty_corrugated_iron",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "corrugated_zinc_streaked": {
+   "purpose": "Galvanised corrugated sheet with rust streaks - albedo from a real photo, corrugation normal from Poly Haven rusty_corrugated_iron (CC0). Corrugations run along V. Back alleys, lean-to roofs, stall roofs, empty-lot fences.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "corrugated_zinc_streaked_albedo.jpg",
+    "corrugated_zinc_streaked_normal.jpg",
+    "corrugated_zinc_streaked_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "88699e03",
+     "url": "https://www.flickr.com/photos/100780486@N02/23288179106/",
+     "image_url": "https://live.staticflickr.com/610/23288179106_59443abfa0_b.jpg",
+     "author": "Mertie .",
+     "licence": "CC BY 2.0"
+    },
+    {
+     "id": "polyhaven:rusty_corrugated_iron",
+     "url": "https://polyhaven.com/a/rusty_corrugated_iron",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "curb_bare_concrete": {
+   "purpose": "Unpainted dirty concrete curb for sois/markets. UV unfolded curb profile, U along the curb (tiles in U, 2.0 m), V across the profile (0.5 m): V 0.00-0.40 (image top) = top surface, sidewalk edge at the very top; V 0.40-0.48 = rounded arris; V 0.48-1.00 = road-facing vertical face, bottom row = road level with gutter grime and tyre scuffs. Precast joints every 1 m.",
+   "size": "2048x512",
+   "alpha": false,
+   "tiling": "U only",
+   "real_world_m": [
+    2.0,
+    0.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "curb_bare_concrete_albedo.jpg",
+    "curb_bare_concrete_normal.jpg",
+    "curb_bare_concrete_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:brushed_concrete",
+     "url": "https://polyhaven.com/a/brushed_concrete",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "curb_red_white": {
+   "purpose": "Red/white painted curb (ขอบทางขาวแดง = no stopping/parking at all). 0.5 m paint blocks, worn & dirty. UV unfolded curb profile, U along the curb (tiles in U, 2.0 m), V across the profile (0.5 m): V 0.00-0.40 (image top) = top surface, sidewalk edge at the very top; V 0.40-0.48 = rounded arris; V 0.48-1.00 = road-facing vertical face, bottom row = road level with gutter grime and tyre scuffs. Precast joints every 1 m.",
+   "size": "2048x512",
+   "alpha": false,
+   "tiling": "U only",
+   "real_world_m": [
+    2.0,
+    0.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "curb_red_white_albedo.jpg",
+    "curb_red_white_normal.jpg",
+    "curb_red_white_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:brushed_concrete",
+     "url": "https://polyhaven.com/a/brushed_concrete",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "curb_white_yellow": {
+   "purpose": "White/yellow painted curb (ขอบทางขาวเหลือง = no parking, brief pick-up/drop-off allowed; bus stops, school gates). UV unfolded curb profile, U along the curb (tiles in U, 2.0 m), V across the profile (0.5 m): V 0.00-0.40 (image top) = top surface, sidewalk edge at the very top; V 0.40-0.48 = rounded arris; V 0.48-1.00 = road-facing vertical face, bottom row = road level with gutter grime and tyre scuffs. Precast joints every 1 m.",
+   "size": "2048x512",
+   "alpha": false,
+   "tiling": "U only",
+   "real_world_m": [
+    2.0,
+    0.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "curb_white_yellow_albedo.jpg",
+    "curb_white_yellow_normal.jpg",
+    "curb_white_yellow_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:brushed_concrete",
+     "url": "https://polyhaven.com/a/brushed_concrete",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "curb_yellow_black": {
+   "purpose": "Yellow/black painted curb (ขอบทางเหลืองดำ = obstruction marker: traffic islands, median noses, pillars, bridge piers). UV unfolded curb profile, U along the curb (tiles in U, 2.0 m), V across the profile (0.5 m): V 0.00-0.40 (image top) = top surface, sidewalk edge at the very top; V 0.40-0.48 = rounded arris; V 0.48-1.00 = road-facing vertical face, bottom row = road level with gutter grime and tyre scuffs. Precast joints every 1 m.",
+   "size": "2048x512",
+   "alpha": false,
+   "tiling": "U only",
+   "real_world_m": [
+    2.0,
+    0.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "curb_yellow_black_albedo.jpg",
+    "curb_yellow_black_normal.jpg",
+    "curb_yellow_black_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:brushed_concrete",
+     "url": "https://polyhaven.com/a/brushed_concrete",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "decal_cigarette_butts_photo": {
+   "purpose": "Cigarette butts cut from a real photo of a gutter (alpha = butts). Use along kerbs, under the win-motosai bench, around shop steps.",
+   "size": "1024x284",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    1.6,
+    0.44
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "files": [
+    "decal_cigarette_butts_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "9ffd5db9",
+     "url": "https://nypost.com/wp-content/uploads/sites/2/2020/01/cigarette-butt.jpg?quality=75&amp;strip=all&amp;w=1024",
+     "image_url": "https://nypost.com/wp-content/uploads/sites/2/2020/01/cigarette-butt.jpg?quality=75&amp;strip=all&amp;w=1024",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_flyers_loan_cluster_photo": {
+   "purpose": "Cluster of photocopied 'เงินด่วน' loan flyers cut from a real B&W photo of a utility pole (alpha = paper). Wrap around concrete poles / walls at 1.2-2.0 m.",
+   "size": "1000x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    0.7,
+    0.72
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "files": [
+    "decal_flyers_loan_cluster_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "5edb6400",
+     "url": "https://www.flickr.com/photos/130414324@N05/24261745700/",
+     "image_url": "https://live.staticflickr.com/1616/24261745700_6731253ff6_b.jpg",
+     "author": "Jay Songpon Chandrananta",
+     "licence": "All rights reserved (Flickr licence 0)"
+    }
+   ]
+  },
+  "decal_gum_spots_photo": {
+   "purpose": "Flattened chewing-gum spots extracted from a real pavement photo (joints removed). Scatter near shop doors, bus stops, 7-Eleven fronts.",
+   "size": "1024x344",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    3.0,
+    1.01
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "files": [
+    "decal_gum_spots_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "f7a2a5c7",
+     "url": "https://static.independent.co.uk/2021/08/29/20/newFile-1.jpg",
+     "image_url": "https://static.independent.co.uk/2021/08/29/20/newFile-1.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_litter_atlas": {
+   "purpose": "Litter atlas cut from real product/street photos (background keyed out): plastic bags (blue/white/pink), crushed PET bottle, iced-coffee cup, striped cup with straw, styrofoam food boxes, crushed can, snack wrapper, bottle caps. 4x3 cells of 256 px; per-cell UVs (v from top) and real sizes in 'atlas'. Use as alpha-tested ground decals / tiny quads around bins, stalls, kerbs.",
+   "size": "1024x768",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": "per cell, see atlas",
+   "maps": [
+    "rgba"
+   ],
+   "atlas": [
+    {
+     "name": "bag_blue",
+     "uv": [
+      0.0342,
+      0.0104,
+      0.2158,
+      0.3216
+     ],
+     "real_size_m": 0.38,
+     "source_id": "f7be1492"
+    },
+    {
+     "name": "bag_white",
+     "uv": [
+      0.2949,
+      0.0104,
+      0.4551,
+      0.3229
+     ],
+     "real_size_m": 0.4,
+     "source_id": "696359ab"
+    },
+    {
+     "name": "bag_pink",
+     "uv": [
+      0.541,
+      0.0104,
+      0.709,
+      0.3229
+     ],
+     "real_size_m": 0.36,
+     "source_id": "733453b7"
+    },
+    {
+     "name": "bottle_crushed",
+     "uv": [
+      0.7578,
+      0.0964,
+      0.9922,
+      0.2357
+     ],
+     "real_size_m": 0.24,
+     "source_id": "9287381b"
+    },
+    {
+     "name": "cup_iced_coffee",
+     "uv": [
+      0.0713,
+      0.3438,
+      0.1787,
+      0.6562
+     ],
+     "real_size_m": 0.16,
+     "source_id": "06fa94bc"
+    },
+    {
+     "name": "cup_striped_straw",
+     "uv": [
+      0.3232,
+      0.3438,
+      0.4258,
+      0.6562
+     ],
+     "real_size_m": 0.17,
+     "source_id": "dbb228e0"
+    },
+    {
+     "name": "foam_box_closed",
+     "uv": [
+      0.5078,
+      0.3685,
+      0.7422,
+      0.6302
+     ],
+     "real_size_m": 0.18,
+     "source_id": "a882a676"
+    },
+    {
+     "name": "foam_box_open",
+     "uv": [
+      0.7764,
+      0.3438,
+      0.9736,
+      0.6562
+     ],
+     "real_size_m": 0.22,
+     "source_id": "e00974db"
+    },
+    {
+     "name": "can_crushed",
+     "uv": [
+      0.0195,
+      0.6771,
+      0.2305,
+      0.9896
+     ],
+     "real_size_m": 0.1,
+     "source_id": "c2d762bd"
+    },
+    {
+     "name": "wrapper_snack",
+     "uv": [
+      0.2578,
+      0.6992,
+      0.4922,
+      0.9661
+     ],
+     "real_size_m": 0.14,
+     "source_id": "f5068e43"
+    },
+    {
+     "name": "bottle_caps_gold",
+     "uv": [
+      0.5078,
+      0.7201,
+      0.7422,
+      0.9466
+     ],
+     "real_size_m": 0.06,
+     "source_id": "cdec9add"
+    },
+    {
+     "name": "bottle_cap_black",
+     "uv": [
+      0.7578,
+      0.6771,
+      0.9912,
+      0.9883
+     ],
+     "real_size_m": 0.03,
+     "source_id": "efda5375"
+    }
+   ],
+   "files": [
+    "decal_litter_atlas.png"
+   ],
+   "sources": [
+    {
+     "id": "f7be1492",
+     "url": "https://banner2.cleanpng.com/20180401/are/avin1fcbz.webp",
+     "image_url": "https://banner2.cleanpng.com/20180401/are/avin1fcbz.webp",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "696359ab",
+     "url": "https://image.pngaaa.com/388/473388-middle.png",
+     "image_url": "https://image.pngaaa.com/388/473388-middle.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "733453b7",
+     "url": "https://i.pinimg.com/originals/a8/43/71/a84371360536e86deaf698aa5b0ff074.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/a8/43/71/a84371360536e86deaf698aa5b0ff074.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "9287381b",
+     "url": "https://i.pinimg.com/736x/d1/10/40/d11040f1345b00d6a2efcd67bb3d80b8.jpg",
+     "image_url": "https://i.pinimg.com/736x/d1/10/40/d11040f1345b00d6a2efcd67bb3d80b8.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "06fa94bc",
+     "url": "https://image.pngaaa.com/761/2995761-middle.png",
+     "image_url": "https://image.pngaaa.com/761/2995761-middle.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "dbb228e0",
+     "url": "https://image.pngaaa.com/547/1143547-middle.png",
+     "image_url": "https://image.pngaaa.com/547/1143547-middle.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "a882a676",
+     "url": "https://i.pinimg.com/originals/99/53/54/9953546f05cf64e243ba4b5a82dc5f58.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/99/53/54/9953546f05cf64e243ba4b5a82dc5f58.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "e00974db",
+     "url": "https://i.pinimg.com/originals/ad/b8/b3/adb8b32c912ec862a75f485293d664f0.jpg",
+     "image_url": "https://i.pinimg.com/originals/ad/b8/b3/adb8b32c912ec862a75f485293d664f0.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "c2d762bd",
+     "url": "https://png.pngtree.com/png-clipart/20250131/original/pngtree-crushed-can-of-soda-on-white-background-representing-waste-and-recycling-png-image_20112238.png",
+     "image_url": "https://png.pngtree.com/png-clipart/20250131/original/pngtree-crushed-can-of-soda-on-white-background-representing-waste-and-recycling-png-image_20112238.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "f5068e43",
+     "url": "https://png.pngtree.com/png-vector/20240130/ourmid/pngtree-candy-wrapper-packaging-white-polyethylene-package-snack-bar-3d-illustration-png-image_11517451.png",
+     "image_url": "https://png.pngtree.com/png-vector/20240130/ourmid/pngtree-candy-wrapper-packaging-white-polyethylene-package-snack-bar-3d-illustration-png-image_11517451.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "cdec9add",
+     "url": "https://www.pikpng.com/pngl/m/361-3611104_beer-bottle-cap-png-beer-bottle-cup-png.png",
+     "image_url": "https://www.pikpng.com/pngl/m/361-3611104_beer-bottle-cap-png-beer-bottle-cup-png.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "efda5375",
+     "url": "https://i.pinimg.com/736x/2b/2e/42/2b2e421fc749dc3bd658fec55018d63b.jpg",
+     "image_url": "https://i.pinimg.com/736x/2b/2e/42/2b2e421fc749dc3bd658fec55018d63b.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_moss_photo": {
+   "purpose": "Moss / algae patches extracted from real photos of damp concrete (alpha = green growth + dark damp). Wall bases, canal walls, shaded corners, drain edges.",
+   "size": "1024x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "atlas_uv": [
+    [
+     "dfb0c916",
+     0.0039,
+     0.0859,
+     0.4961,
+     0.4141
+    ],
+    [
+     "2a300748",
+     0.5039,
+     0.0947,
+     0.9961,
+     0.4053
+    ],
+    [
+     "1778ffbe",
+     0.0527,
+     0.5039,
+     0.4463,
+     0.9961
+    ],
+    [
+     "ea6d964e",
+     0.5039,
+     0.5859,
+     0.9961,
+     0.9141
+    ]
+   ],
+   "files": [
+    "decal_moss_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "dfb0c916",
+     "url": "https://live.staticflickr.com/6096/7016479887_8246978769_b.jpg",
+     "image_url": "https://live.staticflickr.com/6096/7016479887_8246978769_b.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "2a300748",
+     "url": "https://i.pinimg.com/736x/9a/f6/cb/9af6cb993124b9017c85a8044efa4d9d.jpg",
+     "image_url": "https://i.pinimg.com/736x/9a/f6/cb/9af6cb993124b9017c85a8044efa4d9d.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "1778ffbe",
+     "url": "https://i.pinimg.com/originals/26/f3/0e/26f30e0351ea05bd27dddb1eb1ebfce6.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/26/f3/0e/26f30e0351ea05bd27dddb1eb1ebfce6.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "ea6d964e",
+     "url": "https://i.pinimg.com/originals/9b/d1/18/9bd118c98193a9c9acd8066aae704de3.jpg",
+     "image_url": "https://i.pinimg.com/originals/9b/d1/18/9bd118c98193a9c9acd8066aae704de3.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_oil_stains_photo": {
+   "purpose": "Oil / grease stains extracted from real photos of stained concrete (alpha = darkening). 2x2 atlas; multiply-dark, lower roughness under the stain.",
+   "size": "1024x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    2.4,
+    2.4
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "atlas_uv": [
+    [
+     "2c5d9f55",
+     0.0078,
+     0.0889,
+     0.4922,
+     0.4111
+    ],
+    [
+     "6d5a1a71",
+     0.5078,
+     0.0078,
+     0.9922,
+     0.4912
+    ],
+    [
+     "a1f43e2a",
+     0.0078,
+     0.623,
+     0.4922,
+     0.877
+    ],
+    [
+     "80f00dbd",
+     0.5078,
+     0.6133,
+     0.9922,
+     0.8857
+    ]
+   ],
+   "files": [
+    "decal_oil_stains_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "2c5d9f55",
+     "url": "https://live.staticflickr.com/2502/4155328836_40659b1f50_b.jpg",
+     "image_url": "https://live.staticflickr.com/2502/4155328836_40659b1f50_b.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "6d5a1a71",
+     "url": "https://www.craftsmanconcretefloors.com/wp-content/uploads/2023/05/oil-staned-concrete-driveway.jpeg",
+     "image_url": "https://www.craftsmanconcretefloors.com/wp-content/uploads/2023/05/oil-staned-concrete-driveway.jpeg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "a1f43e2a",
+     "url": "https://cdn.images.express.co.uk/img/dynamic/51/1200x630/5222461.jpg",
+     "image_url": "https://cdn.images.express.co.uk/img/dynamic/51/1200x630/5222461.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "80f00dbd",
+     "url": "https://oileater.com/wp-content/uploads/2019/08/oilss-e1564690303477.jpg",
+     "image_url": "https://oileater.com/wp-content/uploads/2019/08/oilss-e1564690303477.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_potholes_photo": {
+   "purpose": "Potholes / broken asphalt cut from real photos with soft elliptical alpha (blend over asphalt). 2x2 atlas, some water-filled.",
+   "size": "1024x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    3.0,
+    3.0
+   ],
+   "maps": [
+    "rgba",
+    "normal"
+   ],
+   "atlas_uv": [
+    [
+     "e559b88f",
+     0.0059,
+     0.1055,
+     0.4941,
+     0.3936
+    ],
+    [
+     "22d7cbe6",
+     0.5059,
+     0.0947,
+     0.9932,
+     0.4043
+    ],
+    [
+     "42ce869c",
+     0.0059,
+     0.5576,
+     0.4941,
+     0.9424
+    ],
+    [
+     "10f8ad40",
+     0.5059,
+     0.5537,
+     0.9932,
+     0.9453
+    ]
+   ],
+   "files": [
+    "decal_potholes_photo.png",
+    "decal_potholes_photo_normal.jpg"
+   ],
+   "sources": [
+    {
+     "id": "e559b88f",
+     "url": "https://www.truthinaccounting.org/library/imglib/Pothole.png",
+     "image_url": "https://www.truthinaccounting.org/library/imglib/Pothole.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "22d7cbe6",
+     "url": "https://i2-prod.birminghammail.co.uk/article33378655.ece/ALTERNATES/s1200d/1_Pothole.jpg",
+     "image_url": "https://i2-prod.birminghammail.co.uk/article33378655.ece/ALTERNATES/s1200d/1_Pothole.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "42ce869c",
+     "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Newport_Whitepit_Lane_pot_hole.JPG/1200px-Newport_Whitepit_Lane_pot_hole.JPG",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Newport_Whitepit_Lane_pot_hole.JPG/1200px-Newport_Whitepit_Lane_pot_hole.JPG",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "10f8ad40",
+     "url": "https://www.thesouthafrican.com/wp-content/uploads/2024/04/pothole.jpg.optimal.jpg",
+     "image_url": "https://www.thesouthafrican.com/wp-content/uploads/2024/04/pothole.jpg.optimal.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_puddles_photo": {
+   "purpose": "Cluster of puddle shapes extracted from a real photo of wet asphalt after rain (alpha = standing water; RGB = dark muddy water so the renderer's env map / neon supplies the reflection; stretched to undo the photo's foreshortening). Pair with decal_puddles_photo_rough (water ~0.04).",
+   "size": "732x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    2.1,
+    3.0
+   ],
+   "maps": [
+    "rgba",
+    "rough"
+   ],
+   "files": [
+    "decal_puddles_photo.png",
+    "decal_puddles_photo_rough.jpg"
+   ],
+   "sources": [
+    {
+     "id": "46e8d835",
+     "url": "https://i.pinimg.com/originals/2a/4f/bf/2a4fbf367f03ccc8eb246bfe29011ccb.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/2a/4f/bf/2a4fbf367f03ccc8eb246bfe29011ccb.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_torn_posters_photo": {
+   "purpose": "Layers of torn / peeled posters cut from real wall photos (ragged alpha edges). Pillars, poles, shutter boxes, walls near the market.",
+   "size": "1024x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    1.2,
+    1.2
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "atlas_uv": [
+    [
+     "8927c0fd",
+     0.0869,
+     0.0059,
+     0.4121,
+     0.4941
+    ],
+    [
+     "9962382a#b",
+     0.5059,
+     0.0869,
+     0.9941,
+     0.4121
+    ],
+    [
+     "9962382a",
+     0.0664,
+     0.5059,
+     0.4326,
+     0.9941
+    ],
+    [
+     "8927c0fd#b",
+     0.5059,
+     0.5664,
+     0.9941,
+     0.9326
+    ]
+   ],
+   "files": [
+    "decal_torn_posters_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "8927c0fd",
+     "url": "https://i.pinimg.com/474x/c7/fe/88/c7fe88fbf970818c84918e6096aee4fc.jpg",
+     "image_url": "https://i.pinimg.com/474x/c7/fe/88/c7fe88fbf970818c84918e6096aee4fc.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "9962382a",
+     "url": "https://i.pinimg.com/originals/b5/12/19/b51219d4f3a2e0b536579b5d802934d3.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/b5/12/19/b51219d4f3a2e0b536579b5d802934d3.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "9962382a",
+     "url": "https://i.pinimg.com/originals/b5/12/19/b51219d4f3a2e0b536579b5d802934d3.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/b5/12/19/b51219d4f3a2e0b536579b5d802934d3.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "8927c0fd",
+     "url": "https://i.pinimg.com/474x/c7/fe/88/c7fe88fbf970818c84918e6096aee4fc.jpg",
+     "image_url": "https://i.pinimg.com/474x/c7/fe/88/c7fe88fbf970818c84918e6096aee4fc.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "decal_wall_grime_streaks_photo": {
+   "purpose": "Black water / mould streaks extracted from real photos of tropical concrete walls (alpha = darkening). Place under ledges, AC units, balconies, roof edges.",
+   "size": "1024x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    2.0,
+    2.0
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "atlas_uv": [
+    [
+     "711eded1",
+     0.0039,
+     0.0859,
+     0.4961,
+     0.4141
+    ],
+    [
+     "18f9f9f9",
+     0.5654,
+     0.0039,
+     0.9346,
+     0.4961
+    ],
+    [
+     "3cf395b4",
+     0.0039,
+     0.5859,
+     0.4961,
+     0.9141
+    ],
+    [
+     "795a47ea",
+     0.5039,
+     0.5039,
+     0.9961,
+     0.9961
+    ]
+   ],
+   "files": [
+    "decal_wall_grime_streaks_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "711eded1",
+     "url": "https://i.pinimg.com/originals/59/82/58/598258603cdd7af27157c7aae16cb45a.jpg",
+     "image_url": "https://i.pinimg.com/originals/59/82/58/598258603cdd7af27157c7aae16cb45a.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "18f9f9f9",
+     "url": "https://i.pinimg.com/originals/2a/a1/33/2aa1333152cc07bf1d9f146443c33268.jpg",
+     "image_url": "https://i.pinimg.com/originals/2a/a1/33/2aa1333152cc07bf1d9f146443c33268.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "3cf395b4",
+     "url": "https://fencefixation.com/wp-content/uploads/2022/05/CONCRE1-1200x800.jpg",
+     "image_url": "https://fencefixation.com/wp-content/uploads/2022/05/CONCRE1-1200x800.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "795a47ea",
+     "url": "https://i.pinimg.com/736x/ec/a9/4c/eca94cbe23a1736d4c82af5315c95cc5.jpg",
+     "image_url": "https://i.pinimg.com/736x/ec/a9/4c/eca94cbe23a1736d4c82af5315c95cc5.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "gate_folding_steel": {
+   "purpose": "Folding steel security gate ('ประตูยืด', scissor lattice) closed across a shop front (real photo, rectified). _albedo = opaque version (gate over dark interior); gate_folding_steel_alpha.png = lattice keyed out (alpha-test, cutoff ~0.4).",
+   "size": "1024x723",
+   "alpha": "albedo no / _alpha.png yes",
+   "tiling": false,
+   "real_world_m": [
+    3.4,
+    2.4
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm",
+    "alpha_png"
+   ],
+   "files": [
+    "gate_folding_steel_albedo.jpg",
+    "gate_folding_steel_alpha.png",
+    "gate_folding_steel_normal.jpg",
+    "gate_folding_steel_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "532123f5",
+     "url": "https://i.pinimg.com/originals/3f/33/86/3f3386d253f55625c0ee8250907be45c.png",
+     "image_url": "https://i.pinimg.com/originals/3f/33/86/3f3386d253f55625c0ee8250907be45c.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "manhole_double_drain_cover": {
+   "purpose": "Real double cast-iron drain cover (Pattaya City, fish relief, drain slots) in concrete surround - kerbside drain inlet / footpath.",
+   "size": "818x1024",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    0.8,
+    1.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "manhole_double_drain_cover_albedo.jpg",
+    "manhole_double_drain_cover_normal.jpg",
+    "manhole_double_drain_cover_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "2faac9e7",
+     "url": "https://commons.wikimedia.org/wiki/File%3APattaya%2C_manhole_cover_on_Thappraya_Road_%2853837262396%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/51/Pattaya%2C_manhole_cover_on_Thappraya_Road_%2853837262396%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Turbo Kholodilnik",
+     "licence": "CC BY-SA 2.0"
+    }
+   ]
+  },
+  "manhole_round_iron": {
+   "purpose": "Real round cast-iron manhole cover (diamond studs, lifting slots), top-down photo, circular alpha. Diameter ~0.75 m incl. frame.",
+   "size": "512x512",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    0.76,
+    0.76
+   ],
+   "maps": [
+    "rgba",
+    "normal"
+   ],
+   "files": [
+    "manhole_round_iron.png",
+    "manhole_round_iron_normal.jpg"
+   ],
+   "sources": [
+    {
+     "id": "77e86905",
+     "url": "https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg",
+     "image_url": "https://i.pinimg.com/736x/8c/3d/aa/8c3daac97eb6bd775765b4ffa5d89636.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "manhole_square_bma": {
+   "purpose": "Real Bangkok (BMA) square cast-iron footpath manhole with fish relief, in its concrete surround; drop-in footpath tile (photo, top-down, lighting evened).",
+   "size": "1024x858",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    0.8,
+    0.67
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "manhole_square_bma_albedo.jpg",
+    "manhole_square_bma_normal.jpg",
+    "manhole_square_bma_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "32b70427",
+     "url": "https://commons.wikimedia.org/wiki/File%3APattaya%2C_manhole_cover_on_3rd_Road_%2853837262346%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Pattaya%2C_manhole_cover_on_3rd_Road_%2853837262346%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Turbo Kholodilnik",
+     "licence": "CC BY-SA 2.0"
+    }
+   ]
+  },
+  "paver_interlock_I": {
+   "purpose": "Interlocking dog-bone ('ตัวหนอน') concrete pavers, grey with random faded-red ones: shop forecourts, soi parking, market lanes, petrol-station edges. Oil stains, gum, moss in joints.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    2.0,
+    2.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "source": "layout+detail from Poly Haven 'concrete_pavers' (CC0), recoloured",
+   "files": [
+    "paver_interlock_I_albedo.jpg",
+    "paver_interlock_I_normal.jpg",
+    "paver_interlock_I_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:concrete_pavers",
+     "url": "https://polyhaven.com/a/concrete_pavers",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "roadline_double_yellow_photo": {
+   "purpose": "Double solid yellow centre line cut from a real top-down road photo (alpha = paint, asphalt removed). Tiles along V.",
+   "size": "128x1024",
+   "alpha": true,
+   "tiling": "V only",
+   "real_world_m": [
+    0.45,
+    3.6
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "files": [
+    "roadline_double_yellow_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "316744e3",
+     "url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "image_url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "roadline_white_dashed_photo": {
+   "purpose": "White dashed lane line from a real top-down photo (alpha = paint).",
+   "size": "512x512",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    3.0,
+    3.0
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "files": [
+    "roadline_white_dashed_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "fcc3f0c6",
+     "url": "https://i.pinimg.com/736x/ef/fe/21/effe21fa3237b6b7d1814585e8e20caf.jpg",
+     "image_url": "https://i.pinimg.com/736x/ef/fe/21/effe21fa3237b6b7d1814585e8e20caf.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "roadline_white_edge_photo": {
+   "purpose": "Worn white edge line from a real road photo (alpha = paint). Tiles along V.",
+   "size": "64x1024",
+   "alpha": true,
+   "tiling": "V only",
+   "real_world_m": [
+    0.22,
+    3.6
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "files": [
+    "roadline_white_edge_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "316744e3",
+     "url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "image_url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "roadline_yellow_single_photo": {
+   "purpose": "Single solid yellow line (no-parking edge / centre line) cut from a real top-down road photo (alpha = paint). Tiles along V.",
+   "size": "64x1024",
+   "alpha": true,
+   "tiling": "V only",
+   "real_world_m": [
+    0.22,
+    3.6
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "files": [
+    "roadline_yellow_single_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "316744e3",
+     "url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "image_url": "https://i.pinimg.com/736x/e4/30/c2/e430c22ec4684543d45694abf366a1df.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "roadmark_zebra_worn_photo": {
+   "purpose": "Badly worn zebra-crossing bars cut from a real top-down photo (cracked, patchy paint; alpha = paint). Bars run along X.",
+   "size": "1024x768",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    4.0,
+    3.0
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "files": [
+    "roadmark_zebra_worn_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "9a883694",
+     "url": "https://preview.stockphotos.com/image/stylish-grunge-texture-3589852.jpg",
+     "image_url": "https://preview.stockphotos.com/image/stylish-grunge-texture-3589852.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "shutter_closed_graffiti": {
+   "purpose": "Whole closed roller shutter, cream, with a big purple graffiti throw-up (real photo, rectified).",
+   "size": "1024x928",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    3.2,
+    2.9
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "shutter_closed_graffiti_albedo.jpg",
+    "shutter_closed_graffiti_normal.jpg",
+    "shutter_closed_graffiti_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "7bbffe31",
+     "url": "https://i.pinimg.com/originals/98/dc/e4/98dce4598ee96c7abb5f082615a78dfd.jpg",
+     "image_url": "https://i.pinimg.com/originals/98/dc/e4/98dce4598ee96c7abb5f082615a78dfd.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "shutter_closed_rusty_white": {
+   "purpose": "Whole closed roller shutter with its housing box (real photo, rectified): white paint, rust bleeding along every slat. One shophouse bay; box = top 15%.",
+   "size": "1024x711",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    3.6,
+    2.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "shutter_closed_rusty_white_albedo.jpg",
+    "shutter_closed_rusty_white_normal.jpg",
+    "shutter_closed_rusty_white_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "55eb42fa",
+     "url": "https://i.pinimg.com/originals/ba/6b/90/ba6b90b754ca10062a373d89703800c8.jpg",
+     "image_url": "https://i.pinimg.com/originals/ba/6b/90/ba6b90b754ca10062a373d89703800c8.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "shutter_slats_painted_green": {
+   "purpose": "Painted (green/blue) roller-shutter slats with chipped paint and rust - real photo scan from Poly Haven \"painted_metal_shutter\" (CC0). Slats run along U; tileable.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    2.0,
+    2.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "shutter_slats_painted_green_albedo.jpg",
+    "shutter_slats_painted_green_normal.jpg",
+    "shutter_slats_painted_green_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "polyhaven:painted_metal_shutter",
+     "url": "https://polyhaven.com/a/painted_metal_shutter",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "shutter_slats_rust_brown": {
+   "purpose": "Roller-shutter slats, fully rusted brown (real photo, made tileable). Slats run along U; ~8 cm slat pitch.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.2,
+    1.2
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "shutter_slats_rust_brown_albedo.jpg",
+    "shutter_slats_rust_brown_normal.jpg",
+    "shutter_slats_rust_brown_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "0c254ef9",
+     "url": "https://i.pinimg.com/originals/13/d6/d8/13d6d8d39853b6e2fbe26c49822d53e9.jpg",
+     "image_url": "https://i.pinimg.com/originals/13/d6/d8/13d6d8d39853b6e2fbe26c49822d53e9.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "shutter_slats_rusty_scan": {
+   "purpose": "Rusty galvanised roller-shutter slats - real photo scan from Poly Haven \"rusty_metal_shutter\" (CC0). Slats run along U; tileable.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    2.0,
+    2.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "shutter_slats_rusty_scan_albedo.jpg",
+    "shutter_slats_rusty_scan_normal.jpg",
+    "shutter_slats_rusty_scan_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "polyhaven:rusty_metal_shutter",
+     "url": "https://polyhaven.com/a/rusty_metal_shutter",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "sidewalk_tile_chain_grey": {
+   "purpose": "Newer BMA footpath tile: 40x40 cm grey pressed concrete, coin + double racetrack grooves over a small-square grid, alternate tiles rotated; dirt in grooves.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.6,
+    1.6
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "sidewalk_tile_chain_grey_albedo.jpg",
+    "sidewalk_tile_chain_grey_normal.jpg",
+    "sidewalk_tile_chain_grey_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:brushed_concrete",
+     "url": "https://polyhaven.com/a/brushed_concrete",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "sidewalk_tile_circles_grey": {
+   "purpose": "Bangkok footpath: 40x40 cm grey concrete tiles with concentric quarter-arc grooves (4 tiles make one circle). Worn, gum spots, food stains, cracks, one broken tile.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.6,
+    1.6
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "sidewalk_tile_circles_grey_albedo.jpg",
+    "sidewalk_tile_circles_grey_normal.jpg",
+    "sidewalk_tile_circles_grey_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:concrete_floor_worn_001",
+     "url": "https://polyhaven.com/a/concrete_floor_worn_001",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "sidewalk_tile_grid_grey_redband": {
+   "purpose": "Common Thai footpath: 30x30 cm grey pressed-concrete tiles with a fine groove grid, one row of faded-red tiles as an accent band (runs along U). Pair with tactile_strip_yellow.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.8,
+    1.8
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "source": "layout+detail from Poly Haven 'square_concrete_pavers' (CC0), recoloured",
+   "files": [
+    "sidewalk_tile_grid_grey_redband_albedo.jpg",
+    "sidewalk_tile_grid_grey_redband_normal.jpg",
+    "sidewalk_tile_grid_grey_redband_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:square_concrete_pavers",
+     "url": "https://polyhaven.com/a/square_concrete_pavers",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "sidewalk_tile_red_hex": {
+   "purpose": "Old-town Bangkok soi footpath: 30x30 cm red/pink pressed concrete tiles with polygon-star grooves; faded, dirty, cigarette/gum spots.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.2,
+    1.2
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "sidewalk_tile_red_hex_albedo.jpg",
+    "sidewalk_tile_red_hex_normal.jpg",
+    "sidewalk_tile_red_hex_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:concrete_floor_worn_001",
+     "url": "https://polyhaven.com/a/concrete_floor_worn_001",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "tactile_strip_yellow": {
+   "purpose": "Yellow tactile guide paving strip with raised bars; lay along the footpath, tiles along V.",
+   "size": "512x1024",
+   "alpha": false,
+   "tiling": "V only (U = strip width)",
+   "real_world_m": [
+    0.3,
+    0.6
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "tactile_strip_yellow_albedo.jpg",
+    "tactile_strip_yellow_normal.jpg",
+    "tactile_strip_yellow_orm.jpg"
+   ],
+   "method": "procedural layout/wear (modelled on Thai references, see NOTES.md) over CC0 Poly Haven photo-scan detail",
+   "sources": [
+    {
+     "id": "polyhaven:brushed_concrete",
+     "url": "https://polyhaven.com/a/brushed_concrete",
+     "author": "Poly Haven",
+     "licence": "CC0"
+    }
+   ]
+  },
+  "tarp_blue_photo": {
+   "purpose": "Blue woven tarpaulin (ผ้าใบฟ้า) from a real photo, tileable: stall roofs, cart covers, patched roofs.",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "tarp_blue_photo_albedo.jpg",
+    "tarp_blue_photo_normal.jpg",
+    "tarp_blue_photo_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "018fbbfc",
+     "url": "https://cdnb.artstation.com/p/assets/images/images/053/547/101/medium/texturecan-plastic-0019-plane-1200.jpg?1662474144",
+     "image_url": "https://cdnb.artstation.com/p/assets/images/images/053/547/101/medium/texturecan-plastic-0019-plane-1200.jpg?1662474144",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "trench_grate_cast_iron_photo": {
+   "purpose": "Cast-iron trench drain grate strip (real photo, rectified from a perspective view, tiles along V). Kerb gutters, market drains, shop-front channels.",
+   "size": "192x1024",
+   "alpha": false,
+   "tiling": "V only",
+   "real_world_m": [
+    0.3,
+    1.6
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "trench_grate_cast_iron_photo_albedo.jpg",
+    "trench_grate_cast_iron_photo_normal.jpg",
+    "trench_grate_cast_iron_photo_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "c2649936",
+     "url": "https://www.ironagegrates.com/wp-content/uploads/2016/09/Flower_Grid_9_x_20_7_E.jpg",
+     "image_url": "https://www.ironagegrates.com/wp-content/uploads/2016/09/Flower_Grid_9_x_20_7_E.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "wall_concrete_black_streaks": {
+   "purpose": "Grey concrete with heavy black water / mould streaks (tropical weathering) (real photo, made tileable).",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    2.0,
+    2.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "wall_concrete_black_streaks_albedo.jpg",
+    "wall_concrete_black_streaks_normal.jpg",
+    "wall_concrete_black_streaks_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "711eded1",
+     "url": "https://i.pinimg.com/originals/59/82/58/598258603cdd7af27157c7aae16cb45a.jpg",
+     "image_url": "https://i.pinimg.com/originals/59/82/58/598258603cdd7af27157c7aae16cb45a.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "wall_concrete_mould_stained": {
+   "purpose": "Board-marked concrete wall, mould and rain staining (real photo, made tileable).",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    2.0,
+    2.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "wall_concrete_mould_stained_albedo.jpg",
+    "wall_concrete_mould_stained_normal.jpg",
+    "wall_concrete_mould_stained_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "18f9f9f9",
+     "url": "https://i.pinimg.com/originals/2a/a1/33/2aa1333152cc07bf1d9f146443c33268.jpg",
+     "image_url": "https://i.pinimg.com/originals/2a/a1/33/2aa1333152cc07bf1d9f146443c33268.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "wall_concrete_plain_dirty": {
+   "purpose": "Plain dirty cement render (real photo, made tileable).",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    2.0,
+    2.0
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "wall_concrete_plain_dirty_albedo.jpg",
+    "wall_concrete_plain_dirty_normal.jpg",
+    "wall_concrete_plain_dirty_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "d8e3ee84",
+     "url": "https://www.flickr.com/photos/coun2rparts/3508864133/",
+     "image_url": "https://live.staticflickr.com/3603/3508864133_3247ae7937_b.jpg",
+     "author": "Rick",
+     "licence": "CC BY 2.0"
+    }
+   ]
+  },
+  "wall_peeling_paint_orange": {
+   "purpose": "Orange-terracotta painted render flaking off in crusts (real photo, made tileable).",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "wall_peeling_paint_orange_albedo.jpg",
+    "wall_peeling_paint_orange_normal.jpg",
+    "wall_peeling_paint_orange_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "c4b0adb7",
+     "url": "https://www.flickr.com/photos/ioachimphotos/33106659902/",
+     "image_url": "https://live.staticflickr.com/3700/33106659902_929e68aa15_b.jpg",
+     "author": "Marcu Ioachim",
+     "licence": "Public Domain Mark 1.0"
+    }
+   ]
+  },
+  "wall_peeling_paint_red_over_cream": {
+   "purpose": "Dark red paint peeling over a cream base coat (real photo, made tileable).",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.2,
+    1.2
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "wall_peeling_paint_red_over_cream_albedo.jpg",
+    "wall_peeling_paint_red_over_cream_normal.jpg",
+    "wall_peeling_paint_red_over_cream_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "4985c871",
+     "url": "https://www.flickr.com/photos/spotsgot/6528266/",
+     "image_url": "https://live.staticflickr.com/7/6528266_d33b60cadf_b.jpg",
+     "author": "Camille King",
+     "licence": "CC BY-SA 2.0"
+    }
+   ]
+  },
+  "wall_peeling_paint_teal": {
+   "purpose": "Teal painted wall flaking to bare plaster, faint marker tag (real photo, made tileable).",
+   "size": "1024x1024",
+   "alpha": false,
+   "tiling": true,
+   "real_world_m": [
+    1.5,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "wall_peeling_paint_teal_albedo.jpg",
+    "wall_peeling_paint_teal_normal.jpg",
+    "wall_peeling_paint_teal_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "2952c113",
+     "url": "https://www.flickr.com/photos/mikecogh/36540627855/",
+     "image_url": "https://live.staticflickr.com/4353/36540627855_2cacb976a0_b.jpg",
+     "author": "Michael Coghlan",
+     "licence": "CC BY-SA 2.0"
+    }
+   ]
+  },
+  "window_grille_white_on_glass": {
+   "purpose": "Window with white steel burglar bars over glass, frame included (real photo, rectified). Upper-floor shophouse window.",
+   "size": "956x1024",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    1.4,
+    1.5
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "window_grille_white_on_glass_albedo.jpg",
+    "window_grille_white_on_glass_normal.jpg",
+    "window_grille_white_on_glass_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "ac496bea",
+     "url": "https://i.pinimg.com/originals/14/ce/d4/14ced4e7bdcff47fa31a0a866762b89f.jpg",
+     "image_url": "https://i.pinimg.com/originals/14/ce/d4/14ced4e7bdcff47fa31a0a866762b89f.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  },
+  "window_wood_shutters_old": {
+   "purpose": "Old weathered wooden window shutters, closed, in a crumbling frame (real photo, rectified). Old wooden shophouses, canal houses, rural houses.",
+   "size": "1024x939",
+   "alpha": false,
+   "tiling": false,
+   "real_world_m": [
+    1.2,
+    1.1
+   ],
+   "maps": [
+    "albedo",
+    "normal",
+    "orm"
+   ],
+   "files": [
+    "window_wood_shutters_old_albedo.jpg",
+    "window_wood_shutters_old_normal.jpg",
+    "window_wood_shutters_old_orm.jpg"
+   ],
+   "sources": [
+    {
+     "id": "8404aaab",
+     "url": "https://www.flickr.com/photos/stockerre/4770263305/",
+     "image_url": "https://live.staticflickr.com/4102/4770263305_e827185e76_b.jpg",
+     "author": "Rachael Towne",
+     "licence": "CC BY 2.0"
+    }
+   ]
+  },
+  "wire_bundle_tangle_photo": {
+   "purpose": "Tangled overhead cable bundles keyed out of real photos taken against the sky (alpha = cables, colour = dark rubber). 2 cells of 1024 (2x1) - use on alpha-tested crossed quads at pole tops / between poles.",
+   "size": "2048x1024",
+   "alpha": true,
+   "tiling": false,
+   "real_world_m": [
+    3.0,
+    3.0
+   ],
+   "maps": [
+    "rgba"
+   ],
+   "atlas_uv": [
+    [
+     "d4263994",
+     0.001,
+     0.002,
+     0.499,
+     0.998
+    ],
+    [
+     "3ad7ba59",
+     0.501,
+     0.0029,
+     0.999,
+     0.9961
+    ]
+   ],
+   "files": [
+    "wire_bundle_tangle_photo.png"
+   ],
+   "sources": [
+    {
+     "id": "d4263994",
+     "url": "https://i.pinimg.com/736x/52/3d/2c/523d2c569edbe7ca794e1ba20b978920.jpg",
+     "image_url": "https://i.pinimg.com/736x/52/3d/2c/523d2c569edbe7ca794e1ba20b978920.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "3ad7ba59",
+     "url": "https://i.pinimg.com/736x/ff/2f/76/ff2f7690414f112115b7c42ef7ace954.jpg",
+     "image_url": "https://i.pinimg.com/736x/ff/2f/76/ff2f7690414f112115b7c42ef7ace954.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ]
+  }
+ }
+}

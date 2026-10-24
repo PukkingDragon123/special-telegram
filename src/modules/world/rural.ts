@@ -32,7 +32,8 @@ export function buildRural(c: SpecialCtx) {
   }
   // ground colliders around (not over) the paddy block
   const gbox = (x0: number, z0: number, x1: number, z1: number) => c.phys.box([(x0 + x1) / 2, RURAL_Y - 0.5, (z0 + z1) / 2], [x1 - x0, 1, z1 - z0]);
-  gbox(-420, -300, PX0, zTop); gbox(PX1, -300, 420, zTop); gbox(PX0, PZ1, PX1, zTop); gbox(PX0, -300, PX1, PZ0);
+  const zc = CANAL.zN;
+  gbox(-420, -300, PX0, zc); gbox(PX1, -300, 420, zc); gbox(PX0, PZ1, PX1, zc); gbox(PX0, -300, PX1, PZ0);
   // ---------------------------------------------------------------- dirt road (+ grass verges/shoulders, ruts, puddles)
   w.mat('dirt', { autoDirt: false, ov: 'laterite', ovAmt: 0.6 });
   flat(w, RROAD.x0, RROAD.zN, RROAD.x1, RROAD.zS, RURAL_Y + 0.02, 10);

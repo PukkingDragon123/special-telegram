@@ -177,7 +177,7 @@ export class Magazine {
   readonly group = new THREE.Group();
   private pages: Page[] = [];
   private cur = 0;
-  private frontMat: THREE.MeshPhysicalMaterial;
+  private frontMat: THREE.MeshStandardMaterial;
   private turnFront: THREE.Mesh;
   private turnBack: THREE.Mesh;
   private front: THREE.Mesh;
@@ -234,14 +234,14 @@ export class Magazine {
     this.group.add(block);
     const adTex: THREE.CanvasTexture = new THREE.CanvasTexture(adCanvas(() => { adTex.needsUpdate = true; }));
     adTex.colorSpace = THREE.SRGBColorSpace;
-    const back = new THREE.Mesh(new THREE.PlaneGeometry(PW, PH), new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.35, clearcoat: 0.6, map: adTex }));
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(PW, PH), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, map: adTex }));
     back.rotation.y = Math.PI;
     back.position.set(PW / 2 + 0.0015, -0.002, -0.0068);
     this.group.add(back);
     this.turnGeo = new THREE.PlaneGeometry(PW, PH, 28, 1);
     this.turnGeo.translate(PW / 2, 0, 0);
     this.turnFront = new THREE.Mesh(this.turnGeo, this.pageMaterial(this.pages[0].tex));
-    this.turnBack = new THREE.Mesh(this.turnGeo, new THREE.MeshPhysicalMaterial({ side: THREE.BackSide, roughness: 0.4, clearcoat: 0.5, map: this.pages[0].tex }));
+    this.turnBack = new THREE.Mesh(this.turnGeo, new THREE.MeshStandardMaterial({ side: THREE.BackSide, roughness: 0.35, map: this.pages[0].tex }));
     this.turnFront.visible = this.turnBack.visible = false;
     this.turnFront.position.z = this.turnBack.position.z = 0.0008;
     this.group.add(this.turnFront, this.turnBack);
@@ -276,7 +276,7 @@ export class Magazine {
   }
 
   private pageMaterial(tex: THREE.Texture) {
-    return new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.32, clearcoat: 0.7, clearcoatRoughness: 0.18, side: THREE.FrontSide });
+    return new THREE.MeshStandardMaterial({ map: tex, roughness: 0.3, metalness: 0, envMapIntensity: 1.2, side: THREE.FrontSide });
   }
 
   private addPage(sec: Section, items: MagItem[], idx = 0, total = 1) {
@@ -571,8 +571,8 @@ export class Magazine {
     this.cur = i;
     // forward: the old page curls away (front shows the new page); backward: the new page curls in
     this.turn = { active: true, t: 0, dir, from, to: i };
-    const tf = this.turnFront.material as THREE.MeshPhysicalMaterial;
-    const tb = this.turnBack.material as THREE.MeshPhysicalMaterial;
+    const tf = this.turnFront.material as THREE.MeshStandardMaterial;
+    const tb = this.turnBack.material as THREE.MeshStandardMaterial;
     if (dir > 0) { tf.map = this.pages[from].tex; this.frontMat.map = this.pages[i].tex; tb.map = this.pages[Math.min(this.pages.length - 1, i)].tex; }
     else { tf.map = this.pages[i].tex; this.frontMat.map = this.pages[from].tex; tb.map = this.pages[from].tex; }
     tf.needsUpdate = tb.needsUpdate = this.frontMat.needsUpdate = true;

@@ -112,7 +112,7 @@ export function tintOf(t: number | [number, number, number] | undefined): [numbe
 
 export class WB {
   readonly buckets = new Map<string, Buf>();
-  chunk = 40;
+  chunk = 48;
   // current material state
   kind: Kind = 'world';
   group: Group = 'base';
@@ -203,6 +203,9 @@ export class WB {
   // ------------------------------------------------------------------ buckets
 
   bucketAt(wx: number, wz: number, kind = this.kind, group = this.group): Buf {
+    // only world & foliage keep a separate (distance-culled) detail group; decals are always detail
+    if (kind === 'sign' || kind === 'glass' || kind === 'cut') group = 'base';
+    else if (kind === 'decal') group = 'detail';
     if (this.target) {
       let b = this.target.bufs[kind];
       if (!b) b = this.target.bufs[kind] = new Buf(256, 384);

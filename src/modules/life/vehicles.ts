@@ -275,7 +275,7 @@ export function wheelModel() {
  * Posed motorbike rider (sitting, hands on the bars), origin at the seat on the ground plane,
  * facing -Z. Parts are separate geometries so shirt / helmet colours can vary per instance.
  */
-export function riderGeometries(): { shirt: THREE.BufferGeometry; skin: THREE.BufferGeometry; pants: THREE.BufferGeometry; helmet: THREE.BufferGeometry; hair: THREE.BufferGeometry } {
+export function riderGeometries(noHead = false): { shirt: THREE.BufferGeometry; skin: THREE.BufferGeometry; pants: THREE.BufferGeometry; helmet: THREE.BufferGeometry; hair: THREE.BufferGeometry } {
   const cyl = (r0: number, r1: number, a: THREE.Vector3, b: THREE.Vector3, seg = 7) => {
     const len = a.distanceTo(b);
     const g = new THREE.CylinderGeometry(r1, r0, len, seg, 1, false);
@@ -302,8 +302,10 @@ export function riderGeometries(): { shirt: THREE.BufferGeometry; skin: THREE.Bu
     pants.push(cyl(0.06, 0.05, kn, an));
     const foot = new THREE.BoxGeometry(0.09, 0.06, 0.22); foot.translate(an.x, 0.4, -0.27); skin.push(foot);
   }
-  const neck = cyl(0.05, 0.05, V(0, 1.42, -0.04), V(0, 1.52, -0.08)); skin.push(neck);
-  const head = new THREE.SphereGeometry(0.11, 9, 7); head.scale(0.9, 1.05, 1); head.translate(0, 1.62, -0.1); skin.push(head);
+  if (!noHead) {
+    const neck = cyl(0.05, 0.05, V(0, 1.42, -0.04), V(0, 1.52, -0.08)); skin.push(neck);
+    const head = new THREE.SphereGeometry(0.11, 9, 7); head.scale(0.9, 1.05, 1); head.translate(0, 1.62, -0.1); skin.push(head);
+  }
   const helmet = new THREE.SphereGeometry(0.135, 10, 7, 0, Math.PI * 2, 0, Math.PI * 0.62); helmet.translate(0, 1.64, -0.1);
   const hair = new THREE.SphereGeometry(0.118, 9, 6, 0, Math.PI * 2, 0, Math.PI * 0.5); hair.translate(0, 1.64, -0.09);
   const mergeUV = (arr: THREE.BufferGeometry[]) => merge(arr.map((g) => { if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2)); return g; }));

@@ -209,30 +209,36 @@ def butts():
 
 # ------------------------------------------------------------------ puddles & potholes
 def puddles():
-    a = src("bb1e10c6")                       # real puddle reflecting clouds, top-down
-    c = crop(a, 140, 0, a.shape[1], a.shape[0])
-    l = lum(c)
-    al = smoothstep(0.36, 0.48, l)
-    al = cv2.morphologyEx(al, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (31, 31)))
-    al = cv2.morphologyEx(al, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11)))
-    b = (al > 0.5).astype(np.uint8)
+    a = src("46e8d835")                       # wet asphalt with sky-reflecting puddles (oblique)
+    c = crop(a, 0, 0, 800, 560)
+    l = cv2.GaussianBlur(lum(c).astype(np.float32), (0, 0), 1.5)
+    al = smoothstep(0.06, 0.14, l - local_bg(l, 300))
+    yy, xx = np.mgrid[0:c.shape[0], 0:c.shape[1]]
+    al[(xx > 460) & (yy < 140)] = 0              # chrome sphere
+    al[(xx < 150) & (yy < 300 - xx * 1.6)] = 0   # wall corner
+    al[(xx > 650) & (yy < 260)] = 0
+    al = cv2.morphologyEx(al, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)))
+    al = cv2.morphologyEx(al, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7)))
+    b = (al > 0.3).astype(np.uint8)
     n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
-    if n > 1:
-        big = 1 + int(np.argmax(st[1:, cv2.CC_STAT_AREA]))
-        al = al * (lab == big)
-    al = feather(al, 3.0)
-    lv = lum(c)
-    lv = (lv - lv.min()) / max(lv.max() - lv.min(), 1e-3)
-    rgb = np.array([0.075, 0.07, 0.062], np.float32) * (0.75 + 0.5 * lv)[..., None]
-    out = trim(np.dstack([rgb, al]), 8, 0.02)
-    out = rs(out, 1024, int(1024 * out.shape[0] / out.shape[1]) // 4 * 4)
+    keep = np.zeros(n, bool)
+    for i in range(1, n):
+        w_, h_, ar = st[i, cv2.CC_STAT_WIDTH], st[i, cv2.CC_STAT_HEIGHT], st[i, cv2.CC_STAT_AREA]
+        keep[i] = ar > 150 and ar / max(1, w_ * h_) > 0.25
+    al = al * keep[lab]
+    al = feather(np.clip(al * 1.4, 0, 1), 1.5)
+    lv = (l - l.min()) / max(l.max() - l.min(), 1e-3)
+    rgb = np.array([0.075, 0.07, 0.062], np.float32) * (0.8 + 0.4 * lv)[..., None]
+    out = np.dstack([rgb, al])
+    out = cv2.resize(np.ascontiguousarray(out, np.float32), (1024, 1434), interpolation=cv2.INTER_CUBIC)  # undo foreshortening
+    out = cv2.resize(out, (732, 1024), interpolation=cv2.INTER_AREA)
     save_rgba(decontaminate(out), f"{OUT}/decal_puddles_photo.png")
     rough = np.clip(1 - out[..., 3] * 0.96, 0.04, 1)
     save_rgb(np.dstack([rough] * 3), f"{OUT}/decal_puddles_photo_rough.jpg", 90)
-    meta("decal_puddles_photo", "Puddle shape extracted from a real top-down photo of a street puddle "
-         "(alpha = standing water, RGB = dark muddy water so the renderer's env map / neon supplies the "
-         "reflection). Pair with decal_puddles_photo_rough (water ~0.04).", f"1024x{out.shape[0]}", True,
-         False, [2.2, round(2.2 * out.shape[0] / 1024, 2)], ["bb1e10c6"], ["rgba", "rough"])
+    meta("decal_puddles_photo", "Cluster of puddle shapes extracted from a real photo of wet asphalt after rain "
+         "(alpha = standing water; RGB = dark muddy water so the renderer's env map / neon supplies the "
+         "reflection; stretched to undo the photo's foreshortening). Pair with decal_puddles_photo_rough "
+         "(water ~0.04).", "732x1024", True, False, [2.1, 3.0], ["46e8d835"], ["rgba", "rough"])
 
 
 def potholes():
@@ -338,24 +344,32 @@ def flyers():
 # ------------------------------------------------------------------ wires & cable
 def wires():
     items = []
-    for cid in ("d4263994", "3ad7ba59", "f04ea494", "56c4d34b"):
+    for cid in ("d4263994", "3ad7ba59"):
         try:
             a = src(cid)
         except Exception:
             continue
         al, sky = sky_key(a, 31, 0.12, 0.5)
         # drop solid masses (buildings, billboards, pole bodies): keep only thin structures
-        thick = cv2.morphologyEx(al, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (13, 13)))
-        thick = cv2.dilate(thick, np.ones((5, 5), np.uint8))
-        al = np.clip(al - thick, 0, 1)
+        b = (al > 0.45).astype(np.uint8)
+        thick = cv2.morphologyEx(b, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11)))
+        thick = cv2.dilate(thick, np.ones((9, 9), np.uint8))
+        b = b * (1 - thick)
+        n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
+        keep = np.zeros(n, bool)
+        for i in range(1, n):
+            w_, h_ = st[i, cv2.CC_STAT_WIDTH], st[i, cv2.CC_STAT_HEIGHT]
+            keep[i] = st[i, cv2.CC_STAT_AREA] >= 80 and max(w_, h_) >= 40     # long thin = wire
+        b = keep[lab].astype(np.float32)
+        al = feather(b, 0.5) * np.clip(al * 1.3, 0, 1)
         rgb = np.clip(a * 0.5, 0, 0.25) * 0 + np.array([0.06, 0.06, 0.065])
         rgb = rgb * (0.7 + 0.6 * lum(a))[..., None]
         items.append((cid, np.dstack([rgb, feather(al, 0.6)])))
-    atlas, uvs = pack_grid(items, 2, 2, 1024, pad=2)
+    atlas, uvs = pack_grid(items, 2, 1, 1024, pad=2)
     save_rgba(atlas, f"{OUT}/wire_bundle_tangle_photo.png")
     meta("wire_bundle_tangle_photo", "Tangled overhead cable bundles keyed out of real photos taken against "
-         "the sky (alpha = cables, colour = dark rubber). 2x2 atlas of 1024 cells - use on alpha-tested "
-         "camera-facing or crossed quads at pole tops / between poles.", "2048x2048", True, False,
+         "the sky (alpha = cables, colour = dark rubber). 2 cells of 1024 (2x1) - use on alpha-tested "
+         "crossed quads at pole tops / between poles.", "2048x1024", True, False,
          [3.0, 3.0], [u[0] for u in uvs], ["rgba"], atlas_uv=uvs)
 
 

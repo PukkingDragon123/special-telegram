@@ -109,15 +109,17 @@ export async function loadSigns(): Promise<SignSys | null> {
   const list: { id: string; cat: string[]; glow: number }[] = [];
   for (const [f, cat, glow] of DELIVERED) {
     const id = 'd:' + f;
-    const big = cat.startsWith('poster') || cat.startsWith('menu') || cat.startsWith('street_dir') || cat.startsWith('moto');
-    items.push({ id, url: `img/signs/${f}.png`, w: big ? 512 : 768, h: big ? 512 : 256 });
+    const sq = cat.startsWith('poster') || cat.startsWith('menu') || cat.startsWith('street_dir') || cat.startsWith('moto') || cat.startsWith('traffic') || cat.startsWith('plate') || cat.startsWith('wallsign') || cat.startsWith('laundry_small') || cat.startsWith('vertical');
+    items.push({ id, url: `img/signs/${f}.png`, w: sq ? 320 : 640, h: sq ? 320 : 200 });
     list.push({ id, cat: cat.split(','), glow });
   }
   const gen = await Assets.jsonSafe<any>('gen/world/signs.json', null);
   for (const it of gen?.items ?? []) {
     const id = 'g:' + it.id;
-    const big = (it.cat as string).startsWith('interior') || (it.cat as string).startsWith('facade');
-    const w = it.w ?? (big ? 768 : 512), h = it.h ?? Math.round(w / (it.aspect ?? 3));
+    const big = /interior|facade|produce/.test(String(it.cat));
+    const a = it.aspect ?? 3;
+    const mx = big ? 440 : 640;
+    const w = a >= 1 ? mx : Math.round(mx * a), h = a >= 1 ? Math.round(mx / a) : mx;
     items.push({ id, url: 'gen/world/' + it.file, w, h });
     list.push({ id, cat: String(it.cat).split(','), glow: it.glow ?? 0 });
   }

@@ -44,7 +44,7 @@ export const LAYERS: LayerDef[] = [
   { name: 'pavers_square', src: ['p:sidewalk_pavers_square'], tile: 2 },
   { name: 'tactile', src: ['w:tactile_strip_yellow', 'p:sidewalk_tactile_yellow'], tile: [0.3, 0.6] },
   { name: 'concrete_old', src: ['p:concrete_old_cracked'], tile: 2 },
-  { name: 'concrete_wet', src: ['p:concrete_wet_puddles'], tile: 1.9 },
+  { name: 'concrete_wet', src: ['p:concrete_wet_puddles'], tile: 1.9, rough: 1.6 },
   { name: 'curb', src: ['w:curb_bare_concrete', 'p:concrete_old_cracked'], tile: [3, 0.36] },
   { name: 'curb_rw', src: ['w:curb_red_white'], tile: [3, 0.36], color: 0xb04030 },
   { name: 'curb_yb', src: ['w:curb_yellow_black'], tile: [3, 0.36], color: 0xc8a020 },

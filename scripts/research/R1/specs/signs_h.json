@@ -1,0 +1,64 @@
+[
+ {
+  "out": "traffic_no_uturn_round.png",
+  "src": "65d5ce1c",
+  "quad": [
+   [
+    1183,
+    556
+   ],
+   [
+    1373,
+    556
+   ],
+   [
+    1373,
+    746
+   ],
+   [
+    1183,
+    746
+   ]
+  ],
+  "w_m": 0.6,
+  "h_m": 0.6,
+  "px": 256,
+  "mask": "circle",
+  "wb": 0.3,
+  "th": "(ห้ามกลับรถ)",
+  "en": "Thai 'no U-turn' regulatory sign (white disc, red ring + slash) - small source, use at distance",
+  "mount": "pole on median, bottom ~2.0 m",
+  "kind": "traffic sign"
+ },
+ {
+  "out": "shop_clinic_ent_skin_vd.png",
+  "src": "49622a9c",
+  "quad": [
+   [
+    400,
+    146
+   ],
+   [
+    878,
+    146
+   ],
+   [
+    878,
+    382
+   ],
+   [
+    400,
+    382
+   ]
+  ],
+  "w_m": 2.4,
+  "h_m": 1.9,
+  "px": 1024,
+  "mask": "rect",
+  "wb": 0.3,
+  "th": "คลีนิค ตา หู คอ จมูก / คลีนิค โรคผิวหนัง ภูมิแพ้ / V.D. CLINIC",
+  "en": "Hanging clinic sign under a footpath canopy (ENT, skin & allergy, V.D. clinic) - Bangkok",
+  "mount": "hanging under canopy / projecting box",
+  "kind": "shop sign (clinic)"
+ }
+]

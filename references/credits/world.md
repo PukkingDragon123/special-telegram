@@ -14,13 +14,9 @@ Also uses the shared libraries credited by the research agents (textures/pbr, te
 | gen/world/signs/old_blue_board.jpg | Billboard at State Railway Station | DMahendra | by 2.0 | https://www.flickr.com/photos/7175652@N02/9979363915 |
 | gen/world/signs/food_golden_neon.jpg | Neon lobster | johnomason | by 2.0 | https://www.flickr.com/photos/91451979@N00/20949041050 |
 | gen/world/signs/street_soi_ornate.jpg | Street sign in Chiang Mai (Thailand 2014) | paularps | by 2.0 | https://www.flickr.com/photos/21160385@N02/16253137902 |
-| gen/world/signs/massage_neon_box.jpg | Nuru Massage Parlor Neon Sign | City Walkr | by-sa 2.0 | https://www.flickr.com/photos/144927530@N03/30560733280 |
 | gen/world/signs/food_birdnest.jpg | Shark fins and birds nest restaurant in Bangkok Chinatown | shankar s. | by 2.0 | https://www.flickr.com/photos/77742560@N06/6975039740 |
-| gen/world/signs/banner_muaythai.jpg | Street signboard for Muay Thai kick boxing & sadist show, Thailand January 1998 | Dialog Center Images | by-sa 2.0 | https://www.flickr.com/photos/124776104@N08/23097905470 |
 | gen/world/signs/neon_coffee_bar.jpg | Thermae sign | Blemished Paradise | by-sa 2.0 | https://www.flickr.com/photos/42060140@N08/4194250183 |
-| gen/world/signs/old_roof_billboard.jpg | General Paints #3 | SqueakyMarmot | by-sa 2.0 | https://www.flickr.com/photos/37804160@N00/1112549644 |
 | gen/world/signs/street_dir_pier.jpg | Pratu Nam Pier, Bangkok, Thailand | David McKelvey | by 2.0 | https://www.flickr.com/photos/94735786@N00/6906983490 |
-| gen/world/signs/massage_may_neon.jpg | One of many massage parlors (Thailand) | Greg Walters | by 2.0 | https://www.flickr.com/photos/21485255@N00/2097495285 |
 | gen/world/signs/int_conv_shelves.jpg | IMG_4498 | mollymazilu | by 2.0 | https://www.flickr.com/photos/40481942@N06/6534527197 |
 | gen/world/signs/int_drinks_front.jpg | bangkok display | michale | by 2.0 | https://www.flickr.com/photos/95286689@N00/85041641 |
 | gen/world/signs/int_products.jpg | 7 eleven nam prik | goodiesfirst | by 2.0 | https://www.flickr.com/photos/49215102@N00/7797232846 |
@@ -31,3 +27,33 @@ Also uses the shared libraries credited by the research agents (textures/pbr, te
 | gen/world/signs/produce_durian.jpg | Fruit Stand | Tracy Hunter | by 2.0 | https://www.flickr.com/photos/11121785@N00/101906866 |
 | gen/world/signs/produce_durian2.jpg | Mmmm- durian! | shankar s. | by 2.0 | https://www.flickr.com/photos/77742560@N06/7904723210 |
 | gen/world/signs/produce_dried.jpg | XOKA8736bs | Phuketian.S | by 2.0 | https://www.flickr.com/photos/124790945@N06/31217646740 |
+| gen/world/signs/produce_chili_red.jpg | India - Koyambedu Market - Chili Peppers 01 | mckaysavage | by 2.0 | https://www.flickr.com/photos/56796376@N00/3986954258 |
+| gen/world/signs/produce_chili_green.jpg | Thai Pepper Pile | Mark Fischer | by-sa 2.0 | https://www.flickr.com/photos/80854685@N08/7454960866 |
+| gen/world/signs/produce_limes.jpg | Lemon-Lime | mapper-montag | by 2.0 | https://www.flickr.com/photos/87506549@N00/1290008805 |
+| gen/world/signs/produce_citrus.jpg | Oranges | Nico Kaiser | by 2.0 | https://www.flickr.com/photos/73084860@N00/5716986269 |
+| gen/world/signs/produce_mango_apple.jpg | Exotic tropical fruit mang on the night market of Bali island. | Artem Beliaikin | cc0 1.0 | https://www.flickr.com/photos/157635012@N07/42804464614 |
+| gen/world/signs/produce_peppers.jpg | Farmers Market | ianmalcm | by 2.0 | https://www.flickr.com/photos/86805724@N00/3828791073 |
+| gen/world/signs/produce_green_pepper.jpg | green peppers | Muffet | by 2.0 | https://www.flickr.com/photos/53133240@N00/5922004490 |
+| gen/world/signs/produce_rambutan.jpg | Rambutan fruits on the asian night market. Bali island. | Artem Beliaikin | cc0 1.0 | https://www.flickr.com/photos/157635012@N07/44066913575 |
+| gen/world/signs/produce_spice_sacks.jpg | 00000201 | Mark Fahey | by 2.0 | https://www.flickr.com/photos/32265037@N08/6090054486 |
+| gen/world/signs/produce_red_pepper.jpg | Red Bell Peppers | Scott 97006 | by 2.0 | https://www.flickr.com/photos/29487672@N07/14771872333 |
+| gen/world/signs/produce_mangoes.jpg | Mangoes! | joyosity | by 2.0 | https://www.flickr.com/photos/33993074@N00/3474057847 |
+| gen/world/signs/produce_longan.jpg | Longan exotic fruit on market | Artem Beliaikin | by 2.0 | https://www.flickr.com/photos/157635012@N07/40931149743 |
+| gen/world/signs/produce_veg_market.jpg | Vegetables for sale, Bangkok | luigig | by 2.0 | https://www.flickr.com/photos/51035803402@N01/3700261181 |
+| gen/world/signs/produce_squid.jpg | Squid at the Market | Mark Fischer | by-sa 2.0 | https://www.flickr.com/photos/80854685@N08/7454699884 |
+| gen/world/signs/produce_dried_shrimp.jpg | Midnight Snack (Bangkok, Thailand) | ~MVI~ (warped) | by 2.0 | https://www.flickr.com/photos/20119750@N00/2903697054 |
+| gen/world/signs/produce_roses.jpg | Bangkok Flowers | Mark Fischer | by-sa 2.0 | https://www.flickr.com/photos/80854685@N08/7459659900 |
+| gen/world/signs/produce_lotus.jpg | 4Y1A0271 Bangkok | Ninara | by 2.0 | https://www.flickr.com/photos/37583176@N00/32977582965 |
+| gen/world/signs/produce_chili_basket.jpg | Chilis | Mark Fischer | by-sa 2.0 | https://www.flickr.com/photos/80854685@N08/7432176784 |
+| gen/world/signs/produce_chili_mix.jpg | Thai Peppers | Mark Fischer | by-sa 2.0 | https://www.flickr.com/photos/80854685@N08/7454967682 |
+| gen/world/signs/produce_pomelo.jpg | Composition in Yellow | Meanest Indian | by 2.0 | https://www.flickr.com/photos/56252733@N00/304309414 |
+| gen/world/signs/produce_fried_snacks.jpg | hua hin night market dried meat | goodiesfirst | by 2.0 | https://www.flickr.com/photos/49215102@N00/4430542981 |
+| gen/world/signs/int_jars.jpg | Apothecary Now | sidibousaid60 | by 2.0 | https://www.flickr.com/photos/60094033@N08/7064590663 |
+| gen/world/signs/int_old_pharmacy.jpg | Old Pharmacy Shelves | berniedup | by-sa 2.0 | https://www.flickr.com/photos/65695019@N07/32190639097 |
+| gen/world/signs/int_shop_shelves.jpg | Sunseed Natural Market - Food Co-op | Rusty Clark ~ 100K Photos | by 2.0 | https://www.flickr.com/photos/23206546@N04/7775588444 |
+| gen/world/signs/int_store_fridges.jpg | DSC_3099: a grocery store filled with lots of food and drinks | PattayaPatrol | by-sa 2.0 | https://www.flickr.com/photos/194424926@N05/53880104121 |
+| gen/world/signs/int_fridge_shelves.jpg | Post Earthquake Tokyo - Food & Supplies | Danny Choo | by-sa 2.0 | https://www.flickr.com/photos/88444437@N00/5531106025 |
+| gen/world/signs/int_chinese_shop.jpg | Bangkok, Thailand | jafsegal (Thanks for the 4,5 million views) | by 2.0 | https://www.flickr.com/photos/67525885@N00/16279515142 |
+| gen/world/signs/int_ceramics.jpg | Cats in kitchenware shop | Londo Mollari | by-sa 2.0 | https://www.flickr.com/photos/25981243@N00/429663222 |
+| gen/world/signs/int_narrow_shop.jpg | Shop at Sampeng Lane - Chinatown | Jorge Lascar | by 2.0 | https://www.flickr.com/photos/8721758@N06/4510174719 |
+| gen/world/signs/int_plates.jpg | 365 x29 Dinner Plates of Faith | David Masters | by 2.0 | https://www.flickr.com/photos/25652278@N03/3668547763 |

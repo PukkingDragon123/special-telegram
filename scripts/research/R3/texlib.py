@@ -53,8 +53,11 @@ def save(path, arr, quality=90):
     else:
         im = Image.fromarray(a, "RGB")
     if path.lower().endswith((".jpg", ".jpeg")):
-        im.convert("RGB" if im.mode == "RGBA" else im.mode).save(
-            path, "JPEG", quality=quality, optimize=True, progressive=True, subsampling=0)
+        im = im.convert("RGB" if im.mode == "RGBA" else im.mode)
+        try:
+            im.save(path, "JPEG", quality=quality, optimize=True, progressive=True, subsampling=0)
+        except OSError:
+            im.save(path, "JPEG", quality=quality, subsampling=0)
     else:
         im.save(path, optimize=True)
 

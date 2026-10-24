@@ -36,10 +36,12 @@ const _cam = new THREE.Vector3();
 export default defineModule({
   id: 'characters',
   async init(game) {
+    const t0 = performance.now();
+    const tm = (label: string) => () => console.info(`[characters] ${label} ${(performance.now() - t0).toFixed(0)} ms`);
     await Promise.all([
-      Assets.jsonSafe<any>('textures/faces/manifest.json', null).then((m) => ingestFaceManifest(m)),
-      preloadFabrics(),
-      loadTemplates(),
+      Assets.jsonSafe<any>('textures/faces/manifest.json', null).then((m) => ingestFaceManifest(m)).then(tm('faces')),
+      preloadFabrics().then(tm('fabrics')),
+      loadTemplates().then(tm('bodies')),
     ]);
     game.chars = factory;
     game.registerView('npc', npcView(game, factory));

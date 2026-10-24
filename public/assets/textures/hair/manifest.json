@@ -1,0 +1,232 @@
+{
+ "textures": {
+  "hair_black_straight": {
+   "file": "hair_black_straight.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "tileable",
+   "desc": "black straight hair, strands along V (tileable) — shells for crew cuts, side-parts, bobs, long hair",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/a6/fe/17/a6fe175b9dd557e5f2ca1fe905902fbc.jpg",
+     "page": "https://www.pinterest.com/pin/148478118948350855/",
+     "title": "Close Up View of Black Hair",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "hair_black_straight_normal.jpg"
+  },
+  "hair_cards_black": {
+   "file": "hair_cards_black.png",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "hair cards (RGBA, alpha-test 0.35 or alpha-hash)",
+   "desc": "alpha hair-card atlas from a real black-hair photo: [0-256] long card, [256-512] long wispy card (ref4 left guy / long female hair / Mae Nak), [512-768,0-640] medium, [768-1024,0-640] ponytail strip, bottom-right two short clumps (fringe, mullet, two-block top)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/a6/fe/17/a6fe175b9dd557e5f2ca1fe905902fbc.jpg",
+     "page": "https://www.pinterest.com/pin/148478118948350855/",
+     "title": "Close Up View of Black Hair",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "cards": {
+    "long": [
+     0,
+     0,
+     256,
+     1024
+    ],
+    "long_wispy": [
+     256,
+     0,
+     256,
+     1024
+    ],
+    "medium": [
+     512,
+     0,
+     256,
+     640
+    ],
+    "ponytail": [
+     768,
+     0,
+     256,
+     640
+    ],
+    "short_a": [
+     512,
+     640,
+     256,
+     384
+    ],
+    "short_b": [
+     768,
+     640,
+     256,
+     384
+    ]
+   }
+  },
+  "hair_card_bob_edge": {
+   "file": "hair_card_bob_edge.png",
+   "size": [
+    512,
+    256
+   ],
+   "kind": "hair card (RGBA)",
+   "desc": "school-bob (ผมติ่งหู) edge card: straight blunt cut at the bottom",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://i.pinimg.com/originals/a6/fe/17/a6fe175b9dd557e5f2ca1fe905902fbc.jpg",
+     "page": "https://www.pinterest.com/pin/148478118948350855/",
+     "title": "Close Up View of Black Hair",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "hair_salt_pepper": {
+   "file": "hair_salt_pepper.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "tileable",
+   "desc": "salt-and-pepper grey straight hair (uncles 55+, grandmas)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://www.floeyeliner.com/wp-content/uploads/2025/03/salt_and_pepper_hair_women_sphi.webp",
+     "page": "https://laylashine.com/stunning-salt-and-pepper-hair-inspo-for-women-of-all-ages/",
+     "title": "Stunning Salt And Pepper Hair Inspo For Women Of All Ages - LaylaShine",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "hair_salt_pepper_normal.jpg"
+  },
+  "hair_dyed_brown": {
+   "file": "hair_dyed_brown.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "tileable",
+   "desc": "dyed chestnut-brown hair (เด็กแว้น mullets, aunties, young women), strands along V",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://static.vecteezy.com/system/resources/previews/069/708/665/large_2x/brown-hair-close-up-showing-texture-and-waves-photo.jpg",
+     "page": "https://www.vecteezy.com/photo/69708665-brown-hair-close-up-showing-texture-and-waves",
+     "title": "Brown hair close up showing texture and waves 69708665 Stock Photo at ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "hair_dyed_brown_normal.jpg"
+  },
+  "hair_afro_black": {
+   "file": "hair_afro_black.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "ref4 standing guy: black afro (tight coils), use on a lumpy noise-displaced shell",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://media.hairtical.com/2026/03/afro-texture-curls-69b3998ec00ac.webp",
+     "page": "https://www.hairtical.com/afro-hairstyles-for-men-33-fresh-afro-cuts-tapers-shape-ups/",
+     "title": "Afro Hairstyles for Men: 33 Fresh Afro Cuts, Tapers & Shape-Ups",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "hair_afro_black_normal.jpg"
+  },
+  "hair_perm_light_brown": {
+   "file": "hair_perm_light_brown.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "auntie perm curls (light brown / highlighted)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://images.stockcake.com/public/8/c/8/8c8598e4-1942-49af-b61a-1e3836045c6e_large/curly-hair-close-up-stockcake.jpg",
+     "page": "https://stockcake.com/i/curly-hair-close-up_908535_895506",
+     "title": "Free Curly Hair Close-up Image - Hair, Curl, Close-up | Download at ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "hair_perm_light_brown_normal.jpg"
+  },
+  "hair_perm_dark_burgundy": {
+   "file": "hair_perm_dark_burgundy.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "auntie perm curls recoloured to the classic dark burgundy-brown dye",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://images.stockcake.com/public/8/c/8/8c8598e4-1942-49af-b61a-1e3836045c6e_large/curly-hair-close-up-stockcake.jpg",
+     "page": "https://stockcake.com/i/curly-hair-close-up_908535_895506",
+     "title": "Free Curly Hair Close-up Image - Hair, Curl, Close-up | Download at ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "hair_perm_dark_burgundy_normal.jpg"
+  },
+  "hair_perm_black": {
+   "file": "hair_perm_black.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "auntie perm curls, black",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://images.stockcake.com/public/8/c/8/8c8598e4-1942-49af-b61a-1e3836045c6e_large/curly-hair-close-up-stockcake.jpg",
+     "page": "https://stockcake.com/i/curly-hair-close-up_908535_895506",
+     "title": "Free Curly Hair Close-up Image - Hair, Curl, Close-up | Download at ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "hair_perm_black_normal.jpg"
+  },
+  "hair_buzz_scalp": {
+   "file": "hair_buzz_scalp.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "buzz cut / ทรงนักเรียน: short dark stubble over scalp (tileable; tint the scalp with the skin colour if needed)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://media.hairtical.com/2026/03/buzz-cut-hair-69b4f78b6000c.webp",
+     "page": "https://www.hairtical.com/12-short-haircuts-that-work-around-cowlicks/",
+     "title": "12 Short Haircuts That Work Around Cowlicks",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "hair_buzz_scalp_normal.jpg"
+  }
+ },
+ "about": "Hair textures from REAL hair photos: solid shell textures (strands along V) + RGBA hair-card atlases (alpha-test ~0.35 or alpha-hash, double-sided).",
+ "normalConvention": "OpenGL (+Y up)"
+}

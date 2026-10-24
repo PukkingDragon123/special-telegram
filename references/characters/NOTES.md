@@ -59,9 +59,10 @@ Farmer's tan is very Thai: face, neck-V and forearms 1–2 steps darker than sho
   forehead, outside of the face oval = the face's own average skin colour (no seam on the head).
 * `*_detail.jpg` = recolourable version (multiply by any skin tone, formula in the manifest);
   `*_mask.png` = where the tint applies (eyes/teeth excluded).
-* Expression swaps for the 5 player-capable young men: `dumb_thinking` (skill-tree face), `drunk`
+* 36 faces: 17 men (young/middle/old, Thai/SE-Asian), 13 women, 6 tourists (European, African, South-Asian looks).
+* Expression swaps for the 5 player-capable young men (m01–m05): `dumb_thinking` (skill-tree face), `drunk`
   (casino intro), `sleep` (cardboard at midnight), `shock` (losing everything / dog eats the
-  pork); `scream` for 3 young women (customisation gag "สาววิ่งกรีดร้อง").
+  pork); `scream` for 3 young women f01/f03/f05 (customisation gag "สาววิ่งกรีดร้อง").
 
 ### Head mesh for planar face projection (Chilla's Art recipe)
 1. Head = slightly squashed sphere/box hybrid, ~400 tris: flat-ish face plane, cheekbones
@@ -159,7 +160,7 @@ Measured colours are from the cover (k-means on each garment).
 1. **Left — seated on a cobalt-blue plastic S-chair, leaning forward, holding a Jenga block**
    * Hair: shoulder-length layered black hair, centre-left part, wispy strands over the cheek.
    * Top: long-sleeve white knit tee (`#f8f6f7`) with thin irregular horizontal dark-grey/black
-     stripes (`#3b3a40`) across chest and belly, plain white sleeves → `clothing/stripe_white_grey`.
+     stripes (`#3b3a40`) across chest and belly, plain white sleeves → `clothing/stripe_white_grey_thin`.
    * Trousers: beige/taupe chinos (`#b39b78`).
    * Shoes: retro canvas sneakers — mustard yellow (`#e6c069`) upper, white toe cap & sole, red details.
    * Chair: cobalt `#1a2fa0` (shadow `#021570`) one-piece plastic cantilever chair.
@@ -167,13 +168,13 @@ Measured colours are from the cover (k-means on each garment).
    * Hair: big round black **afro**; **white terry headband** (`#f2efed`) across the forehead.
    * Oversized **amber-brown tinted sunglasses** (lens `#91573d` fading to `#36110a` at the top), thin metal frame.
    * Shirt: open short-sleeve **lime-green Hawaiian shirt** (`#86ad55`) with big cream/pale-yellow
-     leaf & flower print (`#f4f2c5`, `#e4db7a`) and dark olive shadow leaves → `clothing/hawaiian_green_leaf`.
+     leaf & flower print (`#f4f2c5`, `#e4db7a`) and dark olive shadow leaves → `clothing/hawaiian_green_leaf_ref4`.
    * Under it: plain white crew/V-neck tee (`#fdfdfb`); thin silver chain necklace.
    * Dark indigo straight jeans (`#241f3b`), sneakers.
 3. **Centre-right — seated on the mustard leather sofa, leaning in to the Jenga tower**
    * Hair: short black shaggy cut with a long fringe (2000s Thai pop).
    * Shirt: short-sleeve polo with **bottle-green and off-white horizontal stripes** (`#2a5e48` /
-     `#f2f0e3`), a navy band and a small black/white check at the hem → `clothing/stripe_green_white`.
+     `#f2f0e3`), a navy band and a small black/white check at the hem → `clothing/stripe_green_white_ref4`.
    * Medium-blue jeans (`#32429c` → faded), silver wristwatch.
 4. **Right — sitting on a mustard-orange plastic shell chair, chest against the backrest, arms on top**
    * Hair: short black hair, gelled up/spiky at the front.
@@ -212,3 +213,32 @@ Measured colours are from the cover (k-means on each garment).
   monks walk slowly in single file; idle = fanning, scrolling the phone, scratching the head.
 * **Never** cartoon eyes or animated mouths: swap the face texture (blink is not needed; the
   `sleep` texture is used only when sleeping).
+
+## 10. Texture index (what to use for what)
+
+All in `public/assets/textures/…`, details + photo sources in each `manifest.json`.
+
+| Need | Files |
+|---|---|
+| white singlet เสื้อกล้าม | `clothing/singlet_rib_white`, `_yellowed`, `_sweaty` (+ `sweat_stain_decal.png` for armpits/collar) |
+| boxer / sleep shorts | `clothing/boxer_plaid_navy_beige`, `boxer_plaid_black_white`, `boxer_plaid_navy_green` |
+| plain shorts / trousers | `clothing/cotton_black`, `cotton_khaki_twill`, `khakuay_indigo_cotton` (ขาก๊วย), `denim_dark`, `denim_mid_seam`, `suit_grey_wool` |
+| ผ้าขาวม้า / sarong | `clothing/phakhaoma_blue_white`, `phakhaoma_red_yellow`, `phakhaoma_rainbow`, `phakhaoma_green_yellow`, `sarong_red_purple` |
+| Hawaiian / floral shirts | `clothing/hawaiian_green_leaf_ref4` (ref4 guy 2), `hawaiian_sage_hibiscus`, `hawaiian_palm_sage`, `hawaiian_red_hibiscus`, `hawaiian_blue_floral`, `thai_songkran_floral` |
+| striped / patterned shirts | `clothing/stripe_green_white_ref4` (ref4 guy 3), `stripe_green_white_pique`, `stripe_white_grey_thin` (ref4 guy 1), `stripe_heather_wide`, `stripe_blue_shirting`, `paisley_blue_white` (ref4 guy 4) |
+| knits / plain shirts | `clothing/shirt_white_poplin`, `pique_white`, `jersey_grey` (recolour in shader) |
+| suits / casino | `clothing/suit_black_wool`, `casino_gold_satin`, `casino_maroon_velvet`, `casino_maroon_jacquard` |
+| uniforms | `clothing/school_navy_twill`, `nametag_boy`/`nametag_girl` (+`_alpha.png`), `police_khaki_brown`, `vest_orange_poly` + `win_vest_back_505` + `reflective_band` + `vest_mesh_yellow` |
+| riders | `clothing/rider_green_poly` + `rider_logo_khunhiw`, `rider_pink_poly` + `rider_logo_pinto` (parody names) |
+| aunties / cooks | `clothing/auntie_blouse_pink_ditsy`, `auntie_blouse_mint_ditsy`, `apron_stained` |
+| footwear | `clothing/flipflop_top_photo`, `flipflop_sole_rubber`, `flipflop_strap_blue`, `sneaker_white_worn_photo`, `sneaker_white_leather` |
+| hats / accessories | `clothing/bucket_hat_khaki`, `bucket_hat_brim_stitched`, `cap_washed_navy`, `cap_washed_lilac`, `cap_front_hiaphat`, `sunglass_lens_amber` (ref4 guy 2), `terry_white_headband` (ref4 guy 2) |
+| hair | `hair/hair_black_straight`, `hair_cards_black.png` (atlas: long, long-wispy, medium, ponytail, 2 short clumps), `hair_card_bob_edge.png`, `hair_salt_pepper`, `hair_dyed_brown`, `hair_afro_black`, `hair_perm_dark_burgundy` / `_black` / `_light_brown`, `hair_buzz_scalp` |
+| skin | `faces/skin_detail_pores_a`, `skin_detail_lines_b`, `skin_detail_pores_c` (tileable, neutral 128 = no change), `faces/hand_back(+_detail)`, `faces/foot_top(+_detail)` |
+
+Gaps / notes: the white-singlet "uncle" look has few good real photos in `web/` (most search
+results were stock models; they were removed) — use `cart_oldman_*`/`vendor_cart_*`,
+`fruit_cart_03`, `uncle_singlet_01` and the street-food shots. `web/` holds 110 audited photos
+of real everyday Thai people (vendors, aunties, วิน, riders, students, office lunch, construction
+workers, monks, police, garland sellers, lottery sellers, sweepers, guards, barbers, diners,
+homeless sleepers); look-only, sources in `web/index.json`.

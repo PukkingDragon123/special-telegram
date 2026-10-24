@@ -61,6 +61,18 @@ export function installDebug(game: Game, root: THREE.Group, anchors: Record<stri
     },
     fly: setFly,
     get on() { return flying; },
+    /** raycast from the camera through NDC (x,y) → what static world piece is there */
+    pick(nx: number, ny: number) {
+      const rc = new THREE.Raycaster();
+      rc.setFromCamera(new THREE.Vector2(nx, ny), game.camera);
+      const hits = rc.intersectObject(root, true).slice(0, 3);
+      return hits.map((h) => {
+        const g = (h.object as THREE.Mesh).geometry;
+        const ex = g.getAttribute('aExtra');
+        const i = h.face ? h.face.a : 0;
+        return { name: h.object.name, d: +h.distance.toFixed(2), p: h.point.toArray().map((v) => +v.toFixed(2)), extra: ex ? [ex.getX(i), ex.getY(i), ex.getZ(i), ex.getW(i)] : null };
+      });
+    },
   };
   (window as any).__world = api;
   const apply = () => {

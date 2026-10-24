@@ -1,0 +1,190 @@
+{
+ "textures": {
+  "krasue_entrails_albedo": {
+   "file": "krasue_entrails_albedo.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "tileable",
+   "desc": "Krasue intestines albedo: real raw pork-intestine photo (tile along U on a tube)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/pork-intestines-pig-isolated-white-background-coiled-pile-pork-intestines-displayed-against-white-background-363571756.jpg",
+     "page": "https://www.dreamstime.com/pork-intestines-pig-isolated-white-background-coiled-pile-pork-intestines-displayed-against-white-background-image363571756",
+     "title": "Pork Intestines of Pig Isolated on White Background Stock Photo - Image ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "krasue_entrails_albedo_normal.jpg"
+  },
+  "krasue_entrails_emissive": {
+   "file": "krasue_entrails_emissive.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "tileable",
+   "desc": "emissive map (green-yellow ไฟกระสือ glow) derived from the wet highlights & fat of the same photo; multiply by a pulsing intensity, bloom on",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/pork-intestines-pig-isolated-white-background-coiled-pile-pork-intestines-displayed-against-white-background-363571756.jpg",
+     "page": "https://www.dreamstime.com/pork-intestines-pig-isolated-white-background-coiled-pile-pork-intestines-displayed-against-white-background-image363571756",
+     "title": "Pork Intestines of Pig Isolated on White Background Stock Photo - Image ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "ghost_rag_white": {
+   "file": "ghost_rag_white.png",
+   "size": [
+    512,
+    768
+   ],
+   "kind": "RGBA cut-out",
+   "desc": "tattered off-white cloth with torn, frayed edges and holes (real photo, alpha from the black backdrop) — Mae Nak / white-lady dress hem, ghost shrouds",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://thumbs.dreamstime.com/b/torn-rag-spread-isolated-black-background-white-hole-gap-unbleached-beige-fabric-torn-stitch-hole-loose-threads-grunge-384807276.jpg",
+     "page": "https://www.dreamstime.com/photos-images/torn-unbleached-rag.html",
+     "title": "Torn Unbleached Rag Stock Photos - Free & Royalty-Free Stock Photos ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "nangtani_green_silk": {
+   "file": "nangtani_green_silk.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "panel (tile U)",
+   "desc": "Nang Tani pha sin: real green Thai silk with woven gold/white diamond pattern and a purple-gold border band at the bottom (wrap horizontally; V = skirt height)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134208-81ztf-mikgxx4fng1s92",
+     "page": "https://shopee.co.th/%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B9%84%E0%B8%AB%E0%B8%A1%E0%B9%81%E0%B8%81%E0%B8%A1%E0%B8%9D%E0%B9%89%E0%B8%B2%E0%B8%A2-%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2-%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B8%8B%E0%B8%B4%E0%B9%88%E0%B8%99-%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%AD%E0%B8%97%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%9C%E0%B8%B7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%A2%E0%B8%A3%E0%B8%B2%E0%B8%8A%E0%B8%B2%E0%B8%A0%E0%B8%B4%E0%B9%80%E0%B8%A9%E0%B8%81-%E0%B8%AA%E0%B8%B5%E0%B9%80%E0%B8%82%E0%B8%B5%E0%B8%A2%E0%B8%A7-i.72557594.55353471428",
+     "title": "ผ้าไหมแกมฝ้าย ผ้าไทย ผ้าซิ่น ผ้าทอทั้งผืน ลายราชาภิเษก สีเขียว | Shopee ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "nangtani_green_silk_pattern": {
+   "file": "nangtani_green_silk_pattern.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "the same silk's green diamond body pattern, tileable both ways (sabai / shawl)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://down-th.img.susercontent.com/file/th-11134208-81ztf-mikgxx4fng1s92",
+     "page": "https://shopee.co.th/%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B9%84%E0%B8%AB%E0%B8%A1%E0%B9%81%E0%B8%81%E0%B8%A1%E0%B8%9D%E0%B9%89%E0%B8%B2%E0%B8%A2-%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2-%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B8%8B%E0%B8%B4%E0%B9%88%E0%B8%99-%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B8%97%E0%B8%AD%E0%B8%97%E0%B8%B1%E0%B9%89%E0%B8%87%E0%B8%9C%E0%B8%B7%E0%B8%99-%E0%B8%A5%E0%B8%B2%E0%B8%A2%E0%B8%A3%E0%B8%B2%E0%B8%8A%E0%B8%B2%E0%B8%A0%E0%B8%B4%E0%B9%80%E0%B8%A9%E0%B8%81-%E0%B8%AA%E0%B8%B5%E0%B9%80%E0%B8%82%E0%B8%B5%E0%B8%A2%E0%B8%A7-i.72557594.55353471428",
+     "title": "ผ้าไหมแกมฝ้าย ผ้าไทย ผ้าซิ่น ผ้าทอทั้งผืน ลายราชาภิเษก สีเขียว | Shopee ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "banana_leaf": {
+   "file": "banana_leaf.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "tileable",
+   "desc": "banana-leaf surface with midrib and parallel veins (real photo) — Nang Tani's banana trees, leaf cards",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://images.pexels.com/photos/35611193/pexels-photo-35611193/free-photo-of-close-up-of-vibrant-green-banana-leaf-texture.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+     "page": "https://www.pexels.com/photo/close-up-of-vibrant-green-banana-leaf-texture-35611193/",
+     "title": "Close-up of Vibrant Green Banana Leaf Texture · Free Stock Photo",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "banana_leaf_normal.jpg"
+  },
+  "pret_grey_skin": {
+   "file": "pret_grey_skin.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "tileable",
+   "desc": "Pret / Phi Pop: deeply wrinkled grey skin (real elephant-skin photo, desaturated to cement grey with a blue undertone)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://img.freepik.com/premium-photo/texture-skin-african-elephant-closeup-elephant-skin-wrinkles-irregularities_418821-3129.jpg?w=2000",
+     "page": "https://www.freepik.com/premium-photo/texture-skin-african-elephant-closeup-elephant-skin-wrinkles-irregularities_33432117.htm",
+     "title": "Premium Photo | The texture of the skin of an african elephant closeup ...",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "pret_grey_skin_normal.jpg"
+  },
+  "ghost_moto_burnt": {
+   "file": "ghost_moto_burnt.jpg",
+   "size": [
+    1024,
+    1024
+   ],
+   "kind": "tileable",
+   "desc": "headless rider's motorbike: burnt, peeling blue-grey paint over orange rust (real photo, soot darkened)",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://images.presentationgo.com/2025/04/rust-texture-peeling-paint.jpg",
+     "page": "https://www.presentationgo.com/presentation/rust-texture-peeling-paint/",
+     "title": "High-Detail Rust Texture with Peeling Paint and Corrosion - PresentationGO",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ],
+   "normal": "ghost_moto_burnt_normal.jpg"
+  },
+  "ghost_mist_a": {
+   "file": "ghost_mist_a.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "real smoke photo (on black) as greyscale, made seamless — use as alpha / density for ghost mist quads; scroll UVs slowly",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://img.freepik.com/premium-photo/smoke-black-background-seamless-texture_1308163-29885.jpg",
+     "page": "https://www.freepik.com/free-photos-vectors/smoke-texture/6",
+     "title": "Page 6 | Smoke Texture Images - Free Download on Freepik",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  },
+  "ghost_mist_b": {
+   "file": "ghost_mist_b.jpg",
+   "size": [
+    512,
+    512
+   ],
+   "kind": "tileable",
+   "desc": "real smoke photo (on black) as greyscale, made seamless — use as alpha / density for ghost mist quads; scroll UVs slowly",
+   "sources": [
+    {
+     "type": "web photo",
+     "image": "https://img.freepik.com/premium-photo/smoke-texture-black-background_923957-242.jpg",
+     "page": "https://www.freepik.com/premium-ai-image/smoke-texture-black-background_166792712.htm",
+     "title": "Smoke texture on black background | Premium AI-generated image",
+     "licence": "unknown / all rights reserved by the owner (client-approved web use, see credits)"
+    }
+   ]
+  }
+ },
+ "about": "Thai-ghost textures from REAL photos (see references/ghosts/NOTES.md for how each ghost uses them).",
+ "normalConvention": "OpenGL (+Y up)"
+}

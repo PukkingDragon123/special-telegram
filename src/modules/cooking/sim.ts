@@ -16,7 +16,7 @@ import { amountOf } from './items';
  * Vessel state lives in e.data (quantized, replicated ~10 Hz); full precision in e._s (host only).
  * ============================================================================================= */
 
-interface Act { a: string; src?: number; dst?: number; t: number; last: number; base?: number }
+interface Act { a: string; src?: number; dst?: number; t: number; last: number; idle: number; base?: number }
 const acts = new Map<number, Act>();
 
 /** Who may receive what (shared with the client provider). */
@@ -130,13 +130,13 @@ export function installCookIntents(game: Game) {
     const now = performance.now() / 1000;
     const cur = acts.get(pl.id);
     if (!d.on) { if (cur) stopAct(game, pl, cur); return; }
-    if (cur && cur.a === d.a && cur.src === d.src && cur.dst === d.dst) { cur.last = now; return; }
+    if (cur && cur.a === d.a && cur.src === d.src && cur.dst === d.dst) { cur.last = now; cur.idle = 0; return; }
     if (cur) stopAct(game, pl, cur);
     const dst = game.state.get(d.dst);
     if (!dst || !nearPlayer(game, pl, dst, 3.6)) return;
     const src = d.src != null ? game.state.get(d.src) : null;
     if (d.a === 'pour' || d.a === 'scoop') { if (!src || src.holder !== pl.id) return; }
-    const act: Act = { a: d.a, src: d.src, dst: d.dst, t: 0, last: now };
+    const act: Act = { a: d.a, src: d.src, dst: d.dst, t: 0, last: now, idle: 0 };
     acts.set(pl.id, act);
     startActFx(game, pl, act, src, dst);
   });
@@ -409,7 +409,9 @@ export function cookHostUpdate(game: Game, dt: number) {
   for (const [pid, a] of [...acts]) {
     const pl = game.state.get(pid);
     if (!pl) { acts.delete(pid); continue; }
-    if (now - a.last > 0.9) { stopAct(game, pl, a); continue; }
+    // keep-alive timeout in GAME time (robust when frames are slow) + a generous real-time cap
+    a.idle += dt;
+    if (a.idle > 1.0 || now - a.last > 6) { stopAct(game, pl, a); continue; }
     const dst = game.state.get(a.dst);
     const src = a.src != null ? game.state.get(a.src) : null;
     if (!dst || !nearPlayer(game, pl, dst, 3.8) || (a.src != null && (!src || ((a.a === 'pour' || a.a === 'scoop') && src.holder !== pl.id)))) { stopAct(game, pl, a); continue; }
@@ -444,6 +446,7 @@ export function cookHostUpdate(game: Game, dt: number) {
           s.wet = (g0 * (s.wet ?? 0) + made * wet) / Math.max(1, g0 + made);
           s.q = (g0 * (s.q ?? 1) + made * (1 - Math.abs(wet))) / Math.max(1, g0 + made);
           s.g = g0 + made; s.raw = 0; s.water = 0; s.on = false; s.cook = 0;
+          publish(e);
           sfx(game, ['rice_cooker_click'], entPos(game, e), { vol: 1 });
           sfx(game, ['timer_ding'], entPos(game, e), { vol: 0.5, delay: 0.3 } as any);
         }

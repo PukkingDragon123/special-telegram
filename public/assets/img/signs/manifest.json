@@ -1,0 +1,1731 @@
+{
+ "_readme": "R1-streets signs, plates, posters: cut from REAL photos (client rule) and rectified to a flat front view at the real aspect ratio; real_size_m = [width, height]. hiaphat_* = player-shop signs (4 upgrade tiers) composited on real photo carriers with looped Thai fonts. blank_* = empty carriers for in-engine text.",
+ "signs": [
+  {
+   "file": "banner_laundry_open_vinyl.png",
+   "th": "Laundry Open 09.00 AM - 09.00 PM",
+   "en": "Red vinyl 'Laundry' banner with arrow (low-res source)",
+   "real_size_m": [
+    1.8,
+    0.8
+   ],
+   "mount": "tied above shop / to pole",
+   "kind": "vinyl banner (laundry)",
+   "px": [
+    512,
+    228
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "3a91b009",
+     "url": "https://media.tripcanvas.co/th/2016/08/9-1-laundry-via-langeasy.jpg",
+     "image_url": "https://media.tripcanvas.co/th/2016/08/9-1-laundry-via-langeasy.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "banner_private_land_no_dumping.png",
+   "th": "ที่ดินส่วนบุคคล ห้ามบุกรุก ห้ามทิ้งขยะ ห้ามจอดรถ",
+   "en": "Vinyl banner: private land - no trespassing, no dumping, no parking",
+   "real_size_m": [
+    2.4,
+    1.2
+   ],
+   "mount": "tied to fence / empty lot",
+   "kind": "warning banner",
+   "px": [
+    1024,
+    512
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "7b5f3a5a",
+     "url": "https://www.flickr.com/photos/ocosingo/51827441441/",
+     "image_url": "https://live.staticflickr.com/65535/51827441441_909f434f64_b.jpg",
+     "author": "ocosingo",
+     "licence": "All rights reserved (Flickr licence 0)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "banner_tamsang_paksaep_vinyl.png",
+   "th": "ร้านปากแซ่บ ตามสั่ง อาหารตามสั่ง 35-45 รับทำข้าวกล่อง 087-.........",
+   "en": "Vinyl banner for a made-to-order food cart (35-45 baht, delivery app logos) - tier-3 reference for the player's shop",
+   "real_size_m": [
+    1.8,
+    1.0
+   ],
+   "mount": "tied to cart front / stall frame",
+   "kind": "vinyl banner (tam sang)",
+   "px": [
+    1024,
+    569
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "9aa0ae48",
+     "url": "https://img.pikbest.com/origin/10/05/99/96ppIkbEsT2rt.jpg!bw700",
+     "image_url": "https://img.pikbest.com/origin/10/05/99/96ppIkbEsT2rt.jpg!bw700",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "blank_lightbox_vertical.png",
+   "th": "(ว่าง)",
+   "en": "BLANK projecting light-box frame (white face = emissive area)",
+   "real_size_m": [
+    0.6,
+    1.15
+   ],
+   "mount": "projecting from wall on bracket",
+   "kind": "blank carrier",
+   "px": [
+    401,
+    768
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "c1af38ec",
+     "url": "https://i.pinimg.com/originals/20/81/0a/20810a41a772483ab85e936f56841709.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/20/81/0a/20810a41a772483ab85e936f56841709.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "blank_metal_sign_rusty_posts.png",
+   "th": "(ว่าง)",
+   "en": "BLANK rusty painted-metal sign board (print your own text/image on it; legs not included)",
+   "real_size_m": [
+    1.8,
+    1.0
+   ],
+   "mount": "standing on 2 posts / wall",
+   "kind": "blank carrier",
+   "px": [
+    1024,
+    569
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "ee008476",
+     "url": "https://img.magnific.com/free-psd/rusty-old-metal-sign-blank-vintage-grunge-weathered-texture-background-iron-surface-aged-corroded-decayed-oxidized-patina-retro-rustic-shabby-textured-antique_191095-82429.jpg?semt=ais_hybrid&w=740&q=80",
+     "image_url": "https://img.magnific.com/free-psd/rusty-old-metal-sign-blank-vintage-grunge-weathered-texture-background-iron-surface-aged-corroded-decayed-oxidized-patina-retro-rustic-shabby-textured-antique_191095-82429.jpg?semt=ais_hybrid&w=740&q=80",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "blank_metal_sign_white_rust_frame.png",
+   "th": "(ว่าง)",
+   "en": "BLANK white enamel/painted board with rust, hung in a dark steel frame",
+   "real_size_m": [
+    1.6,
+    1.0
+   ],
+   "mount": "frame on pole",
+   "kind": "blank carrier",
+   "px": [
+    512,
+    320
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "5799351b",
+     "url": "https://i.pinimg.com/474x/6c/3f/b3/6c3fb38bccb8084a58bf5cd6a4709792.jpg",
+     "image_url": "https://i.pinimg.com/474x/6c/3f/b3/6c3fb38bccb8084a58bf5cd6a4709792.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "blank_vinyl_banner_grommets.png",
+   "th": "(ว่าง)",
+   "en": "BLANK white vinyl banner with metal grommets (print a banner design on it)",
+   "real_size_m": [
+    2.0,
+    1.0
+   ],
+   "mount": "tied with rope to frame / fence",
+   "kind": "blank carrier",
+   "px": [
+    1024,
+    512
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "581dbead",
+     "url": "https://www.apsense.com/upload/images/article/20250808/1754655266-896361.jpg",
+     "image_url": "https://www.apsense.com/upload/images/article/20250808/1754655266-896361.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "flyer_loan_ngern_duan_bw.png",
+   "th": "เงินด่วน อนุมัติง่าย โทร..คุณ.. 087-0020068",
+   "en": "Photocopied loan-shark flyer 'เงินด่วน' (quick cash) taped to a pole (B&W photo)",
+   "real_size_m": [
+    0.3,
+    0.23
+   ],
+   "mount": "taped on utility pole / wall",
+   "kind": "flyer",
+   "px": [
+    512,
+    393
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "5edb6400",
+     "url": "https://www.flickr.com/photos/130414324@N05/24261745700/",
+     "image_url": "https://live.staticflickr.com/1616/24261745700_6731253ff6_b.jpg",
+     "author": "Jay Songpon Chandrananta",
+     "licence": "All rights reserved (Flickr licence 0)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "hiaphat_tier1_cardboard_handwritten.png",
+   "th": "เฮียผัด / กะเพรา ไข่ดาว 40.- / อร่อย!!",
+   "en": "Player shop tier 1: marker on a torn cardboard box flap (real cardboard scan), taped to the cart",
+   "real_size_m": [
+    0.6,
+    0.4
+   ],
+   "mount": "taped to cart / leaning on stool",
+   "kind": "player shop sign",
+   "px": [
+    1024,
+    683
+   ],
+   "alpha": true,
+   "notes": "Text: Sriracha + Itim (looped). Blank cardboard can be reused for menu price edits.",
+   "sources": [
+    {
+     "id": "ambientcg:Cardboard001",
+     "url": "https://ambientcg.com/view?id=Cardboard001",
+     "author": "ambientCG",
+     "licence": "CC0"
+    }
+   ],
+   "method": "composited: looped Thai lettering painted onto real photo carrier"
+  },
+  {
+   "file": "hiaphat_tier2_painted_metal_board.png",
+   "th": "ร้านเฮียผัด / อาหารตามสั่ง / โทร. 08x-xxx-xxxx",
+   "en": "Player shop tier 2: hand-painted lettering on an old white enamel board with rust (real photo carrier)",
+   "real_size_m": [
+    1.6,
+    0.95
+   ],
+   "mount": "hung in a steel frame on a pole / wired to the cart canopy",
+   "kind": "player shop sign",
+   "px": [
+    1024,
+    600
+   ],
+   "alpha": true,
+   "notes": "Chonburi + Sarabun (looped). Paint is worn off where the board is rusty.",
+   "sources": [
+    {
+     "id": "5799351b",
+     "url": "https://i.pinimg.com/474x/6c/3f/b3/6c3fb38bccb8084a58bf5cd6a4709792.jpg",
+     "image_url": "https://i.pinimg.com/474x/6c/3f/b3/6c3fb38bccb8084a58bf5cd6a4709792.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "composited: looped Thai lettering painted onto real photo carrier"
+  },
+  {
+   "file": "hiaphat_tier3_vinyl_banner_food_photo.png",
+   "th": "ร้านเฮียผัด / อาหารตามสั่ง / กะเพรา ข้าวผัด ไข่เจียว / เริ่มต้น 40.-",
+   "en": "Player shop tier 3: printed vinyl banner with a real CC0 krapao food photo, on a real vinyl-banner photo carrier (wrinkles + grommets)",
+   "real_size_m": [
+    2.0,
+    1.03
+   ],
+   "mount": "tied with rope to the stall frame",
+   "kind": "player shop sign",
+   "px": [
+    1280,
+    659
+   ],
+   "alpha": true,
+   "notes": "Chonburi + Sarabun (looped). Style follows real Thai tam-sang vinyl banners (banner_tamsang_paksaep_vinyl.png).",
+   "sources": [
+    {
+     "id": "581dbead",
+     "url": "https://www.apsense.com/upload/images/article/20250808/1754655266-896361.jpg",
+     "image_url": "https://www.apsense.com/upload/images/article/20250808/1754655266-896361.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    },
+    {
+     "id": "food_kaprao_cc0",
+     "url": "https://commons.wikimedia.org/wiki/File:Ka-phrao_mu_(basil_fried_pork)_with_rice_%26_egg,_Bangkok,_2019-03-31_(1).jpg",
+     "author": "Wikimedia Commons contributor",
+     "licence": "CC0"
+    }
+   ],
+   "method": "composited: looped Thai lettering painted onto real photo carrier"
+  },
+  {
+   "file": "hiaphat_tier4_lightbox_vertical.png",
+   "th": "ร้าน เฮียผัด ตามสั่ง 24 ชม.",
+   "en": "Player shop tier 4: projecting vertical light box (real light-box photo, printed face replaced)",
+   "real_size_m": [
+    0.6,
+    1.1
+   ],
+   "mount": "projecting from facade on a bracket, 2.6-3.2 m",
+   "kind": "player shop sign",
+   "px": [
+    560,
+    1024
+   ],
+   "alpha": true,
+   "notes": "Use _emissive.png as emissive mask (face only) - glows at night.",
+   "sources": [
+    {
+     "id": "c1af38ec",
+     "url": "https://i.pinimg.com/originals/20/81/0a/20810a41a772483ab85e936f56841709.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/20/81/0a/20810a41a772483ab85e936f56841709.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "composited: looped Thai lettering painted onto real photo carrier"
+  },
+  {
+   "file": "hiaphat_tier4_lightbox_vertical_emissive.png",
+   "th": "",
+   "en": "Emissive mask for hiaphat_tier4_lightbox_vertical.png (white = glowing face)",
+   "real_size_m": [
+    0.6,
+    1.1
+   ],
+   "mount": "same as the light box",
+   "kind": "emissive mask",
+   "px": [
+    560,
+    1024
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "c1af38ec",
+     "url": "https://i.pinimg.com/originals/20/81/0a/20810a41a772483ab85e936f56841709.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/originals/20/81/0a/20810a41a772483ab85e936f56841709.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "composited: looped Thai lettering painted onto real photo carrier"
+  },
+  {
+   "file": "market_arch_700rai_sattahip.png",
+   "th": "ตลาด 700 ไร่ สัตหีบ",
+   "en": "Market entrance arch banner (lit at night)",
+   "real_size_m": [
+    6.0,
+    0.8
+   ],
+   "mount": "arch over market entrance (4-5 m)",
+   "kind": "market arch sign",
+   "px": [
+    1024,
+    137
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "86d768c6",
+     "url": "https://www.flickr.com/photos/pattayapatrol/54587590937/",
+     "image_url": "https://live.staticflickr.com/65535/54587590937_b8bed30676_b.jpg",
+     "author": "Pattaya Patrol",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "menu_chicken_rice_photo_strip.png",
+   "th": "(เมนูภาพ ข้าวมันไก่ ราคา)",
+   "en": "Back-lit food-photo menu strip with prices (chicken rice stall)",
+   "real_size_m": [
+    2.0,
+    0.5
+   ],
+   "mount": "above the stall counter",
+   "kind": "menu board",
+   "px": [
+    1024,
+    256
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "989000d4",
+     "url": "https://i.pinimg.com/originals/a5/d4/72/a5d472102ce8599933eeddf26a4c6d90.jpg",
+     "image_url": "https://i.pinimg.com/originals/a5/d4/72/a5d472102ce8599933eeddf26a4c6d90.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "menu_coffee_boran_handpainted.png",
+   "th": "กาแฟโบราณ กาแฟร้อน ชาร้อน โกโก้ร้อน ชาดำเย็น โอเลี้ยง ...",
+   "en": "Hand-painted drinks menu board (old-style coffee stall)",
+   "real_size_m": [
+    1.2,
+    0.8
+   ],
+   "mount": "wall / leaning on stall",
+   "kind": "menu board",
+   "px": [
+    1024,
+    683
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "e4102264",
+     "url": "https://www.flickr.com/photos/isriya/3084176895/",
+     "image_url": "https://live.staticflickr.com/3042/3084176895_514f88d585_b.jpg",
+     "author": "Isriya Paireepairit",
+     "licence": "All rights reserved (Flickr licence 2)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_car_private_kt1063_udonthani.png",
+   "th": "กท 1063 อุดรธานี",
+   "en": "Private car plate, Udon Thani",
+   "real_size_m": [
+    0.34,
+    0.15
+   ],
+   "mount": "vehicle",
+   "kind": "licence plate",
+   "px": [
+    512,
+    226
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "a5cfd749",
+     "url": "https://commons.wikimedia.org/wiki/File%3ATargaThai_NeroSuBianco.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/45/TargaThai_NeroSuBianco.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Original uploader was YukioSanjo at it.wikipedia",
+     "licence": "CC BY-SA 3.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_car_private_kt2058_chachoengsao.png",
+   "th": "กท 2058 ฉะเชิงเทรา",
+   "en": "Private car plate (white, black letters), Chachoengsao",
+   "real_size_m": [
+    0.34,
+    0.15
+   ],
+   "mount": "vehicle front/rear",
+   "kind": "licence plate",
+   "px": [
+    512,
+    226
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "945f7f26",
+     "url": "https://commons.wikimedia.org/wiki/File%3ALicense_plate_of_Thailand_003.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/15/License_plate_of_Thailand_003.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Dickelbers",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_car_private_red_sk234_nonthaburi.png",
+   "th": "ศก 234 นนทบุรี",
+   "en": "Older private plate with red-brown letters (pre-2000s style), Nonthaburi",
+   "real_size_m": [
+    0.34,
+    0.15
+   ],
+   "mount": "vehicle",
+   "kind": "licence plate",
+   "px": [
+    512,
+    226
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "bd9b9738",
+     "url": "https://commons.wikimedia.org/wiki/File%3ARed_on_white_license_plate_Thailand.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Red_on_white_license_plate_Thailand.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Dickelbers",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_driving_school_yellow_son_bangkok.png",
+   "th": "สอน กรุงเทพมหานคร 1",
+   "en": "Yellow 'สอน' (teaching) driving-school plate, Bangkok",
+   "real_size_m": [
+    0.3,
+    0.23
+   ],
+   "mount": "driving-school car",
+   "kind": "licence plate",
+   "px": [
+    512,
+    393
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "44b34f72",
+     "url": "https://commons.wikimedia.org/wiki/File%3ATHAILAND%2C_BANGKOK_CURRENT_-MOTORCYCLE_TAXI_PLATE_%5E1_-_Flickr_-_woody1778a.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/31/THAILAND%2C_BANGKOK_CURRENT_-MOTORCYCLE_TAXI_PLATE_%5E1_-_Flickr_-_woody1778a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Jerry \"Woody\" from Edmonton, Canada",
+     "licence": "CC BY-SA 2.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_moto_1kth2933_chumphon.png",
+   "th": "1กธ ชุมพร 2933",
+   "en": "Worn motorcycle plate, Chumphon (rusty edges, dirt)",
+   "real_size_m": [
+    0.22,
+    0.165
+   ],
+   "mount": "motorbike rear",
+   "kind": "licence plate",
+   "px": [
+    512,
+    384
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "b831dc7d",
+     "url": "https://commons.wikimedia.org/wiki/File%3A1%E0%B8%81%E0%B8%90_%E0%B8%8A%E0%B8%B8%E0%B8%A1%E0%B8%9E%E0%B8%A3_2933.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/1%E0%B8%81%E0%B8%90_%E0%B8%8A%E0%B8%B8%E0%B8%A1%E0%B8%9E%E0%B8%A3_2933.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Ayakln",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_moto_khns660_rayong.png",
+   "th": "ขนษ ระยอง 660",
+   "en": "Motorcycle plate (3 lines: letters / province / number), Rayong",
+   "real_size_m": [
+    0.22,
+    0.165
+   ],
+   "mount": "motorbike rear",
+   "kind": "licence plate",
+   "px": [
+    512,
+    384
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "6976630c",
+     "url": "https://commons.wikimedia.org/wiki/File%3ATargaMotoRayong.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/TargaMotoRayong.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Original uploader was YukioSanjo at it.wikipedia",
+     "licence": "CC BY-SA 3.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_moto_phlkh772_bangkok.png",
+   "th": "พลข กรุงเทพมหานคร 772",
+   "en": "Motorcycle plate in chrome holder, Bangkok",
+   "real_size_m": [
+    0.22,
+    0.165
+   ],
+   "mount": "motorbike rear",
+   "kind": "licence plate",
+   "px": [
+    512,
+    384
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "960b2ae4",
+     "url": "https://commons.wikimedia.org/wiki/File%3AMotorcycle_plate_Thailand_772.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Motorcycle_plate_Thailand_772.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "arvind grover",
+     "licence": "CC BY-SA 2.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_pickup_green_2tr1387_bangkok.png",
+   "th": "2ฒร 1387 กรุงเทพมหานคร",
+   "en": "Green-letter plate = private pickup / van (rot kra-ba), Bangkok",
+   "real_size_m": [
+    0.34,
+    0.15
+   ],
+   "mount": "pickup truck",
+   "kind": "licence plate",
+   "px": [
+    512,
+    226
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "1f9628f5",
+     "url": "https://commons.wikimedia.org/wiki/File%3AGreen_on_white_Thailand_license_plate_01.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Green_on_white_Thailand_license_plate_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Dickelbers",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_pickup_green_bt4772_nakhonsawan.png",
+   "th": "บต 4772 นครสวรรค์",
+   "en": "Green-letter pickup plate, Nakhon Sawan",
+   "real_size_m": [
+    0.34,
+    0.15
+   ],
+   "mount": "pickup truck",
+   "kind": "licence plate",
+   "px": [
+    512,
+    226
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "8727ea0c",
+     "url": "https://commons.wikimedia.org/wiki/File%3ATargaThai_VerdeSuBianco.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/TargaThai_VerdeSuBianco.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "YukioSanjo at Italian Wikipedia",
+     "licence": "CC BY-SA 3.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_public_yellow_70-2157_udonthani.png",
+   "th": "THAILAND 42 / 70-2157 / อุดรธานี",
+   "en": "Yellow public-transport plate, Udon Thani (songthaew / provincial bus)",
+   "real_size_m": [
+    0.34,
+    0.15
+   ],
+   "mount": "vehicle",
+   "kind": "licence plate",
+   "px": [
+    512,
+    226
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "fa2a8026",
+     "url": "https://commons.wikimedia.org/wiki/File%3ALicenceplate_Thailand.JPG",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/73/Licenceplate_Thailand.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Dickelbers",
+     "licence": "CC BY-SA 3.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_taxi_yellow_31-4304_bangkok.png",
+   "th": "THAILAND 01 / 31-4304 / กรุงเทพมหานคร",
+   "en": "Yellow public-transport plate (taxi / tuk-tuk / bus), Bangkok",
+   "real_size_m": [
+    0.34,
+    0.15
+   ],
+   "mount": "taxi, tuk-tuk, songthaew",
+   "kind": "licence plate",
+   "px": [
+    512,
+    226
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "2b10666d",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABlack_on_Yellow_plate_Thailand_01.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Black_on_Yellow_plate_Thailand_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Dickelbers",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "plate_temporary_red_ph1301_bangkok.png",
+   "th": "ฝ-1301 กรุงเทพมหานคร",
+   "en": "Red temporary 'new car' dealer plate (ป้ายแดง), Bangkok",
+   "real_size_m": [
+    0.34,
+    0.15
+   ],
+   "mount": "brand-new car",
+   "kind": "licence plate",
+   "px": [
+    512,
+    226
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "3f377a0d",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABlack_on_orange_license_plate_Thailand_02.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Black_on_orange_license_plate_Thailand_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Dickelbers",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "poster_lottery_results_sheet.png",
+   "th": "ผลการออกรางวัลสลากกินแบ่งรัฐบาล ทวีทรัพย์ ล็อตโต้",
+   "en": "Printed lottery-results sheet (displayed at lottery stalls)",
+   "real_size_m": [
+    0.38,
+    0.52
+   ],
+   "mount": "pinned on stall / wall",
+   "kind": "lottery poster",
+   "px": [
+    561,
+    768
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "f7fadb4a",
+     "url": "https://i.pinimg.com/736x/cd/54/05/cd540548087c5c7cce71e3b5c3b61015.jpg",
+     "image_url": "https://i.pinimg.com/736x/cd/54/05/cd540548087c5c7cce71e3b5c3b61015.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "poster_phone_shop_film.png",
+   "th": "ติดฟิล์มไฮโดรเจลได้แล้ว! ที่ร้าน ... รองรับทุกรุ่น!",
+   "en": "Phone-shop vinyl poster (hydrogel screen film)",
+   "real_size_m": [
+    0.9,
+    0.9
+   ],
+   "mount": "wall / shop window",
+   "kind": "shop poster",
+   "px": [
+    768,
+    768
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "715e5df3",
+     "url": "https://www.flickr.com/photos/144772218@N07/51324422190/",
+     "image_url": "https://live.staticflickr.com/65535/51324422190_66c2afecce_b.jpg",
+     "author": "OMsecondhand รับซื้อมือถือให้ราคาสูง",
+     "licence": "All rights reserved (Flickr licence 0)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_7eleven_fascia_band.png",
+   "th": "7-ELEVEn",
+   "en": "7-Eleven fascia band (orange/green/red stripes + logo box), real brand per client rule",
+   "real_size_m": [
+    9.0,
+    0.96
+   ],
+   "mount": "wall above convenience-store glass front (3.0-3.6 m)",
+   "kind": "shop sign (convenience store)",
+   "px": [
+    1024,
+    109
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "cbf8023d",
+     "url": "https://www.pattayamail.com/wp-content/uploads/2021/07/Pattaya-News-001-Governor-bans-booze-after-8pm-pic-1x.png",
+     "image_url": "https://www.pattayamail.com/wp-content/uploads/2021/07/Pattaya-News-001-Governor-bans-booze-after-8pm-pic-1x.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_7eleven_fascia_dusk.png",
+   "th": "7-ELEVEn",
+   "en": "7-Eleven fascia band lit at dusk (use as emissive at night)",
+   "real_size_m": [
+    10.0,
+    0.88
+   ],
+   "mount": "wall above glass front",
+   "kind": "shop sign (convenience store)",
+   "px": [
+    1024,
+    90
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "030012da",
+     "url": "https://images.says.com/uploads/story_source/source_image/1312921/e287.jpg",
+     "image_url": "https://images.says.com/uploads/story_source/source_image/1312921/e287.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_7eleven_front_small.png",
+   "th": "7-ELEVEn",
+   "en": "Single-bay 7-Eleven fascia (logo in the middle) for a 1-shophouse-wide branch",
+   "real_size_m": [
+    4.4,
+    0.8
+   ],
+   "mount": "wall above glass front",
+   "kind": "shop sign (convenience store)",
+   "px": [
+    512,
+    93
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "ffaabedc",
+     "url": "https://ved.tomsk.ru/upload/iblock/d82/ozkfvylth2jwxlcyobwuxjp7cf9nyb0w.png",
+     "image_url": "https://ved.tomsk.ru/upload/iblock/d82/ozkfvylth2jwxlcyobwuxjp7cf9nyb0w.png",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_barber_noi_lightbox.png",
+   "th": "น้อย บาร์เบอร์",
+   "en": "Barber shop light-box sign (Noi Barber)",
+   "real_size_m": [
+    3.0,
+    0.43
+   ],
+   "mount": "wall, above shopfront (2.6-3.0 m)",
+   "kind": "shop sign (barber)",
+   "px": [
+    1024,
+    147
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "812a907a",
+     "url": "https://www.flickr.com/photos/pockethifi/48000824202/",
+     "image_url": "https://live.staticflickr.com/65535/48000824202_8bd6abda40_b.jpg",
+     "author": "Wutthichai Charoenburi",
+     "licence": "CC BY 2.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_chicken_rice_hoksuang.png",
+   "th": "นายฮกซ้วง ข้าวมันไก่",
+   "en": "Chicken-rice shop board (Nai Hok Suang Khao Man Gai)",
+   "real_size_m": [
+    1.5,
+    0.7
+   ],
+   "mount": "wall / hanging above stall",
+   "kind": "shop sign (khao man gai)",
+   "px": [
+    1024,
+    478
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "7d4e9deb",
+     "url": "https://www.flickr.com/photos/pockethifi/51949779999/",
+     "image_url": "https://live.staticflickr.com/65535/51949779999_286021e8d7_b.jpg",
+     "author": "Wutthichai Charoenburi",
+     "licence": "CC BY 2.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_chicken_rice_midnight_korat_lightbox.png",
+   "th": "มิดไนท์ไก่ตอนโคราช ไก่ต้มตุ๋นยาจีน รับสั่งจองทำไก่ในงานพิธีต่างๆ",
+   "en": "Night chicken-rice stall light box (Midnight Kai Ton Korat) with rooster logo",
+   "real_size_m": [
+    2.6,
+    0.9
+   ],
+   "mount": "hanging above stall / shopfront",
+   "kind": "shop sign (khao man gai)",
+   "px": [
+    1024,
+    354
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "989000d4",
+     "url": "https://i.pinimg.com/originals/a5/d4/72/a5d472102ce8599933eeddf26a4c6d90.jpg",
+     "image_url": "https://i.pinimg.com/originals/a5/d4/72/a5d472102ce8599933eeddf26a4c6d90.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_clinic_ent_skin_vd.png",
+   "th": "คลีนิค ตา หู คอ จมูก / คลีนิค โรคผิวหนัง ภูมิแพ้ / V.D. CLINIC",
+   "en": "Hanging clinic sign under a footpath canopy (ENT, skin & allergy, V.D. clinic) - Bangkok",
+   "real_size_m": [
+    2.4,
+    1.9
+   ],
+   "mount": "hanging under canopy / projecting box",
+   "kind": "shop sign (clinic)",
+   "px": [
+    1024,
+    811
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "49622a9c",
+     "url": "https://www.flickr.com/search/?text=Thai%20V.D.%20Clinic",
+     "image_url": "https://live.staticflickr.com/137/366738551_3bba81419d_b.jpg",
+     "author": "Flickr user",
+     "licence": "CC BY 2.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_coffee_boran_green_blue.png",
+   "th": "กาแฟโบราณ โอเลี้ยง กาแฟเย็น ชาเย็น ชาดำเย็น นมเย็น น้ำหวาน",
+   "en": "Old-style Thai coffee sign (kafae boran) sponsored by a coffee brand",
+   "real_size_m": [
+    3.0,
+    1.5
+   ],
+   "mount": "wall above stall / standing",
+   "kind": "shop sign (coffee)",
+   "px": [
+    1024,
+    512
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "4c2270fc",
+     "url": "https://www.flickr.com/photos/isriya/3085018692/",
+     "image_url": "https://live.staticflickr.com/3080/3085018692_183380c288_b.jpg",
+     "author": "Isriya Paireepairit",
+     "licence": "All rights reserved (Flickr licence 2)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_dental_clinic_tooth.png",
+   "th": "DENTAL CLINIC ทำฟัน-ใส่ฟัน ถอนฟัน-อุดฟัน",
+   "en": "Dental-clinic box sign with cartoon tooth (Ratchathewi, Bangkok); left part of a longer sign, rectified from a steep angle",
+   "real_size_m": [
+    1.5,
+    1.0
+   ],
+   "mount": "projecting box sign / wall",
+   "kind": "shop sign (clinic)",
+   "px": [
+    512,
+    341
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "45f709d3",
+     "url": "https://www.flickr.com/photos/dgmckelvey/7053096821/",
+     "image_url": "https://live.staticflickr.com/7279/7053096821_8294cbac0e_b.jpg",
+     "author": "David McKelvey",
+     "licence": "CC BY 2.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_gold_jinhuaheng_neon_white.png",
+   "th": "ห้างขายทอง จินฮั้วเฮง (neon)",
+   "en": "White gold-shop sign with red neon-tube Thai letters",
+   "real_size_m": [
+    3.2,
+    1.6
+   ],
+   "mount": "on roof scaffold / above facade",
+   "kind": "shop sign (gold shop)",
+   "px": [
+    1024,
+    512
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "7b1b2eb6",
+     "url": "https://commons.wikimedia.org/wiki/File%3A2016_Bangkok%2C_Dystrykt_Samphanthawong%2C_Ulica_Yaowarat_%2807%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/11/2016_Bangkok%2C_Dystrykt_Samphanthawong%2C_Ulica_Yaowarat_%2807%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Marcin Konsek",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_gold_vertical_green_white_cn.png",
+   "th": "和成興大金行",
+   "en": "Vertical gold-shop sign, green/white/orange boxes with red characters (Yaowarat)",
+   "real_size_m": [
+    1.0,
+    5.6
+   ],
+   "mount": "vertical, projecting from facade",
+   "kind": "shop sign (gold shop)",
+   "px": [
+    183,
+    1024
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "7b1b2eb6",
+     "url": "https://commons.wikimedia.org/wiki/File%3A2016_Bangkok%2C_Dystrykt_Samphanthawong%2C_Ulica_Yaowarat_%2807%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/11/2016_Bangkok%2C_Dystrykt_Samphanthawong%2C_Ulica_Yaowarat_%2807%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Marcin Konsek",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_gold_yulongkimkee_horizontal.png",
+   "th": "ห้างค้าทอง ยู่หลงกิมกี่",
+   "en": "Yaowarat gold-shop sign (red with gold letters, scroll frame) — real ร้านทอง sign",
+   "real_size_m": [
+    4.0,
+    1.45
+   ],
+   "mount": "hanging on steel scaffold frame above shop / projecting from facade",
+   "kind": "shop sign (gold shop)",
+   "px": [
+    1024,
+    371
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "d68602c2",
+     "url": "https://commons.wikimedia.org/wiki/File%3A2016_Bangkok%2C_Dystrykt_Samphanthawong%2C_Ulica_Yaowarat_%2808%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/84/2016_Bangkok%2C_Dystrykt_Samphanthawong%2C_Ulica_Yaowarat_%2808%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Marcin Konsek",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_gold_yulongkimkee_vertical_cn.png",
+   "th": "裕隆金記大金行 (ห้างทอง ยู่หลงกิมกี่)",
+   "en": "Tall vertical Chinese gold-shop sign, 7 stacked red boxes with gold characters",
+   "real_size_m": [
+    1.2,
+    6.3
+   ],
+   "mount": "vertical, projecting from facade on scaffold (3-4 storeys)",
+   "kind": "shop sign (gold shop)",
+   "px": [
+    293,
+    1536
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "d68602c2",
+     "url": "https://commons.wikimedia.org/wiki/File%3A2016_Bangkok%2C_Dystrykt_Samphanthawong%2C_Ulica_Yaowarat_%2808%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/84/2016_Bangkok%2C_Dystrykt_Samphanthawong%2C_Ulica_Yaowarat_%2808%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Marcin Konsek",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_hardware_leevittaya.png",
+   "th": "ลีวิทยาฮาร์ดแวร์ LEE VITTAYA HARDWARE",
+   "en": "Hardware shop sign band (gold letters on dark)",
+   "real_size_m": [
+    4.0,
+    0.7
+   ],
+   "mount": "wall above shopfront",
+   "kind": "shop sign (hardware)",
+   "px": [
+    1024,
+    179
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "82d181ad",
+     "url": "https://lh5.googleusercontent.com/p/AF1QipPVRezM7m2J81kOTzpGl057unVius1RvSpQkdMH=w800-h1060-k-no",
+     "image_url": "https://lh5.googleusercontent.com/p/AF1QipPVRezM7m2J81kOTzpGl057unVius1RvSpQkdMH=w800-h1060-k-no",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_makro_facade_sign.png",
+   "th": "makro แม็คโคร",
+   "en": "Makro wholesale store red facade with logo (real brand, per client rule)",
+   "real_size_m": [
+    24.0,
+    7.0
+   ],
+   "mount": "warehouse facade",
+   "kind": "wholesale store facade",
+   "px": [
+    1024,
+    299
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "86ebc543",
+     "url": "https://thailandru.ru/oc-content/uploads/1/504.jpg",
+     "image_url": "https://thailandru.ru/oc-content/uploads/1/504.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_massage_bosque_band.png",
+   "th": "BOSQUE THAI MASSAGE",
+   "en": "Thai massage shop sign band (green, serif lettering)",
+   "real_size_m": [
+    4.5,
+    0.6
+   ],
+   "mount": "wall above glass front",
+   "kind": "shop sign (massage)",
+   "px": [
+    1024,
+    137
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "a21fc15f",
+     "url": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/06/ff/0d/ba/bosque-thai-massage.jpg?w=1200&h=1200&s=1",
+     "image_url": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/06/ff/0d/ba/bosque-thai-massage.jpg?w=1200&h=1200&s=1",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_massage_nuat_red.png",
+   "th": "นวด Massage",
+   "en": "Red 'นวด / Massage' sign board (bold white Thai)",
+   "real_size_m": [
+    0.9,
+    1.0
+   ],
+   "mount": "wall / standing A-board",
+   "kind": "shop sign (massage)",
+   "px": [
+    691,
+    768
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "4d5887a3",
+     "url": "https://commons.wikimedia.org/wiki/File:%E0%B8%99%E0%B8%A7%E0%B8%94.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a1/%E0%B8%99%E0%B8%A7%E0%B8%94.jpg",
+     "author": "Wikimedia Commons user",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_noodle_neon_logo.png",
+   "th": "(นีออนรูปตัวอักษรไทย) SOOTHR",
+   "en": "Red neon-tube Thai-letter logo sign on black board (noodle bar), emissive at night",
+   "real_size_m": [
+    0.8,
+    0.85
+   ],
+   "mount": "wall / window",
+   "kind": "neon sign",
+   "px": [
+    723,
+    768
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "46fee306",
+     "url": "https://i.pinimg.com/originals/c7/01/8e/c7018e5b49dcf2e511f92a12f51168fb.png?nii=t",
+     "image_url": "https://i.pinimg.com/originals/c7/01/8e/c7018e5b49dcf2e511f92a12f51168fb.png?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_noodle_paord_night.png",
+   "th": "ก๋วยเตี๋ยว ป้าอ๊อด PA-ORD NOODLE",
+   "en": "Noodle shop sign at night (blue bowl 'ก๋วยเตี๋ยว' logo + orange letters), emissive",
+   "real_size_m": [
+    3.4,
+    1.1
+   ],
+   "mount": "wall above shopfront",
+   "kind": "shop sign (noodle)",
+   "px": [
+    1024,
+    331
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "f2f03caa",
+     "url": "https://live.staticflickr.com/2735/4370733835_425b1c21c7_b.jpg",
+     "image_url": "https://live.staticflickr.com/2735/4370733835_425b1c21c7_b.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_pharmacy_ruamphesatchakon.png",
+   "th": "ร้านยา รวมเภสัชกร",
+   "en": "Pharmacy sign band (green, Thai)",
+   "real_size_m": [
+    4.0,
+    1.0
+   ],
+   "mount": "wall above shopfront",
+   "kind": "shop sign (pharmacy)",
+   "px": [
+    1024,
+    256
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "15d588cd",
+     "url": "https://lh3.googleusercontent.com/p/AF1QipPO04cYT-KzEBPXwb5gO4Eqs2-U8C9DVqog1lJr=w1220-h920-k-no",
+     "image_url": "https://lh3.googleusercontent.com/p/AF1QipPO04cYT-KzEBPXwb5gO4Eqs2-U8C9DVqog1lJr=w1220-h920-k-no",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_pharmacy_world_lightbox.png",
+   "th": "Pharmacy 药店 ฟาร์มาซีเวิลด์",
+   "en": "Trilingual pharmacy light box (Thai/English/Chinese)",
+   "real_size_m": [
+    1.6,
+    0.9
+   ],
+   "mount": "projecting from facade",
+   "kind": "shop sign (pharmacy)",
+   "px": [
+    768,
+    432
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "dfa9202c",
+     "url": "https://www.flickr.com/photos/cowyeow/50003778242/",
+     "image_url": "https://live.staticflickr.com/65535/50003778242_264820db77_b.jpg",
+     "author": "cowyeow",
+     "licence": "All rights reserved (Flickr licence 0)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "shop_tamsang_pongpaeng_board.png",
+   "th": "ครัวป่องแป้ง อาหารตามสั่ง โทร.086-9717105 รับทำข้าวกล่อง",
+   "en": "Roadside made-to-order food sign (Krua Pong Paeng, aharn tam sang) with phone",
+   "real_size_m": [
+    1.5,
+    1.0
+   ],
+   "mount": "standing on post at roadside",
+   "kind": "shop sign (tam sang)",
+   "px": [
+    1024,
+    683
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "bd1b5414",
+     "url": "https://www.flickr.com/photos/eddingrid/51880304653/",
+     "image_url": "https://live.staticflickr.com/65535/51880304653_d2df2bb08e_b.jpg",
+     "author": "SierraSunrise",
+     "licence": "All rights reserved (Flickr licence 0)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "sign_laundry_service_price.png",
+   "th": "LAUNDRY SERVICE 1 KG = 30 B / IRON SERVICE 1 piece = 20 B",
+   "en": "Hand-made laundry price sign (low-res source; use small)",
+   "real_size_m": [
+    0.5,
+    0.85
+   ],
+   "mount": "hanging at shop entrance",
+   "kind": "shop sign (laundry)",
+   "px": [
+    226,
+    384
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "3a91b009",
+     "url": "https://media.tripcanvas.co/th/2016/08/9-1-laundry-via-langeasy.jpg",
+     "image_url": "https://media.tripcanvas.co/th/2016/08/9-1-laundry-via-langeasy.jpg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "sign_no_dog_poop_no_litter.png",
+   "th": "ห้ามนำสุนัขมาถ่ายบริเวณนี้",
+   "en": "Warning sign: do not let dogs poop here (crossed-dog symbol)",
+   "real_size_m": [
+    0.45,
+    0.7
+   ],
+   "mount": "pole / wall",
+   "kind": "warning sign",
+   "px": [
+    494,
+    768
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "01b6cd71",
+     "url": "https://i.pinimg.com/736x/4b/84/6d/4b846de5f30deb7f9868e0cf5d30795e.jpg?nii=t",
+     "image_url": "https://i.pinimg.com/736x/4b/84/6d/4b846de5f30deb7f9868e0cf5d30795e.jpg?nii=t",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "sign_room_for_rent_lightbox.png",
+   "th": "มีห้องให้เช่า รายวัน รายเดือน ROOM FOR RENT A DAY, A MONTH 02-2811059",
+   "en": "Room-for-rent light box (daily / monthly) with phone number and arrow",
+   "real_size_m": [
+    1.6,
+    0.8
+   ],
+   "mount": "projecting from wall / pole",
+   "kind": "rent sign",
+   "px": [
+    1024,
+    512
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "32a1513d",
+     "url": "https://www.flickr.com/photos/pacifico/10745769764/",
+     "image_url": "https://live.staticflickr.com/3833/10745769764_5ac11a1f6b_b.jpg",
+     "author": "Etienne Girardet",
+     "licence": "CC BY-SA 2.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "sign_winmoto_price_list.png",
+   "th": "สุขุมวิท 53/1 อัตราค่าโดยสาร ทองหล่อ 1-7 ราคา 10 บาท ...",
+   "en": "Motorcycle-taxi stand fare list (Sukhumvit 53/1), crumpled vinyl",
+   "real_size_m": [
+    0.8,
+    1.2
+   ],
+   "mount": "wall / pole at win stand",
+   "kind": "win price list",
+   "px": [
+    683,
+    1024
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "cbd0e81d",
+     "url": "https://m5.paperblog.com/i/195/1957617/getting-a-motorbike-taxi-in-bangkok-complete--L-lVG8Ef.jpeg",
+     "image_url": "https://m5.paperblog.com/i/195/1957617/getting-a-motorbike-taxi-in-bangkok-complete--L-lVG8Ef.jpeg",
+     "author": "",
+     "licence": "unknown (web image, found via yandex)"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "street_sign_directional_rama1_green.png",
+   "th": "ถนนพระราม 1 / ถนนอังรีดูนังต์ / แยกราชประสงค์",
+   "en": "Green bilingual direction sign (Rama 1 Rd / Henri Dunant Rd / Ratchaprasong Junction)",
+   "real_size_m": [
+    2.0,
+    1.5
+   ],
+   "mount": "standing on two posts at kerb",
+   "kind": "direction sign",
+   "px": [
+    1024,
+    768
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "6b241ced",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABilingual_road_sign_in_Bangkok.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Bilingual_road_sign_in_Bangkok.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Christophe95",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "street_sign_district_pathumwan_green.png",
+   "th": "พื้นที่เขต ปทุมวัน Pathum Wan District Area",
+   "en": "Green arrow-shaped BMA district sign (Pathum Wan District)",
+   "real_size_m": [
+    1.2,
+    0.4
+   ],
+   "mount": "pole (fingerpost, 2.5-3 m)",
+   "kind": "district sign",
+   "px": [
+    1024,
+    341
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "0a51c881",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABang_Rak%E2%80%93Pathum_Wan.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Bang_Rak%E2%80%93Pathum_Wan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Phoebus 28",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "street_sign_maharaj3_ornate.png",
+   "th": "มหาราช 3 Maharaj Rd. เทศบาลเมืองกระบี่",
+   "en": "Ornate provincial street sign (Maharaj Rd 3, Krabi municipality)",
+   "real_size_m": [
+    1.5,
+    0.72
+   ],
+   "mount": "pole (gold post with elephant finial)",
+   "kind": "street-name sign",
+   "px": [
+    1024,
+    492
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "1fcaf8b0",
+     "url": "https://commons.wikimedia.org/wiki/File%3AKrabi%2C_Thailand_April_2025_Maharaj_Road_sign.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Krabi%2C_Thailand_April_2025_Maharaj_Road_sign.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Sharon Hahn Darlin",
+     "licence": "CC BY 2.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "street_sign_soi_ekkachai46_blue.png",
+   "th": "ซอยเอกชัย 46 แยก (6) (สังขสิทธิ์) สนับสนุนโดย ...",
+   "en": "Blue soi name sign (Soi Ekkachai 46, branch 6) donated by a local politician",
+   "real_size_m": [
+    1.2,
+    0.6
+   ],
+   "mount": "pole / wall",
+   "kind": "soi sign",
+   "px": [
+    1024,
+    512
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "06a6f5bf",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABangBon_Bangkok_28.10.2017_%2830%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/BangBon_Bangkok_28.10.2017_%2830%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Tvcccp",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "street_sign_soi_gate_masjid_banglaung.png",
+   "th": "มัสยิด บางหลวง ชุมชนกุฎีขาว",
+   "en": "White ornamental soi/community gate sign (Bang Luang Mosque, Kudi Khao community)",
+   "real_size_m": [
+    3.6,
+    1.8
+   ],
+   "mount": "arch over soi entrance on two pillars",
+   "kind": "soi gate sign",
+   "px": [
+    1024,
+    512
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "e3aaecf7",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABang_Luang_Mosque_-_2017-02-25_%28001%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/09/Bang_Luang_Mosque_-_2017-02-25_%28001%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Iudexvivorum",
+     "licence": "CC0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "street_sign_thaniya_blue.png",
+   "th": "ถนนธนิยะ Thaniya Rd. (ถนนส่วนบุคคล)",
+   "en": "Private-road street sign (Thaniya Rd), ornate black frame",
+   "real_size_m": [
+    1.5,
+    0.6
+   ],
+   "mount": "pole (ornate black post)",
+   "kind": "street-name sign",
+   "px": [
+    1024,
+    410
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "165be108",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABangkok_-_road_sign_of_Thaniya_Road_%28Soi_Thaniya%29_%282026%29_01.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Bangkok_-_road_sign_of_Thaniya_Road_%28Soi_Thaniya%29_%282026%29_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Chainwit.",
+     "licence": "CC BY 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "street_sign_yaowarat_blue.png",
+   "th": "ถนนเยาวราช THANON YAOWARAT CHINA TOWN",
+   "en": "Yaowarat Road (Chinatown) street-name sign",
+   "real_size_m": [
+    1.6,
+    0.5
+   ],
+   "mount": "pole (ornate cast post, 2.8-3.2 m)",
+   "kind": "street-name sign",
+   "px": [
+    1024,
+    320
+   ],
+   "alpha": false,
+   "sources": [
+    {
+     "id": "d4357d2f",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABkkthyaowarat060928a.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Bkkthyaowarat060928a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Hdamm",
+     "licence": "CC BY-SA 3.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "traffic_no_parking_round.png",
+   "th": "(ห้ามจอดรถ)",
+   "en": "Thai 'no parking' regulatory sign (blue disc, red ring + slash)",
+   "real_size_m": [
+    0.6,
+    0.6
+   ],
+   "mount": "pole (bottom edge ~2.0-2.2 m)",
+   "kind": "traffic sign",
+   "px": [
+    512,
+    512
+   ],
+   "alpha": true,
+   "notes": "Mount traffic_no_parking_timeplate.png directly underneath on the same pole.",
+   "sources": [
+    {
+     "id": "a0cd82f7",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABangBon_Bangkok_28.10.2017_%2829%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/BangBon_Bangkok_28.10.2017_%2829%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Tvcccp",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "traffic_no_parking_timeplate.png",
+   "th": "06.00-09.00 16.00-20.00 เว้นวันอาทิตย์",
+   "en": "Supplementary plate: no parking 06-09 & 16-20, except Sundays (both directions arrow)",
+   "real_size_m": [
+    0.6,
+    0.45
+   ],
+   "mount": "pole, under the no-parking disc",
+   "kind": "traffic sign plate",
+   "px": [
+    512,
+    384
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "a0cd82f7",
+     "url": "https://commons.wikimedia.org/wiki/File%3ABangBon_Bangkok_28.10.2017_%2829%29.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/BangBon_Bangkok_28.10.2017_%2829%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "author": "Tvcccp",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  },
+  {
+   "file": "traffic_no_uturn_round.png",
+   "th": "(ห้ามกลับรถ)",
+   "en": "Thai 'no U-turn' regulatory sign (white disc, red ring + slash) - small source, use at distance",
+   "real_size_m": [
+    0.6,
+    0.6
+   ],
+   "mount": "pole on median, bottom ~2.0 m",
+   "kind": "traffic sign",
+   "px": [
+    256,
+    256
+   ],
+   "alpha": true,
+   "sources": [
+    {
+     "id": "65d5ce1c",
+     "url": "https://commons.wikimedia.org/wiki/File:Thailand_No_U-Turn_Sign.jpg",
+     "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Thailand_No_U-Turn_Sign.jpg",
+     "author": "Wikimedia Commons user",
+     "licence": "CC BY-SA 4.0"
+    }
+   ],
+   "method": "real photo: cropped, perspective-rectified, white-balanced, sharpened"
+  }
+ ]
+}

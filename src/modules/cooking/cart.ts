@@ -390,16 +390,17 @@ export function cartView(game: Game, fx: CookFX) {
           roar.setPos(bp);
           roar.setVolume(0.25 + heat * 0.9, 0.2);
           roar.setPitch(0.85 + heat * 0.3, 0.2);
-          if (!hiss) hiss = Sound.loop(pickKey(['gas_hiss_loop', 'gas_hiss']), { pos: bp, vol: 0.15 });
-          hiss.setPos(bp);
+          if (!hiss && Sound.has('gas_hiss_loop')) hiss = Sound.loop('gas_hiss_loop', { pos: bp, vol: 0.15 });
+          hiss?.setPos(bp);
         } else {
           roar?.stop(0.4); roar = null;
           hiss?.stop(0.3); hiss = null;
         }
-        if (speed > 0.25 && camD < 25) {
-          if (!roll) roll = Sound.loop(pickKey(['cart_roll_loop', 'cart_rattle_loop', 'wheel_roll_loop']), { pos: root.position, vol: 0 });
+        const rollKey = ['cart_roll_loop', 'cart_rattle_loop', 'wheel_roll_loop', 'table_drag'].find((k) => Sound.has(k));
+        if (speed > 0.25 && camD < 25 && rollKey) {
+          if (!roll) roll = Sound.loop(rollKey, { pos: root.position, vol: 0, pitch: 0.8 });
           roll.setPos(root.position);
-          roll.setVolume(Math.min(1, speed / 2) * 0.8, 0.15);
+          roll.setVolume(Math.min(1, speed / 2) * 0.55, 0.15);
         } else if (roll) { roll.stop(0.3); roll = null; }
       },
       dispose: () => {

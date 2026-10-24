@@ -99,6 +99,8 @@ function paintEntry(e: AtlasEntry) {
     repaintFace(cv, e.look, e.variant, onFace);
   } else cv = paintAtlas(e.look, e.size, e.variant, onFace);
   e.cv = cv;
+  // the GPU texture was allocated at the placeholder size (immutable storage) → re-create it
+  e.tex.dispose();
   e.tex.image = cv;
   e.tex.needsUpdate = true;
   e.painted = true;
