@@ -2,6 +2,7 @@ import { defineModule } from '../../game/contracts';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import { Sound } from '../../core/audio';
+import { params } from '../../core/util';
 import { Sparkles, SweatDrops, updateDecals, clearDecals } from './fx';
 import { installProgress } from './progress';
 import { installActions, updateRadial, closeRadial, radialOpen } from './actions';
@@ -11,8 +12,6 @@ import { installThink, ThinkCtl } from './think';
 import { installSleep, recipesFor } from './sleep';
 import { installSave } from './save';
 import { buildMoney } from './money';
-import { FlyText } from './flytext';
-import { F } from '../../core/fonts';
 import { SKILLS, SKILL_IDS, levels } from './skills';
 import { hostTimers, localTimers, READING_MODES, anim } from './state';
 
@@ -74,14 +73,20 @@ export default defineModule({
     sleep = installSleep(game, sparks, () => saveApi.save());
     (game as any).social = {
       skills: SKILLS, skillIds: SKILL_IDS, levels: (pl: Ent) => levels(pl), money: (amount: number) => buildMoney(amount),
-      recipesFor: (day: number) => recipesFor(game, day), think: () => think.active, _thinkDebug: () => (think as any).debug, _FlyText: FlyText, _F: F,
+      recipesFor: (day: number) => recipesFor(game, day), think: () => think.active, _thinkDebug: () => (think as any).debug,
     };
+    // ?continue → load the auto-save as soon as we host (QA / until the menu wires "เล่นต่อ")
+    if (params.has('continue')) {
+      let done = false;
+      game.events.on('scene:entered', (name: string) => { if (done || name !== 'world' || !game.isHost) return; done = true; saveApi.load(); });
+    }
     game.events.on('world:exit', () => { think.dispose(); sleep.dispose(); closeRadial(); clearDecals(); localTimers.clear(); });
   },
   buildWorld(game) {
     game.scene?.add(sparks.points);
     game.scene?.add(sweat.group);
     sleep.buildWorld();
+    setTimeout(() => { try { think.prewarm(); } catch {} }, 4000);
     if (game.isHost) {
       const g = game.g;
       const day = g.day ?? 1;

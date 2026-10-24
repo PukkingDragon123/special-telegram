@@ -353,6 +353,12 @@ vec3 wPerturb(vec3 eye_pos, vec3 N, vec2 uv, vec3 mapN, float faceDir) {
 /** vertex injection shared by world/cut materials */
 function injectWorldVertex(shader: any) {
   shader.vertexShader = shader.vertexShader
+    .replace('#include <begin_vertex>', `#include <begin_vertex>
+if (aExtra.y < -0.5) {
+  // thin cable: keep it at least ~1 px wide far away (otherwise it breaks into dashes)
+  vec3 wcp = (modelMatrix * vec4(transformed, 1.0)).xyz;
+  transformed += normalize(objectNormal) * max(0.0, distance(cameraPosition, wcp) * 0.00045 - 0.007);
+}`)
     .replace('#include <common>', `#include <common>
 attribute vec4 aExtra;
 varying vec2 vUvT;

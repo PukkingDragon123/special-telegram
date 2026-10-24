@@ -149,7 +149,7 @@ export function installSleep(game: Game, sparks: Sparkles, save: () => void) {
     data: () => ({ v: Math.floor(Math.random() * 3) }),
     build: (e) => buildFolded(e.data?.v ?? 0),
     label: (e) => tl(`${VAR_TH[(e.data?.v ?? 0) % 3]} (ปูนอน)`, 'cardboard (sleep on it)'),
-    hold: { pos: [0, -0.08, -0.05], rot: [0.9, -0.4, 0.1], scale: 0.6 },
+    hold: { pos: [0.04, -0.1, -0.08], rot: [1.1, -0.5, 0.15], scale: 0.32 },
   });
   game.items.define({
     kind: 'cardboard_bed', name: tl('ที่นอนลังกระดาษ', 'cardboard bed'), weight: 0.7, fixed: true, noPickup: true, tags: ['bed', 'cardboard'],

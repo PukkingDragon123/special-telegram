@@ -288,7 +288,7 @@ class SkillTree {
       const root = new THREE.Group();
       const pos = nodePos(s);
       root.position.copy(pos);
-      const icon = normalize(buildIcon(game, s.icon), s.branch === 'life' ? 0.2 : 0.24);
+      const icon = normalize(buildIcon(game, s.icon), s.branch === 'life' ? 0.22 : 0.27);
       icon.traverse((o: any) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; o.material = Array.isArray(o.material) ? o.material.map((m: any) => m.clone()) : o.material.clone(); } });
       const glow = dreamGlow(0.5, 0.5, 0xffd88a, false);
       glow.position.z = -0.05;
@@ -361,12 +361,12 @@ class SkillTree {
       if (old && old.key === key) continue;
       if (old) { old.ft.dispose(); this.labels.splice(this.labels.indexOf(old), 1); }
       const ft = new FlyText([
-        { text: `${BRANCH_NAME[b].th}  Lv.${p.lv}`, style: { font: F.bubbly, size: 44, weight: 700, color: '#4a2f14', stroke: '#fffaf0', strokeWidth: 3 } },
-        { text: p.lv >= 15 ? 'MAX' : `${p.cur}/${p.need} xp`, style: { font: F.body, size: 26, weight: 700, color: '#6a5240', stroke: '#fffaf0', strokeWidth: 2 } },
+        { text: `${BRANCH_NAME[b].th}  Lv.${p.lv}`, style: { font: F.bubbly, size: 44, weight: 700, color: '#4a2f14' } },
+        { text: p.lv >= 15 ? 'MAX' : `${p.cur}/${p.need} xp`, style: { font: F.body, size: 26, weight: 700, color: '#6a5240' } },
       ], { px: 0.0021, stagger: 0.02, depthTest: false });
       const tip = nodePos(SKILLS.find((s) => s.branch === b && s.tier === 4)!);
       const ang = BR_ANG[b as Exclude<Branch, 'life'>];
-      ft.mesh.position.set(tip.x * 0.96, tip.y + (Math.abs(ang) > 1.5 ? -0.2 : 0.2), 0.36);
+      ft.mesh.position.set(tip.x * 0.98, tip.y - 0.21, 0.36);
       ft.t = -0.9 - BRANCHES.indexOf(b as any) * 0.12;
       this.group.add(ft.mesh);
       this.labels.push({ ft, key, br: b });
@@ -399,10 +399,10 @@ class SkillTree {
       const status = st.st === 'owned' ? 'ปลดแล้ว ✓' : st.st === 'ready' ? `คลิกเพื่อปลด · ใช้ ${n.s.cost} แต้ม (มี ${me.sp ?? 0})` : st.why?.th ?? '';
       const key = `node:${n.s.id}:${st.st}:${me.sp}`;
       this.info.set(key, () => new FlyText([
-        { text: n.s.name.th, style: { font: F.bubbly, size: 66, weight: 700, color: '#2e1a0c', stroke: '#fffaf0', strokeWidth: 4, maxWidth: 1500 } },
-        { text: n.s.desc.th, style: { font: F.ui, size: 36, weight: 600, color: '#3a2618', stroke: '#fffaf0', strokeWidth: 3, maxWidth: 1300 } },
-        { text: `${n.s.name.en} — ${n.s.desc.en}`, style: { font: F.body, size: 25, weight: 600, color: '#5a4636', stroke: '#fffaf0', strokeWidth: 2, maxWidth: 1400 } },
-        { text: status, style: { font: F.ui, size: 30, weight: 700, color: st.st === 'ready' ? '#a85a00' : st.st === 'owned' ? '#2f6e22' : '#6a4a7a', stroke: '#fffaf0', strokeWidth: 3 } },
+        { text: n.s.name.th, style: { font: F.bubbly, size: 66, weight: 700, color: '#2e1a0c', maxWidth: 1500 } },
+        { text: n.s.desc.th, style: { font: F.ui, size: 36, weight: 600, color: '#3a2618', maxWidth: 1300 } },
+        { text: `${n.s.name.en} — ${n.s.desc.en}`, style: { font: F.body, size: 25, weight: 600, color: '#5a4636', maxWidth: 1400 } },
+        { text: status, style: { font: F.ui, size: 30, weight: 700, color: st.st === 'ready' ? '#a85a00' : st.st === 'owned' ? '#2f6e22' : '#6a4a7a' } },
       ], { px: 0.0021, depthTest: false, stagger: 0.012, dur: 0.45 }));
       return;
     }
@@ -412,9 +412,9 @@ class SkillTree {
       const th = ths[this.thoughtIdx % ths.length];
       const key = `thought:${this.thoughtIdx}:${me.sp ?? 0}`;
       this.info.set(key, () => new FlyText([
-        { text: th.th, style: { font: F.hand, size: 56, weight: 400, color: '#33220f', stroke: '#fffaf0', strokeWidth: 3, maxWidth: 1400 } },
-        ...(th.en ? [{ text: th.en, style: { font: F.body, size: 25, weight: 600, color: '#5e4a3a', stroke: '#fffaf0', strokeWidth: 2 } }] : []),
-        { text: `แต้มสกิล ${me.sp ?? 0} แต้ม · เลเวลรวม ${totalLevel(me)}`, style: { font: F.ui, size: 32, weight: 700, color: (me.sp ?? 0) > 0 ? '#a85a00' : '#5e4a3a', stroke: '#fffaf0', strokeWidth: 3 } },
+        { text: th.th, style: { font: F.hand, size: 56, weight: 400, color: '#33220f', maxWidth: 1400 } },
+        ...(th.en ? [{ text: th.en, style: { font: F.body, size: 25, weight: 600, color: '#5e4a3a' } }] : []),
+        { text: `แต้มสกิล ${me.sp ?? 0} แต้ม · เลเวลรวม ${totalLevel(me)}`, style: { font: F.ui, size: 32, weight: 700, color: (me.sp ?? 0) > 0 ? '#a85a00' : '#5e4a3a' } },
       ], { px: 0.0021, depthTest: false, stagger: 0.016 }));
     }
   }
@@ -522,17 +522,31 @@ class RemoteCloud {
 
 // ------------------------------------------------------------------ controller
 
+const CAM_DIST = 3.35, CAM_UP = 0.55;
+const BLOCK = G.STATIC | G.ITEM | G.VEHICLE;
+/** free distance from the thinker's face toward a camera direction (also checks toward the cloud) */
+function clearance(game: Game, head: THREE.Vector3, a: number) {
+  const face = head.clone().add(new THREE.Vector3(0, -0.15, 0));
+  const cam = head.clone().add(new THREE.Vector3(-Math.sin(a) * CAM_DIST, CAM_UP, -Math.cos(a) * CAM_DIST));
+  let worst = 1;
+  for (const target of [face, head.clone().add(new THREE.Vector3(0, CLOUD_UP, 0))]) {
+    const dir = cam.clone().sub(target);
+    const L = dir.length();
+    dir.normalize();
+    const hit = game.physics?.raycast(target, dir, L, BLOCK);
+    if (hit) worst = Math.min(worst, hit.toi / L);
+  }
+  return worst;
+}
 /** yaw (camera-direction convention) of the freest direction around the thinker, preferring the front-side */
-function pickCamDir(game: Game, look: THREE.Vector3, yaw: number): number {
-  const tries = [0.35, -0.35, 0.8, -0.8, 1.3, -1.3, 1.9, -1.9, 2.5, -2.5, Math.PI];
-  let best = yaw + 0.35, bestD = -1;
+function pickCamDir(game: Game, head: THREE.Vector3, yaw: number): number {
+  const tries = [0.35, -0.35, 0.75, -0.75, 0.05, 1.2, -1.2, 1.7, -1.7, 2.3, -2.3, Math.PI];
+  let best = yaw + 0.35, bestK = -1;
   for (const o of tries) {
     const a = yaw + o;
-    const dir = new THREE.Vector3(-Math.sin(a), 0.14, -Math.cos(a)).normalize();
-    const hit = game.physics?.raycast(look, dir, 4.6, G.STATIC);
-    const d = hit ? hit.toi : 4.6;
-    if (d >= 4.2) return a;
-    if (d > bestD) { bestD = d; best = a; }
+    const k = clearance(game, head, a);
+    if (k >= 0.999) return a;
+    if (k > bestK) { bestK = k; best = a; }
   }
   return best;
 }
@@ -618,6 +632,19 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
   }
 
   return {
+    /** compile the cloud / tree shaders ahead of the first Tab (avoids a hitch) */
+    prewarm() {
+      const r: any = game.engine.renderer;
+      if (!game.scene || !r?.compileAsync) return;
+      const me = game.me;
+      if (!me) return;
+      try {
+        const tree = new SkillTree(game, me);
+        tree.group.position.set(0, -500, 0);
+        game.scene.add(tree.group);
+        r.compileAsync(tree.group, game.camera, game.scene).catch(() => {}).finally(() => tree.dispose());
+      } catch (e) { console.warn('[social] prewarm failed', e); }
+    },
     get active() { return !!local && !local.leaving; },
     get debug() { return local ? { t: local.t, leaving: local.leaving, camDir: local.camDir, lookK: local.lookK, frames: dbgFrames, err: dbgErr } : null; },
     stop,
@@ -646,12 +673,12 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
         local.t += dt;
         const cam = game.camera;
         const head = headPos(game, me.id) ?? pl.pos.clone().add(new THREE.Vector3(0, 1.75, 0));
-        const look = head.clone().add(new THREE.Vector3(0, 1.0, 0));
+        const look = head.clone().add(new THREE.Vector3(0, 1.12, 0));
         // choose the freest viewing direction once (front-side first; walls behind the camera are common)
-        if (local.camDir == null) local.camDir = pickCamDir(game, look, pl.yaw);
+        if (local.camDir == null) local.camDir = pickCamDir(game, head, pl.yaw);
         const baseA = local.camDir;
         const orbit = Math.sin(local.t * 0.25) * 0.16;
-        const dist = 3.75;
+        const dist = CAM_DIST;
         const dirV = new THREE.Vector3(-Math.sin(baseA + orbit), 0, -Math.cos(baseA + orbit));
         local.cloudYaw = baseA + Math.PI;  // cloud opening (+Z) faces the camera
         local.cloudPos.copy(head).add(new THREE.Vector3(0, CLOUD_UP, 0));
@@ -661,12 +688,12 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
         const yaw = local.cloudYaw;
         const night = game.clock.nightFactor;
         local.tree.update(dt, cam.quaternion, night);
-        let want = head.clone().addScaledVector(dirV, dist).add(new THREE.Vector3(0, 0.55 + Math.sin(local.t * 0.33) * 0.06, 0));
+        let want = head.clone().addScaledVector(dirV, dist).add(new THREE.Vector3(0, CAM_UP + Math.sin(local.t * 0.33) * 0.06, 0));
         if (game.physics) {
           const dir = want.clone().sub(look);
           const L = dir.length();
           dir.normalize();
-          const hit = game.physics.raycast(look, dir, L, G.STATIC);
+          const hit = game.physics.raycast(look, dir, L, BLOCK);
           if (hit) want = look.clone().addScaledVector(dir, Math.max(1.4, hit.toi - 0.3));
         }
         const inK = local.leaving ? 1 - clamp(local.t / 0.55) : clamp(local.t / 1.1);

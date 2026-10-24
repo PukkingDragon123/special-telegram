@@ -105,6 +105,9 @@ function lampHead(c: PoleCtx, x: number, y: number, z: number, yaw: number, col:
   c.lights.lamp(new THREE.Vector3(x, y - 0.15, z), col, col === LED ? 30 : 42, 22, 4.6);
 }
 
+/** aExtra.y < 0 marks thin cables: the world vertex shader widens them with distance (no sub-pixel dashes) */
+const WIRE_FLAG = -7;
+
 /** wires between consecutive poles of a line (and the bundles) */
 function span(c: PoleCtx, a: PoleInfo, b: PoleInfo, heavy = 1) {
   const { w, rng } = c;
@@ -114,13 +117,13 @@ function span(c: PoleCtx, a: PoleInfo, b: PoleInfo, heavy = 1) {
   const len = Math.hypot(dx, dz);
   const px = -dz / len, pz = dx / len; // perpendicular
   // HV conductors (bare aluminium) on the top crossarm
-  w.mat('alu', { tint: 0x8a8a88, uv: 'local' });
+  w.mat('alu', { tint: 0x8a8a88, uv: 'local' }); w.ov = WIRE_FLAG;
   for (const o of [-0.75, 0, 0.75]) {
     w.tube(WB.sagLine(a.x + px * o, a.y + a.h - 0.18, a.z + pz * o, b.x + px * o, b.y + b.h - 0.18, b.z + pz * o, len * 0.012, 8), 0.007, 3);
   }
   for (const o of [-0.55, 0.55]) w.tube(WB.sagLine(a.x + px * o, a.y + a.h - 0.98, a.z + pz * o, b.x + px * o, b.y + b.h - 0.98, b.z + pz * o, len * 0.016, 8), 0.007, 3);
   // telecom / fibre bundles: the famous tangle
-  w.mat('rubber', { tint: 0x1c1c1c, uv: 'local' });
+  w.mat('rubber', { tint: 0x1c1c1c, uv: 'local' }); w.ov = WIRE_FLAG;
   const n = Math.round(rng.range(7, 14) * heavy);
   for (let i = 0; i < n; i++) {
     const ya = a.y + rng.range(5.4, 6.3), yb = b.y + rng.range(5.4, 6.3);
@@ -144,7 +147,7 @@ function span(c: PoleCtx, a: PoleInfo, b: PoleInfo, heavy = 1) {
 function drop(c: PoleCtx, p: PoleInfo, tx: number, ty: number, tz: number) {
   const { w, rng } = c;
   w.setGroup('detail');
-  w.mat('rubber', { tint: 0x1a1a1a, uv: 'local' });
+  w.mat('rubber', { tint: 0x1a1a1a, uv: 'local' }); w.ov = WIRE_FLAG;
   for (let i = 0; i < rng.int(1, 3); i++) {
     const len = Math.hypot(tx - p.x, tz - p.z);
     w.tube(WB.sagLine(p.x, p.y + rng.range(5.2, 6.0), p.z, tx + rng.range(-0.3, 0.3), ty + rng.range(-0.3, 0.3), tz, len * rng.range(0.03, 0.07), 8), rng.range(0.008, 0.014), 3);

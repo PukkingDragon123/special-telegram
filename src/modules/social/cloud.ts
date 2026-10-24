@@ -155,7 +155,7 @@ function buildGeometry(o: Required<CloudOpts>) {
   const hit = geoCache.get(key);
   if (hit) return hit;
   const puffs = layout(o);
-  const ico = new THREE.IcosahedronGeometry(1, o.detail).toNonIndexed();
+  const ico = new THREE.IcosahedronGeometry(1, o.detail);
   const ip = ico.attributes.position as THREE.BufferAttribute;
   const nv = ip.count;
   const pos = new Float32Array(puffs.length * nv * 3);
