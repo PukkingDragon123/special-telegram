@@ -13,6 +13,12 @@ Four agents work at the same time in this tree:
 | **heaven** | `src/modules/social/*` (think mode, skill visuals, flytext, cloud), `public/assets/gen/social/` |
 | **props** | `src/modules/world/{props,dressing,market,rural}.ts`, new `src/modules/world/realprops*.ts`, `scripts/polyhaven.mjs`, `public/assets/gen/world/models/`, plus the `build` visuals of furniture/prop items in `restaurant`/`shops`/`cooking` (visual only) |
 | **buildings** | `src/modules/world/{mats,shophouse,buildings,streets,geo,sky,lights,wires,canal,signs,foliage,weather,layout}.ts`, `src/core/postfx.ts`, `public/assets/gen/world/` (not `models/`, except own downloads via the shared script) |
+| **food** | `src/modules/cooking/*` food/ingredient/dish visuals + physics feel (not furniture items), small generic hooks in `src/game/items.ts`, `public/assets/gen/cooking/` |
+| **creatures** | `src/modules/life/{creature,quad,pets,tex}.ts`, `src/modules/characters/*`, `scripts/life/`, `public/assets/gen/{life,characters}/` |
+| **lead** | `src/modules/menu/*` (album cover + newspaper on the main menu), integration |
+
+Follow-up from the client: "make textured and model hyper realistic, add cooler and polish models, make dogs have rig fur, the food
+have physic bouncy super polish satisfying, use new font too, and make menu show the album cover and newspaper".
 
 `src/modules/world/index.ts` is shared by props + buildings: keep edits there to a few lines, re-read before every edit.
 

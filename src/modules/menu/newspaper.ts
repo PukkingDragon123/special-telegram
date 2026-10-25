@@ -17,7 +17,7 @@ import { headlineTemplates, HeadlineTpl, SIDE_STORIES } from './lines';
  * ========================================================================================== */
 
 export interface DayStatsIn { [k: string]: any }
-interface Stats { day: number; money: number; customers: number; dish: string; rating: number; events: string[]; mood: 'day1' | 'good' | 'bad' | 'neutral' }
+interface Stats { day: number; money: number; customers: number; dish: string; rating: number; events: string[]; mood: 'day1' | 'good' | 'bad' | 'neutral' | 'story' }
 
 const K = 'img/newspaper/';
 const DISH_TH: Record<string, string> = {
@@ -37,7 +37,7 @@ function normStats(game: Game, s?: DayStatsIn | null): Stats {
   if (typeof dish === 'object') dish = (dish as any).th ?? (dish as any).name?.th ?? (dish as any).recipe ?? 'kaphrao_moo';
   dish = DISH_TH[dish] ?? dish;
   const events: string[] = Array.isArray(g.events) ? g.events.map((e: any) => (typeof e === 'string' ? e : e?.th ?? e?.text ?? '')).filter(Boolean) : [];
-  const mood: Stats['mood'] = day <= 1 && money < 200 ? 'day1' : rating >= 3.6 || money >= 1500 ? 'good' : (rating > 0 && rating < 2.6) || (customers > 0 && customers < 5) ? 'bad' : 'neutral';
+  const mood: Stats['mood'] = g.mood === 'story' ? 'story' : day <= 1 && money < 200 ? 'day1' : rating >= 3.6 || money >= 1500 ? 'good' : (rating > 0 && rating < 2.6) || (customers > 0 && customers < 5) ? 'bad' : 'neutral';
   return { day, money, customers, dish, rating: Math.round(rating * 10) / 10, events, mood };
 }
 
@@ -153,19 +153,22 @@ export async function renderFrontPage(s: Stats): Promise<HTMLCanvasElement> {
   }
   fit(h1, R.headline_1, 170, 900, INK, { maxSX: 0.78 });
   fit(h2, R.headline_2, 170, 900, RED, { maxSX: 0.78 });
-  const ph = layout?.photo_suggestions?.[s.mood === 'neutral' ? 'event' : s.mood] ?? ['kaprao_egg'];
+  const ph = s.mood === 'story' ? ['casino_tables'] : layout?.photo_suggestions?.[s.mood === 'neutral' ? 'event' : s.mood] ?? ['kaprao_egg'];
   await photo(ph[Math.floor(Math.random() * ph.length)], R.photo_main);
-  const cap = s.mood === 'day1' ? 'บรรยากาศหน้าร้านเฮียผัดวันแรก ลูกค้ายังงง ๆ ว่าใครเป็นพ่อครัว (ภาพประกอบ)'
+  const cap = s.mood === 'story' ? 'บ่อนเถื่อนย่านชานเมือง ที่สี่หนุ่มเสียเงินเก็บทั้งชีวิตไปในคืนเดียว (ภาพประกอบ)'
+    : s.mood === 'day1' ? 'บรรยากาศหน้าร้านเฮียผัดวันแรก ลูกค้ายังงง ๆ ว่าใครเป็นพ่อครัว (ภาพประกอบ)'
     : s.mood === 'good' ? `ลูกค้า ${s.customers} คนต่อคิวยาวเหยียด เพื่อ${s.dish}จานเด็ด (ภาพประกอบ)`
       : s.mood === 'bad' ? 'เตาร้อนแต่ร้านเงียบ เฮียผัดยืนพัดเตารอลูกค้าทั้งบ่าย (ภาพประกอบ)' : `${s.dish} จานนี้ ราคานี้ ซอยนี้เท่านั้น (ภาพประกอบ)`;
   para(cap, R.caption_main, 23, 30, INK, 600, F.body, 2);
   const deck = s.mood === 'good' ? ['ยอดขายพุ่งกระฉูด ลูกค้าแน่นซอย', `${s.dish} ขายดีเป็นเทน้ำเทท่า`, 'ป้าข้างบ้านเริ่มอิจฉา!']
     : s.mood === 'bad' ? ['ขายไม่ออก! กระทะเย็นเฉียบ', `ลูกค้าบ่น ${s.dish} รสชาติแปลก`, 'สี่หนุ่มประชุมด่วนกลางดึก']
+      : s.mood === 'story' ? ['ลงพนันหมดหน้าตัก ไพ่ไม่เข้าข้าง', 'ตื่นมากลางซอยเก่า เหลือแค่เสื้อกล้ามกับกางเกงขาสั้น', 'จะสู้ชีวิตด้วยร้อยบาทสุดท้าย!']
       : s.mood === 'day1' ? ['ตื่นมากลางซอยในชุดเสื้อกล้าม', 'ลุงจับได้คาหนังคาเขา ขายให้ร้อยเดียว', 'หมาจรฉกหมูสับ วิ่งหนีเข้าซอย!']
         : ['ชีวิตพ่อค้ากะเพราไม่ง่าย', `วันที่ ${s.day} ขายได้ ${s.money.toLocaleString('th-TH')} บาท`, 'พรุ่งนี้สู้ใหม่!'];
   const D = R.deck;
   if (D) deck.forEach((t, i) => fit(t, { x: D.x, y: D.y + i * (D.h / 3), w: D.w, h: D.h / 3 }, 44, 800, [RED, BLUE, INK][i], { maxSX: 0.85 }));
-  const body = s.events.length ? `ผู้สื่อข่าวรายงานว่า วันนี้ที่ร้านเฮียผัด ${s.events.slice(0, 3).join(' ')} ทั้งนี้ยอดขายรวมอยู่ที่ ${s.money.toLocaleString('th-TH')} บาท จากลูกค้า ${s.customers} คน`
+  const body = s.mood === 'story' ? 'ผู้สื่อข่าวรายงานว่า เมื่อคืนนี้ชายหนุ่มสี่คนซึ่งเป็นเพื่อนรักกันมาตั้งแต่สมัยเรียน ได้เข้าไปเล่นการพนันในบ่อนเถื่อนแห่งหนึ่ง ก่อนจะเสียเงินเก็บ รถ และโทรศัพท์มือถือไปจนหมดตัว เช้าวันรุ่งขึ้นทั้งสี่ตื่นขึ้นมากลางซอยเก่า เหลือเพียงเสื้อกล้ามกับกางเกงขาสั้น และเหรียญรวมกันแค่ 100 บาท แหล่งข่าวใกล้ชิดเผยว่า ลุงเจ้าของรถเข็นอาหารตามสั่งท้ายซอยกำลังจะเลิกขายพอดี'
+    : s.events.length ? `ผู้สื่อข่าวรายงานว่า วันนี้ที่ร้านเฮียผัด ${s.events.slice(0, 3).join(' ')} ทั้งนี้ยอดขายรวมอยู่ที่ ${s.money.toLocaleString('th-TH')} บาท จากลูกค้า ${s.customers} คน`
     : `ผู้สื่อข่าวรายงานว่า เมื่อวานนี้ร้านอาหารตามสั่งของสี่หนุ่มหมดตัวในซอยเก่า มีลูกค้าแวะเวียนมาทั้งหมด ${s.customers} คน ทำยอดขายได้ ${s.money.toLocaleString('th-TH')} บาท เมนูที่ขายดีที่สุดคือ ${s.dish} ได้คะแนนรีวิวเฉลี่ย ${s.rating.toFixed(1)} ดาว ชาวบ้านละแวกนั้นต่างพากันวิจารณ์ทั้งรสชาติและความวุ่นวายหน้าเตา`;
   para(body, R.body_main, 20, 27, INK, 400, F.looped);
   // stats box (erase the dotted leader first)

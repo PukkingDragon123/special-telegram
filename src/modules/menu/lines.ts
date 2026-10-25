@@ -29,9 +29,10 @@ export function screamLines(): TLine[] {
 }
 
 /** Newspaper headline templates with {money} {customers} {dish} {rating} {day} placeholders. */
-export interface HeadlineTpl { th: string; en?: string; mood?: 'good' | 'bad' | 'day1' | 'neutral' | 'event'; kicker?: string }
+export interface HeadlineTpl { th: string; en?: string; mood?: 'good' | 'bad' | 'day1' | 'neutral' | 'event' | 'story'; kicker?: string }
 
 const HEAD_FALLBACK: HeadlineTpl[] = [
+  { mood: 'story', kicker: 'ข่าวด่วน! บ่อนเถื่อนกลางกรุง', th: 'สี่หนุ่มหมดตัวในบ่อน!|เหลือแค่ 100 บาท กับเสื้อกล้าม' },
   { mood: 'day1', kicker: 'ระทึกกลางซอยเก่า!', th: '4 หนุ่มหมดตัว! ควักเหรียญ|ซื้อรถเข็นลุง 100 บาท' },
   { mood: 'good', kicker: 'ร้อนแรงที่สุดในซอย!', th: 'กะเพราเฮียผัดฟีเวอร์!|ลูกค้า {customers} คน แห่ต่อคิว' },
   { mood: 'good', kicker: 'ข่าวดีวงการกะเพรา', th: 'โกยเรียบ {money} บาท!|{dish} ขายดีจนกระทะไหม้' },
@@ -57,7 +58,7 @@ export function headlineTemplates(): HeadlineTpl[] {
       else if (x && (x.th || x.text)) a.push({ th: x.th ?? x.text, en: x.en, mood: mood as any, kicker: x.kicker });
     }
   }
-  return a.length ? a.concat(HEAD_FALLBACK.filter((h) => h.mood === 'day1')) : HEAD_FALLBACK;
+  return a.length ? a.concat(HEAD_FALLBACK.filter((h) => h.mood === 'day1' || h.mood === 'story')) : HEAD_FALLBACK;
 }
 
 export const SIDE_STORIES: { head: string; body: string }[] = [

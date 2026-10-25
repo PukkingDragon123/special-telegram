@@ -18,7 +18,9 @@ import { CustomizeView } from './customize';
 /* ============================================================================================
  * 'menu' scene: the album cover (ref4) as a live 3D set + the lobby as album-print stickers.
  * The four guys are the four player slots (slot i ↔ G(i+1), matches characters.playerLook(i)).
- * Empty slots are dark silhouettes; when a friend joins he pops in (confetti + sax jingle).
+ * All four guys are always shown in full colour, posed exactly like the album cover; when a friend
+ * joins, his guy pops (confetti + sax jingle). A folded "ไทยรั่ว" newspaper leans against the coffee
+ * table with the casino story on its front page: click it to read the whole paper.
  * Click your own guy (bobbing arrow "คุณ") → customize (street + fashion magazine, customize.ts).
  * ========================================================================================== */
 
@@ -69,6 +71,13 @@ export class MenuScene implements SceneDef {
   private starting = false;
   private envTex: THREE.Texture | null = null;
   private raycaster = new THREE.Raycaster();
+  /** the folded newspaper prop (story edition) leaning against the coffee table */
+  private paper: THREE.Group | null = null;
+  private paperHover = false;
+  private paperLift = 0;
+  private paperTag: Sticker | null = null;
+  private reading = false;
+  private gone = false;
   private nameEdit: { close(): void } | null = null;
   private nameDraft = '';
   private firstSync = true;
@@ -97,6 +106,7 @@ export class MenuScene implements SceneDef {
     this.scene.add(buildTable());
     this.jenga = buildJenga();
     this.scene.add(this.jenga.group);
+    this.buildPaper();
     const panton = buildPanton();
     panton.position.copy(SLOTS[0].pos).add(new THREE.Vector3(0.02, 0, 0.06));
     panton.rotation.y = SLOTS[0].yaw + Math.PI;
@@ -246,12 +256,14 @@ export class MenuScene implements SceneDef {
       s.rig.update(rdt);
     }
     this.updateArrow(rdt);
+    this.updatePaper(rdt);
     this.updateBits(rdt);
     this.refreshUI();
     this.ui.update(rdt);
   }
 
   async exit() {
+    this.gone = true;
     this.typing?.close();
     this.nameEdit?.close();
     this.custom?.dispose();
@@ -300,7 +312,7 @@ export class MenuScene implements SceneDef {
             s.block = b;
           }
         }
-        s.rig!.setSilhouette(!occ);
+        s.rig!.setSilhouette(false);
         s.occupied = occ;
         s.lookKey = key;
         if (!this.firstSync && occ !== wasOcc) this.popSlot(s, occ);
@@ -430,21 +442,107 @@ export class MenuScene implements SceneDef {
 
   private hovering = false;
   private pick() {
-    if (this.mode !== 'album' || this.starting) return;
-    const s = this.mySlot();
-    if (!s?.rig) { this.hovering = false; return; }
+    if (this.mode !== 'album' || this.starting || this.reading) return;
     this.raycaster.setFromCamera(new THREE.Vector2(Input.ndc.x, Input.ndc.y), this.camera);
-    const hits = this.raycaster.intersectObjects([s.rig.root, this.arrow], true);
-    const h = hits.length > 0;
+    const ph = !!this.paper && this.raycaster.intersectObject(this.paper, true).length > 0;
+    if (ph && !this.paperHover) { sfx.hover(); sfx.paper(); }
+    this.paperHover = ph;
+    const s = this.mySlot();
+    const h = !ph && !!s?.rig && this.raycaster.intersectObjects([s.rig.root, this.arrow], true).length > 0;
     if (h && !this.hovering) sfx.hover();
     this.hovering = h;
-    this.game.engine.canvas.style.cursor = h ? 'pointer' : '';
+    this.game.engine.canvas.style.cursor = h || ph ? 'pointer' : '';
   }
 
   private click() {
-    if (this.mode !== 'album' || this.starting) return;
+    if (this.mode !== 'album' || this.starting || this.reading) return;
     this.pick();
-    if (this.hovering) this.openCustomize();
+    if (this.paperHover) this.readPaper();
+    else if (this.hovering) this.openCustomize();
+  }
+
+  // ------------------------------------------------------------------ the newspaper prop
+
+  private static STORY = { mood: 'story', day: 1, revenue: 100, customers: 0, bestDish: 'kaphrao_moo', rating: 0, events: [] };
+
+  /** Fold the story-edition front page in half (masthead + headline showing) and lean it on the table. */
+  private async buildPaper() {
+    const np = (this.game as any).newspaper;
+    if (!np?.frontPage) return;
+    let cv: HTMLCanvasElement;
+    try { cv = await np.frontPage(MenuScene.STORY); } catch (e) { console.warn('[menu] paper', e); return; }
+    if (this.gone) return;
+    const half = document.createElement('canvas');
+    half.width = 1024; half.height = Math.round(1024 * (cv.height / 2) / cv.width);
+    half.getContext('2d')!.drawImage(cv, 0, 0, cv.width, cv.height / 2, 0, 0, half.width, half.height);
+    const map = new THREE.CanvasTexture(half);
+    map.colorSpace = THREE.SRGBColorSpace;
+    map.anisotropy = 8;
+    const W = 0.42, H = W * half.height / half.width;
+    const geo = new THREE.PlaneGeometry(W, H, 18, 10);
+    const pos = geo.attributes.position as THREE.BufferAttribute;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), y = pos.getY(i);
+      // soft cup + the fold rolling over at the bottom edge + a little newsprint waviness
+      const fold = Math.max(0, -(y / H) - 0.36);
+      pos.setZ(i, Math.cos((x / W) * Math.PI) * 0.008 - fold * fold * 0.05 + Math.sin(x * 40 + y * 23) * 0.0008);
+    }
+    geo.computeVertexNormals();
+    const back = Assets.texture('img/newspaper/newsprint_tile_2048.jpg', { srgb: true });
+    const front = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map, roughness: 0.92, metalness: 0, side: THREE.FrontSide }));
+    const rear = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: back, color: 0xd9d3c3, roughness: 0.95, side: THREE.BackSide }));
+    // the other half of the sheet folded behind (shows as a slightly offset page edge)
+    const under = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: back, color: 0xcfc8b6, roughness: 0.95, side: THREE.DoubleSide }));
+    under.position.set(0.004, -0.003, -0.006);
+    under.rotation.z = 0.012;
+    for (const m of [front, rear, under]) { m.castShadow = true; m.receiveShadow = true; }
+    const g = new THREE.Group();
+    g.name = 'menu_newspaper';
+    g.add(under, front, rear);
+    g.userData.H = H;
+    this.paper = g;
+    this.placePaper(0);
+    this.scene.add(g);
+  }
+
+  private placePaper(lift: number) {
+    const g = this.paper;
+    if (!g) return;
+    const H = g.userData.H as number;
+    const lean = 0.2 - lift * 0.12;   // standing on the coffee table, propped against the Jenga tower
+    const TOP = 0.381;                // table top height (album.ts buildTable)
+    g.rotation.set(-lean, 0.22 - lift * 0.1, 0.04);
+    g.position.set(-0.2, TOP + (H / 2) * Math.cos(lean) + lift * 0.035, -2.36 - (H / 2) * Math.sin(lean) + lift * 0.05);
+  }
+
+  private readPaper() {
+    const np = (this.game as any).newspaper;
+    if (!np?.show || this.reading) return;
+    this.reading = true;
+    this.paperHover = false;
+    this.game.engine.canvas.style.cursor = '';
+    if (this.paper) this.paper.visible = false;
+    Promise.resolve(np.show(MenuScene.STORY)).finally(() => {
+      this.reading = false;
+      if (this.paper) { this.paper.visible = true; this.paperLift = 0; }
+    });
+  }
+
+  private updatePaper(dt: number) {
+    if (!this.paper) return;
+    const target = this.paperHover ? 1 : 0;
+    this.paperLift += (target - this.paperLift) * damp(8, dt);
+    this.placePaper(this.paperLift);
+    // a breeze from the studio fan
+    this.paper.rotation.z += Math.sin(this.t * 1.7) * 0.004 + Math.sin(this.t * 4.1) * 0.0015 * this.paperLift;
+    const want = this.paperHover && !this.reading && this.mode === 'album';
+    if (want && !this.paperTag) {
+      this.paperTag = this.ui.add({
+        lines: [{ text: 'ข่าวด่วน!', size: 30, font: F.looped, weight: 900 }, { text: 'คลิกอ่านหนังสือพิมพ์', size: 15, font: F.looped, weight: 800, gap: -6, band: 0.7 }],
+        style: DANGER, tilt: -4, passive: true, bob: 2,
+        follow: () => { const g = this.paper; if (!g) return null; return this.project(new THREE.Vector3(g.position.x, g.position.y + 0.2, g.position.z)); },
+      });
+    } else if (!want && this.paperTag) { this.ui.remove(this.paperTag); this.paperTag = null; }
   }
 
   openCustomize(instant = false) {
