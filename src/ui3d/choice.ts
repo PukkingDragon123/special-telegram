@@ -23,16 +23,16 @@ export interface ChoiceOpts {
 }
 
 const OPT: Text3DOpts = {
-  font: 'talk', size: 0.021, depth: 0.32, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.34, shadow: 0.5,
+  font: 'talk', size: 0.026, depth: 0.32, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.34, shadow: 0.5,
   xray: true, castShadow: false, maxWidth: 0.5, valign: 'bottom', anim: { pop: 0.3, rise: 0.4, spin: 1, vanish: 0.2, drift: 0.3 },
 };
 const OPT_HOT: Partial<Text3DOpts> = { color: 0xffe28a, side: 0x8a3c0a, emissive: 0.85, rim: 0xffb347, rimStrength: 1.3 };
 const SUB: Text3DOpts = {
-  font: 'ui', size: 0.0105, depth: 0.2, bevel: 0.05, color: 0xe9dfcd, side: 0x33271f, roughness: 0.5, emissive: 0.3, shadow: 0.5,
+  font: 'ui', size: 0.0125, depth: 0.2, bevel: 0.05, color: 0xe9dfcd, side: 0x33271f, roughness: 0.5, emissive: 0.3, shadow: 0.5,
   xray: true, castShadow: false, maxWidth: 0.5, valign: 'top', anim: { pop: 0.25, rise: 0.3, spin: 0.5, vanish: 0.2, drift: 0.2 },
 };
 const NUM: Text3DOpts = {
-  font: 'display', size: 0.03, depth: 0.4, bevel: 0.1, color: 0xffcf5a, metalness: 0.85, roughness: 0.25, emissive: 0.2, bevelFace: true,
+  font: 'display', size: 0.034, depth: 0.4, bevel: 0.1, color: 0xffcf5a, metalness: 0.85, roughness: 0.25, emissive: 0.2, bevelFace: true,
   xray: true, castShadow: false, valign: 'bottom', anim: { pop: 0.35, rise: 0.4, spin: 1.4, vanish: 0.2, drift: 0.3 },
 };
 

@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import type { Game } from '../../game/game';
-import { makeCloudMaterial } from '../../ui3d/cloud';
-import { renderText, canvasTexture, TS } from '../../ui3d/text';
-import { F } from '../../core/fonts';
+import { canvasTexture } from '../../ui3d/text';
+import { Text3D, Text3DOpts } from '../../ui3d/text3d';
 import { Input } from '../../core/input';
 import { Sound } from '../../core/audio';
 import { Assets } from '../../core/assets';
@@ -35,17 +34,17 @@ const PETALS: { id: PetalId; th: string; en: string; dir: THREE.Vector2; key: st
   { id: 'money', th: 'ให้เงิน', en: 'give money', dir: new THREE.Vector2(1, -0.12).normalize(), key: '3' },
 ];
 
+// petal labels are real floating 3D lettering (no bubble); the hand / banknote pictures stay real images
+const PETAL_TXT: Text3DOpts = { font: 'bubbly', size: 0.032, depth: 0.4, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, emissive: 0.3, shadow: 0.5, xray: true, castShadow: false, valign: 'top' };
+const PETAL_HOT: Partial<Text3DOpts> = { color: 0xffe28a, side: 0x8a1c0a, emissive: 0.8, rim: 0xffb347, rimStrength: 1.2 };
+const PETAL_SUB: Text3DOpts = { font: 'ui', size: 0.013, depth: 0.2, bevel: 0.05, color: 0xeadfcc, side: 0x33271f, emissive: 0.3, shadow: 0.5, xray: true, castShadow: false, valign: 'top' };
+
 function petalCanvas(p: (typeof PETALS)[number]) {
-  const t = renderText([
-    { text: `${p.key}. ${p.th}`, style: { ...TS.bubble, font: F.bubbly, size: 54, weight: 700, color: '#2a211a' } },
-    { text: p.en, style: { ...TS.bubbleSub, size: 26 } },
-  ], { pad: 2, scale: 1.5 });
   const iconH = 120;
   const cv = document.createElement('canvas');
-  cv.width = Math.max(t.width, 260);
-  cv.height = t.height + iconH;
+  cv.width = 260;
+  cv.height = iconH;
   const ctx = cv.getContext('2d')!;
-  ctx.drawImage(t.canvas, (cv.width - t.width) / 2, iconH);
   const cx = cv.width / 2, cy = iconH / 2 + 6;
   const hand = images['handprint_red.png'];
   if (p.id === 'slap' && hand) {
@@ -61,13 +60,13 @@ function petalCanvas(p: (typeof PETALS)[number]) {
   return cv;
 }
 
-interface Petal { id: PetalId; mesh: THREE.Mesh; mat: THREE.ShaderMaterial; base: THREE.Vector3; dir: THREE.Vector2 }
+interface Petal { id: PetalId; mesh: THREE.Group; icon: THREE.Mesh; txt: Text3D; sub: Text3D; hot: boolean; base: THREE.Vector3; dir: THREE.Vector2 }
 
 export class Radial {
   readonly group = new THREE.Group();
   private petals: Petal[] = [];
   private core: THREE.Mesh;
-  private coreMat: THREE.ShaderMaterial;
+  private coreMat: THREE.MeshStandardMaterial;
   private t = 0;
   private sel = -1;
   private aim = new THREE.Vector2();
@@ -76,7 +75,7 @@ export class Radial {
   private money: { obj: THREE.Group; v: number; base: THREE.Vector3 }[] = [];
   private msel = 1;
   private macc = 0;
-  private label: THREE.Mesh | null = null;
+  private label: THREE.Group | null = null;
   private labelKey = '';
   alive = true;
   private wasMode: string | null = null;
@@ -85,23 +84,22 @@ export class Radial {
     const S = 0.00078;
     PETALS.forEach((p) => {
       const cv = petalCanvas(p);
-      const padX = 50, padY = 40;
-      const W = cv.width + padX * 2, H = cv.height + padY * 2;
-      const mat = makeCloudMaterial({ style: 'speech', tailSpace: 0, depthTest: false, fill: 0xfffaf0 });
-      mat.uniforms.uText.value = canvasTexture(cv);
-      mat.uniforms.uHasText.value = 1;
-      mat.uniforms.uSize.value.set(W, H);
-      mat.uniforms.uTextRect.value.set(padX / W, padY / H, 1 - padX / W, 1 - padY / H);
-      mat.uniforms.uLines.value = 1;
-      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(W * S, H * S), mat);
-      mesh.renderOrder = 2100;
+      const mesh = new THREE.Group();
+      const icon = new THREE.Mesh(new THREE.PlaneGeometry(cv.width * S, cv.height * S), new THREE.MeshBasicMaterial({ map: canvasTexture(cv), transparent: true, depthTest: false, depthWrite: false, toneMapped: false }));
+      icon.position.y = cv.height * S * 0.5 + 0.004;
+      icon.renderOrder = 2100;
+      const txt = new Text3D(`${p.key}. ${p.th}`, PETAL_TXT);
+      const sub = new Text3D(p.en, PETAL_SUB);
+      txt.popIn(0.03);
+      sub.popIn(0.015);
+      mesh.add(icon, txt, sub);
       const base = new THREE.Vector3(p.dir.x * 0.36, p.dir.y * 0.3 + 0.02, 0);
       this.group.add(mesh);
-      this.petals.push({ id: p.id, mesh, mat, base, dir: p.dir });
+      this.petals.push({ id: p.id, mesh, icon, txt, sub, hot: false, base, dir: p.dir });
     });
-    this.coreMat = makeCloudMaterial({ style: 'thought', tailSpace: 0, depthTest: false, fill: 0xfff3dc, puff: 1.6 });
-    this.coreMat.uniforms.uSize.value.set(1, 1);
-    this.core = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.13), this.coreMat);
+    // aim bead (a little glowing 3D pearl that slides toward the petal you aim at)
+    this.coreMat = new THREE.MeshStandardMaterial({ color: 0xfff3dc, emissive: 0x6a5030, roughness: 0.3, metalness: 0.1, transparent: true, depthTest: false, depthWrite: false });
+    this.core = new THREE.Mesh(new THREE.SphereGeometry(0.014, 16, 12), this.coreMat);
     this.core.renderOrder = 2099;
     this.group.add(this.core);
     this.group.renderOrder = 2100;
@@ -146,16 +144,19 @@ export class Radial {
     const key = text + '|' + sub;
     if (key === this.labelKey) return;
     this.labelKey = key;
-    if (this.label) { this.label.removeFromParent(); this.label.geometry.dispose(); ((this.label.material as any).map as THREE.Texture)?.dispose(); (this.label.material as THREE.Material).dispose(); }
-    const mt = renderText([
-      { text, style: { font: F.heavy, size: 56, weight: 800, color: '#fff3c4', stroke: '#2a1a08', strokeWidth: 8 } },
-      { text: sub, style: { font: F.body, size: 28, weight: 600, color: '#ffe9c0', stroke: '#2a1a08', strokeWidth: 5 } },
-    ], { pad: 6, scale: 1.5 });
-    const tex = canvasTexture(mt.canvas);
-    const S = 0.0005;
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(mt.width / 1.5 * S, mt.height / 1.5 * S), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false, toneMapped: false }));
-    m.renderOrder = 2105;
-    m.position.set(0, -0.26, 0.01);
+    if (this.label) {
+      // relayout in place (3D lettering; glyph geometry is cached)
+      (this.label.children[0] as Text3D).setText(text);
+      (this.label.children[1] as Text3D).setText(sub);
+      return;
+    }
+    const m = new THREE.Group();
+    const main = new Text3D(text, { font: 'heavy', size: 0.026, depth: 0.45, bevel: 0.08, color: 0xffd45a, metalness: 0.85, roughness: 0.25, emissive: 0.1, keyLight: 0.55, bevelFace: true, shadow: 0.35, xray: true, castShadow: false, valign: 'bottom' });
+    const subT = new Text3D(sub, { font: 'ui', size: 0.0095, depth: 0.2, bevel: 0.05, color: 0xffe9c0, side: 0x3a2410, emissive: 0.3, shadow: 0.5, xray: true, castShadow: false, valign: 'top', maxWidth: 0.6 });
+    main.popIn(0.03);
+    subT.position.y = -0.004;
+    m.add(main, subT);
+    m.position.set(0, -0.2, 0.01);
     this.group.add(m);
     this.label = m;
   }
@@ -187,8 +188,7 @@ export class Radial {
       const me = game.me;
       if (me?.p && tgt.p && Math.hypot(me.p[0] - tgt.p[0], me.p[2] - tgt.p[2]) > 4.5 && this.phase !== 'closing') this.close();
     }
-    for (const p of this.petals) { p.mat.uniforms.uTime.value += dt; }
-    this.coreMat.uniforms.uTime.value += dt;
+    for (const p of this.petals) p.sub.position.y = -p.txt.height - 0.003;
 
     if (this.phase === 'closing') {
       this.closeT += dt;
@@ -222,8 +222,7 @@ export class Radial {
         p.mesh.scale.setScalar(Math.max(0.001, pop) * (1 + hi * 0.18));
         p.mesh.position.copy(p.base).addScaledVector(new THREE.Vector3(p.dir.x, p.dir.y, 0), hi * 0.035);
         p.mesh.position.y += Math.sin(this.t * 3 + i * 2) * 0.006;
-        p.mat.uniforms.uInk.value.set(hi ? 0xc0392b : 0x2a2420);
-        p.mat.uniforms.uFill.value.set(hi ? 0xfff0c2 : 0xfffaf0);
+        if (!!hi !== p.hot) { p.hot = !!hi; p.txt.setLook(hi ? PETAL_HOT : { color: PETAL_TXT.color, side: PETAL_TXT.side, emissive: PETAL_TXT.emissive, rimStrength: 0 }); }
       });
       if (Input.mousePressed(0) || Input.mousePressed(2)) {
         Input.consumeMouse(0); Input.consumeMouse(2);
@@ -285,10 +284,10 @@ export class Radial {
   dispose() {
     this.alive = false;
     this.group.removeFromParent();
-    for (const p of this.petals) { p.mesh.geometry.dispose(); (p.mat.uniforms.uText.value as THREE.Texture)?.dispose(); p.mat.dispose(); }
+    for (const p of this.petals) { p.icon.geometry.dispose(); ((p.icon.material as any).map as THREE.Texture)?.dispose(); (p.icon.material as THREE.Material).dispose(); p.txt.dispose(); p.sub.dispose(); }
     this.core.geometry.dispose(); this.coreMat.dispose();
     for (const m of this.money) m.obj.traverse((o: any) => { if (o.isMesh) o.material.dispose(); });
-    if (this.label) { this.label.geometry.dispose(); ((this.label.material as any).map as THREE.Texture)?.dispose(); (this.label.material as THREE.Material).dispose(); }
+    if (this.label) for (const c of [...this.label.children]) (c as Text3D).dispose();
     const pl = this.game.player;
     if (pl && this.wasMode === 'play' && pl.mode === 'frozen') pl.setMode('play');
   }

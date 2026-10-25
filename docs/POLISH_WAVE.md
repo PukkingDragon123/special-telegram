@@ -36,7 +36,7 @@ Market and stall micro detail and better tables: **props**.
 
 ```ts
 // src/ui3d/text3d.ts
-export type Font3D = 'heavy' | 'ui' | 'bubbly' | 'display' | 'hand' | 'news';
+export type Font3D = 'talk' | 'heavy' | 'ui' | 'bubbly' | 'display' | 'hand' | 'news';   // 'talk' = Krub Bold (default)
 export interface Text3DOpts {
   font?: Font3D;            // looped Thai faces only (K2D, IBM Plex Sans Thai Looped, Kodchasan, Chonburi, Itim, Taviraj)
   size?: number;            // letter height in metres (default 0.12)

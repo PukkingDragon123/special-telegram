@@ -78,7 +78,7 @@ const LOOK: Record<string, Text3DOpts> = {
     maxWidth: 1.5, valign: 'bottom', anim: { pop: 0.3, rise: 0.45, spin: 1, vanish: 0.26, drift: 0.4 },
   },
   saySub: {
-    font: 'ui', size: 0.028, depth: 0.2, bevel: 0.05, color: 0xefe3cf, side: 0x3b2c22, roughness: 0.5, emissive: 0.12, shadow: 0.45,
+    font: 'ui', size: 0.028, depth: 0.2, bevel: 0.05, color: 0xefe3cf, side: 0x3b2c22, roughness: 0.5, emissive: 0.12, shadow: 0.45, castShadow: false,
     maxWidth: 1.5, valign: 'bottom', anim: { pop: 0.25, rise: 0.3, spin: 0.6, vanish: 0.22, drift: 0.3 },
   },
   shout: {
@@ -86,20 +86,20 @@ const LOOK: Record<string, Text3DOpts> = {
     maxWidth: 1.7, valign: 'bottom', anim: { pop: 0.16, rise: 0.0, spin: 0.35, vanish: 0.22, drift: 0.2, shake: 0.012 },
   },
   shoutSub: {
-    font: 'ui', size: 0.03, depth: 0.22, bevel: 0.05, color: 0xffd8bf, side: 0x6a1c0c, roughness: 0.45, emissive: 0.2, keyLight: 0.6, shadow: 0.45,
+    font: 'ui', size: 0.03, depth: 0.22, bevel: 0.05, color: 0xffd8bf, side: 0x6a1c0c, roughness: 0.45, emissive: 0.2, keyLight: 0.6, shadow: 0.45, castShadow: false,
     maxWidth: 1.7, valign: 'bottom', anim: { pop: 0.2, rise: 0.2, spin: 0.5, vanish: 0.2, drift: 0.2 },
   },
   think: {
-    font: 'hand', size: 0.066, depth: 0.22, bevel: 0.06, color: 0xdfe8ff, side: 0x8e9bd6, roughness: 0.3, emissive: 0.42,
-    opacity: 0.84, rim: 0xc9b8ff, rimStrength: 0.55, shadow: 0.22, maxWidth: 1.4, valign: 'bottom',
+    font: 'hand', size: 0.066, depth: 0.22, bevel: 0.06, color: 0xe3ebff, side: 0x5a66a6, roughness: 0.3, emissive: 0.42,
+    opacity: 0.88, rim: 0xc9b8ff, rimStrength: 0.55, shadow: 0.42, castShadow: false, maxWidth: 1.4, valign: 'bottom',
     anim: { pop: 0.5, rise: 0.25, spin: 0.5, vanish: 0.4, drift: 0.9, wobble: 0.035 },
   },
   thinkSub: {
     font: 'ui', size: 0.027, depth: 0.16, bevel: 0.04, color: 0xe9e1ff, side: 0x7d74ad, roughness: 0.4, emissive: 0.35,
-    opacity: 0.8, maxWidth: 1.4, valign: 'bottom', anim: { pop: 0.4, rise: 0.2, spin: 0.4, vanish: 0.35, drift: 0.7, wobble: 0.02 },
+    opacity: 0.8, castShadow: false, maxWidth: 1.4, valign: 'bottom', anim: { pop: 0.4, rise: 0.2, spin: 0.4, vanish: 0.35, drift: 0.7, wobble: 0.02 },
   },
   popup: {
-    font: 'heavy', size: 0.09, depth: 0.5, bevel: 0.08, color: 0xffd45a, metalness: 0.85, roughness: 0.24, emissive: 0.1, keyLight: 0.7, shadow: 0.35,
+    font: 'heavy', size: 0.09, depth: 0.5, bevel: 0.08, color: 0xffd45a, metalness: 0.85, roughness: 0.24, emissive: 0.08, keyLight: 0.55, shadow: 0.35,
     bevelFace: true, maxWidth: 1.6, valign: 'middle', anim: { pop: 0.36, rise: 0.5, spin: 1.3, vanish: 0.34, drift: -0.7 },
   },
   tag: {

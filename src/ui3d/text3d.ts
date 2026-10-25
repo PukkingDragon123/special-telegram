@@ -77,6 +77,8 @@ export interface Text3DOpts {
   keyLight?: number;
   /** soft letter-shaped contact shadow just behind the lettering (opacity, default 0 = none) — readability on bright skies */
   shadow?: number;
+  /** outline detail; default 'auto' = low below 3.5 cm letter height (subtitles, tags) */
+  detail?: 'auto' | 'low' | 'high';
   anim?: Text3DAnim;
 }
 
@@ -90,7 +92,8 @@ interface GlyphOutline {
   minX: number; minY: number; maxX: number; maxY: number;
 }
 
-interface GlyphGeo { pos: Float32Array; nor: Float32Array; idx: Uint32Array; vcount: number; cx: number; cy: number }
+/** idx holds the front-cap triangles first (capN indices), then the chamfer/wall bands */
+interface GlyphGeo { pos: Float32Array; nor: Float32Array; idx: Uint32Array; capN: number; vcount: number; cx: number; cy: number }
 
 interface FontRec {
   key: Font3D;
@@ -119,7 +122,7 @@ function loadHB(): Promise<any> {
     HB = hbjs(Module);
     return HB;
   })();
-  hbPromise.catch((e) => console.warn('[text3d] harfbuzz failed', e));
+  hbPromise.catch((e) => { console.warn('[text3d] harfbuzz failed', e); hbPromise = null; }); // retried on next use
   return hbPromise;
 }
 
@@ -141,6 +144,7 @@ function loadFont(key: Font3D): Promise<FontRec | null> {
       return rec;
     } catch (e) {
       console.warn('[text3d] font failed', key, e);
+      fontPromises.delete(key); // allow a retry
       return null;
     }
   })();
@@ -236,7 +240,8 @@ function reversed(c: number[]) {
 }
 
 /** SVG-ish path commands from HarfBuzz (font units, y up) → flat contours in em. Adaptive curve steps (≤ 4). */
-function contoursFromCmds(cmds: { type: string; values: number[] }[], upem: number): number[][] {
+function contoursFromCmds(cmds: { type: string; values: number[] }[], upem: number, lo = false): number[][] {
+  const maxSeg = lo ? 2 : 4, segLen = lo ? 0.14 : 0.075;
   const inv = 1 / upem;
   const out: number[][] = [];
   let cur: number[] = [];
@@ -261,7 +266,7 @@ function contoursFromCmds(cmds: { type: string; values: number[] }[], upem: numb
       case 'L': add(v[0], v[1]); px = v[0]; py = v[1]; break;
       case 'Q': {
         const len = Math.hypot(v[0] - px, v[1] - py) + Math.hypot(v[2] - v[0], v[3] - v[1]);
-        const n = Math.max(1, Math.min(4, Math.ceil(len / 0.075)));
+        const n = Math.max(1, Math.min(maxSeg, Math.ceil(len / segLen)));
         for (let k = 1; k <= n; k++) {
           const t = k / n, u = 1 - t;
           add(u * u * px + 2 * u * t * v[0] + t * t * v[2], u * u * py + 2 * u * t * v[1] + t * t * v[3]);
@@ -271,7 +276,7 @@ function contoursFromCmds(cmds: { type: string; values: number[] }[], upem: numb
       }
       case 'C': {
         const len = Math.hypot(v[0] - px, v[1] - py) + Math.hypot(v[2] - v[0], v[3] - v[1]) + Math.hypot(v[4] - v[2], v[5] - v[3]);
-        const n = Math.max(2, Math.min(4, Math.ceil(len / 0.075)));
+        const n = Math.max(2, Math.min(maxSeg + 1, Math.ceil(len / segLen)));
         for (let k = 1; k <= n; k++) {
           const t = k / n, u = 1 - t;
           add(u * u * u * px + 3 * u * u * t * v[0] + 3 * u * t * t * v[2] + t * t * t * v[4], u * u * u * py + 3 * u * u * t * v[1] + 3 * u * t * t * v[3] + t * t * t * v[5]);
@@ -286,16 +291,18 @@ function contoursFromCmds(cmds: { type: string; values: number[] }[], upem: numb
   return out;
 }
 
-function outlineOf(rec: FontRec, gid: number): GlyphOutline | null {
-  if (rec.outlines.has(gid)) return rec.outlines.get(gid)!;
+/** lo = low-detail outline (fewer curve steps) for small lettering */
+function outlineOf(rec: FontRec, gid: number, lo = false): GlyphOutline | null {
+  const okey = lo ? -1e6 - gid : gid;
+  if (rec.outlines.has(okey)) return rec.outlines.get(okey)!;
   let raw: number[][];
   try {
-    raw = gid < 0 ? synthOutline(gid) : contoursFromCmds(rec.hb.glyphToJson(gid), rec.upem);
+    raw = gid < 0 ? synthOutline(gid) : contoursFromCmds(rec.hb.glyphToJson(gid), rec.upem, lo);
   } catch (e) {
     raw = [];
   }
   const cs = raw.map((c) => ({ c, a: area(c) })).filter((x) => Math.abs(x.a) > 1e-6).sort((a, b) => Math.abs(b.a) - Math.abs(a.a));
-  if (!cs.length) { rec.outlines.set(gid, null); return null; }
+  if (!cs.length) { rec.outlines.set(okey, null); return null; }
   // nesting depth by containment (robust to either winding convention)
   const depth: number[] = [];
   const parent: number[] = [];
@@ -340,7 +347,7 @@ function outlineOf(rec: FontRec, gid: number): GlyphOutline | null {
     } catch { /* degenerate glyph: sides only */ }
   }
   const o: GlyphOutline = { solids, minX, minY, maxX, maxY };
-  rec.outlines.set(gid, o);
+  rec.outlines.set(okey, o);
   return o;
 }
 
@@ -348,16 +355,16 @@ function outlineOf(rec: FontRec, gid: number): GlyphOutline | null {
  * Bevelled extrusion, front-facing only (front cap + chamfer + side wall; back stays open — the text always
  * faces the camera, the shadow pass renders double-sided). Smooth normals on curves, split on corners.
  */
-function glyphGeo(rec: FontRec, gid: number, depth: number, bevel: number): GlyphGeo | null {
-  const key = `${gid}|${depth.toFixed(4)}|${bevel.toFixed(4)}`;
+function glyphGeo(rec: FontRec, gid: number, depth: number, bevel: number, lo = false): GlyphGeo | null {
+  const key = `${gid}|${depth.toFixed(4)}|${bevel.toFixed(4)}${lo ? '|lo' : ''}`;
   if (rec.geos.has(key)) return rec.geos.get(key)!;
-  const o = outlineOf(rec, gid);
+  const o = outlineOf(rec, gid, lo);
   if (!o) { rec.geos.set(key, null); return null; }
   const cx = (o.minX + o.maxX) / 2, cy = (o.minY + o.maxY) / 2;
   // chamfer mostly INWARD: the silhouette stays the real letterform (tiny Thai loops stay open)
   const bi = bevel * 0.85, bo = bevel * 0.15, bt = bevel;
   const hasBevel = bevel > 1e-5;
-  const P: number[] = [], N: number[] = [], I: number[] = [];
+  const P: number[] = [], N: number[] = [], I: number[] = [], IC: number[] = [];
   const COS_SHARP = Math.cos((38 * Math.PI) / 180);
   for (const s of o.solids) {
     // per-point miter data for every contour of this solid
@@ -394,7 +401,7 @@ function glyphGeo(rec: FontRec, gid: number, depth: number, bevel: number): Glyp
       P.push(d.c[i * 2] - d.mv[i * 2] * bi - cx, d.c[i * 2 + 1] - d.mv[i * 2 + 1] * bi - cy, 0);
       N.push(0, 0, 1);
     }
-    for (const t of s.tris) I.push(capBase + t);
+    for (const t of s.tris) IC.push(capBase + t);
     // bands: [offset, z] rings; normal kind: 0 = chamfer, 1 = wall
     const rings: [number, number, number, number, number][] = hasBevel
       ? [[-bi, 0, bo, -bt, 0], [bo, -bt, bo, -depth, 1]]
@@ -427,7 +434,7 @@ function glyphGeo(rec: FontRec, gid: number, depth: number, bevel: number): Glyp
       }
     }
   }
-  const g: GlyphGeo = { pos: new Float32Array(P), nor: new Float32Array(N), idx: new Uint32Array(I), vcount: P.length / 3, cx, cy };
+  const g: GlyphGeo = { pos: new Float32Array(P), nor: new Float32Array(N), idx: new Uint32Array(IC.concat(I)), capN: IC.length, vcount: P.length / 3, cx, cy };
   rec.geos.set(key, g);
   return g;
 }
@@ -585,7 +592,7 @@ function patchFrag(src: string) {
         vec3 t3dL = normalize( vec3( -0.45, 0.75, 0.55 ) );
         float t3dNd = max( dot( normal, t3dL ), 0.0 );
         float t3dSp = pow( max( dot( normal, normalize( t3dL + t3dV ) ), 0.0 ), 40.0 ) * ( 1.0 - roughnessFactor * 0.8 );
-        outgoingLight += uT3dKey * ( diffuseColor.rgb * t3dNd * ( 1.0 - metalnessFactor * 0.6 ) + mix( vec3( 0.5 ), diffuseColor.rgb * 1.8, metalnessFactor ) * t3dSp );
+        outgoingLight += uT3dKey * ( diffuseColor.rgb * t3dNd * ( 1.0 - metalnessFactor * 0.6 ) + mix( vec3( 0.5 ), diffuseColor.rgb * 1.05, metalnessFactor ) * t3dSp );
       }
       #include <opaque_fragment>`);
 }
@@ -671,6 +678,8 @@ export class Text3D extends THREE.Group {
   private vanishing = false;
   private disposed = false;
   private shadowMesh: THREE.Mesh | null = null;
+  private shadowGeo: THREE.BufferGeometry | null = null;
+  private shadowDepth = -0.2;
 
   constructor(text: string, o: Text3DOpts = {}) {
     super();
@@ -682,10 +691,14 @@ export class Text3D extends THREE.Group {
     this.mesh.onBeforeRender = () => { U_TIME.value = text3dNow(); };
     this.applyLook();
     this.add(this.mesh);
-    this.ready = loadFont(this.o.font ?? DEF.font).then((rec) => {
-      if (!rec && (this.o.font ?? DEF.font) !== 'ui') return loadFont('ui');
-      return rec;
-    }).then((rec) => {
+    const font = this.o.font ?? DEF.font;
+    const tryLoad = async (n: number): Promise<FontRec | null> => {
+      const rec = (await loadFont(font)) ?? (font !== 'ui' ? await loadFont('ui') : null);
+      if (rec || n <= 0 || this.disposed) return rec;
+      await new Promise((r) => setTimeout(r, 1500));
+      return tryLoad(n - 1);
+    };
+    this.ready = tryLoad(4).then((rec) => {
       if (this.disposed || !rec) return;
       this.rec = rec;
       this.build();
@@ -754,6 +767,7 @@ export class Text3D extends THREE.Group {
     this.disposed = true;
     this.removeFromParent();
     this.mesh.geometry.dispose();
+    this.shadowGeo?.dispose();
   }
 
   // ---------------------------------------------------------------- internals
@@ -781,7 +795,8 @@ export class Text3D extends THREE.Group {
     this.mesh.renderOrder = this.o.xray ? 1001 : 0;
     if (L.shadow) {
       if (!this.shadowMesh) {
-        this.shadowMesh = new THREE.Mesh(this.mesh.geometry, L.shadow);
+        this.shadowMesh = new THREE.Mesh(this.shadowGeo ?? this.mesh.geometry, L.shadow);
+        this.shadowMesh.position.set(0.045, -0.06, this.shadowDepth);
         this.shadowMesh.frustumCulled = false;
         this.mesh.add(this.shadowMesh);
       }
@@ -809,9 +824,10 @@ export class Text3D extends THREE.Group {
       maxW: o.maxWidth ? o.maxWidth / em : 0, align: o.align ?? 'center', lineH: o.lineHeight ?? DEF.lineHeight, valign: o.valign ?? 'middle',
     });
     const parts: { g: GlyphGeo; x: number; y: number }[] = [];
+    const lo = o.detail === 'low' || (o.detail !== 'high' && size < 0.035);
     let vt = 0, it = 0;
     for (const p of lay.placed) {
-      const g = glyphGeo(rec, p.gid, depthEm, bevelEm);
+      const g = glyphGeo(rec, p.gid, depthEm, bevelEm, lo);
       if (!g || !g.vcount) continue;
       parts.push({ g, x: p.x + g.cx, y: p.y + g.cy });
       vt += g.vcount; it += g.idx.length;
@@ -822,7 +838,10 @@ export class Text3D extends THREE.Group {
     const showN = Math.min(parts.length, Math.floor(this._reveal));
     const pop = this.pendingPop;
     const now = text3dNow();
-    let v = 0, ii = 0;
+    let capTotal = 0;
+    for (const p of parts) capTotal += p.g.capN;
+    // caps of every glyph first (the contact shadow draws just that range), then all side bands
+    let v = 0, ic = 0, is = capTotal;
     parts.forEach((p, k) => {
       ranges[k] = v;
       pos.set(p.g.pos, v * 3);
@@ -830,9 +849,10 @@ export class Text3D extends THREE.Group {
       const appear = pop >= 0 ? now + k * pop : k < showN ? SHOWN : HIDDEN;
       const vanish = this.vanishing ? now : HIDDEN;
       for (let q = 0; q < p.g.vcount; q++) { const b = (v + q) * 4; ag[b] = p.x; ag[b + 1] = p.y; ag[b + 2] = appear; ag[b + 3] = vanish; }
-      const src = p.g.idx;
-      for (let q = 0; q < src.length; q++) idx[ii + q] = src[q] + v;
-      v += p.g.vcount; ii += src.length;
+      const src = p.g.idx, cn = p.g.capN;
+      for (let q = 0; q < cn; q++) idx[ic++] = src[q] + v;
+      for (let q = cn; q < src.length; q++) idx[is++] = src[q] + v;
+      v += p.g.vcount;
     });
     ranges[parts.length] = v;
     const geo = new THREE.BufferGeometry();
@@ -847,10 +867,19 @@ export class Text3D extends THREE.Group {
     box.expandByScalar(0.6);
     geo.boundingBox = box;
     geo.boundingSphere = box.getBoundingSphere(new THREE.Sphere());
+    const sgeo = new THREE.BufferGeometry();
+    for (const k of ['position', 'normal', 'aGlyph']) sgeo.setAttribute(k, geo.getAttribute(k));
+    sgeo.setIndex(geo.getIndex());
+    sgeo.setDrawRange(0, capTotal);
+    sgeo.boundingBox = box;
+    sgeo.boundingSphere = geo.boundingSphere;
     this.mesh.geometry.dispose();
+    this.shadowGeo?.dispose();
     this.mesh.geometry = geo;
+    this.shadowGeo = sgeo;
+    this.shadowDepth = -depthEm - 0.035;
     if (this.shadowMesh) {
-      this.shadowMesh.geometry = geo;
+      this.shadowMesh.geometry = sgeo;
       // just behind the letters, nudged down-right like light from the upper left
       this.shadowMesh.position.set(0.045, -0.06, -depthEm - 0.035);
     }
