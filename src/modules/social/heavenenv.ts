@@ -272,22 +272,22 @@ export const beamVert = /* glsl */ `
 varying vec3 vN, vW; varying vec2 vUv;
 void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix) * normal); gl_Position = projectionMatrix * viewMatrix * w; }`;
 export const beamFrag = /* glsl */ `
-uniform float uTime, uK; uniform vec3 uCol;
+uniform float uTime, uK, uLo, uHi; uniform vec3 uCol;
 varying vec3 vN, vW; varying vec2 vUv;
 ${NOISE}
 void main() {
   float ndv = abs(dot(normalize(vN), normalize(cameraPosition - vW)));
   float core = pow(ndv, 2.2);
-  float along = smoothstep(0.0, 0.35, vUv.y) * smoothstep(1.0, 0.55, vUv.y);
+  float along = smoothstep(0.0, uLo, vUv.y) * smoothstep(1.0, uHi, vUv.y);
   float st = 0.55 + 0.45 * fbm(vec3(vUv.x * 9.0, vUv.y * 2.0 - uTime * 0.25, uTime * 0.05));
   float a = core * along * st * uK;
   gl_FragColor = vec4(uCol * a, a);
 }`;
 
-export function beamMaterial(color: THREE.ColorRepresentation, k = 1) {
+export function beamMaterial(color: THREE.ColorRepresentation, k = 1, lo = 0.35, hi = 0.55) {
   return new THREE.ShaderMaterial({
     vertexShader: beamVert, fragmentShader: beamFrag, transparent: true, depthWrite: false, side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending, uniforms: { uTime: { value: 0 }, uK: { value: k }, uCol: { value: new THREE.Color(color) } },
+    blending: THREE.AdditiveBlending, uniforms: { uTime: { value: 0 }, uK: { value: k }, uLo: { value: lo }, uHi: { value: hi }, uCol: { value: new THREE.Color(color) } },
   });
 }
 

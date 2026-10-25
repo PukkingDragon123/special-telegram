@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import { Assets } from '../../core/assets';
-import { Ease, clamp, damp } from '../../core/util';
+import { Ease, damp } from '../../core/util';
 import { text3d, Text3D } from '../../ui3d/text3d';
 import { NOISE, SUN_L, COL } from './heavenenv';
 import { SKILLS, SkillDef, Branch, BRANCH_NAME, XpSkill, lvProgress, skillState, SkillState } from './skills';
@@ -316,7 +316,7 @@ export interface PropNode {
 
 export interface Cluster { b: Branch; centre: THREE.Vector3; top: number; title: Text3D; sub: Text3D; key: string; at: number }
 
-const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _m = new THREE.Matrix4(), _c = new THREE.Color(), _e = new THREE.Euler();
+const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _c = new THREE.Color(), _e = new THREE.Euler();
 const UP = new THREE.Vector3(0, 1, 0);
 
 const C_GOLD = new THREE.Color(1.0, 0.72, 0.28);
@@ -510,7 +510,7 @@ export class SkillProps {
   celebrate(n: PropNode) { n.happy = 1; n.bounce = 1; n.U.flash.value = 1.6; }
   refuse(n: PropNode) { n.shake = 1; }
 
-  update(dt: number, camLocal: THREE.Vector3, camQuat: THREE.Quaternion, burst: (p: THREE.Vector3, n: number, o: any) => void) {
+  update(dt: number, camLocal: THREE.Vector3, burst: (p: THREE.Vector3, n: number, o: any) => void) {
     this.t += dt;
     const t = this.t;
     this.fitT += dt;
@@ -600,7 +600,6 @@ export class SkillProps {
       c.title.rotation.set(0, yaw, 0);
       c.sub.rotation.set(0, yaw, 0);
     }
-    void camQuat;
   }
 
   dispose() {
@@ -688,4 +687,3 @@ export class PropInfo {
 }
 
 const _tmp = new THREE.Vector3();
-export { clamp };

@@ -112,6 +112,12 @@ export function buildRural(c: SpecialCtx) {
     w.quad(x - 1.7, RURAL_Y + 2.3, z + 1.9, x + 1.7, RURAL_Y + 2.3, z + 1.9, x + 1.7, RURAL_Y + 2.9, z, x - 1.7, RURAL_Y + 2.9, z);
     w.quad(x + 1.7, RURAL_Y + 2.3, z - 1.9, x - 1.7, RURAL_Y + 2.3, z - 1.9, x - 1.7, RURAL_Y + 2.9, z, x + 1.7, RURAL_Y + 2.9, z);
     if (F) canopyTree(w, F, x + 5, RURAL_Y, z - 4, rng, { h: 9, r: 5, trunk: 0.45 });
+    const R2 = c.props.real;
+    R2.add('basket', x - 0.6, RURAL_Y + 0.55, z + 0.4, 0.3, { phys: 'none' });
+    R2.add('bananas', x + 0.3, RURAL_Y + 0.55, z - 0.5, 1.1);
+    R2.add('styro_box', x + 1.6, RURAL_Y, z + 1.0, 0.2);
+    R2.add('thai_stool', x + 1.7, RURAL_Y, z - 0.9, 0.4, { color: 0xc03020 });
+    R2.add('drum', x - 1.8, RURAL_Y, z - 1.2, 0, { color: 0x2a5ab0 });
     c.lights.add({ p: new THREE.Vector3(x, RURAL_Y + 2.3, z), color: new THREE.Color(0xffc080), intensity: 6, range: 8, glow: 0.4, kind: 'custom' });
   }
   // ---------------------------------------------------------------- fences: bamboo along the grove, barbed wire posts along paddies
@@ -169,8 +175,18 @@ function stiltHome(c: SpecialCtx, x: number, z: number, rng: RNG) {
   w.mat('fabric', { tint: rng.pick([0x3a6a9a, 0xc04030, 0x4a8a4a]), uv: 'local' });
   w.tube(WB.sagLine(x0 + 0.2, fy - 0.4, z0 + 0.3, x0 + 0.2, fy - 0.4, z1 - 0.3, 0.7, 8), 0.12, 5);
   w.put(c.props.motorbike(rng.pick([0xc0302a, 0x1c1c1e, 0x2a62b8])), x1 - 1, RURAL_Y, z - 0.5, 0.4, 1, { rz: 0.08 });
-  w.mat('tiles_terracotta', { tint: 0x6a3a22, uv: 'local' });
-  for (let k = 0; k < 3; k++) { w.cyl(x0 - 0.8, RURAL_Y, z0 + k * 0.9, 0.3, 0.4, 0.55, 9, 0, 0, 0.03); w.cyl(x0 - 0.8, RURAL_Y + 0.55, z0 + k * 0.9, 0.4, 0.25, 0.25, 9, 1); }
+  // real props: glazed water jars, blue drums, baskets, a tyre, plastic chairs & a cone hat's worth of clutter
+  const R = c.props.real;
+  for (let k = 0; k < 3; k++) R.add('pot_ceramic', x0 - 0.8, RURAL_Y, z0 + k * 0.9, rng.range(0, 6), { scale: rng.range(0.95, 1.15) });
+  R.add('drum', x1 + 0.6, RURAL_Y, z0 + 0.4, rng.range(0, 6), { color: 0x2a5ab0 });
+  R.add('drum_red', x1 + 0.65, RURAL_Y, z0 + 1.15, rng.range(0, 6));
+  R.add('basket_lid', x - 0.6, RURAL_Y + 0.5, z + 0.2, rng.range(0, 6), { phys: 'none' });
+  R.add('basket', x + 0.5, RURAL_Y + 0.5, z - 0.3, rng.range(0, 6), { phys: 'none' });
+  for (let k = 0; k < 2; k++) R.add('monobloc', x + (k ? 1.4 : -1.4), RURAL_Y, z + 0.1, (k ? -1 : 1) * Math.PI / 2 + rng.range(-0.4, 0.4), { color: rng.pick([0x2a62b8, 0xe8e4dc, 0xc03020]) });
+  R.add('tyre', x1 - 0.3, RURAL_Y, z1 + 0.9, 0);
+  R.add('broom_wood', x1 - 2.0, RURAL_Y, z1 + 1.75, Math.PI, { rx: -0.25 });
+  R.add('jerrycan', x1 - 0.5, RURAL_Y, z - 1.6, rng.range(0, 6), { color: 0xc03020 });
+  R.add('bucket', x0 - 0.4, RURAL_Y, z1 - 0.3, 0, { color: rng.pick([0x2a62b8, 0x2a8a4a]) });
   w.setGroup('base');
   w.mat('glass', { tint: 0xfff0d0, emis: EMIS.warm.i, emisK: 0.7, uv: 'local' });
   w.box(x - 0.2, fy + 1.0, z1 + 0.012, x + 0.3, fy + 1.6, z1 + 0.02, PZ);

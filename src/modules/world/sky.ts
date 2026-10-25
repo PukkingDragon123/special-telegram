@@ -229,7 +229,8 @@ export class Atmosphere {
     this.sun.castShadow = true;
     const q = game.engine.quality;
     // non-square map: x = across the view, y = along the view (far side of the soi still gets shadows)
-    const ms = q === 'ultra' ? [4096, 8192] : q === 'high' ? [2048, 4096] : q === 'medium' ? [2048, 3072] : [1024, 1536];
+    const sq = new URLSearchParams(location.search).has('sqshadow');
+    const ms = sq ? [2048, 2048] : q === 'ultra' ? [4096, 8192] : q === 'high' ? [2048, 4096] : q === 'medium' ? [2048, 3072] : [1024, 1536];
     this.shadowHalf = q === 'low' ? 24 : 32;
     this.shadowLen = q === 'low' ? 40 : q === 'medium' ? 62 : 76;
     this.sun.shadow.mapSize.set(ms[0], ms[1]);

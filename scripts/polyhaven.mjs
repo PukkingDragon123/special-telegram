@@ -110,5 +110,8 @@ if (!opt.list) {
     '| model | Poly Haven page | author(s) | size |', '|---|---|---|---|',
     ...Object.entries(sorted).map(([id, m]) => `| ${m.name ?? id} (\`${id}\`) | ${m.source} | ${m.authors.join(', ')} | ${(m.bytes / 1024).toFixed(0)} KB |`),
     '', `Total: ${(total / 1048576).toFixed(1)} MB in ${Object.keys(sorted).length} models.`, ''];
+  // hand-maintained extra credits (photo-derived textures etc.) are appended verbatim
+  const extra = path.join(OUT, 'CREDITS.extra.md');
+  if (fs.existsSync(extra)) lines.push('', fs.readFileSync(extra, 'utf8'));
   fs.writeFileSync(path.join(OUT, 'CREDITS.md'), lines.join('\n'));
 }

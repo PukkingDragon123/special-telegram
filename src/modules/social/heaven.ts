@@ -36,7 +36,7 @@ export class Veil {
   readonly mesh: THREE.Mesh;
   private mat: THREE.MeshBasicMaterial;
   constructor() {
-    this.mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(1, 0.97, 0.92).multiplyScalar(4), transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false });
+    this.mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(1, 0.97, 0.92).multiplyScalar(1.7), transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false });
     this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.mat);
     this.mesh.renderOrder = 3000;
     this.mesh.frustumCulled = false;
@@ -151,6 +151,7 @@ export class SkillHeaven {
   private ray = new THREE.Raycaster();
   private _v = new THREE.Vector3();
   private _ndc = new THREE.Vector2();
+  private burst = (p: THREE.Vector3, n: number, o: any) => this.sparks.burst(p, n, o);
   /** bloom kick (0..1) read by the controller after a learn */
   kick = 0;
 
@@ -194,7 +195,7 @@ export class SkillHeaven {
     const a = text3d('สวรรค์สกิล', { font: 'display', size: 0.42, color: 0xffc24a, side: 0x4a2208, emissive: 0.25, metalness: 0.45, roughness: 0.3, rim: 0xfff0c0, rimStrength: 0.9, align: 'center', valign: 'bottom', castShadow: false, anim: { pop: 0.5, rise: 0.8, spin: 1.2 } });
     const b = text3d('เล็งแล้วคลิกเพื่อเรียนสกิล · Tab กลับลงไป', { font: 'ui', size: 0.15, color: 0x4a2a4a, side: 0xfff0e0, emissive: 0.05, bevelFace: true, align: 'center', valign: 'top', castShadow: false });
     const c = text3d('SKILL HEAVEN — aim & click to learn · Tab to go back', { font: 'ui', size: 0.1, color: 0x5a4470, side: 0xf6eeff, emissive: 0.05, bevelFace: true, align: 'center', valign: 'top', castShadow: false });
-    a.position.set(0, 6.3, -8.0); b.position.set(0, 6.15, -8.0); c.position.set(0, 5.9, -8.0);
+    a.position.set(0, 6.3, -8.0); b.position.set(0, 6.15, -8.0); c.position.set(0, 5.84, -8.0);
     for (const t of [a, b, c]) { t.reveal = 0; this.root.add(t); }
     this.welcome = [a, b, c];
     Sound.play('social_heaven_arrive', { vol: 0.8 });
@@ -298,7 +299,7 @@ export class SkillHeaven {
         this.lookYaw -= Input.mouseDX * s;
         this.lookPitch -= Input.mouseDY * s * (Input.invertY ? -1 : 1);
       } else {
-        const nx = Input.ndc.x, ny = Input.ndc.y;
+        const nx = Input.ndc.x;
         const ex = Math.abs(nx) > 0.78 ? Math.sign(nx) * (Math.abs(nx) - 0.78) / 0.22 : 0;
         this.lookYaw -= ex * 1.5 * dt;
       }
@@ -340,12 +341,12 @@ export class SkillHeaven {
     this.info.update(dt, this.props.hovered, this.camLocal, this.camRight);
     // ---- world
     this.props.refresh();
-    this.props.update(dt, this.camLocal, this.camera.quaternion, (p, n, o) => this.sparks.burst(p, n, o));
+    this.props.update(dt, this.camLocal, this.burst);
     this.env.update(dt, this.camLocal);
     this.sparks.update(dt);
     this.hud.set(me.sp ?? 0);
     this.hud.update(dt);
-    this.hud.group.visible = this.phase !== 'leave';
+    this.hud.group.visible = this.phase !== 'leave' && !(this.phase === 'arrive' && t < 1.5);
     this.kick = Math.max(0, this.kick - dt * 1.6);
     // welcome title: pop in, float, vanish
     if (this.welcome.length) {

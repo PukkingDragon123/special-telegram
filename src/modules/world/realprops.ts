@@ -10,8 +10,9 @@ import { G, groups } from '../../sim/physics';
 import { PROC_MODELS as BASE_PROC, ProcModel } from './realprops-proc';
 import { TABLE_MODELS } from './realprops-table';
 import { STALL_MODELS } from './realprops-stall';
+import { VEHICLE_MODELS } from './realprops-vehicle';
 
-const PROC_MODELS: Record<string, () => Promise<ProcModel>> = { ...BASE_PROC, ...TABLE_MODELS, ...STALL_MODELS };
+const PROC_MODELS: Record<string, () => Promise<ProcModel>> = { ...BASE_PROC, ...TABLE_MODELS, ...STALL_MODELS, ...VEHICLE_MODELS };
 
 /**
  * REAL PROPS — photoscanned Poly Haven models (CC0, public/assets/gen/world/models, fetched and
@@ -112,6 +113,8 @@ export const MODELS: Record<PropId, ModelDef> = {
   power_box: M('power_box_01', { phys: 'static', far: 1.0, anchor: 'back' }),
   hydrant: M('fire_hydrant', { phys: 'static', far: 1.2, shadow: true }),
   barrier: M('concrete_road_barrier_02', { phys: 'static', far: 1.6, shadow: true }),
+  // ---- vehicles (realprops-vehicle.ts) — callers add their own static colliders
+  scooter: { phys: 'none', recolor: true, shadow: true, far: 1.3 },
   // ---- tables & table things (realprops-table.ts)
   thai_table: { phys: 'dyn', mass: 3.5, friction: 0.6, recolor: true, shadow: true, collider: 'box' },
   steel_table: { phys: 'dyn', mass: 8, friction: 0.5, shadow: true, collider: 'box' },

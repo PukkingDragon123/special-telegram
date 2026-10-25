@@ -259,8 +259,8 @@ export class PostFX {
     }
     this.caPass.enabled = q === 'high' || q === 'ultra';
     this.bloom.intensity = q === 'low' ? 0.35 : 0.55;
-    // shafts/haze: off at low
-    this.shaftsOn = q !== 'low';
+    // shafts/haze: off at low (and with ?noshafts)
+    this.shaftsOn = q !== 'low' && !new URLSearchParams(location.search).has('noshafts');
     this.syncShaftsPass();
   }
 
@@ -306,6 +306,9 @@ export class PostFX {
     // nobody fed the sun recently (menu / other scenes): no shafts or haze
     if (performance.now() - this.sunStamp > 400) { this.shafts.u('shaftK').value = 0; this.shafts.u('hazeK').value = 0; }
     else this.shafts.u('projInv').value.copy((this.camera as THREE.PerspectiveCamera).projectionMatrixInverse);
+    // modules toggle ao / dof directly: re-check the buffer-swap parity every frame (and skip the pass when idle)
+    if (this.shaftsPass) this.shaftsPass.enabled = this.shaftsOn && this.ao.enabled && !this.dofPass.enabled
+      && (this.shafts.u('shaftK').value > 0.001 || this.shafts.u('hazeK').value > 0.001);
     this.composer.render(dt);
   }
 }

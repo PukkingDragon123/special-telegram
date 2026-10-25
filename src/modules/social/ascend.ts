@@ -21,15 +21,19 @@ void main() {
   float sw = uTime * 0.25 + (1.0 - r) * 1.6;            // swirl
   vec2 q = vec2(cos(a + sw), sin(a + sw)) * r;
   float n = fbm(vec3(q * 3.2, uTime * 0.12));
-  float hole = uOpen * 0.5;
-  float edge = r - hole - (n - 0.5) * 0.28;
-  float core = 1.0 - smoothstep(-0.06, 0.04, edge);
-  float cloud = smoothstep(-0.02, 0.1, edge) * (1.0 - smoothstep(0.62, 1.0, r)) * smoothstep(0.25, 0.65, n + 0.25);
-  vec3 light = mix(vec3(1.0, 0.82, 0.55), vec3(1.0, 0.97, 0.9), smoothstep(hole + 0.05, 0.0, r)) * (2.2 + 3.0 * exp(-r * r * 9.0));
-  vec3 cloudCol = mix(vec3(0.86, 0.8, 0.92), vec3(1.12, 1.04, 0.98), n) + vec3(1.0, 0.75, 0.45) * smoothstep(0.18, 0.0, edge) * 1.5;
-  float glow = exp(-r * r * 2.2) * 0.35 * uOpen;
-  vec3 col = core * light + (1.0 - core) * (cloud * cloudCol + glow * vec3(1.0, 0.85, 0.6));
-  float alpha = clamp(max(core, max(cloud, glow)), 0.0, 1.0) * uK;
+  float n2 = fbm(vec3(q * 7.0 + 3.0, uTime * 0.2));
+  float hole = uOpen * 0.42;
+  float edge = r - hole - (n - 0.5) * 0.3;
+  float core = 1.0 - smoothstep(-0.08, 0.06, edge);
+  float outer = 1.0 - smoothstep(0.3, 0.95, r + (n2 - 0.5) * 0.5);
+  float dens = smoothstep(0.32, 0.72, n * 0.7 + n2 * 0.45);
+  float cloud = smoothstep(-0.02, 0.14, edge) * outer * dens;
+  vec3 light = mix(vec3(1.0, 0.8, 0.52), vec3(1.0, 0.97, 0.9), smoothstep(hole + 0.05, 0.0, r)) * (2.0 + 3.0 * exp(-r * r * 9.0));
+  vec3 cloudCol = mix(vec3(0.74, 0.7, 0.86), vec3(1.15, 1.04, 0.94), smoothstep(0.4, 0.0, edge)) * (0.78 + 0.4 * n2)
+                + vec3(1.0, 0.72, 0.4) * smoothstep(0.16, 0.0, edge) * 1.4;
+  float glow = exp(-r * r * 3.0) * 0.55 * uOpen;
+  vec3 col = core * light + (1.0 - core) * (cloud * cloudCol + glow * vec3(1.0, 0.84, 0.58) * (1.0 - cloud));
+  float alpha = clamp(max(core, max(cloud * 0.95, glow * 0.6)), 0.0, 1.0) * uK;
   gl_FragColor = vec4(col, alpha);
 }`;
 
@@ -56,7 +60,7 @@ void main() {
   float x = 1.0 - abs(vUv.x - 0.5) * 2.0;
   float along = smoothstep(0.0, 0.2, vUv.y) * (1.0 - smoothstep(0.75, 1.0, vUv.y));
   float fl = 0.55 + 0.45 * vn(vec3(vS * 9.0, vUv.y * 3.0 - uTime * 0.6, uTime * 0.1));
-  float a = pow(x, 2.2) * along * fl * uK * 0.42;
+  float a = pow(x, 1.8) * along * fl * uK * 0.75;
   gl_FragColor = vec4(vec3(1.0, 0.86, 0.6) * a, a);
 }`;
 
@@ -178,8 +182,8 @@ export class ThinkerBeam {
   private t = Math.random() * 10;
 
   constructor() {
-    const geo = new THREE.CylinderGeometry(0.28, 0.62, 16, 20, 1, true).translate(0, 8, 0);
-    this.mat = beamMaterial(0xffe0a6, 0);
+    const geo = new THREE.CylinderGeometry(0.32, 0.72, 14, 20, 1, true).translate(0, 7, 0);
+    this.mat = beamMaterial(0xffd690, 0, 0.02, 0.2);
     this.beam = new THREE.Mesh(geo, this.mat);
     this.beam.renderOrder = 9;
     const n = 26;
@@ -206,7 +210,7 @@ export class ThinkerBeam {
     this.k += Math.sign(this.target - this.k) * Math.min(Math.abs(this.target - this.k), dt * (this.target > this.k ? 0.8 : 1.6));
     if (feet) this.group.position.copy(feet);
     this.mat.uniforms.uTime.value = this.t;
-    this.mat.uniforms.uK.value = this.k * 0.6;
+    this.mat.uniforms.uK.value = this.k * 1.1;
     this.mm.uniforms.uTime.value = this.t;
     this.mm.uniforms.uK.value = this.k;
     this.group.visible = this.k > 0.002;
