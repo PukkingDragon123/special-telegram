@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import type { Ctx } from '../../game/interact';
-import { tl, round, angleDiff, damp } from '../../core/util';
+import { tl, round, angleDiff, damp, params } from '../../core/util';
+import { Assets } from '../../core/assets';
+import type { SceneDef } from '../../game/scenes';
 import { yawTo } from '../../game/mapplan';
 import { buildQuad, QuadAnimator, QuadInput, QuadPose, QuadRig } from './quad';
 import { Creature, loadCreature, SPECS } from './creature';
@@ -84,6 +86,11 @@ export class Pets {
     const game = this.game;
     game.registerView('dog', (e: Ent) => this.makeView(e, 'dog'));
     game.registerView('cat', (e: Ent) => this.makeView(e, 'cat'));
+    game.scenes.register('petlab', () => new PetLab(game));
+    if (params.has('petlab')) {
+      let done = false;
+      game.events.on('net:session', () => { if (done) return; done = true; setTimeout(() => { if (game.isHost) game.g.scene = 'petlab'; }, 0); });
+    }
 
     game.onIntent('life.feed', (pl, d: { id: number; slot?: number }) => this.hostFeed(pl, d.id, d.slot ?? pl.sel ?? 0));
     game.onIntent('life.pet', (pl, d: { id: number }) => this.hostPet(pl, d.id));
@@ -821,4 +828,92 @@ export class DogAPI {
   get adopted() { return !!this.ent?.adopted; }
   /** HOST: force adoption (debug / story). */
   adopt() { const e = this.ensure(); if (e) this.pets.adopt(e); return this; }
+}
+
+/* ============================================================================================
+ * ?petlab — isolated close-up scene for the sculpted dog & cat (fur / face / animation checks).
+ *   &sp=dog|cat|both  &pose=stand|sit|lie|sleep|beg|walk|trot|run|eat|scratch|sniff|pant|bark|wag
+ *   &cam=x,y,z,lx,ly,lz  &look=x,y,z (head tracking target)  &tod=day|night
+ * window.__petlab = { dog, cat, inp, cam(x,y,z,lx,ly,lz), set(partialInput), adv(seconds) }
+ * ========================================================================================== */
+export class PetLab implements SceneDef {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.02, 200);
+  fade = false;
+  private pets: { c: Creature; inp: QuadInput; base: THREE.Vector3; t: number }[] = [];
+  private camT = new THREE.Vector3(0, 0.4, 0);
+  constructor(private game: Game) {}
+  async enter() {
+    const g = this.game;
+    const night = params.get('tod') === 'night';
+    this.scene.background = new THREE.Color(night ? 0x10141c : 0xb9c2c4);
+    g.engine.setView(this.scene, this.camera);
+    g.engine.post.setLook(night ? 'night' : 'thaiDay');
+    const hemi = new THREE.HemisphereLight(0xe6eef5, 0x6a5a48, night ? 0.15 : 0.7);
+    const sun = new THREE.DirectionalLight(night ? 0xffb070 : 0xfff0d8, night ? 1.2 : 2.6);
+    sun.position.set(-3, 6, 4);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(1024, 1024);
+    const sc = sun.shadow.camera as THREE.OrthographicCamera;
+    sc.left = -3; sc.right = 3; sc.top = 3; sc.bottom = -3; sc.far = 20;
+    sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.01;
+    this.scene.add(hemi, sun, sun.target);
+    const gm = Assets.pbr('concrete_soi_road', { repeat: 3 });
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), gm);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    this.scene.add(ground);
+    try {
+      const hdr = await Assets.hdr(night ? 'hdri/night_street_sodium_1k.hdr' : 'hdri/day_hazy_street_1k.hdr');
+      const pm = new THREE.PMREMGenerator(g.engine.renderer);
+      this.scene.environment = pm.fromEquirectangular(hdr).texture;
+      this.scene.environmentIntensity = night ? 0.5 : 0.8;
+      pm.dispose();
+    } catch { /* hemi only */ }
+    const which = params.get('sp') ?? 'dog';
+    const pose = params.get('pose') ?? 'stand';
+    const add = async (sp: 'dog' | 'cat', x: number, z: number, yaw: number) => {
+      const gltf = await loadCreature(sp);
+      const c = new Creature(gltf, SPECS[sp], 1);
+      c.root.position.set(x, 0, z);
+      c.root.rotation.y = yaw;
+      this.scene.add(c.root);
+      const inp: QuadInput = { speed: 0, turn: 0, pose: 'stand', wag: 0.2, eat: false, scratch: false, sniff: false, pant: false, alert: 0, tail: 0.2, look: null };
+      const P = pose;
+      if (P === 'sit' || P === 'lie' || P === 'sleep' || P === 'beg') inp.pose = P as QuadPose;
+      if (P === 'walk') inp.speed = 0.9; if (P === 'trot') inp.speed = 1.8; if (P === 'run') inp.speed = 4.5;
+      if (P === 'eat') inp.eat = true; if (P === 'scratch') { inp.scratch = true; inp.pose = 'sit'; }
+      if (P === 'sniff') inp.sniff = true; if (P === 'pant') { inp.pant = true; inp.wag = 1; c.happy = 1; }
+      if (P === 'wag') { inp.wag = 1; inp.tail = 0.6; c.happy = 1; }
+      const lk = params.get('look')?.split(',').map(Number);
+      if (lk && lk.length === 3) inp.look = new THREE.Vector3(lk[0], lk[1], lk[2]);
+      this.pets.push({ c, inp, base: c.root.position.clone(), t: 0 });
+      if (P === 'bark') c.anim.bark(30);
+      return c;
+    };
+    const lab: any = { inp: null, cam: (x: number, y: number, z: number, lx: number, ly: number, lz: number) => { this.camera.position.set(x, y, z); this.camT.set(lx, ly, lz); this.camera.lookAt(this.camT); } };
+    if (which === 'dog' || which === 'both') { lab.dog = await add('dog', 0, 0, Math.PI / 2); lab.inp = this.pets[this.pets.length - 1].inp; }
+    if (which === 'cat' || which === 'both') { lab.cat = await add('cat', which === 'both' ? 0.9 : 0, which === 'both' ? 0.5 : 0, Math.PI / 2); lab.inp ??= this.pets[this.pets.length - 1].inp; }
+    lab.set = (o: Partial<QuadInput>) => { for (const p of this.pets) Object.assign(p.inp, o); };
+    lab.adv = (s: number) => { for (let i = 0; i < s * 30; i++) this.step(1 / 30); };
+    lab.pets = this.pets;
+    (window as any).__petlab = lab;
+    const cam = params.get('cam')?.split(',').map(Number);
+    if (cam && cam.length >= 6) lab.cam(...cam);
+    else lab.cam(0.2, 0.55, 1.6, 0, 0.38, 0);
+    // settle poses before the first frame
+    lab.adv(2.5);
+  }
+  private step(dt: number) {
+    for (const p of this.pets) {
+      p.t += dt;
+      p.c.update(dt, p.inp, this.camera.position);
+    }
+  }
+  update(dt: number) { this.step(Math.min(dt, 1 / 20)); }
+  exit() {
+    for (const p of this.pets) { p.c.dispose(); p.c.root.removeFromParent(); }
+    this.scene.environment?.dispose();
+    delete (window as any).__petlab;
+  }
 }

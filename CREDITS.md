@@ -1771,3 +1771,8 @@ Also uses the shared libraries credited by the research agents (textures/pbr, te
 | gen/world/signs/int_ceramics.jpg | Cats in kitchenware shop | Londo Mollari | by-sa 2.0 | https://www.flickr.com/photos/25981243@N00/429663222 |
 | gen/world/signs/int_narrow_shop.jpg | Shop at Sampeng Lane - Chinatown | Jorge Lascar | by 2.0 | https://www.flickr.com/photos/8721758@N06/4510174719 |
 | gen/world/signs/int_plates.jpg | 365 x29 Dinner Plates of Faith | David Masters | by 2.0 | https://www.flickr.com/photos/25652278@N03/3668547763 |
+
+## 3D text (`src/ui3d/text3d.ts`, `public/assets/gen/text3d/`)
+
+- `public/assets/fonts/Krub-Bold.woff2` + `gen/text3d/talk.ttf` — **Krub** Bold, Copyright 2018 The Krub Project Authors (Cadson Demak, https://github.com/cadsondemak/Krub), SIL Open Font License 1.1, from https://github.com/google/fonts/tree/main/ofl/krub. Looped Thai (ไทยมีหัว). Default face of the floating 3D dialogue lettering.
+- `gen/text3d/{heavy,ui,bubbly,display,hand,news}.ttf` — TTF subsets (Thai + Latin + punctuation) of the already-shipped OFL fonts K2D ExtraBold, IBM Plex Sans Thai Looped SemiBold, Kodchasan Bold, Chonburi, Itim and Taviraj Bold (SIL OFL 1.1, Google Fonts), converted with fontTools so HarfBuzz (`harfbuzzjs`, MIT) can shape them and extract outlines for extruded 3D letters.

@@ -19,6 +19,8 @@ export const F = {
   /** high-contrast looped serif (400,700,900) — newspaper & magazine headlines */
   news: '"Taviraj"',
   news2: '"Trirong"',
+  /** rounded-square looped display (700, Cadson Demak "Krub") — the floating 3D dialogue lettering */
+  krub: '"Krub"',
   /** rounded looped display (400,600,700) — the main title / bubbly lettering */
   bubbly: '"Kodchasan"',
   /** soft rounded looped (400,600,700) */
@@ -54,7 +56,7 @@ const FILES: [string, string, string, string?][] = [
   ['Trirong', 'Trirong-Regular', '400'], ['Trirong', 'Trirong-Bold', '700'], ['Trirong', 'Trirong-Black', '900'],
   ['Kodchasan', 'Kodchasan-Regular', '400'], ['Kodchasan', 'Kodchasan-SemiBold', '600'], ['Kodchasan', 'Kodchasan-Bold', '700'],
   ['KoHo', 'KoHo-Regular', '400'], ['KoHo', 'KoHo-SemiBold', '600'], ['KoHo', 'KoHo-Bold', '700'],
-  ['Chonburi', 'Chonburi-Regular', '400'],
+  ['Chonburi', 'Chonburi-Regular', '400'], ['Krub', 'Krub-Bold', '700'],
   ['Itim', 'Itim-Regular', '400'], ['Mali', 'Mali-Regular', '400'], ['Mali', 'Mali-Bold', '700'], ['Sriracha', 'Sriracha-Regular', '400'],
   ['Charmonman', 'Charmonman-Regular', '400'], ['Charmonman', 'Charmonman-Bold', '700'],
   ['Charm', 'Charm-Regular', '400'], ['Charm', 'Charm-Bold', '700'],
