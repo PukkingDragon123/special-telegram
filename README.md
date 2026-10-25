@@ -48,6 +48,7 @@ tabs of one browser (dev). Multiplayer is implemented but not yet play-tested (s
 `?autostart&skipintro` straight into the world · `?debug` · `?only=world,characters` · `?skip=life` ·
 `?timescale=20` · `?time=22` · `?fly` · `?kitchenlab` · `?restaurantlab` · `?shoplab` · `?lifelab` · `?charlab` ·
 `?customize` · `?newspaper` · `?intro=<step>` · `?scene=casino`.
+itch.io build: `npm run build && node scripts/itch-pack.mjs` → `hia-phat-itch.zip` (under 1000 files; assets packed into .pak files).
 Headless checks: `node scripts/shot.mjs "<query>" out.png <wait>` and `node scripts/playtest.mjs`.
 
 ## Code
