@@ -646,6 +646,12 @@ export interface QuadInput {
   snarl?: number;
   /** allow idle yawns (default true) */
   yawn?: boolean;
+  /** trigger a head tilt now */
+  tilt?: boolean;
+  /** force the derp tongue */
+  derp?: boolean;
+  /** zoomies 0..1 (goofy sprint: ears back, tongue out, body stretch) */
+  zoom?: number;
   /** float (ghost) — legs dangle */
 }
 
@@ -715,7 +721,7 @@ export interface QuadRigLike {
 
 export class QuadAnimator {
   /** live facial / layer state for drivers (0..1) */
-  readonly face = { blink: 0, pant: 0, eat: 0, bark: 0, sniff: 0, alert: 0, wag: 0, squint: 0, sleep: 0, eyeYaw: 0, eyePitch: 0, yawn: 0, breath: 0, dream: 0, snarl: 0, brow: 0 };
+  readonly face = { blink: 0, pant: 0, eat: 0, bark: 0, sniff: 0, alert: 0, wag: 0, squint: 0, sleep: 0, eyeYaw: 0, eyePitch: 0, yawn: 0, breath: 0, dream: 0, snarl: 0, brow: 0, tilt: 0, derp: 0, squash: 0, stretch: 0, zoom: 0 };
   /** smoothed pose weights (normalised) */
   readonly poseW: Record<QuadPose, number> = { stand: 1, sit: 0, lie: 0, sleep: 0, beg: 0 };
   private cur = new Float32Array(NB * 3);
@@ -742,6 +748,12 @@ export class QuadAnimator {
   private sacT = 0.5; private sacYaw = 0; private sacPitch = 0;
   private snarlK = 0;
   private eyeYaw = 0; private eyePitch = 0;
+  // goofy layer: head tilt "huh?", derp tongue (blep), zoomies, squash & stretch spring
+  private tiltT = 4 + Math.random() * 6; private tiltK = 0; private tiltDir = 1; private tiltHold = 0;
+  private derpK = 0; private derpT = 3; private derpSide = 1;
+  private sq = 0; private sqV = 0; private lastBarkEnv = 0;
+  /** kick the squash/stretch spring (+ = stretch up, - = squash) */
+  pop(v: number) { this.sqV += v; }
 
   constructor(private rig: QuadRigLike) {}
 
@@ -875,6 +887,34 @@ export class QuadAnimator {
     this.face.snarl = this.snarlK;
     if (this.snarlK > 0.01) { addB(QB.jaw, 0.08 * this.snarlK + Math.sin(this.t * 30) * 0.01 * this.snarlK); addB(QB.head, 0.12 * this.snarlK); addB(QB.neck, 0.15 * this.snarlK); }
     this.face.brow = (inp.pose === 'beg' ? 1 : 0) * (1 - this.snarlK) - this.snarlK - this.alertK * 0.3 * (this.alertK > 0 ? 1 : 0);
+    // head tilt "huh?" — when watching something and standing still (and on demand)
+    if (this.tiltHold > 0) this.tiltHold -= dt;
+    else {
+      this.tiltT -= dt;
+      if ((this.tiltT < 0 && inp.look && !moving && this.eatK < 0.2) || inp.tilt) {
+        this.tiltT = 5 + Math.random() * 8; this.tiltHold = 1.4 + Math.random() * 1.2; this.tiltDir = Math.random() < 0.5 ? 1 : -1;
+        this.sqV += 0.6;
+      }
+    }
+    this.tiltK = ease(this.tiltK, this.tiltHold > 0 ? 1 : 0, this.tiltHold > 0 ? 7 : 4);
+    this.face.tilt = this.tiltK * this.tiltDir;
+    if (this.tiltK > 0.01) {
+      // overshoot: the tilt snaps past and settles (spring feel from the eased value + a wobble)
+      const wob = Math.sin(this.t * 9) * 0.06 * this.tiltK * Math.max(0, 1 - this.tiltHold * 0.2);
+      addB(QB.head, -0.12 * this.tiltK, 0, (0.5 + wob) * this.tiltK * this.tiltDir);
+      addB(QB.neck, -0.05 * this.tiltK, 0, 0.12 * this.tiltK * this.tiltDir);
+      addB(QB.ear_l, 0.3 * this.tiltK); addB(QB.ear_r, 0.3 * this.tiltK);
+    }
+    // derp tongue: while panting / zooming the tongue sometimes flops out sideways (blep)
+    this.derpT -= dt;
+    if (this.derpT < 0) { this.derpT = 2 + Math.random() * 5; this.derpSide = Math.random() < 0.5 ? 1 : -1; }
+    const wantDerp = (this.pantK > 0.4 && this.derpT < 2.2) || (inp.zoom ?? 0) > 0.5 || inp.derp ? 1 : 0;
+    this.derpK = ease(this.derpK, wantDerp, 5);
+    this.face.derp = this.derpK * this.derpSide;
+    // zoomies: ears pinned back, tail streaming, spine flexing, goofy grin
+    const zk = inp.zoom ?? 0;
+    this.face.zoom = zk;
+    if (zk > 0.01) { addB(QB.ear_l, -0.5 * zk, 0, 0.4 * zk); addB(QB.ear_r, -0.5 * zk, 0, -0.4 * zk); addB(QB.jaw, 0.25 * zk); }
     // ears
     addB(QB.ear_l, this.alertK * 0.28, 0, (this.alertK < 0 ? -this.alertK * 0.7 : 0));
     addB(QB.ear_r, this.alertK * 0.28, 0, (this.alertK < 0 ? this.alertK * 0.7 : 0));
@@ -892,10 +932,12 @@ export class QuadAnimator {
       addB(QB.head, -0.18 * env);
       addB(QB.jaw, (cat ? 0.32 : 0.55) * env);
       this.face.bark = env;
+      if (env > 0.9 && this.lastBarkEnv <= 0.9) this.sqV += cat ? 0.8 : 1.4;
       addB(QB.chest, 0.06 * env);
       ry -= 0.01 * env;
     }
 
+    this.lastBarkEnv = this.face.bark;
     // look-at (head & neck yaw/pitch) — idle glances when no target
     let wantYaw = 0, wantPitch = 0;
     if (inp.look) {
@@ -1014,6 +1056,16 @@ export class QuadAnimator {
       g(QB.neck, 0, this.turnK * 0.25);
     }
 
+    // ---- squash & stretch spring (bark pops, head-tilt pops, gallop stride, happy bounces)
+    {
+      const k = 160, c = 9;
+      this.sqV += (-this.sq * k - this.sqV * c) * dt;
+      this.sq += this.sqV * dt;
+      this.sq = Math.max(-0.25, Math.min(0.25, this.sq));
+      const stride = this.gallopK * Math.sin(this.phase * Math.PI * 2) * 0.07 + (inp.zoom ?? 0) * 0.04;
+      this.face.squash = this.sq * 0.35;
+      this.face.stretch = stride;
+    }
     // ---- apply
     if (rig.apply) {
       const out = this.out;

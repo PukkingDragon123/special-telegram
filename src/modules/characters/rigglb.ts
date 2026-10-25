@@ -86,17 +86,101 @@ const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _v3 = new THREE.Vector3();
 const D2R = Math.PI / 180;
 
+/* ---- photo-real skin / eyes / hair / fabric on the single atlas material ----------------------------
+ * skin mask (painter: final atlas == skin-only paint) → skin gets wrap-lit, red-shifted soft terminator and
+ * warm back-light translucency (ears, nose rim, fingers), real pore detail (photo, painted into the atlas) as
+ * bump, satin roughness; eyes (face-photo landmarks) get a wet, glossy surface + a tiny catchlight;
+ * hair (atlas hair region) gets a dual Kajiya-Kay strand highlight; fabric weave relief = bump from the
+ * real fabric photos in the albedo. */
+const WHITE1 = (() => { const t = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1); t.needsUpdate = true; return t; })();
+const CHAR_PARS_F = /* glsl */`
+uniform sampler2D uSkinMask;
+float skinG = 0.0; float wetG = 0.0; float hairG = 0.0; float catchG = 0.0; float bumpK = 1.0;
+bool inRect(vec2 p, vec4 r) { return p.x > r.x && p.y > r.y && p.x < r.x + r.z && p.y < r.y + r.w; }
+`;
+const CHAR_MAP_F = /* glsl */`
+#include <map_fragment>
+{
+  vec2 ap = vMapUv * 1024.0;                        // virtual atlas px (layout.ts)
+  skinG = texture2D(uSkinMask, vMapUv).r;
+  bumpK = mix(1.0, 0.3, skinG);
+  if (inRect(ap, vec4(5.0, 405.0, 310.0, 310.0))) {  // face photo: eye landmarks at (0.36,0.44)/(0.64,0.44)
+    vec2 f = (ap - vec2(5.0, 405.0)) / 310.0;
+    vec2 e1 = (f - vec2(0.36, 0.442)) * vec2(1.0, 1.7), e2 = (f - vec2(0.64, 0.442)) * vec2(1.0, 1.7);
+    wetG = 1.0 - smoothstep(0.03, 0.045, min(length(e1), length(e2)));
+    float dc = min(length(f - vec2(0.352, 0.432)), length(f - vec2(0.632, 0.432)));
+    catchG = 1.0 - smoothstep(0.0035, 0.007, dc);
+    bumpK = 0.22;
+    skinG = max(skinG, 0.85) * (1.0 - wetG);
+  }
+  if (inRect(ap, vec4(704.0, 400.0, 320.0, 272.0))) {
+    hairG = 1.0; skinG = 0.0; bumpK = 0.9;
+    // alpha-tested strand ends on the shell edges (hairline rim t≈0.62, curtain tips t→1): no helmet edge
+    vec2 h = (ap - vec2(709.0, 405.0)) / vec2(310.0, 262.0);
+    float col = floor(h.x * 190.0);
+    float n1 = fract(sin(col * 12.9898) * 43758.5453), n2 = fract(sin(col * 78.233 + 3.1) * 23421.631);
+    float rim = (h.y - 0.565) / 0.055, tip = (h.y - 0.9) / 0.1;
+    if ((rim > 0.0 && rim < 1.0 && rim > 0.25 + n1 * 0.75) || (tip > 0.0 && tip > 0.15 + n2 * 0.85)) discard;
+  }
+}
+`;
+const CHAR_ROUGH_F = /* glsl */`
+#include <roughnessmap_fragment>
+roughnessFactor = mix(roughnessFactor, 0.52, skinG);
+roughnessFactor = mix(roughnessFactor, 0.62, hairG);
+roughnessFactor = mix(roughnessFactor, 0.08, wetG);
+`;
+const CHAR_EMIS_F = /* glsl */`
+#include <emissivemap_fragment>
+totalEmissiveRadiance += vec3(0.9, 0.92, 0.95) * catchG;
+`;
+const CHAR_BUMP_F = THREE.ShaderChunk.bumpmap_pars_fragment.replace(/bumpScale \*/g, 'bumpScale * bumpK *');
+const CHAR_LIGHT_F = THREE.ShaderChunk.lights_physical_pars_fragment
+  .replace('float dotNL = saturate( dot( geometryNormal, directLight.direction ) );\n\n\tvec3 irradiance = dotNL * directLight.color;',
+    `float dotNL = saturate( dot( geometryNormal, directLight.direction ) );
+	vec3 wrapS = vec3(0.42, 0.24, 0.17);
+	vec3 dotNLs = saturate((dot(geometryNormal, directLight.direction) + wrapS) / (1.0 + wrapS));
+	vec3 irradiance = mix(vec3(dotNL), dotNLs, skinG) * directLight.color;`)
+  .replace('reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}',
+    `reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );
+	{
+		// skin: warm translucency when back-lit (ear rims, nose, fingers)
+		float bl = pow(saturate(dot(geometryViewDir, -directLight.direction)), 3.0) * pow(1.0 - saturate(dot(geometryNormal, geometryViewDir)), 1.5);
+		reflectedLight.directDiffuse += directLight.color * bl * skinG * vec3(1.0, 0.32, 0.18) * material.diffuseColor * 1.6;
+		// hair: dual Kajiya-Kay highlight along the strands (combed down from the crown)
+		if (hairG > 0.5) {
+			vec3 up = normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz);
+			vec3 T = up - geometryNormal * dot(up, geometryNormal);
+			T = dot(T, T) > 1e-6 ? normalize(T) : up;
+			vec3 Hh = normalize(directLight.direction + geometryViewDir);
+			float t1 = dot(T, Hh), t2 = dot(normalize(T + geometryNormal * 0.25), Hh);
+			float s1 = pow(sqrt(max(0.0, 1.0 - t1 * t1)), 80.0), s2 = pow(sqrt(max(0.0, 1.0 - t2 * t2)), 22.0);
+			float nl = saturate(dot(geometryNormal, directLight.direction) * 0.5 + 0.5);
+			reflectedLight.directSpecular += directLight.color * nl * (0.05 * s1 + 0.16 * s2 * material.diffuseColor);
+		}
+	}
+}`);
+
 function makeAtlasMaterial() {
-  const m = new THREE.MeshStandardMaterial({ roughness: 0.82, metalness: 0, envMapIntensity: 0.85 });
+  const m = new THREE.MeshStandardMaterial({ roughness: 0.84, metalness: 0, envMapIntensity: 0.85, bumpScale: 1.4 });
   m.name = 'char-atlas';
   m.userData.uFat = { value: 0 };
+  m.userData.uSkin = { value: WHITE1 };
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uFat = m.userData.uFat;
+    sh.uniforms.uSkinMask = m.userData.uSkin;
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', '#include <common>\nattribute float afat;\nuniform float uFat;')
       .replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += normal * afat * uFat;');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\n' + CHAR_PARS_F)
+      .replace('#include <map_fragment>', CHAR_MAP_F)
+      .replace('#include <roughnessmap_fragment>', CHAR_ROUGH_F)
+      .replace('#include <emissivemap_fragment>', CHAR_EMIS_F)
+      .replace('#include <bumpmap_pars_fragment>', CHAR_BUMP_F)
+      .replace('#include <lights_physical_pars_fragment>', CHAR_LIGHT_F);
   };
-  m.customProgramCacheKey = () => 'char-atlas-fat';
+  m.customProgramCacheKey = () => 'char-atlas-skin2';
   return m;
 }
 
@@ -117,6 +201,7 @@ export class Rig implements CharacterRig {
   private geoKey = '';
   private geoKeyLo = '';
   private mat = makeAtlasMaterial();
+  private atlasE: { mtex?: THREE.Texture } | null = null;
   private fpMats: THREE.Material[] | null = null;
   private atlasKey = '';
   private atlasSize = 512;
@@ -245,6 +330,9 @@ export class Rig implements CharacterRig {
     const { key, e } = acquireAtlas(this.look, this.atlasSize, v, this.opts.lod === 'high', this.root);
     this.atlasKey = key;
     this.mat.map = e.tex;
+    this.mat.bumpMap = e.tex;
+    this.atlasE = e;
+    this.mat.userData.uSkin.value = e.mtex ?? WHITE1;
     this.mat.needsUpdate = true;
     if (this.fpMats) (this.fpMats[0] as THREE.MeshStandardMaterial).map = e.tex;
     if (prev) releaseAtlas(prev);
@@ -255,7 +343,7 @@ export class Rig implements CharacterRig {
     if (this.mode === 'sil') mats = [silMat, silMat];
     else if (this.mode === 'fp') {
       if (!this.fpMats) {
-        const a = this.mat.clone(); a.colorWrite = false; a.depthWrite = false; (a as any).userData = { uFat: this.mat.userData.uFat }; a.onBeforeCompile = this.mat.onBeforeCompile;
+        const a = this.mat.clone(); a.colorWrite = false; a.depthWrite = false; (a as any).userData = { uFat: this.mat.userData.uFat, uSkin: this.mat.userData.uSkin }; a.onBeforeCompile = this.mat.onBeforeCompile;
         const b = accessoryMaterial().clone(); b.colorWrite = false; b.depthWrite = false;
         this.fpMats = [a, b];
       }
@@ -291,6 +379,18 @@ export class Rig implements CharacterRig {
     else if (plan.clip) { const a = this.action(plan.clip); if (a && (this.wClip.get(plan.clip) ?? 0) < 0.05) a.reset(); }
     this.fidget = null;
     this.updateFace();
+    // reaction timing: anticipation squash, then stretch overshoot
+    switch (anim) {
+      case 'get_slapped': this.squashKick(-2.6); this.squashKick(1.2, 0.18); break;
+      case 'slap': this.squashKick(-0.9); this.squashKick(2.0, 0.14); break;
+      case 'highfive': this.squashKick(-0.6); this.squashKick(2.2, 0.12); break;
+      case 'scream_run': case 'wake_up': this.squashKick(2.6); break;
+      case 'fall': this.squashKick(-2.2); break;
+      case 'angry': this.squashKick(-1.4); this.squashKick(1.6, 0.16); break;
+      case 'wave': case 'point': case 'shrug': case 'give': case 'think': case 'count_coins': this.squashKick(0.9); break;
+      case 'celebrate': case 'casino_cheer': this.squashKick(-1.0); this.squashKick(2.4, 0.15); break;
+      case 'drunk': case 'sad': this.squashKick(-0.8); break;
+    }
   }
 
   setMove(speed: number) { this.moveTarget = Math.max(0, Number.isFinite(speed) ? speed : 0); }
@@ -312,6 +412,9 @@ export class Rig implements CharacterRig {
 
   update(dt: number) {
     if (this.disposed) return;
+    // the skin mask arrives with the (queued) atlas paint
+    const mt = this.atlasE?.mtex;
+    if (mt && this.mat.userData.uSkin.value !== mt) this.mat.userData.uSkin.value = mt;
     this.root.getWorldPosition(_v);
     const d = _v.distanceTo(RigWorld.cam);
     const wantLow = this.opts.lod === 'low' || (this.opts.lod !== 'high' && d > RigWorld.lodDist);
@@ -326,6 +429,25 @@ export class Rig implements CharacterRig {
     const step = Math.min(0.25, this.accDt);
     this.accDt = 0;
     this.tick(step);
+    this.squashTick(step);
+  }
+
+  // ---------------------------------------------------------------- goofy anime squash & stretch
+  // anticipation → overshoot → wobble on reactions (volume-preserving scale of the whole body)
+  private sq = 0; private sqV = 0; private sqKicks: { t: number; v: number }[] = []; private sqBeat = 0;
+  private squashKick(v: number, delay = 0) { if (delay <= 0) this.sqV += v; else this.sqKicks.push({ t: delay, v }); }
+  private squashTick(dt: number) {
+    for (let i = this.sqKicks.length - 1; i >= 0; i--) { const k = this.sqKicks[i]; k.t -= dt; if (k.t <= 0) { this.sqV += k.v; this.sqKicks.splice(i, 1); } }
+    const n = this.cur.name;
+    // looping happy bounces / trembling
+    if ((n === 'celebrate' || n === 'casino_cheer' || n === 'dance') && !this.cur.ended) { this.sqBeat += dt; if (this.sqBeat > 0.42) { this.sqBeat = 0; this.sqV += 1.5; } }
+    else if ((n === 'angry' || n === 'tug' || n === 'casino_despair') && !this.cur.ended) this.sqV += (Math.random() - 0.5) * 6 * dt * 10;
+    const k = 230, c = 10;
+    this.sqV += (-this.sq * k - this.sqV * c) * dt;
+    this.sq = Math.max(-0.32, Math.min(0.32, this.sq + this.sqV * dt));
+    const base = this.height / this.t.height;
+    const sy = 1 + this.sq * 0.3, sx = 1 / Math.sqrt(sy);
+    this.inner.scale.set(base * sx, base * sy, base * sx);
   }
 
   private setLod(l: 'high' | 'low') {

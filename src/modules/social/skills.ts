@@ -32,7 +32,7 @@ export interface SkillDef {
   minLv: number;
   name: TL;
   desc: TL;
-  /** item kinds to use as the spinning 3D icon (first one that exists wins) */
+  /** item kinds whose real model floats in the Skill Heaven (first one that exists wins; '__coin10' / '__slapwok' are composites) */
   icon: string[];
 }
 
@@ -86,11 +86,11 @@ export const SKILLS: SkillDef[] = [
     tl('เก็บกวาดเร็วขึ้นอีก 25%', '+25% cleaning speed.'), ['trash_bag', 'sponge']),
   // ---------------------------------------------------------------- life (roots on the trunk)
   S('iron_cheek', 'life', 0, 1, null, 6, tl('แก้มหนาทนตบ', 'Slap-Proof Cheeks'),
-    tl('โดนตบแล้วของไม่หล่น แถมคนตบเจ็บมือเอง', 'Slaps never make you drop things — and the slapper hurts their hand.'), ['__hand']),
+    tl('โดนตบแล้วของไม่หล่น แถมคนตบเจ็บมือเอง', 'Slaps never make you drop things — and the slapper hurts their hand.'), ['__slapwok']),
   S('tug_strong', 'life', 1, 1, null, 8, tl('แรงช้างสาร', 'Strength of a Bull Elephant'),
     tl('ชักเย่อแย่งของ ทุกคลิกแรงขึ้น 30%', 'Every click in a snatch tug-of-war counts 30% more.'), ['rice_bag', 'gas_tank']),
   S('sleep_well', 'life', 2, 2, null, 12, tl('หลับบนลังเหมือนโรงแรมห้าดาว', 'Five-Star Cardboard Sleeper'),
-    tl('ตื่นมาสดชื่น ได้บัฟขยันทุกเช้า', 'Wake up refreshed with a morning hustle buff.'), ['__cardboard']),
+    tl('ตื่นมาสดชื่น ได้บัฟขยันทุกเช้า', 'Wake up refreshed with a morning hustle buff.'), ['cardboard']),
 ];
 
 export const SKILL = new Map(SKILLS.map((s) => [s.id, s]));

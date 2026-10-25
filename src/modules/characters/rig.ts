@@ -49,7 +49,7 @@ function releaseGeo(key: string) {
   if (--e.refs <= 0) { e.geo.dispose(); geoCache.delete(key); }
 }
 
-interface AtlasEntry { tex: THREE.CanvasTexture; cv: HTMLCanvasElement; refs: number; painted: boolean; look: Look; variant: FaceVariant; size: number; at?: THREE.Object3D }
+interface AtlasEntry { tex: THREE.CanvasTexture; cv: HTMLCanvasElement; refs: number; painted: boolean; look: Look; variant: FaceVariant; size: number; at?: THREE.Object3D; mtex?: THREE.CanvasTexture }
 const atlasCache = new Map<string, AtlasEntry>();
 const queue: AtlasEntry[] = [];
 const PLACEHOLDER = (() => { const c = document.createElement('canvas'); c.width = c.height = 4; return c; })();
@@ -81,6 +81,7 @@ function releaseAtlas(key: string) {
   if (!e) return;
   if (--e.refs <= 0) {
     e.tex.dispose();
+    e.mtex?.dispose();
     atlasCache.delete(key);
     const qi = queue.indexOf(e);
     if (qi >= 0) queue.splice(qi, 1);
@@ -100,6 +101,13 @@ function paintEntry(e: AtlasEntry) {
     repaintFace(cv, e.look, e.variant, onFace);
   } else cv = paintAtlas(e.look, e.size, e.variant, onFace);
   e.cv = cv;
+  // skin mask (photo-real skin shading in rigglb.ts)
+  const mk: HTMLCanvasElement | undefined = (cv as any).__skinMask ?? (base?.cv as any)?.__skinMask;
+  if (mk) {
+    (cv as any).__skinMask = mk;
+    if (!e.mtex) { e.mtex = new THREE.CanvasTexture(mk); e.mtex.flipY = false; e.mtex.colorSpace = THREE.NoColorSpace; }
+    else { e.mtex.image = mk; e.mtex.needsUpdate = true; }
+  }
   // the GPU texture was allocated at the placeholder size (immutable storage) → re-create it
   e.tex.dispose();
   e.tex.image = cv;

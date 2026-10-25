@@ -20,7 +20,7 @@ import type { Life } from './index';
  *
  * Entity: { t, p, yaw, st, act, actT, aff 0..100, feeds, adopted, name, follow:playerId|null,
  *           look:eid|null, scared }
- *   st: 'idle'|'sit'|'lie'|'sleep'|'beg'|'eat'|'bark'|'scratch'|'sniff'|'wag'|'guard'|'flee'|'swat'
+ *   st: 'idle'|'sit'|'lie'|'sleep'|'beg'|'eat'|'bark'|'scratch'|'sniff'|'wag'|'guard'|'flee'|'swat'|'zoom'
  *   act/actT: one-shot triggers for the view ('bark' | 'meow' | 'hearts' | 'hiss').
  * The dog doubles as the intro's food thief — see DogAPI (game.life.dog).
  * ========================================================================================== */
@@ -49,13 +49,15 @@ interface Brain {
   meowT: number;
   petT: Map<number, number>;
   idleT: number;
+  zoomN: number;
+  zoomA: number;
 }
 
 const brains = new WeakMap<Ent, Brain>();
 function brain(e: Ent): Brain {
   let b = brains.get(e);
   if (!b) {
-    b = { next: 0, plan: 'idle', until: 0, target: null, barkT: 0, whineT: 0, stealT: 20 + Math.random() * 20, followUntil: 0, eatUntil: 0, eatDone: null, script: false, jump: null, perch: null, perchItem: null, meowT: 0, petT: new Map(), idleT: 0 };
+    b = { next: 0, plan: 'idle', until: 0, target: null, barkT: 0, whineT: 0, stealT: 20 + Math.random() * 20, followUntil: 0, eatUntil: 0, eatDone: null, script: false, jump: null, perch: null, perchItem: null, meowT: 0, petT: new Map(), idleT: 0, zoomN: 0, zoomA: 0 };
     brains.set(e, b);
   }
   return b;
@@ -307,8 +309,30 @@ export class Pets {
       return;
     }
 
-    // 7. wander / idle
+    // 7. ZOOMIES — a happy dog suddenly sprints goofy laps around a spot, then flops down
+    if (b.plan === 'zoom') {
+      if (game.npcs.isMoving(e)) { e.st = 'zoom'; return; }
+      if (b.zoomN-- > 0 && b.target) {
+        b.zoomA += 1.0 + Math.random() * 0.6;
+        const rr = 2.0 + Math.random() * 1.2;
+        const to = b.target.clone().add(new THREE.Vector3(Math.cos(b.zoomA) * rr, 0, Math.sin(b.zoomA) * rr));
+        to.y = this.game.world?.groundY(to.x, to.z) ?? to.y;
+        this.go(e, to, 5.5 + Math.random() * 1.5);
+        e.st = 'zoom';
+        return;
+      }
+      b.plan = 'idle'; e.st = 'lie'; b.until = now + 5 + Math.random() * 4;
+      this.act(e, 'wag');
+      return;
+    }
+    // 8. wander / idle
     if (game.npcs.isMoving(e)) { e.st = 'sniff'; return; }
+    if (now > b.until && !this.night() && (e.adopted || (e.aff ?? 0) > 20) && Math.random() < 0.12) {
+      b.plan = 'zoom'; b.zoomN = 6 + Math.floor(Math.random() * 5); b.zoomA = Math.random() * 6.28;
+      b.target = new THREE.Vector3(p[0], p[1], p[2]);
+      this.act(e, 'bark'); sfx(game, 'bark', p, { vol: 0.9, max: 60 });
+      return;
+    }
     if (now > b.until) {
       const home = e.adopted ? cartLocal(cart ?? ({ p: this.cartPos().toArray(), yaw: Math.PI / 2 } as any), 0, 0, 1.2) : anchorP(game, 'dog_home', [-11, 0.15, -90]);
       const r = Math.random();
@@ -731,13 +755,13 @@ export class Pets {
           if (lastAct > 0 || e.act) {
             if (e.act === 'bark') vis.anim.bark(sp === 'dog' ? 2 : 1);
             else if (e.act === 'meow' || e.act === 'hiss') vis.anim.bark(1);
-            else if (e.act === 'hearts') { hearts(game, root, 6); wagT = 3; happyT = 4; }
-            else if (e.act === 'wag') { wagT = 2.5; happyT = 2; }
+            else if (e.act === 'hearts') { hearts(game, root, 6); wagT = 3; happyT = 4; vis.anim.pop(1.6); }
+            else if (e.act === 'wag') { wagT = 2.5; happyT = 2; vis.anim.pop(0.9); }
             else if (e.act === 'shake' || e.act === 'roll' || e.act === 'dead') { if (!vis.once(e.act)) wagT = 2.5; happyT = e.act === 'dead' ? 0 : 3; }
           }
         }
         wagT -= dt; happyT -= dt;
-        const happy = e.adopted || st === 'wag' || st === 'beg' || wagT > 0 || (e.follow != null);
+        const happy = e.adopted || st === 'wag' || st === 'beg' || st === 'zoom' || wagT > 0 || (e.follow != null);
         happyK += ((happyT > 0 || st === 'eat' ? 1 : e.adopted ? 0.35 : 0) - happyK) * damp(4, dt);
         vis.setHappy(happyK);
         inp.speed = speed; inp.turn = turn; inp.pose = pose;
@@ -745,7 +769,8 @@ export class Pets {
         inp.eat = st === 'eat';
         inp.scratch = st === 'scratch';
         inp.sniff = st === 'sniff' && speed < 1.6;
-        inp.pant = sp === 'dog' && (speed > 2.5 || (happy && st !== 'sleep' && st !== 'eat'));
+        inp.pant = sp === 'dog' && (speed > 2.5 || st === 'zoom' || (happy && st !== 'sleep' && st !== 'eat'));
+        inp.zoom = st === 'zoom' ? 1 : 0;
         inp.alert = st === 'bark' || st === 'guard' ? 1 : st === 'flee' || st === 'dead' ? -1 : st === 'beg' ? 0.5 : 0;
         inp.tail = st === 'flee' || e.scared ? -1 : st === 'bark' ? 1 : happy ? 0.6 : 0.1;
         inp.swat = st === 'swat';
@@ -897,6 +922,9 @@ export class PetLab implements SceneDef {
       if (P === 'eat') inp.eat = true; if (P === 'scratch') { inp.scratch = true; inp.pose = 'sit'; }
       if (P === 'sniff') inp.sniff = true; if (P === 'pant') { inp.pant = true; inp.wag = 1; c.happy = 1; }
       if (P === 'wag') { inp.wag = 1; inp.tail = 0.6; c.happy = 1; }
+      if (P === 'zoom') { inp.zoom = 1; inp.speed = 6; inp.pant = true; inp.wag = 1; c.happy = 1; }
+      if (P === 'tilt') { inp.tilt = true; inp.wag = 0.5; }
+      if (P === 'derp') { inp.derp = true; inp.pant = true; c.happy = 1; }
       const lk = params.get('look')?.split(',').map(Number);
       if (lk && lk.length === 3) inp.look = new THREE.Vector3(lk[0], lk[1], lk[2]);
       if (params.get('look') === 'cam') inp.look = this.camera.position;

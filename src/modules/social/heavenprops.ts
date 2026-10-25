@@ -62,7 +62,7 @@ void main() {
   gl_Position = projectionMatrix * viewMatrix * w;
 }`;
 const puffFrag = /* glsl */ `
-uniform vec3 uL, uTop, uBottom, uRim, uSunCol;
+uniform vec3 uL, uTop, uMid, uBottom, uRim, uSunCol;
 uniform float uTime;
 varying vec3 vN, vW;
 varying float vCrease, vSeed, vUp;
@@ -72,17 +72,19 @@ void main() {
   vec3 N = normalize(vN);
   vec3 V = normalize(cameraPosition - vW);
   if (!gl_FrontFacing) N = -N;
-  float dif = clamp((dot(N, uL) + 0.6) / 1.6, 0.0, 1.0);
+  float hl = dot(N, uL) * 0.5 + 0.5;
+  float b1 = smoothstep(0.36, 0.42, hl), b2 = smoothstep(0.6, 0.66, hl);
   float ndv = clamp(dot(N, V), 0.0, 1.0);
-  float fres = pow(1.0 - ndv, 2.6);
-  float sss = pow(clamp(dot(V, -uL), 0.0, 1.0), 3.0) * (0.35 + 0.65 * fres);
   float crease = smoothstep(0.72, 1.12, vCrease);
   float fluff = fbm(vW * 6.0 + vec3(0.0, uTime * 0.05, vSeed));
-  float ao = mix(0.66, 1.0, crease) * (0.88 + 0.24 * fluff);
-  vec3 base = mix(uBottom, uTop, smoothstep(-0.8, 0.8, vUp));
-  vec3 col = base * (0.62 + 0.42 * dif) * ao;
-  col += uRim * fres * 0.55 + uSunCol * sss * 0.6;
-  col += vGlow.rgb * vGlow.a * (0.3 + 0.9 * fres) * (0.55 + 0.45 * smoothstep(-0.3, 0.8, vUp));
+  // soft cel bands: periwinkle shadow, candy-pink mid, cream light
+  vec3 col = mix(uBottom, uMid, b1);
+  col = mix(col, uTop, b2);
+  col *= mix(0.8, 1.0, smoothstep(0.25, 0.4, crease)) * (0.94 + 0.12 * fluff);
+  float rim = smoothstep(0.58, 0.66, 1.0 - ndv);
+  float back = pow(clamp(dot(V, -uL), 0.0, 1.0), 3.0);
+  col += uRim * rim * (0.35 + 0.8 * back);
+  col += vGlow.rgb * vGlow.a * (0.3 + 0.9 * rim + 0.25 * b2) * (0.55 + 0.45 * smoothstep(-0.3, 0.8, vUp));
   gl_FragColor = vec4(col, 1.0);
 }`;
 
@@ -118,7 +120,7 @@ export class PuffField {
       vertexShader: puffVert, fragmentShader: puffFrag,
       uniforms: {
         uTime: { value: 0 }, uOff: { value: this.off }, uGlow: { value: this.glow },
-        uL: { value: SUN_L.clone() }, uTop: { value: new THREE.Color(1.05, 0.96, 0.9) }, uBottom: { value: new THREE.Color(0.62, 0.56, 0.84) },
+        uL: { value: SUN_L.clone() }, uTop: { value: new THREE.Color(1.12, 1.02, 0.95) }, uMid: { value: new THREE.Color(1.0, 0.78, 0.95) }, uBottom: { value: new THREE.Color(0.58, 0.6, 1.0) },
         uRim: { value: new THREE.Color(1.0, 0.8, 0.52) }, uSunCol: { value: COL.sun.clone() },
       },
     });
@@ -223,25 +225,33 @@ class Halos {
 
 // ------------------------------------------------------------------ props
 
-function handIcon() {
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.2), new THREE.MeshStandardMaterial({ map: Assets.texture(GEN + 'handprint_red.png', { wrap: false }), transparent: true, side: THREE.DoubleSide, depthWrite: false, roughness: 0.7 }));
-  const g = new THREE.Group(); g.add(m); return g;
+/** a stack of real 10 ฿ coins (money.ts) */
+function coinStack() {
+  const g = new THREE.Group();
+  for (let i = 0; i < 4; i++) { const c = buildMoney(10); c.position.set((i % 2) * 0.012, i * 0.0024, (i >> 1) * 0.008); c.rotation.set(Math.PI / 2 + (i - 2) * 0.05, 0, i * 0.4); g.add(c); }
+  return g;
 }
-function cardboardIcon() {
-  const t = Assets.texture('textures/props/cardboard_mat_mama.jpg', { wrap: false });
-  const box = new THREE.BoxGeometry(0.2, 0.012, 0.2);
-  const side = Assets.pbr('cardboard_worn');
-  const m = new THREE.Mesh(box, [side, side, new THREE.MeshStandardMaterial({ map: t, roughness: 0.9 }), side, side, side]);
-  m.rotation.x = 0.9;
-  const g = new THREE.Group(); g.add(m); return g;
+
+/** 'Slap-proof cheeks': the real wok item with a red slap print on its iron belly */
+function slapWok(game: Game) {
+  const g = new THREE.Group();
+  const wok = game.items.def('wok');
+  if (!wok) return coinStack();
+  const o = wok.build({ id: -1, t: 'item', k: 'wok', data: wok.data?.() ?? {}, p: [0, 0, 0] } as any, game);
+  o.rotation.x = -Math.PI / 2;   // iron belly toward you, like a cheek
+  g.add(o);
+  const print = new THREE.Mesh(new THREE.CircleGeometry(0.11, 24), new THREE.MeshStandardMaterial({ map: Assets.texture(GEN + 'handprint_red.png', { wrap: false }), transparent: true, depthWrite: false, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -4 }));
+  print.position.z = 0.004;
+  print.rotation.z = 0.3;
+  g.add(print);
+  return g;
 }
 
 /** Real item model for a skill: first existing item kind wins (cooking/restaurant/shops item builders). */
 export function buildSkillProp(game: Game, kinds: string[]): THREE.Object3D {
   for (const k of kinds) {
-    if (k === '__coin10') { const g = new THREE.Group(); for (let i = 0; i < 4; i++) { const c = buildMoney(10); c.position.set((i % 2) * 0.012, i * 0.0024, (i >> 1) * 0.008); c.rotation.set(Math.PI / 2 + (i - 2) * 0.05, 0, i * 0.4); g.add(c); } return g; }
-    if (k === '__hand') return handIcon();
-    if (k === '__cardboard') return cardboardIcon();
+    if (k === '__coin10') return coinStack();
+    if (k === '__slapwok') return slapWok(game);
     const def = game.items.def(k);
     if (!def) continue;
     try {
@@ -251,11 +261,8 @@ export function buildSkillProp(game: Game, kinds: string[]): THREE.Object3D {
       return o;
     } catch (e) { console.warn('[heaven] prop build failed', k, e); }
   }
-  // modules not loaded (?only=social): a real-textured gold ingot so nothing is ever an untextured box
-  const g = new THREE.Group();
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 0.07, 6), Assets.pbr('brass_gold'));
-  g.add(m);
-  return g;
+  // modules not loaded (?only=social): real coins rather than any primitive
+  return coinStack();
 }
 
 interface PropU { stone: { value: number }; rim: { value: number }; rimCol: { value: THREE.Color }; flash: { value: number } }

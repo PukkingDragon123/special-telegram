@@ -12,6 +12,7 @@ import type { AnchorPt } from '../../game/contracts';
 import type { FoliageSys } from './foliage';
 import { vines, bougainvillea, pottedPlant, weeds } from './foliage';
 import { birdcage, floorShrine, wallShrine, cctv, drainpipe, rebar, breezeBlocks, grilleMotif } from './archkit';
+import { ARCH } from './archmodels';
 
 /**
  * PROCEDURAL SHOPHOUSE (ตึกแถว) GENERATOR
@@ -284,7 +285,7 @@ export class Shophouse {
       const layer = rng.pick(['corr_rust', 'roof_galv', 'corr_paint', 'roof_fibre']);
       w.setGroup('detail');
       w.mat(layer, { tint: layer === 'corr_paint' ? rng.pick([0x3a6a9a, 0xa04030, 0x3a7a4a, 0xc8c0a0]) : 0xffffff, ao: 0.9, uv: 'local' });
-      corrSheet(w, 0, W, cd - 0.05, ay, cd + ad, ay - drop, 0.16, 0.022);
+      corrSheet(w, 0, W, cd - 0.05, ay, cd + ad, ay - drop);
       w.mat('steel_rust', { uv: 'local' });
       for (const x of [0.15, W - 0.15]) w.tube([x, yb - 0.6, 0.03, x, ay - drop - 0.03, cd + ad - 0.1], 0.025, 4);
       w.box(0.05, ay - drop - 0.05, cd + ad - 0.14, W - 0.05, ay - drop - 0.01, cd + ad - 0.1, ALL);
@@ -473,7 +474,7 @@ export class Shophouse {
       w.box((h[0] + h[1]) / 2 - t / 2, h[2], -0.14, (h[0] + h[1]) / 2 + t / 2, h[3], -0.1, PZ | PX | NX);
       trimMat();
       w.box(h[0] - 0.05, h[2] - 0.06, 0, h[1] + 0.05, h[2], 0.07, PZ | PY | NY | PX | NX);
-      if (!far && h[2] > y1 && rng.chance(0.35)) { w.setGroup('detail'); w.put(P.acUnit(rng.int(0, 1)), (h[0] + h[1]) / 2, h[2] - 0.75, 0.02, 0); w.setGroup('base'); }
+      if (!far && h[2] > y1 && rng.chance(0.35)) { w.setGroup('detail'); this.wallAC((h[0] + h[1]) / 2, h[2] - 0.78); w.setGroup('base'); }
       if (!far && h[2] > y1 && rng.chance(0.3)) {
         w.setGroup('detail');
         w.mat('metal_paint', { tint: grilleCol, ov: 'steel_rust', ovAmt: 0.5, uv: 'local' });
@@ -593,7 +594,7 @@ export class Shophouse {
         if (rng.chance(0.28)) w.put(birdcage(w, rng.int(0, 1)), rng.range(0.6, W - 0.6), fl.y + hf - 0.2, bd * 0.55, rng.range(0, 6));
         if (rng.chance(0.15)) w.put(wallShrine(w), rng.chance(0.5) ? 0.8 : W - 0.8, fl.y + 1.9, 0.0, 0);
         // AC unit or junk on the balcony
-        if (rng.chance(0.55)) w.put(P.acUnit(rng.int(0, 1)), rng.chance(0.5) ? 0.6 : W - 0.6, fl.y + 0.06, 0.05, 0);
+        if (rng.chance(0.55)) ARCH.add('ac_rusted', w.M, rng.chance(0.5) ? 0.6 : W - 0.6, fl.y + 0.06, 0.05, 0);
         if (rng.chance(0.4)) w.put(P.bucket(rng.pick(PLASTIC_COLORS)), W * 0.5 + rng.range(-0.8, 0.8), fl.y + 0.06, bd * 0.5, rng.range(0, 6));
         w.setGroup('base');
       }
@@ -622,6 +623,8 @@ export class Shophouse {
         w.box(a - 0.18, hy - 0.05, hd - 0.04, b + 0.18, hy, hd, PZ | NY | NZ | PX | NX);
         if (deco.fins) for (const fx of [a - 0.18, b + 0.1]) w.box(fx, fl.hy0 - 0.06, 0, fx + 0.08, hy, hd * 0.8, PZ | PX | NX | NY);
       }
+      // old window-type air conditioner pushed through the lower part of the opening
+      if (!far && !fl.grille && fl.style !== 'balcony' && b - a > 1.0 && rng.chance(0.14)) ARCH.add('ac_window', w.M, a + 0.35 + rng.range(0, b - a - 0.75), fl.hy0 + 0.02, -0.3, 0);
       // open slider with a curtain blowing out of the window
       if (!far && !fl.grille && fl.style === 'slider' && rng.chance(0.22)) {
         w.mat('fabric', { tint: rng.pick(CURTAIN), uv: 'local', ao: 0.95 });
@@ -675,13 +678,25 @@ export class Shophouse {
     if (!far && rng.chance(0.42)) {
       w.setGroup('detail');
       const ax = rng.range(0.7, Math.max(0.75, W - 0.7));
-      w.put(P.acUnit(rng.int(0, 1)), ax, fl.hy0 - 0.75, 0.02, 0);
+      this.wallAC(ax, fl.hy0 - 0.78);
       w.setGroup('base');
+    }
+  }
+
+  /** wall-mounted condenser (real model) on two galvanised L-brackets bolted to the facade */
+  private wallAC(x: number, y: number) {
+    const w = this.c.w;
+    ARCH.add('ac_rusted', w.M, x, y + 0.02, 0.04, 0);
+    w.mat('galv', { uv: 'local', ov: 'steel_rust', ovAmt: 0.6 });
+    for (const dx of [-0.3, 0.3]) {
+      w.box(x + dx - 0.02, y - 0.02, 0, x + dx + 0.02, y + 0.02, 0.4, ALL);
+      w.tube([x + dx, y - 0.3, 0.005, x + dx, y - 0.01, 0.36], 0.012, 4);
     }
   }
 
   private roofStuff(W: number, D: number, yR: number, rng: RNG) {
     const w = this.c.w, P = this.c.props;
+    if (rng.chance(0.25)) ARCH.add('ac_old', w.M, rng.range(0.7, W - 0.7), yR, -rng.range(2, D - 2), rng.pick([0, Math.PI / 2, Math.PI, -Math.PI / 2]));
     w.setGroup('detail');
     if (rng.chance(0.6)) w.put(rng.chance(0.55) ? P.waterTankSteel() : P.waterTankBlue(), rng.range(0.9, W - 0.9), yR, -rng.range(2.5, D - 2), rng.range(0, 6));
     if (rng.chance(0.45)) w.put(P.antenna(), rng.range(0.5, W - 0.5), yR, -rng.range(1, D - 1), rng.range(0, 3));
@@ -699,10 +714,10 @@ export class Shophouse {
       // corrugated sheet walls on two sides (real ridges), a door gap on the front
       w.mat(rng.pick(['corr_rust', 'corr_paint', 'roof_galv']), { uv: 'local', tint: rng.pick([0xffffff, 0x9ab0c0, 0xc8b8a0]) });
       w.pushT(sx, yR, sz, Math.PI / 2);
-      corrWall(w, 0, sd, 0, 2.1, 0.0);
+      corrWall(w, 0, sd, 0, 2.1, 0);
       w.pop();
       w.pushT(sx + sw, yR, sz - sd, -Math.PI / 2);
-      corrWall(w, 0, sd, 0, 2.1, 0.0);
+      corrWall(w, 0, sd, 0, 2.1, 0);
       w.pop();
     }
     // unfinished columns with rebar sticking out (the floor that was never built)
@@ -912,31 +927,21 @@ export class Shophouse {
 const round2 = (v: number) => Math.round(v * 100) / 100;
 
 /** vertical corrugated wall x0..x1 (local, facing +z) from y0 to y1, ridges vertical */
-export function corrWall(w: WB, x0: number, x1: number, y0: number, y1: number, z: number, per = 0.16, amp = 0.02) {
-  const n = Math.max(2, Math.round((x1 - x0) / (per / 2)));
-  const dx = (x1 - x0) / n;
-  for (let i = 0; i < n; i++) {
-    const xa = x0 + i * dx, xb = xa + dx;
-    const za = z + (i % 2 === 0 ? 0 : amp), zb = z + (i % 2 === 0 ? amp : 0);
-    w.quad(xa, y0, za, xb, y0, zb, xb, y1, zb, xa, y1, za);
-    w.quad(xb, y0, zb - 0.004, xa, y0, za - 0.004, xa, y1, za - 0.004, xb, y1, zb - 0.004);
-  }
+export function corrWall(w: WB, x0: number, x1: number, y0: number, y1: number, z: number) {
+  // flat sheet: the corrugation lives in the texture's normal map (clean silhouette for the ink pass)
+  w.quad(x0, y0, z, x1, y0, z, x1, y1, z, x0, y1, z);
+  w.quad(x1, y0, z - 0.004, x0, y0, z - 0.004, x0, y1, z - 0.004, x1, y1, z - 0.004);
 }
 
 /**
  * corrugated sheet as real ridged geometry: from the back edge (zb, yb) to the front edge (zf, yf) across
  * x0..x1, ridge period `per`, amplitude `amp` (both faces).
  */
-export function corrSheet(w: WB, x0: number, x1: number, zb: number, yb: number, zf: number, yf: number, per = 0.16, amp = 0.02) {
-  const n = Math.max(2, Math.round((x1 - x0) / (per / 2)));
-  const dx = (x1 - x0) / n;
-  for (let i = 0; i < n; i++) {
-    const xa = x0 + i * dx, xb = xa + dx;
-    const ha = (i % 2 === 0 ? 0 : amp), hb = (i % 2 === 0 ? amp : 0);
-    // top face: a (front, xa) b (front, xb) c (back, xb) d (back, xa)
-    w.quad(xa, yf + ha, zf, xb, yf + hb, zf, xb, yb + hb, zb, xa, yb + ha, zb);
-    w.quad(xb, yf + hb - 0.004, zf, xa, yf + ha - 0.004, zf, xa, yb + ha - 0.004, zb, xb, yb + hb - 0.004, zb);
-  }
+export function corrSheet(w: WB, x0: number, x1: number, zb: number, yb: number, zf: number, yf: number) {
+  // flat sloped sheet (both faces) + a folded drip lip at the front edge; ridges come from the normal map
+  w.quad(x0, yf, zf, x1, yf, zf, x1, yb, zb, x0, yb, zb);
+  w.quad(x1, yf - 0.004, zf, x0, yf - 0.004, zf, x0, yb - 0.004, zb, x1, yb - 0.004, zb);
+  w.quad(x0, yf - 0.05, zf + 0.004, x1, yf - 0.05, zf + 0.004, x1, yf, zf + 0.004, x0, yf, zf + 0.004);
 }
 
 /** deterministic unit dimensions (storeys, floor heights, parapet) — shared by neighbours */

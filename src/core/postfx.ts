@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import {
-  EffectComposer, RenderPass, EffectPass, BloomEffect, ToneMappingEffect, ToneMappingMode, VignetteEffect, NoiseEffect,
+  EffectComposer, RenderPass, EffectPass, BloomEffect, ToneMappingEffect, ToneMappingMode, VignetteEffect,
   SMAAEffect, SMAAPreset, ChromaticAberrationEffect, DepthOfFieldEffect, Effect, BlendFunction, EffectAttribute,
 } from 'postprocessing';
 import { N8AOPostPass } from 'n8ao';
+import { InkEdgePass, InkEffect, InkSettings, CEL, installMaterialPatch, updateInkHulls, InkParams } from './ink';
 
 export type Quality = 'low' | 'medium' | 'high' | 'ultra';
 
@@ -115,6 +116,115 @@ class SunShaftsEffect extends Effect {
   u(name: string) { return this.uniforms.get(name)!; }
 }
 
+/**
+ * Film grain whose cell is a fixed fraction of the screen height (1/1080), so it looks the same at 720p, 4K or
+ * supersampled — never a fizzing per-pixel noise at high resolutions. Mid-tones only, very subtle.
+ */
+class GrainEffect extends Effect {
+  constructor() {
+    super('GrainEffect', /* glsl */ `
+      uniform float grainK;
+      void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+        float cell = max(1.0, resolution.y / 1080.0);
+        vec2 c = floor(uv * resolution / cell);
+        float t = floor(time * 24.0);
+        float n = fract(sin(dot(c + t * vec2(17.13, 41.71), vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
+        float l = clamp(dot(inputColor.rgb, vec3(0.2126, 0.7152, 0.0722)), 0.0, 1.0);
+        float w = 0.35 + 2.6 * l * (1.0 - l);
+        outputColor = vec4(inputColor.rgb + n * grainK * w, inputColor.a);
+      }`, {
+      blendFunction: BlendFunction.NORMAL,
+      uniforms: new Map<string, THREE.Uniform>([['grainK', new THREE.Uniform(0.022)]]),
+    });
+  }
+  u(name: string) { return this.uniforms.get(name)!; }
+}
+
+/**
+ * Last pass, internal resolution → screen:
+ *  - supersampled (ultra): 4 bilinear taps per output pixel (≈ tent over the footprint) = clean downsample
+ *  - upscaled (adaptive resolution under load): bilinear, then sharpened
+ *  - contrast-adaptive sharpening (AMD CAS-style, lite) after the resample
+ *  - anime IMPACT FRAME: 2–3 frames of inverted / black-ink-on-paper flash with a radial burst, then a
+ *    halftone burst that fades (driven by PostFX.impact())
+ */
+class FinalEffect extends Effect {
+  constructor() {
+    super('FinalEffect', /* glsl */ `
+      uniform vec2 dstTexel;
+      uniform vec2 outRes;
+      uniform float ss;
+      uniform float sharp;
+      uniform float impT;
+      uniform float impK;
+      uniform vec2 impC;
+      uniform float impSeed;
+      vec3 S(vec2 uv) {
+        if (ss > 1.05) {
+          vec2 o = dstTexel * 0.375;
+          return 0.25 * (texture2D(inputBuffer, uv + vec2(-o.x, -o.y)).rgb + texture2D(inputBuffer, uv + vec2(o.x, -o.y)).rgb
+                       + texture2D(inputBuffer, uv + vec2(-o.x, o.y)).rgb + texture2D(inputBuffer, uv + vec2(o.x, o.y)).rgb);
+        }
+        return texture2D(inputBuffer, uv).rgb;
+      }
+      void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+        vec3 c = S(uv);
+        if (sharp > 0.001) {
+          vec3 n = S(uv + vec2(0.0, dstTexel.y)), s = S(uv - vec2(0.0, dstTexel.y));
+          vec3 e = S(uv + vec2(dstTexel.x, 0.0)), w = S(uv - vec2(dstTexel.x, 0.0));
+          vec3 mn = min(c, min(min(n, s), min(e, w)));
+          vec3 mx = max(c, max(max(n, s), max(e, w)));
+          vec3 amp = sqrt(clamp(min(mn, 1.0 - mx) / max(mx, vec3(1e-4)), 0.0, 1.0));
+          vec3 wgt = -amp * mix(0.07, 0.2, clamp(sharp, 0.0, 1.0));
+          c = clamp((c + (n + s + e + w) * wgt) / (1.0 + 4.0 * wgt), 0.0, 1.0);
+        }
+        if (impT >= 0.0 && impK > 0.0) {
+          float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+          vec2 d = (uv - impC) * vec2(outRes.x / outRes.y, 1.0);
+          float r = length(d);
+          float a = atan(d.y, d.x) / 6.2831853 * 46.0;
+          float id = floor(a);
+          float rnd = fract(sin(id * 12.9898 + impSeed * 78.233) * 43758.5453);
+          float ray = step(abs(fract(a) - 0.5), 0.08 + 0.3 * rnd) * smoothstep(0.06 + 0.22 * rnd, 0.55, r);
+          float cell = 7.0 * outRes.y / 1080.0;
+          vec2 g = mat2(0.7071, -0.7071, 0.7071, 0.7071) * (uv * outRes / cell);
+          float dd = length(fract(g) - 0.5);
+          float rad = clamp(0.64 - r * 0.85, 0.0, 0.64);
+          float dots = 1.0 - smoothstep(rad - 0.07, rad + 0.07, dd);
+          vec3 o;
+          if (impT < 0.05) {
+            float bw = smoothstep(0.3, 0.42, l);
+            o = mix(vec3(1.0 - bw), vec3(1.0), ray * 0.9);
+          } else if (impT < 0.1) {
+            float bw = smoothstep(0.16, 0.3, l);
+            o = mix(vec3(0.015, 0.012, 0.01), vec3(1.0, 0.97, 0.92), bw);
+            o = mix(o, vec3(0.015, 0.012, 0.01), ray * 0.85);
+          } else {
+            float k = 1.0 - smoothstep(0.1, 0.34, impT);
+            o = mix(c, c * 0.2, dots * k * 0.75);
+            o = mix(o, vec3(1.0, 0.98, 0.94), ray * k * 0.3);
+          }
+          c = mix(c, o, impK);
+        }
+        outputColor = vec4(c, inputColor.a);
+      }`, {
+      attributes: EffectAttribute.CONVOLUTION,
+      blendFunction: BlendFunction.NORMAL,
+      uniforms: new Map<string, THREE.Uniform>([
+        ['dstTexel', new THREE.Uniform(new THREE.Vector2(1 / 1280, 1 / 720))],
+        ['outRes', new THREE.Uniform(new THREE.Vector2(1280, 720))],
+        ['ss', new THREE.Uniform(1)],
+        ['sharp', new THREE.Uniform(0)],
+        ['impT', new THREE.Uniform(-1)],
+        ['impK', new THREE.Uniform(0)],
+        ['impC', new THREE.Uniform(new THREE.Vector2(0.5, 0.5))],
+        ['impSeed', new THREE.Uniform(0)],
+      ]),
+    });
+  }
+  u(name: string) { return this.uniforms.get(name)!; }
+}
+
 export interface GradeParams {
   lift?: [number, number, number];
   gamma?: [number, number, number];
@@ -128,10 +238,11 @@ export interface GradeParams {
 
 /** Named looks. Modules may blend between them (day cycle, night, casino, dream). */
 export const LOOKS: Record<string, GradeParams> = {
-  // hot hazy Thai afternoon: warm highlights, slightly lifted blacks, a touch desaturated
-  thaiDay: { lift: [0.012, 0.011, 0.01], gamma: [1.02, 1.0, 0.97], gain: [1.06, 1.01, 0.95], saturation: 1.02, contrast: 1.12, tint: [1, 1, 1], split: 0.35 },
-  golden: { lift: [0.02, 0.01, 0.0], gamma: [1.03, 0.98, 0.9], gain: [1.14, 1.0, 0.8], saturation: 1.1, contrast: 1.14, tint: [1, 0.98, 0.93], split: 0.5 },
-  night: { lift: [0.0, 0.004, 0.014], gamma: [0.97, 1.0, 1.05], gain: [1.0, 1.0, 1.06], saturation: 0.98, contrast: 1.16, tint: [0.99, 1, 1.03], split: 0.55 },
+  // anime-sunny Thai afternoon: warm saturated highlights, clean teal-leaning shadows, punchy but not crushed
+  thaiDay: { lift: [0.008, 0.01, 0.014], gamma: [1.03, 1.01, 0.97], gain: [1.08, 1.03, 0.95], saturation: 1.17, contrast: 1.1, tint: [1.01, 1, 0.98], split: 0.42 },
+  golden: { lift: [0.018, 0.01, 0.004], gamma: [1.04, 0.99, 0.9], gain: [1.16, 1.01, 0.8], saturation: 1.22, contrast: 1.13, tint: [1.01, 0.98, 0.92], split: 0.55 },
+  // moody teal night with neon that pops: teal-lifted shadows, warm/neon highlights split off, extra saturation
+  night: { lift: [0.0, 0.009, 0.016], gamma: [0.96, 1.0, 1.04], gain: [1.03, 1.0, 1.04], saturation: 1.14, contrast: 1.18, tint: [0.98, 1, 1.02], split: 0.7 },
   casino: { lift: [0.02, 0.0, 0.0], gamma: [1.04, 0.98, 0.9], gain: [1.12, 0.98, 0.8], saturation: 1.15, contrast: 1.08, tint: [1, 0.97, 0.9] },
   dream: { lift: [0.06, 0.05, 0.08], gamma: [1.06, 1.02, 1.1], gain: [1.0, 0.98, 1.05], saturation: 1.2, contrast: 0.92, tint: [1, 0.98, 1.04] },
   album: { lift: [0.03, 0.02, 0.0], gamma: [1.05, 1.0, 0.86], gain: [1.08, 1.0, 0.8], saturation: 1.08, contrast: 1.05, tint: [1, 0.98, 0.9] },
@@ -146,11 +257,16 @@ export class PostFX {
   tone: ToneMappingEffect;
   grade: GradeEffect;
   vignette: VignetteEffect;
-  noise: NoiseEffect;
+  /** film grain (resolution-independent; was a NoiseEffect) */
+  noise: GrainEffect;
   ca: ChromaticAberrationEffect;
   smaa: SMAAEffect;
   dof: DepthOfFieldEffect;
   shafts: SunShaftsEffect;
+  /** screen-space ink: edge mask pass (after the RenderPass) + composite (first effect of the main pass) */
+  inkPass: InkEdgePass;
+  ink: InkEffect;
+  final: FinalEffect;
   private shaftsPass: EffectPass | null = null;
   private mainPass: EffectPass;
   private shaftsOn = true;
@@ -158,16 +274,36 @@ export class PostFX {
   private caPass: EffectPass;
   private smaaPass: EffectPass;
   private dofPass: EffectPass;
+  private finalPass: EffectPass;
   quality: Quality = 'high';
+  /** internal render scale relative to the drawing buffer (ultra supersamples > 1, adaptive < 1) */
+  scale = 1;
+  /** contrast-adaptive sharpening after the resample (0..1) */
+  sharpen = 0;
+  private cssW = 1;
+  private cssH = 1;
+  private intW = 1;
+  private intH = 1;
+  private impStart = -1;
+  private impDur = 0.34;
+  private finalOnScreen = true;
   private scene: THREE.Scene;
   private camera: THREE.Camera;
 
   constructor(private renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
+    installMaterialPatch();
     this.scene = scene;
     this.camera = camera;
     this.composer = new EffectComposer(renderer, { frameBufferType: THREE.HalfFloatType, multisampling: 0 });
+    this.composer.autoRenderToScreen = false;
     this.renderPass = new RenderPass(scene, camera);
     this.composer.addPass(this.renderPass);
+
+    // ink edge mask: reads the RenderPass colour (ink-mask alpha) + depth, writes its own R8 target (no swap)
+    this.inkPass = new InkEdgePass(camera);
+    this.inkPass.setScene(scene);
+    this.inkPass.enabled = InkSettings.ink;
+    this.composer.addPass(this.inkPass);
 
     const w = renderer.domElement.width, h = renderer.domElement.height;
     this.ao = new N8AOPostPass(scene, camera, w, h);
@@ -184,36 +320,52 @@ export class PostFX {
     this.dofPass.enabled = false;
     this.composer.addPass(this.dofPass);
 
+    this.ink = new InkEffect(this.inkPass.target.texture);
     this.bloom = new BloomEffect({ mipmapBlur: true, intensity: 0.55, luminanceThreshold: 0.88, luminanceSmoothing: 0.22, radius: 0.68 });
     this.tone = new ToneMappingEffect({ mode: ToneMappingMode.AGX });
     this.grade = new GradeEffect();
     this.vignette = new VignetteEffect({ offset: 0.28, darkness: 0.5 });
-    this.noise = new NoiseEffect({ premultiply: true });
-    this.noise.blendMode.opacity.value = 0.28;
+    this.noise = new GrainEffect();
     this.shafts = new SunShaftsEffect(28);
     this.mainPass = this.makeMainPass(camera, true);
     this.composer.addPass(this.mainPass);
     this.shaftsPass = new EffectPass(camera, this.shafts);
     this.composer.addPass(this.shaftsPass);
 
-    this.ca = new ChromaticAberrationEffect({ offset: new THREE.Vector2(0.00055, 0.00045), radialModulation: true, modulationOffset: 0.35 });
+    // subtle: crisp ink lines should not grow colour fringes
+    this.ca = new ChromaticAberrationEffect({ offset: new THREE.Vector2(0.0003, 0.00025), radialModulation: true, modulationOffset: 0.45 });
     this.caPass = new EffectPass(camera, this.ca);
     this.composer.addPass(this.caPass);
 
     this.smaa = new SMAAEffect({ preset: SMAAPreset.HIGH });
     this.smaaPass = new EffectPass(camera, this.smaa);
     this.composer.addPass(this.smaaPass);
+
+    this.final = new FinalEffect();
+    this.finalPass = new EffectPass(camera, this.final);
+    this.composer.addPass(this.finalPass);
+    this.syncOutput(true);
     this.setLook('thaiDay');
   }
 
   private makeMainPass(camera: THREE.Camera, _shafts: boolean) {
-    return new EffectPass(camera, this.bloom, this.tone, this.grade, this.vignette, this.noise);
+    return new EffectPass(camera, this.ink, this.bloom, this.tone, this.grade, this.vignette, this.noise);
   }
   /** shafts read the depth texture: they run in their own pass right after the main pass. With AO on and DOF
    *  off that is an even number of buffer swaps, so they read the buffer that owns the depth attachment and
-   *  write the other one (no feedback loop). Any other pass layout → shafts off. */
+   *  write the other one (no feedback loop). Any other pass layout → shafts off. (The ink pass never swaps.) */
   private syncShaftsPass() {
     if (this.shaftsPass) this.shaftsPass.enabled = this.shaftsOn && this.ao.enabled && !this.dofPass.enabled;
+  }
+
+  /** The final resample/sharpen/impact pass only runs when it has something to do; otherwise SMAA goes to screen. */
+  private syncOutput(force = false) {
+    const need = Math.abs(this.scale - 1) > 0.01 || this.sharpen > 0.001 || this.impStart >= 0;
+    if (!force && need === this.finalOnScreen) return;
+    this.finalOnScreen = need;
+    this.finalPass.enabled = need;
+    this.finalPass.renderToScreen = need;
+    this.smaaPass.renderToScreen = !need;
   }
 
   /** Sun for shafts + aerial haze: world-space direction to the sun, colour (HDR), strengths. Call every frame. */
@@ -247,6 +399,7 @@ export class PostFX {
     this.ao.camera = camera;
     for (const p of this.composer.passes) (p as any).mainCamera = camera;
     (this.dof as any).camera = camera;
+    this.inkPass.setScene(scene);
   }
 
   setQuality(q: Quality) {
@@ -262,6 +415,51 @@ export class PostFX {
     // shafts/haze: off at low (and with ?noshafts)
     this.shaftsOn = q !== 'low' && !new URLSearchParams(location.search).has('noshafts');
     this.syncShaftsPass();
+    // ink: creases are the expensive/noisy part → lighter at low; ultra gets the finest SMAA
+    this.inkPass.setParams(q === 'low' ? { creaseK: 0.5, jitter: 0.4 } : { creaseK: 0.85, jitter: 0.6 });
+    this.smaa.applyPreset(q === 'ultra' ? SMAAPreset.ULTRA : q === 'low' ? SMAAPreset.MEDIUM : SMAAPreset.HIGH);
+    this.noise.u('grainK').value = q === 'low' ? 0 : 0.022;
+    this.sharpen = q === 'high' ? 0.3 : q === 'ultra' ? 0.18 : 0;
+    this.syncOutput();
+  }
+
+  /** Internal render scale (1 = native drawing buffer). Engine drives this (ultra supersampling, adaptive). */
+  setScale(s: number) {
+    const v = Math.max(0.5, Math.min(2.5, s));
+    if (Math.abs(v - this.scale) < 1e-3) return;
+    this.scale = v;
+    this.setSize(this.cssW, this.cssH);
+  }
+
+  /** Tune the screen-space ink (widths, thresholds, fade). */
+  setInk(p: Partial<InkParams> & { on?: boolean; strength?: number; tint?: number; glow?: number }) {
+    this.inkPass.setParams(p);
+    if (p.on !== undefined) { InkSettings.ink = p.on; this.inkPass.enabled = p.on; this.ink.u('inkK').value = p.on ? (p.strength ?? 1) : 0; }
+    else if (p.strength !== undefined) this.ink.u('inkK').value = InkSettings.ink ? p.strength : 0;
+    if (p.tint !== undefined) this.ink.u('tintK').value = p.tint;
+    if (p.glow !== undefined) this.ink.u('glowK').value = p.glow;
+  }
+  /** Cel banding strength (0 = plain PBR). */
+  setCel(k: number, shadow = k > 0 ? 0.6 : 0) { CEL.uCelK.value = k; CEL.uCelShadow.value = shadow; }
+
+  /**
+   * Anime impact frame: 2–3 frames of inverted / ink-on-paper flash + radial burst, then a fading halftone burst.
+   * `at` = world point (projected with the current camera) or null for the screen centre.
+   */
+  impact(at: THREE.Vector3 | null = null, strength = 1) {
+    if (params_noImpact) return;
+    const now = performance.now() / 1000;
+    if (this.impStart >= 0 && now - this.impStart < 0.5 && strength <= this.final.u('impK').value) return;
+    let x = 0.5, y = 0.5;
+    if (at) {
+      const p = _p.copy(at).project(this.camera as THREE.PerspectiveCamera);
+      if (p.z < 1) { x = THREE.MathUtils.clamp(p.x * 0.5 + 0.5, 0.1, 0.9); y = THREE.MathUtils.clamp(p.y * 0.5 + 0.5, 0.1, 0.9); }
+    }
+    this.impStart = now;
+    this.final.u('impC').value.set(x, y);
+    this.final.u('impK').value = Math.max(0, Math.min(1, strength));
+    this.final.u('impSeed').value = Math.random() * 100;
+    this.syncOutput();
   }
 
   /** Blend towards a grading look. `k`=1 → fully that look. */
@@ -301,7 +499,28 @@ export class PostFX {
     if (this.dofPass.enabled) (this.dof as any).target = p;
   }
 
-  setSize(w: number, h: number) { this.composer.setSize(w, h, false); }
+  /** CSS size; buffers = drawing buffer × scale. */
+  setSize(w: number, h: number) {
+    this.cssW = w; this.cssH = h;
+    this.composer.setSize(w, h, false);
+    const db = this.renderer.getDrawingBufferSize(_sz);
+    const ow = Math.max(1, db.x), oh = Math.max(1, db.y);
+    this.intW = Math.max(1, Math.round(ow * this.scale));
+    this.intH = Math.max(1, Math.round(oh * this.scale));
+    if (this.intW !== ow || this.intH !== oh) {
+      this.composer.inputBuffer.setSize(this.intW, this.intH);
+      this.composer.outputBuffer.setSize(this.intW, this.intH);
+      for (const p of this.composer.passes) p.setSize(this.intW, this.intH);
+    }
+    this.final.u('dstTexel').value.set(1 / ow, 1 / oh);
+    this.final.u('outRes').value.set(ow, oh);
+    this.final.u('ss').value = this.scale;
+    this.final.u('sharp').value = this.scale < 0.99 ? Math.max(this.sharpen, 0.45) : this.sharpen;
+    this.syncOutput();
+  }
+  /** internal (render) resolution in pixels */
+  get renderSize() { return { w: this.intW, h: this.intH }; }
+
   render(dt: number) {
     // nobody fed the sun recently (menu / other scenes): no shafts or haze
     if (performance.now() - this.sunStamp > 400) { this.shafts.u('shaftK').value = 0; this.shafts.u('hazeK').value = 0; }
@@ -309,8 +528,20 @@ export class PostFX {
     // modules toggle ao / dof directly: re-check the buffer-swap parity every frame (and skip the pass when idle)
     if (this.shaftsPass) this.shaftsPass.enabled = this.shaftsOn && this.ao.enabled && !this.dofPass.enabled
       && (this.shafts.u('shaftK').value > 0.001 || this.shafts.u('hazeK').value > 0.001);
+    // impact frame clock (real time: slow-mo must not stretch the flash)
+    if (this.impStart >= 0) {
+      const t = performance.now() / 1000 - this.impStart;
+      if (t > this.impDur) { this.impStart = -1; this.final.u('impT').value = -1; this.final.u('impK').value = 0; }
+      else this.final.u('impT').value = t;
+    }
+    this.final.u('sharp').value = this.scale < 0.99 ? Math.max(this.sharpen, 0.45) : this.sharpen;
+    this.syncOutput();
+    this.inkPass.enabled = InkSettings.ink;
+    updateInkHulls(this.intH, this.intW);
     this.composer.render(dt);
   }
 }
 
+const params_noImpact = new URLSearchParams(location.search).has('noimpact');
+const _sz = new THREE.Vector2();
 const _v = new THREE.Vector3(), _p = new THREE.Vector3();

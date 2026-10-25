@@ -158,8 +158,8 @@ const SH_DISP_V = /* glsl */`
     float face = abs(dot(normalize(cross(ve, vn)), Vv));
     vFinVis = smoothstep(0.4, 0.78, sil) * smoothstep(0.1, 0.45, face);
     vFin = aFin;
-    float L = uLen * aFurLen * 1.15;
-    float lie = uLie * 0.4;
+    float L = uLen * aFurLen * 0.95;
+    float lie = uLie * 0.45;
   #else
     float h = uH;
     float L = uLen * aFurLen;
@@ -218,7 +218,7 @@ const SH_MAP_F = /* glsl */`
     if (furMaskG < 0.5 || yy > sl || abs(fx) > w || vFinVis < dith * 0.9 + 0.05) discard;
   #endif
   #ifdef FUR_FIN
-    float ao = mix(0.72, 1.0, hh);            // fins only show at the silhouette: no deep root occlusion
+    float ao = mix(0.85, 1.05, hh);           // fins only show at the silhouette: no deep root occlusion
   #else
     float ao = mix(uBaseAO, 1.0, pow(hh, 0.65));
   #endif
@@ -237,7 +237,12 @@ const SH_LIGHT_F = (() => {
   let c = THREE.ShaderChunk.lights_physical_pars_fragment;
   c = c.replace('float dotNL = saturate( dot( geometryNormal, directLight.direction ) );\n\n\tvec3 irradiance = dotNL * directLight.color;',
     `float dotNL = saturate( dot( geometryNormal, directLight.direction ) );
-	float dotNLw = mix(dotNL, saturate((dot(geometryNormal, directLight.direction) + uWrap) / (1.0 + uWrap)), furMaskG);
+	#ifdef FUR_FIN
+		float wrapK = 0.95;   // fins are silhouette strands: light them softly (no dark noisy fringe)
+	#else
+		float wrapK = uWrap;
+	#endif
+	float dotNLw = mix(dotNL, saturate((dot(geometryNormal, directLight.direction) + wrapK) / (1.0 + wrapK)), furMaskG);
 	vec3 irradiance = dotNLw * directLight.color;`);
   c = c.replace('reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}',
     `reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );
@@ -848,6 +853,19 @@ export class Creature implements QuadRigLike {
         this.tng.forEach((ti, i) => add(ti, (0.12 + i * 0.06 + wob) * pant, 0, 0));
       }
       if (F.yawn > 0.05) this.tng.forEach((ti, i) => add(ti, -(0.08 + i * 0.07) * F.yawn, 0, 0));
+      // derp tongue: flops out of the side of the mouth (blep)
+      const dp = Math.abs(F.derp), ds = Math.sign(F.derp) || 1;
+      if (dp > 0.02) {
+        addP(this.tng[0], 0.009 * ds * dp, -0.01 * dp, 0.03 * dp);
+        this.tng.forEach((ti, i) => add(ti, (0.2 + i * 0.06) * dp, (0.3 + i * 0.05) * ds * dp, 0.2 * ds * dp));
+        add(N.jaw, 0.12 * dp, 0, 0.05 * ds * dp);
+      }
+    }
+    // squash & stretch (goofy anime timing): volume-preserving scale of the whole body
+    {
+      const sq = F.squash, st = F.stretch;
+      const sy = 1 + sq - st * 0.4, sz = 1 + st - sq * 0.5, sx = 1 / Math.sqrt(Math.max(0.5, sy * sz));
+      this.inner.scale.set(sx, sy, sz);
     }
     if (F.sniff > 0.05) add(N.nose, Math.sin(this.t * 26) * 0.06 * F.sniff, 0, 0);
     // breathing → fur/body shader

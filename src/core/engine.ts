@@ -35,11 +35,17 @@ export class Engine {
   private last = performance.now();
   private running = false;
   private hiddenTimer: any = null;
+  /** drawing-buffer pixel ratio (≤ device pixel ratio) */
   pixelRatio = 1;
   private maxPixelRatio = 1.5;
+  /** internal render scale on top of the drawing buffer: ultra supersamples (>1), adaptive drops below 1 only when truly slow */
+  renderScale = 1;
+  private nominalScale = 1;
+  private minScale = 0.7;
   private adaptive = true;
   private ftAvg = 16;
-  private adaptCooldown = 0;
+  private adaptCooldown = 4;
+  private slowFor = 0;
   fps = 60;
   /** Called with Frame when an uncaught error happens inside a loop callback (shown in debug overlay). */
   onError: ((e: any) => void) | null = null;
@@ -54,7 +60,10 @@ export class Engine {
     this.canvas = this.renderer.domElement;
     this.canvas.tabIndex = 0;
     container.appendChild(this.canvas);
-    Assets.maxAnisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+    Assets.maxAnisotropy = Math.min(16, this.renderer.capabilities.getMaxAnisotropy());
+    installAnisotropyFloor();
+    // adaptive resolution is pointless on a software rasterizer (headless SwiftShader): keep the real look there
+    if (params.get('adapt') === '0' || /swiftshader|llvmpipe|softpipe|software/i.test(rendererName(this.renderer))) this.adaptive = false;
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.05, 900);
@@ -67,13 +76,27 @@ export class Engine {
     this.resize();
   }
 
+  /**
+   * Quality tiers
+   *  low     drawing buffer 0.85 (browser upscale), no AO / shafts / grain — fast
+   *  medium  1× CSS pixels, no CA, no sharpening
+   *  high    native device pixel ratio (up to 2) + light CAS sharpening; adaptive scale only drops below
+   *          native when the frame time is really bad (> 30 ms for a while) and climbs back fast
+   *  ultra   native DPR × 1.5–2 supersampling (≤ ~14.7 MP internal) with a tent downsample
+   */
   setQuality(q: Quality) {
     this.post.setQuality(q);
     const dpr = window.devicePixelRatio || 1;
-    this.maxPixelRatio = q === 'low' ? Math.min(dpr, 0.85) : q === 'medium' ? Math.min(dpr, 1) : q === 'high' ? Math.min(dpr, 1.5) : Math.min(dpr, 2);
+    this.maxPixelRatio = q === 'low' ? Math.min(dpr, 0.85) : q === 'medium' ? Math.min(dpr, 1) : Math.min(dpr, 2);
     this.pixelRatio = this.maxPixelRatio;
+    const px = innerWidth * innerHeight * this.maxPixelRatio * this.maxPixelRatio;
+    const ss = q === 'ultra' ? Math.max(1, Math.min(dpr >= 2 ? 1.5 : 2, Math.sqrt(14.7e6 / Math.max(1, px)))) : 1;
+    this.nominalScale = ss;
+    this.renderScale = ss;
+    this.minScale = q === 'ultra' ? 0.75 : q === 'high' ? 0.7 : 1;
     this.renderer.shadowMap.type = q === 'low' ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
     try { localStorage.setItem('hp.quality', q); } catch {}
+    this.adaptCooldown = 3;
     this.resize();
   }
   get quality(): Quality { return this.post.quality; }
@@ -109,6 +132,7 @@ export class Engine {
     this.canvas.style.height = h + 'px';
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    this.post.scale = this.renderScale;
     this.post.setSize(w, h);
   }
 
@@ -185,20 +209,71 @@ export class Engine {
     this.adapt(raw);
   }
 
+  /**
+   * Adaptive resolution. high/ultra move the internal render scale (the drawing buffer stays native, the final
+   * pass resamples + sharpens); low/medium move the drawing-buffer pixel ratio. Drops need a sustained bad frame
+   * time; recovery is quick.
+   */
   private adapt(raw: number) {
     this.ftAvg += (raw * 1000 - this.ftAvg) * 0.05;
     this.fps = 1000 / this.ftAvg;
-    if (!this.adaptive) return;
+    if (!this.adaptive || document.hidden) return;
     this.adaptCooldown -= raw;
+    const q = this.post.quality;
+    const scaled = q === 'high' || q === 'ultra';
+    // ultra sheds supersampling first (> 20 ms), below native only when truly bad (> 30 ms)
+    const badMs = scaled && this.renderScale > 1.001 ? 20 : scaled ? 30 : 24;
+    this.slowFor = this.ftAvg > badMs ? this.slowFor + raw : 0;
     if (this.adaptCooldown > 0) return;
-    if (this.ftAvg > 24 && this.pixelRatio > 0.6) {
+    if (scaled) {
+      if (this.slowFor > 1.5 && this.renderScale > this.minScale + 1e-3) {
+        const step = this.renderScale > 1.001 ? 0.25 : 0.1;
+        this.renderScale = Math.max(this.minScale, this.renderScale - step);
+        if (this.renderScale > 1 && this.renderScale < 1.12) this.renderScale = 1;
+        this.resize();
+        this.adaptCooldown = 1.5;
+        this.slowFor = 0;
+      } else if (this.ftAvg < (this.renderScale >= 1 ? 13 : 20) && this.renderScale < this.nominalScale - 1e-3) {
+        this.renderScale = Math.min(this.nominalScale, this.renderScale + (this.renderScale >= 1 ? 0.25 : 0.1));
+        this.resize();
+        this.adaptCooldown = 0.75;
+      }
+      return;
+    }
+    if (this.slowFor > 1.5 && this.pixelRatio > 0.6) {
       this.pixelRatio = Math.max(0.6, this.pixelRatio - 0.1);
       this.resize();
-      this.adaptCooldown = 2;
-    } else if (this.ftAvg < 13 && this.pixelRatio < this.maxPixelRatio) {
+      this.adaptCooldown = 1.5;
+      this.slowFor = 0;
+    } else if (this.ftAvg < 14 && this.pixelRatio < this.maxPixelRatio) {
       this.pixelRatio = Math.min(this.maxPixelRatio, this.pixelRatio + 0.1);
       this.resize();
-      this.adaptCooldown = 3;
+      this.adaptCooldown = 0.75;
     }
   }
+}
+
+function rendererName(r: THREE.WebGLRenderer): string {
+  try {
+    const gl = r.getContext();
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    return String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+  } catch { return ''; }
+}
+
+/**
+ * Crisp textures at grazing angles everywhere: every trilinear-mipmapped texture gets at least the device's
+ * max anisotropy (≤ 16), including the ones modules create with a hard-coded 4/8. (three only applies it to
+ * mipmapped, non-nearest textures, so render targets are unaffected.)
+ */
+function installAnisotropyFloor() {
+  const proto = THREE.Texture.prototype as any;
+  if (proto.__anisoFloor) return;
+  proto.__anisoFloor = true;
+  const KEY = Symbol('aniso');
+  Object.defineProperty(proto, 'anisotropy', {
+    configurable: true,
+    get(this: any) { return Math.max(this[KEY] ?? 1, Assets.maxAnisotropy); },
+    set(this: any, v: number) { this[KEY] = v; },
+  });
 }

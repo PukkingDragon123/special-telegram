@@ -1,0 +1,126 @@
+[
+ {
+  "id": "arch/ac_rusted",
+  "file": "arch/ac_rusted.glb",
+  "category": "arch",
+  "tags": [
+   "ac",
+   "air conditioner",
+   "condenser",
+   "facade",
+   "rusty",
+   "wall"
+  ],
+  "size_m": [
+   0.82,
+   0.6,
+   0.32
+  ],
+  "tris": 1600,
+  "license": "CC-BY-4.0",
+  "author": "zeee7",
+  "source_url": "https://sketchfab.com/3d-models/b327c7ee12f348de9c0b6081e7355f2a",
+  "physics": "static",
+  "mass_kg": 35,
+  "note": "Sketchfab \"Rusted Air Conditioner\" via Objaverse mirror; backdrop wall removed, scaled to a Thai split-type condenser, decimated, origin back-bottom-centre, front +Z",
+  "bytes": 130456
+ },
+ {
+  "id": "arch/ac_old",
+  "file": "arch/ac_old.glb",
+  "category": "arch",
+  "tags": [
+   "ac",
+   "hvac",
+   "rooftop",
+   "duct",
+   "old"
+  ],
+  "size_m": [
+   0.97,
+   0.72,
+   1.09
+  ],
+  "tris": 1800,
+  "license": "CC-BY-4.0",
+  "author": "jennybria",
+  "source_url": "https://sketchfab.com/3d-models/502124e1278e4f9cba041b610e7f2e27",
+  "physics": "static",
+  "mass_kg": 60,
+  "note": "Sketchfab \"Old air conditioner\" via Objaverse mirror; rooftop unit on a stand with duct elbow",
+  "bytes": 266112
+ },
+ {
+  "id": "arch/ac_window",
+  "file": "arch/ac_window.glb",
+  "category": "arch",
+  "tags": [
+   "ac",
+   "window unit",
+   "old",
+   "facade"
+  ],
+  "size_m": [
+   0.44,
+   0.5,
+   0.58
+  ],
+  "tris": 1800,
+  "license": "CC-BY-4.0",
+  "author": "ixMkc1",
+  "source_url": "https://sketchfab.com/3d-models/dd16906812c243efb345fb9953cd084b",
+  "physics": "static",
+  "mass_kg": 30,
+  "note": "Sketchfab \"Old Air Conditioner\" via Objaverse mirror; window-type unit, origin at its back",
+  "bytes": 342464
+ },
+ {
+  "id": "arch/thai_pole",
+  "file": "arch/thai_pole.glb",
+  "category": "arch",
+  "tags": [
+   "thai",
+   "electric pole",
+   "concrete pole",
+   "utility",
+   "mea"
+  ],
+  "size_m": [
+   0.26,
+   9.0,
+   0.26
+  ],
+  "tris": 472,
+  "license": "custom (project)",
+  "author": "buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py)",
+  "source_url": "",
+  "physics": "static",
+  "mass_kg": 1200,
+  "note": "custom Thai prestressed concrete pole; real PBR photo textures baked (albedo\u00d7AO, normal, ORM); scale Y for other heights",
+  "bytes": 210532
+ },
+ {
+  "id": "arch/thai_pole_arms",
+  "file": "arch/thai_pole_arms.glb",
+  "category": "arch",
+  "tags": [
+   "thai",
+   "crossarm",
+   "insulator",
+   "utility"
+  ],
+  "size_m": [
+   1.8,
+   1.25,
+   0.16
+  ],
+  "tris": 2468,
+  "license": "custom (project)",
+  "author": "buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py)",
+  "source_url": "",
+  "physics": "none",
+  "mass_kg": 40,
+  "note": "galvanised crossarm set (1.8 m + 1.4 m, braces, bolt plates, 5 porcelain pin insulators); origin = pole axis at the pole top",
+  "bytes": 75244
+ }
+]

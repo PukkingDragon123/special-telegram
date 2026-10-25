@@ -5,6 +5,9 @@ import type { NightLights } from './lights';
 import type { Props } from './props';
 import { POLES_SOI, POLES_SOI_E, POLES_MAIN_N, POLES_MAIN_S, POLES_CANAL, POLES_RURAL, SW_H, MAIN, MEDIAN_H } from './layout';
 import { EMIS } from './mats';
+import { ARCH } from './archmodels';
+
+const IDENT = new THREE.Matrix4();
 
 /**
  * UTILITY POLES & WIRES — Thai concrete poles with steel crossarms, insulators, transformers,
@@ -23,41 +26,13 @@ function pole(c: PoleCtx, x: number, z: number, y: number, along: THREE.Vector2,
   const { w, rng } = c;
   const h = o.h ?? rng.range(8.6, 9.6);
   const yaw = Math.atan2(along.x, along.y);
-  // tapered square concrete pole (8-sided bevel so it never reads as a lazy box)
-  w.setGroup('base');
-  w.mat('concrete_old', { tint: 0xc8c4bc, ov: 'plaster_moldy', ovAmt: 0.55, uv: 'local' });
+  // the pole + crossarm/insulator set are real library models (custom bpy kit: gen/lib/arch/thai_pole*.glb),
+  // instanced; the code below adds the per-pole clutter (junction boxes, coils, transformers, lamps)
+  ARCH.add('thai_pole', IDENT, x, y, z, yaw, [1, h / 9, 1]);
+  ARCH.add('thai_pole_arms', IDENT, x, y + h, z, yaw, 1);
   w.pushT(x, y, z, yaw);
-  const r0 = 0.17, r1 = 0.1;
-  const P = (r: number): [number, number][] => [[-r, -r * 0.6], [-r * 0.6, -r], [r * 0.6, -r], [r, -r * 0.6], [r, r * 0.6], [r * 0.6, r], [-r * 0.6, r], [-r, r * 0.6]];
-  // build as 3 stacked frustums
-  const segs = 3;
-  for (let i = 0; i < segs; i++) {
-    const ya = (h * i) / segs, yb = (h * (i + 1)) / segs;
-    const ra = r0 + (r1 - r0) * (i / segs), rb = r0 + (r1 - r0) * ((i + 1) / segs);
-    const A = P(ra), B = P(rb);
-    for (let k = 0; k < 8; k++) {
-      const a = A[k], b = A[(k + 1) % 8], cc = B[(k + 1) % 8], d = B[k];
-      w.quad(b[0], ya, b[1], a[0], ya, a[1], d[0], yb, d[1], cc[0], yb, cc[1]);
-    }
-  }
-  w.fan(P(r1), h, true);
-  // black/white base band + number plate
-  w.mat('metal_paint', { tint: 0x1a1a1a, uv: 'local' });
-  w.box(-r0 - 0.005, 0.0, -r0 - 0.005, r0 + 0.005, 0.5, r0 + 0.005, SIDES);
-  w.mat('metal_paint', { tint: 0xe8e8e0, uv: 'local' });
-  w.box(-0.08, 2.2, r0 * 0.9, 0.08, 2.45, r0 * 0.9 + 0.01, ALL);
-  // crossarms (perpendicular to the line = local X), insulators
   w.setGroup('detail');
-  w.mat('galv', { ov: 'steel_rust', ovAmt: 0.4, uv: 'local' });
-  w.box(-0.9, h - 0.35, -0.05, 0.9, h - 0.25, 0.05, ALL);
-  w.box(-0.7, h - 1.15, -0.05, 0.7, h - 1.05, 0.05, ALL);
-  w.tube([-0.6, h - 0.3, 0, 0, h - 0.9, 0, 0.6, h - 0.3, 0], 0.02, 3);
-  w.mat('plastic_gloss', { tint: 0xd8d4c8, uv: 'local' });
-  for (const xx of [-0.75, 0, 0.75]) w.cyl(xx, h - 0.25, 0, 0.045, 0.035, 0.14, 6, 1);
-  for (const xx of [-0.55, 0.55]) w.cyl(xx, h - 1.05, 0, 0.04, 0.03, 0.12, 6, 1);
-  // telecom clamp bracket + junction box + slack coil
-  w.mat('metal_paint', { tint: 0x9a9a94, ov: 'steel_rust', ovAmt: 0.5, uv: 'local' });
-  w.box(-0.25, 5.9, -0.22, 0.25, 6.0, 0.22, ALL);
+  // junction box + slack coil (the telecom clamp ring is part of the pole model)
   if (rng.chance(0.55)) { w.mat('plastic', { tint: rng.pick([0x9aa0a0, 0xd8d4c8, 0x5a6a6a]), uv: 'local' }); w.bevelBox(0.12, 4.1, -0.15, 0.45, 4.6, 0.12, 0.02); }
   if (rng.chance(0.3)) {
     // big hanging loops of spare fibre (several coils bundled, sagging)

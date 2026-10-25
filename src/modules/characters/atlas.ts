@@ -50,6 +50,8 @@ export const FABRICS: Record<string, Fab> = {
   grid_red: { path: GEN + 'grid_red.jpg', tile: 0.24 },
   stripe_check: { path: GEN + 'stripe_check.jpg', tile: 0.2 },
   quilted: { path: GEN + 'quilted.jpg', tile: 0.3 },
+  // real skin macro photo (pores, fine wrinkles) → overlay on every bare-skin region
+  skin: { path: GEN + 'skin_pores.jpg', tile: 0.055 },
 };
 
 /** pick the real check/plaid photo whose colourway is closest to the wanted colour */
@@ -377,12 +379,28 @@ export function paintAtlas(look: Look, size: number, variant: FaceVariant, onFac
   paintSkin(P, look, spec, skin);
   paintFace(P, look, skin, variant, onFaceReady);
   paintScalp(P, look, skin);
+  const MS = 128;
+  const snap = document.createElement('canvas'); snap.width = snap.height = MS;
+  const sg = snap.getContext('2d', { willReadFrequently: true })!;
+  sg.drawImage(cv, 0, 0, MS, MS);
   paintBottom(P, look, spec, skin, r);
   paintTop(P, look, spec, skin, r);
   paintShoes(P, look, spec, skin);
   paintAcc(P, look, spec, skin, r);
   paintHair(P, look, r);
   paintGrime(P, look, spec, r);
+  // skin mask: wherever the finished atlas still equals the skin-only paint
+  const fin = document.createElement('canvas'); fin.width = fin.height = MS;
+  const fg = fin.getContext('2d', { willReadFrequently: true })!;
+  fg.drawImage(cv, 0, 0, MS, MS);
+  const a = sg.getImageData(0, 0, MS, MS), b = fg.getImageData(0, 0, MS, MS);
+  for (let i = 0; i < a.data.length; i += 4) {
+    const d = Math.abs(a.data[i] - b.data[i]) + Math.abs(a.data[i + 1] - b.data[i + 1]) + Math.abs(a.data[i + 2] - b.data[i + 2]);
+    const v = d < 24 ? 255 : d < 48 ? Math.round(255 * (48 - d) / 24) : 0;
+    b.data[i] = b.data[i + 1] = b.data[i + 2] = v; b.data[i + 3] = 255;
+  }
+  fg.putImageData(b, 0, 0);
+  (cv as any).__skinMask = fin;
   return cv;
 }
 
@@ -402,6 +420,8 @@ function paintSkin(P: Painter, look: Look, spec: BodySpec, skin: string) {
   g.fillRect(0, 0, ATLAS, ATLAS);
   const dark = shade(skin, 0.62);
   const AO = (reg: Region, s: number, t: number, rs: number, rt: number, a: number, wrap = false) => P.blob(reg, s, t, rs, rt, rgbHex(shade(skin, 0.55)), a, wrap);
+  // real skin photo detail (pores, fine lines) on every bare-skin region
+  for (const rn of ['torso', 'leg', 'arm', 'neck', 'hand', 'foot', 'scalp', 'ear'] as const) P.fabric(rn, R[rn], 0, 0, 1, 1, 'skin', '#808080', { mode: 'overlay', contrast: 0.22, noFill: true });
   // body form shading (zero-mean-ish noise + AO)
   for (const reg of [R.torso, R.leg, R.arm, R.neck, R.hand, R.foot, R.scalp, R.ear]) P.noise(reg, 0.16, 0, 0, 1, 1, 0.6);
   // torso: armpits, under chest, navel, back crease, crotch

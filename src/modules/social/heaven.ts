@@ -27,7 +27,7 @@ export const HEAVEN_Y = 2600;
 const EYE = 1.62;
 const inCubic = (t: number) => t * t * t;
 
-const HEAVEN_LOOK = { lift: [0.008, 0.004, 0.014] as [number, number, number], gamma: [1.0, 0.99, 1.02] as [number, number, number], gain: [1.06, 1.0, 0.98] as [number, number, number], saturation: 1.2, contrast: 1.16, tint: [1.02, 0.99, 1.0] as [number, number, number] };
+const HEAVEN_LOOK = { lift: [0.008, 0.004, 0.014] as [number, number, number], gamma: [1.0, 0.99, 1.02] as [number, number, number], gain: [1.06, 1.0, 0.98] as [number, number, number], saturation: 1.3, contrast: 1.1, tint: [1.02, 0.99, 1.0] as [number, number, number] };
 export { HEAVEN_LOOK };
 
 // ------------------------------------------------------------------ white veil in front of a camera

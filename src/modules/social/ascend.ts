@@ -29,8 +29,10 @@ void main() {
   float dens = smoothstep(0.32, 0.72, n * 0.7 + n2 * 0.45);
   float cloud = smoothstep(-0.02, 0.14, edge) * outer * dens;
   vec3 light = mix(vec3(1.0, 0.8, 0.52), vec3(1.0, 0.97, 0.9), smoothstep(hole + 0.05, 0.0, r)) * (2.0 + 3.0 * exp(-r * r * 9.0));
-  vec3 cloudCol = mix(vec3(0.74, 0.7, 0.86), vec3(1.15, 1.04, 0.94), smoothstep(0.4, 0.0, edge)) * (0.78 + 0.4 * n2)
-                + vec3(1.0, 0.72, 0.4) * smoothstep(0.16, 0.0, edge) * 1.4;
+  // soft cel bands: lilac shadow, cream light toward the hole, a crisp gold rim right at the edge
+  float lit = smoothstep(0.3, 0.26, edge + (n2 - 0.5) * 0.12);
+  vec3 cloudCol = mix(vec3(0.7, 0.68, 1.0), vec3(1.16, 1.06, 1.0), lit)
+                + vec3(1.0, 0.74, 0.4) * smoothstep(0.09, 0.05, edge) * 1.6;
   float glow = exp(-r * r * 3.0) * 0.55 * uOpen;
   vec3 col = core * light + (1.0 - core) * (cloud * cloudCol + glow * vec3(1.0, 0.84, 0.58) * (1.0 - cloud));
   float alpha = clamp(max(core, max(cloud * 0.95, glow * 0.6)), 0.0, 1.0) * uK;

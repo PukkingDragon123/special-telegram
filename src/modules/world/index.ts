@@ -29,6 +29,7 @@ import { installDebug, DebugCam } from './debug';
 import { Weather } from './weather';
 import { installReflection } from './reflect';
 import { installDrainFx, drainsFrame, publicDrains } from './drains';
+import { ARCH } from './archmodels';
 
 /**
  * WORLD MODULE — builds ซอยเฮียผัด and its surroundings (see docs/MAP_PLAN.md):
@@ -119,6 +120,7 @@ async function buildWorld(game: Game) {
 
   // ---------------------------------------------------------------- build everything
   const step = (name: string, fn: () => void) => { const t = performance.now(); try { fn(); } catch (e) { console.error('[world] build step failed:', name, e); } const dt = performance.now() - t; TIMES[name] = Math.round(dt); };
+  ARCH.reset();   // buildings: library model placements (AC units…)
   step('streets', () => buildStreets(ctx));
   step('rows', () => buildRows(shopCtx, ROWS));
   const extraHoles: { x0: number; z0: number; x1: number; z1: number }[] = [];
@@ -154,6 +156,7 @@ async function buildWorld(game: Game) {
 
   for (const o of pendingWater.splice(0)) root.add(o);
   installDrainFx(root);   // buildings: sewer water + drain steam
+  void ARCH.build(root);
   // ---------------------------------------------------------------- atmosphere & lights
   tf = performance.now();
   const atmo = new Atmosphere(game);
@@ -268,6 +271,7 @@ function frame(game: Game, dt: number) {
   realPropsFrame(game, dt);
   S.lights.update(_cam, S.atmo.night, dt);
   drainsFrame(_cam, S.atmo.night, U.uWet.value, S.atmo.hemi.color);
+  ARCH.update(_cam);
   U.uWet.value += (((game.g as any).rain ?? 0) - U.uWet.value) * Math.min(1, dt * 0.2);
   // distance-cull small detail meshes
   if ((S.frameN++ & 7) === 0) {

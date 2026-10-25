@@ -1,0 +1,58 @@
+[
+ {
+  "id": "thai_stool",
+  "file": "furniture/thai_stool.glb",
+  "category": "furniture",
+  "tags": [
+   "stool",
+   "plastic",
+   "thai",
+   "seat",
+   "street-food",
+   "red"
+  ],
+  "size_m": [
+   0.368,
+   0.45,
+   0.368
+  ],
+  "tris": 2599,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_furniture.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.75,
+  "bytes": 76628,
+  "title": "Thai plastic stool (เก้าอี้พลาสติก)",
+  "tint": true,
+  "friction": 0.55,
+  "far": 0.9
+ },
+ {
+  "id": "thai_table_steel",
+  "file": "furniture/thai_table_steel.glb",
+  "category": "furniture",
+  "tags": [
+   "table",
+   "stainless",
+   "folding",
+   "street-food",
+   "thai"
+  ],
+  "size_m": [
+   0.75,
+   0.722,
+   0.6
+  ],
+  "tris": 2532,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 7.5,
+  "bytes": 70732,
+  "title": "Stainless folding street table (โต๊ะพับสแตนเลส)",
+  "friction": 0.5,
+  "collider": "box"
+ }
+]
