@@ -17,6 +17,7 @@ Four agents work at the same time in this tree:
 | **creatures** | `src/modules/life/{creature,quad,pets,tex}.ts`, `src/modules/characters/*`, `scripts/life/`, `public/assets/gen/{life,characters}/` |
 | **alive** | new `src/modules/escape/` (police "wanted" cinematic at the map edges) and new `src/modules/critters/` (cockroaches, flies, rats, ants), `public/assets/gen/{escape,critters}/` |
 | **water** | new `src/modules/water/` (buoyancy, splashes, sloshing containers, spills, puddle ripples, taps/hoses, sewer water), `public/assets/gen/water/` |
+| **assets** | shared detailed-model library `public/assets/gen/lib/` + `catalog.json`, `src/modules/world/{lib,clutter}.ts`, `scripts/objaverse.mjs`, `scripts/blender/` (see `docs/ART_STYLE.md`) |
 | **lead** | `src/modules/menu/*` (album cover + newspaper on the main menu), integration |
 
 Follow-up from the client: "make textured and model hyper realistic, add cooler and polish models, make dogs have rig fur, the food
@@ -29,6 +30,10 @@ counter blood knife etc, and water physic etc too".
 Manholes and drain grates: **buildings** (real 3D covers and grates with sewer water visible below). It publishes their
 positions as `game.world.drains: {p:[x,y,z], kind:'manhole'|'grate'}[]` for **alive** (roaches/rats) and **water**.
 Market and stall micro detail and better tables: **props**.
+
+Fourth client message: "I hate the lazy blocky assets, I need detailed assets, custom realistic or download from Sketchfab, super
+detailed, with small props, the map looks bad; make every agent use the same art style, working on the same thing" → **`docs/ART_STYLE.md`** is
+binding for every agent.
 
 `src/modules/world/index.ts` is shared by props + buildings: keep edits there to a few lines, re-read before every edit.
 
