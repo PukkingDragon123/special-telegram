@@ -19,10 +19,28 @@ Not: cartoon, flat colour, plastic toy, voxel, "2005 game", boxes with a photo s
    - Every hard edge is bevelled.
    - Every object has real thickness, a broken-up silhouette and the small parts it has in reality: screws, rims, lips, handles, hinges, feet, cables, labels, seams, welds.
    - A stool has its leg flare, its moulded lip and its drainage hole. A stall has tarp ropes, clamps, bulbs on wires, crates under it, a cash tin and a calendar.
-2. **Source priority:**
-   1. Poly Haven CC0 photoscans (`scripts/polyhaven.mjs`).
-   2. Sketchfab models through the **Objaverse mirror** on HuggingFace (Objaverse 1.0 uids are Sketchfab uids). Discover with the Sketchfab search API (`https://api.sketchfab.com/v3/search?type=models&q=...&downloadable=true`), check the uid is in `object-paths.json.gz`, then download the GLB from `https://huggingface.co/datasets/allenai/objaverse/resolve/main/<path>`. **Licences: CC0 / CC-BY / CC-BY-SA only** (no NC, no ND). Credit the author and link in CREDITS.
-   3. **Custom models** built with headless Blender (`import bpy`, installed for python3) or in code: bevels, subdivision-sculpted shapes, real photo textures, baked AO and normal maps.
+2. **Where models come from** (client, Oct 25: "download assets from Sketchfab from now on, but some Thai assets make it yourself"):
+   - **Generic objects come from Sketchfab.** Vehicles, tools, furniture, kitchenware, bins, plants, critters, poles, AC units: anything that exists outside Thailand.
+     - Discover with the Sketchfab search API (`https://api.sketchfab.com/v3/search?type=models&q=...&downloadable=true`, no token needed).
+     - Download through the official download API when `SKETCHFAB_TOKEN` is set in the environment (`GET https://api.sketchfab.com/v3/models/<uid>/download` with `Authorization: Token $SKETCHFAB_TOKEN`).
+     - Otherwise download through the **Objaverse mirror** (Objaverse 1.0 uids are Sketchfab uids): check the uid is in `object-paths.json.gz`, then fetch `https://huggingface.co/datasets/allenai/objaverse/resolve/main/<path>`.
+     - **Licences: CC0 / CC-BY / CC-BY-SA only** (no NC, no ND). Credit the author and link in CREDITS and `catalog.json`.
+   - **Thai-specific objects are custom-made by us**, because nothing online gets them right. Examples:
+     - Thai plastic stools and tables;
+     - the รถเข็น food cart and its stainless parts;
+     - the ตู้กับข้าว glass food cabinet;
+     - the condiment caddy (พริกน้ำปลา, น้ำส้มพริกดอง, chili flakes, sugar);
+     - the ศาลพระภูมิ spirit house and its garlands;
+     - the โอ่ง water jar;
+     - Thai market baskets and woven trays (กระด้ง);
+     - Thai signage boxes;
+     - Thai electric poles with their wire bundles;
+     - Thai shophouse facade parts: folding gates, ventilation blocks, grilles;
+     - the พัดไล่แมลงวัน fly-fan;
+     - the เขียงมะขาม chopping block;
+     - Thai brand bottles and packs.
+     Build them with headless Blender (`import bpy`, installed for python3) or in code. Model them from the real reference photos, with bevels, real thickness and every small part, real photo textures, and baked AO and normal maps. Then add them to the library like any other model.
+   - Poly Haven models that are already imported may stay. New generic models come from Sketchfab. PBR *materials and textures* (Poly Haven, ambientCG, real photos) are still fine for custom models.
    Never ship an untextured or flat-colour mesh.
 3. **PBR everywhere:**
    - albedo + normal + roughness, plus AO and metalness where relevant;
