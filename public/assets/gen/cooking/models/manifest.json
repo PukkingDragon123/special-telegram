@@ -2,9 +2,9 @@
  "food_ginger_01": {
   "file": "food_ginger_01/food_ginger_01.glb",
   "name": "Food Ginger 01",
-  "bytes": 85548,
+  "bytes": 76304,
   "srcTris": 7205,
-  "tris": 1664,
+  "tris": 500,
   "dims": [
    0.24,
    0.147,
@@ -19,9 +19,9 @@
  "food_lime_01": {
   "file": "food_lime_01/food_lime_01.glb",
   "name": "Food Lime 01",
-  "bytes": 82640,
+  "bytes": 69492,
   "srcTris": 8100,
-  "tris": 2278,
+  "tris": 450,
   "dims": [
    0.06,
    0.061,
@@ -36,9 +36,9 @@
  "yellow_onion": {
   "file": "yellow_onion/yellow_onion.glb",
   "name": "Yellow Onion",
-  "bytes": 72112,
+  "bytes": 64868,
   "srcTris": 5444,
-  "tris": 1418,
+  "tris": 498,
   "dims": [
    0.072,
    0.069,

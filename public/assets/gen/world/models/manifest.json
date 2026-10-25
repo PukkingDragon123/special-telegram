@@ -1,4 +1,21 @@
 {
+ "bananas": {
+  "file": "bananas/bananas.glb",
+  "name": "Bananas",
+  "bytes": 79352,
+  "srcTris": 46868,
+  "tris": 2496,
+  "dims": [
+   0.6,
+   0.244,
+   0.179
+  ],
+  "authors": [
+   "Alexander Shulha"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/bananas"
+ },
  "Barrel_01": {
   "file": "Barrel_01/Barrel_01.glb",
   "name": "Barrel_01",
@@ -32,6 +49,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/barrel_03"
+ },
+ "boombox": {
+  "file": "boombox/boombox.glb",
+  "name": "Boombox",
+  "bytes": 192684,
+  "srcTris": 10168,
+  "tris": 2082,
+  "dims": [
+   0.724,
+   0.186,
+   0.47
+  ],
+  "authors": [
+   "Thomas Paul Mouilleron"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/boombox"
  },
  "can_rusted": {
   "file": "can_rusted/can_rusted.glb",
@@ -101,6 +135,23 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/ceramic_pot"
  },
+ "cleaner_tin_01": {
+  "file": "cleaner_tin_01/cleaner_tin_01.glb",
+  "name": "Cleaner Tin 01",
+  "bytes": 32252,
+  "srcTris": 3560,
+  "tris": 762,
+  "dims": [
+   0.088,
+   0.088,
+   0.13
+  ],
+  "authors": [
+   "Tom Phillips"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/cleaner_tin_01"
+ },
  "concrete_road_barrier_02": {
   "file": "concrete_road_barrier_02/concrete_road_barrier_02.glb",
   "name": "Concrete Road Barrier 02",
@@ -135,23 +186,6 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/dustpan"
  },
- "exterior_aircon_unit": {
-  "file": "exterior_aircon_unit/exterior_aircon_unit.glb",
-  "name": "Exterior Aircon Unit",
-  "bytes": 1232604,
-  "srcTris": 18986,
-  "tris": 4678,
-  "dims": [
-   1.8,
-   0.374,
-   0.928
-  ],
-  "authors": [
-   "Monsta3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/exterior_aircon_unit"
- },
  "fire_hydrant": {
   "file": "fire_hydrant/fire_hydrant.glb",
   "name": "Fire Hydrant",
@@ -169,6 +203,23 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/fire_hydrant"
  },
+ "fish_knife": {
+  "file": "fish_knife/fish_knife.glb",
+  "name": "Fish Knife",
+  "bytes": 42972,
+  "srcTris": 2736,
+  "tris": 525,
+  "dims": [
+   0.029,
+   0.016,
+   0.216
+  ],
+  "authors": [
+   "Mateusz Sadek"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/fish_knife"
+ },
  "folding_wooden_stool": {
   "file": "folding_wooden_stool/folding_wooden_stool.glb",
   "name": "Folding Wooden Stool",
@@ -185,6 +236,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/folding_wooden_stool"
+ },
+ "food_lychee_01": {
+  "file": "food_lychee_01/food_lychee_01.glb",
+  "name": "Food Lychee 01",
+  "bytes": 37256,
+  "srcTris": 6783,
+  "tris": 120,
+  "dims": [
+   0.041,
+   0.042,
+   0.051
+  ],
+  "authors": [
+   "Oliver Harries"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/food_lychee_01"
  },
  "hand_truck": {
   "file": "hand_truck/hand_truck.glb",
@@ -219,6 +287,40 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/industrial_pastic_container"
+ },
+ "jug_01": {
+  "file": "jug_01/jug_01.glb",
+  "name": "Jug 01",
+  "bytes": 43796,
+  "srcTris": 5770,
+  "tris": 1596,
+  "dims": [
+   0.275,
+   0.168,
+   0.211
+  ],
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/jug_01"
+ },
+ "lightbulb_01": {
+  "file": "lightbulb_01/lightbulb_01.glb",
+  "name": "Lightbulb 01",
+  "bytes": 24324,
+  "srcTris": 4372,
+  "tris": 336,
+  "dims": [
+   0.06,
+   0.06,
+   0.1
+  ],
+  "authors": [
+   "Josh Dean"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/lightbulb_01"
  },
  "metal_stool_02": {
   "file": "metal_stool_02/metal_stool_02.glb",
@@ -441,40 +543,6 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/propane_tank"
- },
- "rollershutter_door": {
-  "file": "rollershutter_door/rollershutter_door.glb",
-  "name": "Rollershutter Door",
-  "bytes": 275980,
-  "srcTris": 1104,
-  "tris": 1104,
-  "dims": [
-   3.08,
-   0.3,
-   2.4
-  ],
-  "authors": [
-   "MP"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/rollershutter_door"
- },
- "rollershutter_window_01": {
-  "file": "rollershutter_window_01/rollershutter_window_01.glb",
-  "name": "Rollershutter Window 01",
-  "bytes": 260252,
-  "srcTris": 1104,
-  "tris": 1104,
-  "dims": [
-   5.1,
-   0.3,
-   1.851
-  ],
-  "authors": [
-   "MP"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/rollershutter_window_01"
  },
  "small_lpg_tank": {
   "file": "small_lpg_tank/small_lpg_tank.glb",

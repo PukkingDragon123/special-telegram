@@ -210,8 +210,14 @@ function officeTower(c: SpecialCtx) {
     w.mat('concrete_streaked', { tint: 0xb8b4ac });
     w.box(O.x0, y, O.z0, O.x1, y + 1.1, O.z1, SIDES);
     const lit = rng.chance(0.55);
-    w.mat('glass', { tint: rng.pick([0x30404a, 0x28343c, 0x3a4a50]), emis: lit ? EMIS.cool.i : 0, emisK: rng.range(0.15, 0.4) });
-    w.box(O.x0 + 0.15, y + 1.1, O.z0 + 0.15, O.x1 - 0.15, y + fh, O.z1 - 0.15, SIDES);
+    // glass curtain wall with office interiors behind (fake interior shader, office variant)
+    const lvl = lit ? EMIS.cool.i : 0;
+    const strip = (len: number, fn: (a: number, b: number) => void) => { const n = Math.max(1, Math.round(len / 3)); for (let i = 0; i < n; i++) fn((len * i) / n, (len * (i + 1)) / n); };
+    const ww = O.x1 - O.x0 - 0.3, dd = O.z1 - O.z0 - 0.3;
+    w.pushT(O.x0 + 0.15, 0, O.z1 - 0.15, 0); strip(ww, (a, b) => w.roomPane(a, y + 1.1, b, y + fh, 0, lvl, 0.6, 0.95)); w.pop();
+    w.pushT(O.x1 - 0.15, 0, O.z0 + 0.15, Math.PI); strip(ww, (a, b) => w.roomPane(a, y + 1.1, b, y + fh, 0, lvl, 0.6, 0.95)); w.pop();
+    w.pushT(O.x1 - 0.15, 0, O.z1 - 0.15, Math.PI / 2); strip(dd, (a, b) => w.roomPane(a, y + 1.1, b, y + fh, 0, lvl, 0.6, 0.95)); w.pop();
+    w.pushT(O.x0 + 0.15, 0, O.z0 + 0.15, -Math.PI / 2); strip(dd, (a, b) => w.roomPane(a, y + 1.1, b, y + fh, 0, lvl, 0.6, 0.95)); w.pop();
     w.mat('alu', { tint: 0x9aa0a4, uv: 'local' });
     for (let x = O.x0 + 1.5; x < O.x1; x += 1.5) { w.box(x - 0.05, y + 1.1, O.z1 - 0.2, x + 0.05, y + fh, O.z1 - 0.05, PZ | PX | NX); w.box(x - 0.05, y + 1.1, O.z0 + 0.05, x + 0.05, y + fh, O.z0 + 0.2, NZ | PX | NX); }
     for (let z = O.z0 + 1.5; z < O.z1; z += 1.5) { w.box(O.x1 - 0.2, y + 1.1, z - 0.05, O.x1 - 0.05, y + fh, z + 0.05, PX | PZ | NZ); w.box(O.x0 + 0.05, y + 1.1, z - 0.05, O.x0 + 0.2, y + fh, z + 0.05, NX | PZ | NZ); }

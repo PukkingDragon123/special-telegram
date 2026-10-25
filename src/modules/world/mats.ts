@@ -148,6 +148,11 @@ export const LAYERS: LayerDef[] = [
   { name: 'denim', src: ['p:denim'], tile: 0.5 },
   { name: 'glass', src: ['p:glass_dirty'], tile: 1, rough: 1, metal: 0 },
   { name: 'paper', src: ['p:paper_creased'], tile: 0.4 },
+  // ---------------------------------------------------------------- buildings agent extras (tools/bake_arch.py, real photos)
+  { name: 'drain_round', src: ['g:drain_round'], tile: 1, metal: 0.6, pud: 0 },
+  { name: 'drain_square', src: ['g:drain_square'], tile: 1, metal: 0.55, pud: 0 },
+  { name: 'drain_slots', src: ['g:drain_slots'], tile: 1, metal: 0.5, pud: 0 },
+  { name: 'grate_iron', src: ['g:grate_iron'], tile: 0.6, metal: 0.5, pud: 0 },
 ];
 
 export const LAYER_INDEX = new Map<string, number>(LAYERS.map((l, i) => [l.name, i]));
@@ -191,11 +196,57 @@ export const U = {
   uRefl: { value: null as THREE.Texture | null },
   uReflMat: { value: new THREE.Matrix4() },
   uReflOn: { value: 0 },
+  /** tileable mask noise (see noiseTex) */
+  uNoise: { value: null as THREE.Texture | null },
 };
 for (const k in EMIS) {
   const e = EMIS[k];
   U.uEmisCol.value[e.i].set(e.c);
   U.uEmisDay.value[e.i] = e.day;
+}
+
+// ------------------------------------------------------------------ mask noise (procedural masks only, not art)
+
+let _noiseTex: THREE.DataTexture | null = null;
+/**
+ * Tileable 256² RGBA value-noise fbm used as cheap MASKS in the world shader (puddle shapes, moss breakup,
+ * streaks, wheel-track wear): one texture fetch instead of dozens of hash evaluations per pixel.
+ * R = large blobs (period 64 px), G = medium (32), B = fine (16), A = very fine (8).
+ */
+export function noiseTex(): THREE.DataTexture {
+  if (_noiseTex) return _noiseTex;
+  const N = 256, data = new Uint8Array(N * N * 4);
+  let seed = 1337;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const lattice = (P: number) => { const g = new Float32Array(P * P); for (let i = 0; i < P * P; i++) g[i] = rnd(); return g; };
+  const fbmChan = (basePeriod: number, oct: number) => {
+    const out = new Float32Array(N * N);
+    let amp = 0.5, total = 0;
+    for (let o = 0; o < oct; o++) {
+      const cells = Math.max(2, Math.round(N / (basePeriod / (1 << o))));
+      const g = lattice(cells);
+      for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+        const fx = (x / N) * cells, fy = (y / N) * cells;
+        const ix = Math.floor(fx), iy = Math.floor(fy);
+        let tx = fx - ix, ty = fy - iy;
+        tx = tx * tx * (3 - 2 * tx); ty = ty * ty * (3 - 2 * ty);
+        const x0 = ix % cells, y0 = iy % cells, x1 = (ix + 1) % cells, y1 = (iy + 1) % cells;
+        const a = g[y0 * cells + x0], b = g[y0 * cells + x1], c = g[y1 * cells + x0], d = g[y1 * cells + x1];
+        out[y * N + x] += amp * (a + (b - a) * tx + (c - a) * ty + (a - b - c + d) * tx * ty);
+      }
+      total += amp; amp *= 0.5;
+    }
+    for (let i = 0; i < N * N; i++) out[i] /= total;
+    return out;
+  };
+  const ch = [fbmChan(64, 4), fbmChan(32, 4), fbmChan(16, 3), fbmChan(8, 2)];
+  for (let i = 0; i < N * N; i++) for (let k = 0; k < 4; k++) data[i * 4 + k] = Math.max(0, Math.min(255, Math.round(ch[k][i] * 255)));
+  const t = new THREE.DataTexture(data, N, N, THREE.RGBAFormat);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter;
+  t.generateMipmaps = true; t.colorSpace = THREE.NoColorSpace; t.needsUpdate = true;
+  _noiseTex = t;
+  return t;
 }
 
 // ------------------------------------------------------------------ loading
@@ -392,10 +443,21 @@ if (aExtra.y < -0.5) {
   // thin cable: keep it at least ~1 px wide far away (otherwise it breaks into dashes)
   vec3 wcp = (modelMatrix * vec4(transformed, 1.0)).xyz;
   transformed += normalize(objectNormal) * max(0.0, distance(cameraPosition, wcp) * uWirePx - 0.007);
+}
+if (aExtra.z > 2.999) {
+  // cloth (laundry, curtains, awning valances): sway in the breeze, weight grows toward the free edge
+  float cw = fract(aExtra.z) * 1.05;
+  vec3 cp0 = (modelMatrix * vec4(transformed, 1.0)).xyz;
+  float ph = dot(cp0.xz, vec2(0.63, 0.91)) + cp0.y * 0.4;
+  float gust = 0.55 + 0.45 * sin(uTime * 0.31 + cp0.x * 0.05) * sin(uTime * 0.23 + cp0.z * 0.04);
+  float sw = (sin(uTime * 1.9 + ph) * 0.6 + sin(uTime * 3.7 + ph * 1.7) * 0.25) * gust;
+  transformed += (normalize(objectNormal) * sw * 0.07 + vec3(uWind.x, 0.0, uWind.z) * (0.02 + 0.035 * sw)) * cw;
 }`)
     .replace('#include <common>', `#include <common>
 attribute vec4 aExtra;
 uniform float uWirePx;
+uniform float uTime;
+uniform vec3 uWind;
 varying vec2 vUvT;
 varying vec4 vExt;
 varying vec3 vWPos;
@@ -473,11 +535,48 @@ vec3 wInterior(vec3 wp, vec3 nW, vec2 uv, vec4 ex, out float glassDirt) {
   // lighting: daylight from the window falling off with depth / the room lamp at night
   float lit = step(0.5, ex.w);
   vec3 lampC = lit > 0.5 ? uEmisCol[int(floor(ex.w))] : vec3(1.0);
+  bool tv = int(floor(ex.w)) == 4;
+  if (fract(ex.z) > 0.9) {
+    // OFFICE floor: deep open plan, carpet, grey partitions, a grid of ceiling panels, venetian blinds
+    float Do = 9.0;
+    float tYo = ((rd.y > 0.0 ? 2.6 - 0.9 : -0.9) - ro.y) / rd.y;
+    float tZo = (Do - ro.z) / rd.z;
+    float to = min(tYo, tZo);
+    vec3 q = ro + rd * to;
+    vec3 oc;
+    float lightK = (1.0 - uNight) * 0.3 + lit * uNight * 1.1;
+    if (to == tZo) oc = wRoomTex(q.xy * 0.5, ${LI('plaster')}) * 0.7;
+    else if (rd.y < 0.0) {
+      oc = wRoomTex(q.xz * 1.5, ${LI('fabric')}) * vec3(0.32, 0.34, 0.38);
+      // desks / partitions: dark bands across the floor
+      float dk = step(0.62, fract(q.z * 0.42 + s1)) * step(0.3, fract(q.x * 0.33 + s2));
+      oc = mix(oc, vec3(0.25, 0.26, 0.27), dk * 0.8);
+    } else {
+      oc = vec3(0.75);
+      vec2 g = fract(q.xz * vec2(0.5, 0.42) + s3);
+      float panel = step(0.7, g.x) * step(0.6, g.y);
+      oc += vec3(4.0) * panel * (0.3 * (1.0 - uNight) + lit * uNight);
+    }
+    vec3 room = oc * lightK * vec3(0.92, 0.97, 1.0) * (0.5 + 0.5 * exp(-q.z * 0.12));
+    // blinds: horizontal slats partly lowered
+    float bl = step(uv.y, 0.35 + 0.6 * s4);
+    float slat = 0.6 + 0.4 * step(0.5, fract(uv.y * H * 9.0));
+    room = mix(room, vec3(0.62, 0.62, 0.6) * slat * (0.45 * (1.0 - uNight) + lit * uNight * 0.6), (1.0 - bl) * 0.9);
+    glassDirt = texture(uNoise, vec2(wp.x + wp.z, wp.y) * 0.2).a * 0.3;
+    return room * 0.9;
+  }
+  if (tv) {
+    // a TV is the only light: flickering cold blue, cuts between "scenes"
+    float sc = floor(uTime * 0.7 + s1 * 10.0);
+    float fl = 0.55 + 0.25 * wHash13(vec3(sc, s2, 1.0)) + 0.2 * wNoise(vec3(uTime * 9.0, s3 * 20.0, 0.0));
+    lampC = mix(vec3(0.45, 0.62, 1.0), vec3(0.9, 0.8, 0.7), wHash13(vec3(sc, 3.0, s4))) * fl * 0.7;
+  }
   float dayL = (0.38 * exp(-p.z * 0.35) + 0.08) * (1.0 - uNight);
   vec3 L = vec3(dayL) * vec3(1.0, 0.98, 0.94) + lampC * (lit * uNight * (0.5 + 0.35 * exp(-abs(p.z - D * 0.5) * 0.4)));
   vec3 room = col * ao * L;
-  // ceiling tube
-  if (t == tY && rd.y > 0.0 && abs(p.z - D * 0.45) < 0.05 && abs(p.x - W * 0.5) < 0.6) room += lampC * lit * uNight * 3.0;
+  // ceiling tube (not in TV rooms) / the TV screen glowing on the back wall
+  if (!tv && t == tY && rd.y > 0.0 && abs(p.z - D * 0.45) < 0.05 && abs(p.x - W * 0.5) < 0.6) room += lampC * lit * uNight * 3.0;
+  if (tv && t == tZ && abs(p.x - (x0 + x1) * 0.5) < 0.42 && abs(p.y - (y0 + 0.95)) < 0.26) room = lampC * 2.2 * lit * uNight + room * (1.0 - uNight);
   // curtains just behind the glass: half drawn, fully drawn sheer, or none
   float cs = s4;
   float tc = (0.06 - ro.z) / rd.z; vec3 pc = ro + rd * tc;
@@ -490,7 +589,7 @@ vec3 wInterior(vec3 wp, vec3 nW, vec2 uv, vec4 ex, out float glassDirt) {
     vec3 cl = cc * ((0.36 + 0.1 * folds) * (1.0 - uNight) + lampC * lit * uNight * 0.75);
     room = mix(room, cl, sheer * cov);
   }
-  glassDirt = wNoise(wp * vec3(5.0, 3.0, 5.0)) * 0.6 + wNoise(wp * 23.0) * 0.4;
+  glassDirt = texture(uNoise, vec2(wp.x + wp.z, wp.y) * 0.3).a;
   return room;
 }
 `;
@@ -530,6 +629,7 @@ export function makeWorldMaterial(tex: WorldTex, cutout = false): THREE.MeshStan
   };
   const NL = Math.max(1, tex.metal.length);   // one entry per texture-array layer
   m.onBeforeCompile = (shader) => {
+    if (!U.uNoise.value) U.uNoise.value = noiseTex();
     Object.assign(shader.uniforms, uniforms, U);
     if (!U.uRefl.value) U.uRefl.value = dummyTex();
     injectWorldVertex(shader);
@@ -552,6 +652,7 @@ uniform float uTime;
 uniform sampler2D uRefl;
 uniform mat4 uReflMat;
 uniform float uReflOn;
+uniform sampler2D uNoise;
 varying vec2 vUvT;
 varying vec4 vExt;
 varying vec3 vWPos;
@@ -562,7 +663,7 @@ ${INTERIOR_GLSL}
 ${RIPPLE_GLSL}`)
       .replace('#include <map_fragment>', `
 vec3 wp = vWPos;
-bool wRoom = vExt.z > 1.5;
+bool wRoom = vExt.z > 1.5 && vExt.z < 2.999;
 float wL0 = wRoom ? 0.0 : floor(vExt.x + 0.5);
 float wL1 = wRoom ? 0.0 : max(0.0, floor(vExt.y + 0.5));
 vec4 albT = vec4(1.0);
@@ -580,12 +681,13 @@ if (wRoom) {
   nraT = texture(uNra, vec3(vUvT, wL0));
   ${cutout ? 'if (albT.a < 0.5) discard;' : ''}
   baseCol = albT.rgb * vColor.rgb;
-  if (vExt.z > 0.001) {
-    float blot = wFbm(wp * vec3(0.42, 0.16, 0.42) + vec3(3.1, 0.0, 7.7));
-    float streak = wNoise(vec3((wp.x + wp.z) * 2.6, wp.y * 0.18, 1.3)) * wNoise(vec3((wp.x - wp.z) * 0.9, wp.y * 0.05, 4.1));
+  if (vExt.z > 0.001 && vExt.z < 1.5) {
+    vec2 nuv = abs(vWNrm.y) > 0.5 ? wp.xz : vec2(wp.x + wp.z, wp.y * 0.4);
+    float blot = texture(uNoise, nuv * 0.011 + 0.31).r;
+    float streak = texture(uNoise, vec2((wp.x + wp.z) * 0.16, wp.y * 0.011)).b * texture(uNoise, vec2((wp.x - wp.z) * 0.05, wp.y * 0.004 + 0.5)).g;
     float bottom = 1.0 - smoothstep(0.0, 1.7, wp.y - 0.1);
     float m = blot * 1.15 + streak * 0.7 + bottom * 0.55 - 0.42;
-    ovA = smoothstep(0.18, 0.62, m) * vExt.z;
+    ovA = smoothstep(0.18, 0.62, m) * min(vExt.z, 1.0);
     vec2 ouv = vUvT * 0.71 + vec2(0.37, 0.11);
     vec4 albO = texture(uAlb, vec3(ouv, wL1));
     vec4 nraO = texture(uNra, vec3(ouv, wL1));
@@ -596,21 +698,40 @@ if (wRoom) {
   float mossK = uMoss[int(wL0)];
   if (mossK > 0.0 && abs(vWNrm.y) < 0.6) {
     float hb = wp.y - 0.12;
-    float nb = wNoise(vec3(wp.x * 1.7 + wp.z * 1.7, 0.0, 2.0));
+    vec4 mn = texture(uNoise, vec2((wp.x + wp.z) * 0.045, wp.y * 0.09 + 0.17));
+    float nb = mn.r;
     float band = 1.0 - smoothstep(0.0, 0.55 + 0.6 * nb, hb);
-    float n = wFbm(wp * vec3(1.6, 3.2, 1.6));
+    float n = mn.g * 0.7 + mn.a * 0.3;
     float moss = smoothstep(0.42, 0.72, band * (0.55 + n * 0.9)) * mossK;
     baseCol *= 1.0 - band * 0.32 * mossK;
     baseCol = mix(baseCol, baseCol * vec3(0.5, 0.58, 0.34) + vec3(0.006, 0.012, 0.0), moss * 0.85);
     // dark water streaks running down from ledges (stretched vertical noise)
-    float st = wNoise(vec3((wp.x + wp.z) * 7.0, wp.y * 0.35, 8.3));
+    float st = texture(uNoise, vec2((wp.x + wp.z) * 0.45, wp.y * 0.02 + 0.7)).b;
     baseCol *= 1.0 - smoothstep(0.62, 0.9, st) * 0.22 * mossK;
+  }
+  // --- wheel tracks: polished darker lanes where tyres run, an oil-drip line in the middle of each lane
+  //     (soi: x -3.5..3.5 running N-S; main road: z 6..22 running E-W, median 13.25..14.75)
+  if (wL0 > 0.5 && wL0 < 4.5 && vWNrm.y > 0.9) {
+    float across = -1.0, lane = 0.0;
+    if (abs(wp.x) < 3.5 && wp.z < 6.0) { across = wp.x + 3.5; lane = 3.5; }
+    else if (wp.z > 6.0 && wp.z < 13.25) { across = wp.z - 6.0; lane = 3.62; }
+    else if (wp.z > 14.75 && wp.z < 22.0) { across = wp.z - 14.75; lane = 3.62; }
+    if (across > -50.0) {
+      float lp = fract(across / lane);          // 0..1 within a lane
+      float tr = exp(-pow((lp - 0.27) * 9.0, 2.0)) + exp(-pow((lp - 0.73) * 9.0, 2.0));
+      vec4 tn = texture(uNoise, wp.xz * 0.037 + 0.63);
+      float br = 0.55 + 0.45 * tn.g;
+      float oilL = exp(-pow((lp - 0.5) * 14.0, 2.0)) * smoothstep(0.45, 0.7, tn.b);
+      baseCol *= 1.0 - tr * br * 0.16 - oilL * 0.22;
+      nraT.b *= 1.0 - tr * br * 0.28 - oilL * 0.35;
+    }
   }
   // --- puddles & wet ground (outdoor flat surfaces): organic blobs, a darker damp rim, mirror water
   float pudK = uPud[int(wL0)] * smoothstep(0.84, 0.95, vColor.a);
   if (pudK > 0.0 && vWNrm.y > 0.85) {
     float wetAmt = clamp(max(uDamp, uWet * 1.1), 0.0, 1.0);
-    float n = wFbm(vec3(wp.xz * 0.21, 1.7)) + wNoise(vec3(wp.xz * 1.9, 5.0)) * 0.1 + wNoise(vec3(wp.xz * 7.0, 9.0)) * 0.03;
+    vec4 pn = texture(uNoise, wp.xz * 0.0125);
+    float n = pn.r * 0.9 + texture(uNoise, wp.xz * 0.11).a * 0.12 + pn.b * 0.05 - 0.035;
     float thr = mix(0.78, 0.5, wetAmt);
     puddle = smoothstep(thr, thr + 0.035, n) * pudK;
     damp = smoothstep(thr - 0.14 - 0.1 * wetAmt, thr, n) * pudK;
@@ -669,7 +790,7 @@ if (vExt.w > 0.5 && !wRoom) {
   #endif
 }`);
   };
-  m.customProgramCacheKey = () => (cutout ? 'world-cut-v2' : 'world-v2');
+  m.customProgramCacheKey = () => (cutout ? 'world-cut-v3' : 'world-v3');
   return m;
 }
 
@@ -731,12 +852,26 @@ export function makeDecalMaterial(atlas: THREE.Texture, normalAtlas?: THREE.Text
     shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>
 attribute vec4 aExtra; varying vec4 vExt;`).replace('#include <begin_vertex>', `#include <begin_vertex>
 vExt = aExtra;`);
+    shader.vertexShader = shader.vertexShader.replace('#include <fog_vertex>', `#include <fog_vertex>
+vDWPos = (modelMatrix * vec4(transformed, 1.0)).xyz;`).replace('#include <common>', `#include <common>
+varying vec3 vDWPos;`);
     shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>
-uniform float uWet; varying vec4 vExt;`)
-      .replace('#include <color_fragment>', `diffuseColor.rgb *= vColor.rgb; diffuseColor.a *= vColor.a;`)
-      .replace('#include <roughnessmap_fragment>', `float roughnessFactor = mix(vExt.y > 0.0 ? vExt.y : roughness, 0.04, clamp(vExt.x, 0.0, 1.0));`);
+uniform float uWet; varying vec4 vExt; varying vec3 vDWPos;
+uniform sampler2D uRefl; uniform mat4 uReflMat; uniform float uReflOn;`)
+      .replace('#include <color_fragment>', `diffuseColor.rgb *= vColor.rgb; diffuseColor.a *= vColor.a;
+float dWet = clamp(vExt.x, 0.0, 1.0);
+diffuseColor.rgb *= mix(1.0, 0.55, dWet);`)
+      .replace('#include <roughnessmap_fragment>', `float roughnessFactor = mix(vExt.y > 0.0 ? vExt.y : roughness, 0.04, dWet);`)
+      .replace('#include <lights_fragment_maps>', `#include <lights_fragment_maps>
+#if defined( RE_IndirectSpecular )
+if (uReflOn > 0.5 && dWet > 0.01) {
+  vec4 rp = uReflMat * vec4(vDWPos, 1.0);
+  vec2 ruv = rp.xy / rp.w + inverseTransformDirection(normal, viewMatrix).xz * 0.02;
+  radiance = mix(radiance, textureLod(uRefl, ruv, 0.5).rgb, dWet);
+}
+#endif`);
   };
-  m.customProgramCacheKey = () => 'world-decal-v1';
+  m.customProgramCacheKey = () => 'world-decal-v2';
   return m;
 }
 

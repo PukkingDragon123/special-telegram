@@ -10,7 +10,8 @@ import type { Atlas, AtlasRect } from './atlas';
 import { EMIS } from './mats';
 import type { AnchorPt } from '../../game/contracts';
 import type { FoliageSys } from './foliage';
-import { vines, bougainvillea } from './foliage';
+import { vines, bougainvillea, pottedPlant, weeds } from './foliage';
+import { birdcage, floorShrine, wallShrine, cctv, drainpipe, rebar, breezeBlocks, grilleMotif } from './archkit';
 
 /**
  * PROCEDURAL SHOPHOUSE (ตึกแถว) GENERATOR
@@ -45,6 +46,8 @@ export interface ShopCtx {
 const WALL_TINTS = [0xe8dcc8, 0xd9c7a6, 0xc9d6c2, 0xe2c6c0, 0xc8d2dc, 0xe6d7a0, 0xd8d8d0, 0xb8c4a8, 0xd8b8a0, 0xa8b8c8, 0xe0e0d8, 0xd0c0b0, 0xc0b8a8, 0xe8c8a0];
 const TRIM_TINTS = [0xffffff, 0xe0d8c8, 0x8a8478, 0x5a6a5a, 0x7a3a2a, 0x3a4a6a];
 const GRILLE_TINTS = [0xe8e8e0, 0x2a2a2a, 0x3a5a3a, 0x6a4a2a, 0x8a8a8a, 0x2a3a5a, 0x9a2a2a];
+const CLOTH = [0xffffff, 0xd03030, 0x3050c0, 0xe0c020, 0x30a050, 0xf080a0, 0x202020, 0xe08030, 0x80c0e0, 0xf0f0e8, 0x7a3a8a];
+const CURTAIN = [0xf0e8d8, 0xe8d0a0, 0xc84a3a, 0x5a7ab0, 0xf4f0f0, 0x8aa070, 0xe0a0b0];
 const SHUTTER_TINTS = [0xc8c8c0, 0x8aa0b0, 0x9aa890, 0xc0a080, 0x7a8a9a, 0xd0c8a8, 0xa04030, 0x40607a];
 
 /** world frame of a unit */
@@ -146,6 +149,7 @@ export class Shophouse {
 
     // ================================================================ GROUND FLOOR
     const yb = y1 - 0.45;              // beam bottom (top of the opening)
+    const colZ0 = 0.13;                // ground-floor columns stand this far proud of the facade
     const open = !noG && ground !== 'shutter' && ground !== 'closed';
     if (!noG) {
     const ox0 = nb.mergeL ? 0 : pw, ox1 = nb.mergeR ? W : W - pw;
@@ -153,9 +157,17 @@ export class Shophouse {
     const pilL = rng.chance(0.35) ? 'tiles_wall' : wallL;
     const pilT = pilL === 'tiles_wall' ? rng.pick([0xffffff, 0xd8e8d8, 0xe8d8c8, 0x8a2a2a]) : tint;
     w.mat(pilL, { tint: pilT, ov: ovL, ovAmt: ovA });
-    if (!nb.mergeL) w.box(0, y0, -0.25, pw, yb + 0.02, 0.06, PZ | PX | NX);
-    if (!nb.mergeR) w.box(W - pw, y0, -0.25, W, yb + 0.02, 0.06, PZ | PX | NX);
-    if (nb.mergeL) w.box(-0.11, y0, -0.18, 0.11, yb, 0.04, PZ | PX | NX);
+    // proper concrete columns between the bays (proud of the facade, with a plinth and a capital band)
+    const colZ = 0.13;
+    if (!nb.mergeL) w.box(0, y0, -0.25, pw, yb + 0.02, colZ, PZ | PX | NX);
+    if (!nb.mergeR) w.box(W - pw, y0, -0.25, W, yb + 0.02, colZ, PZ | PX | NX);
+    if (nb.mergeL) w.box(-0.11, y0, -0.18, 0.11, yb, colZ - 0.03, PZ | PX | NX);
+    w.mat(rng.chance(0.5) ? 'concrete_old' : 'tiles_wall', { tint: rng.pick([0x7a766e, 0x5a5a56, 0x8a3a2a, 0x3a4a3a]), ov: 'plaster_moldy', ovAmt: 0.6 });
+    const cols: [number, number][] = [nb.mergeL ? [-0.13, 0.13] : [-0.012, pw + 0.012]];
+    if (!nb.mergeR) cols.push([W - pw - 0.012, W + 0.012]);
+    for (const [a, b] of cols) w.box(a, y0, -0.02, b, y0 + 0.34, colZ + 0.018, PZ | PX | NX | PY);   // plinth
+    trimMat();
+    for (const [a, b] of cols) w.box(a - 0.004, yb - 0.16, -0.02, b + 0.004, yb - 0.04, colZ + 0.025, PZ | PX | NX | PY | NY);   // capital
     // beam band above the opening
     wallMat();
     w.box(0, yb, -0.2, W, y1, 0.03, PZ | NY);
@@ -193,6 +205,12 @@ export class Shophouse {
       const lp = this.wp(W / 2, yb - 0.2, -1.2);
       c.lights.add({ p: lp, color: new THREE.Color(shop === 'residence' ? 0xffc890 : 0xfff0d8), intensity: shop === 'residence' ? 6 : 12, range: 9, glow: 0, kind: 'tube', day: 0 });
       this.dressInterior(shop, ground, W, rd, ox0, ox1, y0, yb, rng, managed, u, nb);
+      // ตี่จู้เอี๊ยะ floor shrine just inside the entrance (Chinese-Thai shops), candle glow at night
+      if (!far && shop !== 'residence' && rng.chance(0.45)) {
+        const sx = rng.chance(0.5) ? ox0 + 0.32 : ox1 - 0.32;
+        w.setGroup('detail'); w.put(floorShrine(w), sx, y0, -0.35, 0); w.setGroup('base');
+        c.lights.add({ p: this.wp(sx, y0 + 0.35, -0.2), color: new THREE.Color(0xff6a20), intensity: 0, range: 0, glow: 0.25, kind: 'sign', day: 0.4 });
+      }
     } else {
       this.col(0, 0, -D, W, yP, 0);
     }
@@ -261,26 +279,48 @@ export class Shophouse {
     w.box(0, yb - 0.05, cd - 0.08, W, yb + 0.3, cd, PZ | NY | NZ);
     const awn = u.awning ?? rng.weighted(['none', 'corr', 'tarp', 'corr'], [3, 4, 2, 2]);
     if (awn === 'corr' && !far) {
-      // corrugated / polycarbonate extension sloping toward the street on steel brackets
+      // corrugated sheet extension (real ridged geometry) sloping toward the street on steel brackets
       const ad = rng.range(1.2, 2.2), ay = yb + 0.2, drop = ad * 0.18;
       const layer = rng.pick(['corr_rust', 'roof_galv', 'corr_paint', 'roof_fibre']);
+      w.setGroup('detail');
       w.mat(layer, { tint: layer === 'corr_paint' ? rng.pick([0x3a6a9a, 0xa04030, 0x3a7a4a, 0xc8c0a0]) : 0xffffff, ao: 0.9, uv: 'local' });
-      w.quad(0, ay - drop, cd + ad, W, ay - drop, cd + ad, W, ay, cd - 0.05, 0, ay, cd - 0.05);
-      w.quad(W, ay - drop - 0.01, cd + ad, 0, ay - drop - 0.01, cd + ad, 0, ay - 0.01, cd - 0.05, W, ay - 0.01, cd - 0.05);
+      corrSheet(w, 0, W, cd - 0.05, ay, cd + ad, ay - drop, 0.16, 0.022);
       w.mat('steel_rust', { uv: 'local' });
       for (const x of [0.15, W - 0.15]) w.tube([x, yb - 0.6, 0.03, x, ay - drop - 0.03, cd + ad - 0.1], 0.025, 4);
+      w.box(0.05, ay - drop - 0.05, cd + ad - 0.14, W - 0.05, ay - drop - 0.01, cd + ad - 0.1, ALL);
+      w.setGroup('base');
     } else if (awn === 'tarp' && !far) {
+      // canvas awning sagging between its frame, with a valance flapping in the breeze
       const ad = rng.range(1.6, 2.6), ay = yb + 0.1;
       const tl = rng.weighted(['tarp', 'tarp_blue', 'awning_ry', 'awning_gw', 'awning_rp'], [3, 3, 2, 2, 1]);
+      w.setGroup('detail');
       w.mat(tl, { tint: tl === 'tarp' ? rng.pick([0x2a8a4a, 0xc0b8a0, 0xb03a2a, 0x3a3a8a]) : rng.pick([0xffffff, 0xe0dcd4, 0xc8c4bc]), ao: 0.95, uv: 'local', ov: 'plaster_moldy', ovAmt: 0.35 });
-      const sag = 0.18;
-      w.quad(0, ay - 0.5, cd + ad, W, ay - 0.5, cd + ad, W, ay, cd, 0, ay, cd);
-      w.quad(W, ay - 0.5 - 0.005, cd + ad, 0, ay - 0.5 - 0.005, cd + ad, 0, ay - 0.005, cd, W, ay - 0.005, cd);
-      w.quad(0, ay - 0.5 - sag, cd + ad + 0.02, W, ay - 0.5 - sag, cd + ad + 0.02, W, ay - 0.5, cd + ad, 0, ay - 0.5, cd + ad);
+      const sag = rng.range(0.1, 0.22);
+      const NXs = 8, NZs = 4;
+      const P = (i: number, j: number) => {
+        const u = i / NXs, t = j / NZs;
+        return [u * W, ay - 0.5 * t - sag * Math.sin(Math.PI * u) * Math.sin(Math.PI * t * 0.9), cd + ad * t];
+      };
+      for (let i = 0; i < NXs; i++) for (let j = 0; j < NZs; j++) {
+        const a = P(i, j + 1), b = P(i + 1, j + 1), c2 = P(i + 1, j), d = P(i, j);
+        w.quad(a[0], a[1], a[2], b[0], b[1], b[2], c2[0], c2[1], c2[2], d[0], d[1], d[2]);
+        w.quad(b[0], b[1] - 0.004, b[2], a[0], a[1] - 0.004, a[2], d[0], d[1] - 0.004, d[2], c2[0], c2[1] - 0.004, c2[2]);
+      }
+      const yv = ay - 0.5;
+      w.cloth(0, yv - rng.range(0.18, 0.3), W, yv, cd + ad + 0.01, 2, 0.02, 0.6);
+      w.mat('steel_rust', { uv: 'local' });
+      w.tube([0.02, yv, cd + ad, W - 0.02, yv, cd + ad], 0.015, 4);
+      for (const x of [0.03, W - 0.03]) w.tube([x, ay, cd, x, yv, cd + ad], 0.012, 4);
       if (rng.chance(0.6) && open) {
-        w.mat('steel_rust', { uv: 'local' });
         for (const x of [0.2, W - 0.2]) w.cyl(x, y0, cd + ad - 0.1, 0.025, 0.025, ay - 0.5 - y0, 5, 0);
       }
+      w.setGroup('base');
+    }
+    // CCTV on the canopy soffit next to a column (shops)
+    if (!far && open && shop !== 'residence' && rng.chance(0.3)) {
+      w.setGroup('detail');
+      w.put(cctv(w), rng.chance(0.5) ? pw + 0.12 : W - pw - 0.12, yb - 0.12, colZ0 + 0.0, rng.range(-0.4, 0.4));
+      w.setGroup('base');
     }
 
     } // canopy
@@ -308,20 +348,37 @@ export class Shophouse {
         floors.push({ y: yk, style: winStyle, balcony, grille, hx0: m, hx1: W - m, hy0, hy1 });
       }
     }
+    // facade style of this building: concrete window hoods ("eyebrows"), side fins, grille motif, laundry habit
+    const deco = {
+      hood: !far && rng.chance(0.5) ? rng.range(0.32, 0.62) : 0,
+      fins: !far && rng.chance(0.22),
+      motif: rng.weighted(['bars', 'sun', 'diamond', 'scroll'], [3, 3, 2, 2]),
+      laundry: rng.chance(0.4),
+      plants: rng.chance(0.55),
+    };
+    // breeze-block (ช่องลม) band in the parapet on some buildings
+    const breeze = !far && !apt && par > 0.8 && rng.chance(0.3);
+    if (breeze) holes.push([0.32, W - 0.32, yR + 0.16, yP - 0.14]);
     // facade wall (between pilasters handled as one plane; pilasters added on top)
     wallMat();
     this.wallHoles(0, W, y1, yP, holes, 0, 0.22, () => wallMat({ ao: 0.8 }));
+    if (breeze) breezeBlocks(w, 0.32, W - 0.32, yR + 0.16, yP - 0.14, 0, new THREE.Color(tint).multiplyScalar(0.92).getHex());
     // pilasters (upper)
     w.mat(wallL, { tint: new THREE.Color(tint).multiplyScalar(0.94).getHex(), ov: ovL, ovAmt: ovA });
-    if (!nb.mergeL || true) w.box(0, y1, 0, pw, yP + 0.06, 0.07, PZ | PX | (nb.left < yP ? NX : 0));
-    w.box(W - pw, y1, 0, W, yP + 0.06, 0.07, PZ | NX | (nb.right < yP ? PX : 0));
-    // floor bands + parapet coping
+    if (!nb.mergeL || true) w.box(0, y1, 0, pw, yP + 0.06, 0.1, PZ | PX | (nb.left < yP ? NX : 0));
+    w.box(W - pw, y1, 0, W, yP + 0.06, 0.1, PZ | NX | (nb.right < yP ? PX : 0));
+    // floor bands (with a drip edge) + stepped cornice under the parapet coping
     trimMat();
-    for (let k = 1; k < n; k++) { const yk = y1 + (k - 1) * hf; if (k > 1) w.box(0, yk - 0.14, 0, W, yk + 0.05, 0.09, PZ | PY | NY); }
-    w.box(-0.02, yP, -0.3, W + 0.02, yP + 0.07, 0.1, ALL & ~NY);
-    if (rng.chance(0.5)) w.box(0, yR - 0.12, 0, W, yR + 0.08, 0.1, PZ | PY | NY); // roof slab edge band
+    for (let k = 1; k < n; k++) {
+      const yk = y1 + (k - 1) * hf;
+      if (k > 1) { w.box(0, yk - 0.14, 0, W, yk + 0.05, 0.12, PZ | PY | NY); w.box(0, yk - 0.2, 0, W, yk - 0.14, 0.06, PZ | NY); }
+    }
+    w.box(-0.03, yP, -0.3, W + 0.03, yP + 0.08, 0.17, ALL & ~NY);
+    w.box(-0.01, yP - 0.13, 0, W + 0.01, yP, 0.12, PZ | NY | (nb.left < yP ? NX : 0) | (nb.right < yP ? PX : 0));
+    w.box(0, yP - 0.2, 0, W, yP - 0.13, 0.065, PZ | NY);
+    if (rng.chance(0.6)) { w.box(0, yR - 0.12, 0, W, yR + 0.08, 0.15, PZ | PY | NY); w.box(0, yR - 0.17, 0, W, yR - 0.12, 0.08, PZ | NY); } // roof slab edge band
     // windows, grilles, balconies, AC units, laundry
-    for (const fl of floors) this.floorFill(fl, W, hf, rng, grilleCol, trim, far);
+    for (const fl of floors) this.floorFill(fl, W, hf, rng, grilleCol, trim, far, deco);
     if (!far && c.decals) {
       // black water streaks below sills and AC units, moss at the base, torn posters on pilasters
       for (const fl of floors) if (rng.chance(0.65)) {
@@ -334,6 +391,10 @@ export class Shophouse {
       if (rng.chance(0.35)) { const k = rng.int(0, 3); this.cellDecal('decal_torn_posters_photo', k % 2, k >> 1, rng.chance(0.5) ? -0.05 : W - 0.25, y0 + rng.range(0.9, 1.4), 0.3, 0.45, 0.07, 0.95); }
     }
     if (!far && c.fol) {
+      // weeds pushing out of the crack between the footpath and the column plinths
+      if (rng.chance(0.4)) weeds(w, c.fol, rng.chance(0.5) ? -0.02 : W + 0.02, y0, colZ0 + 0.06, rng, rng.range(0.3, 0.55));
+      // a fig sapling growing out of the parapet / a gutter (Bangkok classic)
+      if (rng.chance(0.12)) weeds(w, c.fol, rng.range(0.4, W - 0.4), yP + 0.05, 0.05, rng, rng.range(0.5, 0.9));
       if (rng.chance(0.18)) vines(w, c.fol, rng.range(0.6, W - 0.6), yP, 0.08, 0, rng, rng.chance(0.4));
       if (rng.chance(0.12) && floors.some((f) => f.balcony)) { const fb = floors.find((f) => f.balcony)!; bougainvillea(w, c.fol, rng.range(0.5, W - 0.5), fb.y + 0.2, 0.8, rng, 0.7); }
     }
@@ -350,8 +411,10 @@ export class Shophouse {
     w.mat(sideL, { tint: 0xffffff, ov: 'plaster_moldy', ovAmt: 0.85 });
     w.quad(W, 0, -D, 0, 0, -D, 0, yP, -D, W, yP, -D);
     if (!far) {
-      w.mat('glass', { tint: 0x0e1012, ao: 0.6 });
-      for (let k = 1; k < n; k++) { const yk = y1 + (k - 1) * hf; w.quad(W * 0.6 + 0.6, yk + 1.0, -D - 0.02, W * 0.6 - 0.4, yk + 1.0, -D - 0.02, W * 0.6 - 0.4, yk + 2.0, -D - 0.02, W * 0.6 + 0.6, yk + 2.0, -D - 0.02); }
+      // back windows (seen from the back lanes): rooms too, facing -z
+      w.pushT(W, 0, -D - 0.02, Math.PI);
+      for (let k = 1; k < n; k++) { const yk = y1 + (k - 1) * hf; w.roomPane(W * 0.4 - 0.6, yk + 1.0, W * 0.4 + 0.4, yk + 2.0, 0, rng.chance(0.3) ? EMIS.cool.i : 0, 0.5, rng.range(0, 1)); }
+      w.pop();
     }
     // roof slab + parapets
     w.mat('roof_slab', { autoDirt: false, ao: 0.9 });
@@ -368,6 +431,14 @@ export class Shophouse {
       w.mat('rubber', { uv: 'local' });
       const cx = rng.chance(0.5) ? 0.25 : W - 0.25;
       for (let i = 0; i < rng.int(2, 5); i++) w.tube([cx + i * 0.03, yb + 0.3, 0.12 + i * 0.015, cx + i * 0.035 + 0.02, yR - 0.5, 0.1 + i * 0.012, cx + 0.5, yR + 0.2, 0.05], 0.012, 3);
+      w.setGroup('base');
+    }
+    // rain downpipe from the roof scupper to the footpath (beside a column), with a dark wet streak behind it
+    if (!far && rng.chance(0.6)) {
+      w.setGroup('detail');
+      const px = rng.chance(0.5) ? pw + 0.08 : W - pw - 0.08;
+      drainpipe(w, px, yR + 0.12, y0, 0.2, rng);
+      if (c.decals) { const k = rng.int(0, 3); this.cellDecal('decal_wall_grime_streaks_photo', k % 2, k >> 1, px - 0.35, y1 - 0.5, 0.7, yR - y1, 0, 0.7); }
       w.setGroup('base');
     }
 
@@ -394,8 +465,7 @@ export class Shophouse {
     this.wallHoles(0, D, 0, yP, holes, 0, 0.18, () => wallMat({ ao: 0.8 }));
     const lit = rng.chance(0.4);
     for (const h of holes) {
-      w.mat('glass', { tint: rng.pick([0x0c0e10, 0x14181a, 0x1a1612]), emis: lit && rng.chance(0.5) ? EMIS.warm.i : 0, emisK: 0.4 });
-      w.quad(h[0], h[2], -0.12, h[1], h[2], -0.12, h[1], h[3], -0.12, h[0], h[3], -0.12);
+      w.roomPane(h[0], h[2], h[1], h[3], -0.12, lit && rng.chance(0.5) ? rng.pick([EMIS.warm.i, EMIS.cool.i]) : 0, 0.6, rng.range(0, 1));
       w.mat('alu', { tint: 0xc8c8c0, uv: 'local' });
       const t = 0.04;
       w.box(h[0], h[2], -0.14, h[1], h[2] + t, -0.1, PZ | PY);
@@ -420,12 +490,12 @@ export class Shophouse {
   }
 
   /** grime streak / moss / poster decal from a 2x2 photo atlas cell on the facade plane */
-  private cellDecal(id: string, cx: number, cy: number, x: number, y: number, ww: number, hh: number, z = 0, alpha = 0.85) {
+  private cellDecal(id: string, cx: number, cy: number, x: number, y: number, ww: number, hh: number, z = 0, alpha = 0.85, tint = 0xffffff) {
     const D = this.c.decals;
     const r = D?.cell(id, cx, cy, 2, 2);
     if (!r) return;
     const w = this.c.w;
-    w.atlas('decal', { ao: alpha, group: 'detail' });
+    w.atlas('decal', { ao: alpha, group: 'detail', tint });
     w.quad(x, y, z + 0.014, x + ww, y, z + 0.014, x + ww, y + hh, z + 0.014, x, y + hh, z + 0.014, [r.u0, r.v0, r.u1, r.v1]);
   }
 
@@ -437,15 +507,17 @@ export class Shophouse {
     w.quad(x, y, z + 0.012, x + width, y, z + 0.012, x + width, y + h, z + 0.012, x, y + h, z + 0.012, [r.u0, r.v0, r.u1, r.v1]);
   }
 
-  private floorFill(fl: { y: number; style: string; balcony: boolean; grille: boolean; hx0: number; hx1: number; hy0: number; hy1: number }, W: number, hf: number, rng: RNG, grilleCol: number, trim: number, far: boolean) {
+  private floorFill(fl: { y: number; style: string; balcony: boolean; grille: boolean; hx0: number; hx1: number; hy0: number; hy1: number }, W: number, hf: number, rng: RNG, grilleCol: number, trim: number, far: boolean,
+    deco: { hood: number; fins: boolean; motif: string; laundry: boolean; plants: boolean } = { hood: 0, fins: false, motif: 'bars', laundry: false, plants: false }) {
     const w = this.c.w, P = this.c.props;
     const zg = -0.12;
     const lit = rng.chance(0.35);
     const pal = rng.weighted([EMIS.warm.i, EMIS.cool.i, EMIS.tv.i], [5, 4, 1]);
     const glassT = rng.pick([0x0c0e10, 0x101418, 0x14181a, 0x1a1612, 0x18141a, 0x22201c]);
     const glass = (x0: number, y0: number, x1: number, y1: number, z = zg) => {
-      w.mat('glass', { tint: glassT, emis: lit ? pal : 0, emisK: rng.range(0.25, 0.55), ao: 1 });
-      w.quad(x0, y0, z, x1, y0, z, x1, y1, z, x0, y1, z);
+      // a whole parallax room behind the glass (fake interior shader), lit at night when `lit`
+      w.roomPane(x0, y0, x1, y1, z, lit ? pal : 0, rng.range(0.4, 0.9), rng.range(0, 1));
+      void glassT;
       if (lit) this.c.lights.add({ p: this.wp((x0 + x1) / 2, (y0 + y1) / 2, z + 0.3), color: new THREE.Color(EMIS.warm.c), intensity: 0, range: 0, glow: 0, kind: 'window' });
     };
     const frame = (x0: number, y0: number, x1: number, y1: number, mullions: number, col: number, layer = 'alu') => {
@@ -499,8 +571,8 @@ export class Shophouse {
         if (!wallRail) w.box(0.08, fl.y + 1.0, bd - 0.06, W - 0.08, fl.y + 1.04, bd - 0.01, ALL);
         for (let x = 0.25; x < W - 0.2; x += 0.13) w.box(x, yb0, bd - 0.045, x + 0.018, top, bd - 0.027, PZ | NZ | PX | NX);
         if (fl.grille) for (let z = 0.15; z < bd - 0.1; z += 0.15) { w.box(0.09, yb0, z, 0.11, top, z + 0.018, PX | NX | PZ | NZ); w.box(W - 0.11, yb0, z, W - 0.09, top, z + 0.018, PX | NX | PZ | NZ); }
-        // laundry on a line
-        if (rng.chance(0.55)) {
+        // laundry on a line (real cloth that sways)
+        if (rng.chance(deco.laundry ? 0.85 : 0.4)) {
           w.mat('steel_rust', { uv: 'local' });
           const ly = fl.y + 2.05;
           w.box(0.15, ly, bd * 0.6, W - 0.15, ly + 0.015, bd * 0.6 + 0.015, ALL);
@@ -508,13 +580,18 @@ export class Shophouse {
           while (x < W - 0.6) {
             const cw = rng.range(0.35, 0.7), ch = rng.range(0.45, 0.85);
             const den = rng.chance(0.25);
-            w.mat(den ? 'denim' : 'fabric', { tint: den ? 0xffffff : rng.pick([0xffffff, 0xd03030, 0x3050c0, 0xe0c020, 0x30a050, 0xf080a0, 0x202020, 0xe08030, 0x80c0e0]), uv: 'local', ao: 0.95 });
-            const zz = bd * 0.6 + 0.01;
-            w.quad(x, ly - ch, zz, x + cw, ly - ch, zz, x + cw, ly, zz, x, ly, zz);
-            w.quad(x + cw, ly - ch, zz - 0.002, x, ly - ch, zz - 0.002, x, ly, zz - 0.002, x + cw, ly, zz - 0.002);
+            w.mat(den ? 'denim' : 'fabric', { tint: den ? 0xffffff : rng.pick(CLOTH), uv: 'local', ao: 0.95 });
+            w.cloth(x, ly - ch, x + cw, ly, bd * 0.6 + 0.01, 3, 0, 1);
             x += cw + rng.range(0.05, 0.25);
           }
         }
+        // potted plants on the slab / along the railing, a birdcage hanging from the ceiling
+        if (deco.plants && this.c.fol) {
+          const np = rng.int(1, 4);
+          for (let i = 0; i < np; i++) pottedPlant(w, this.c.fol, rng.range(0.4, W - 0.4), fl.y + 0.06, rng.range(0.25, bd - 0.2), rng);
+        }
+        if (rng.chance(0.28)) w.put(birdcage(w, rng.int(0, 1)), rng.range(0.6, W - 0.6), fl.y + hf - 0.2, bd * 0.55, rng.range(0, 6));
+        if (rng.chance(0.15)) w.put(wallShrine(w), rng.chance(0.5) ? 0.8 : W - 0.8, fl.y + 1.9, 0.0, 0);
         // AC unit or junk on the balcony
         if (rng.chance(0.55)) w.put(P.acUnit(rng.int(0, 1)), rng.chance(0.5) ? 0.6 : W - 0.6, fl.y + 0.06, 0.05, 0);
         if (rng.chance(0.4)) w.put(P.bucket(rng.pick(PLASTIC_COLORS)), W * 0.5 + rng.range(-0.8, 0.8), fl.y + 0.06, bd * 0.5, rng.range(0, 6));
@@ -537,6 +614,20 @@ export class Shophouse {
       // sill
       w.mat('plaster_dirty', { tint: trim, ov: 'plaster_moldy', ovAmt: 0.7 });
       w.box(a - 0.06, fl.hy0 - 0.06, 0, b + 0.06, fl.hy0, 0.08, PZ | PY | NY | PX | NX);
+      // concrete sun hood ("eyebrow") with a drip edge, and side fins (mid-century Thai shophouse)
+      if (deco.hood > 0) {
+        w.mat('plaster_dirty', { tint: trim, ov: 'concrete_streaked', ovAmt: 0.75 });
+        const hy = fl.hy1 + 0.16, hd = deco.hood;
+        w.box(a - 0.18, hy, 0, b + 0.18, hy + 0.09, hd, PY | NY | PZ | PX | NX);
+        w.box(a - 0.18, hy - 0.05, hd - 0.04, b + 0.18, hy, hd, PZ | NY | NZ | PX | NX);
+        if (deco.fins) for (const fx of [a - 0.18, b + 0.1]) w.box(fx, fl.hy0 - 0.06, 0, fx + 0.08, hy, hd * 0.8, PZ | PX | NX | NY);
+      }
+      // open slider with a curtain blowing out of the window
+      if (!far && !fl.grille && fl.style === 'slider' && rng.chance(0.22)) {
+        w.mat('fabric', { tint: rng.pick(CURTAIN), uv: 'local', ao: 0.95 });
+        const cx0 = rng.chance(0.5) ? a + 0.05 : b - 0.75;
+        w.cloth(cx0, fl.hy0 + rng.range(0.0, 0.3), cx0 + 0.7, fl.hy1 - 0.06, 0.04, 4, 0.18, 1);
+      }
     }
     // grille cage
     if (fl.grille && !far) {
@@ -551,13 +642,33 @@ export class Shophouse {
       const pat = rng.int(0, 2);
       for (let x = x0 + 0.12; x < x1 - 0.08; x += 0.12) w.box(x, y0, gz - 0.022, x + 0.016, y1, gz - 0.006, PZ | NZ | PX | NX);
       w.box(x0, (y0 + y1) / 2, gz - 0.03, x1, (y0 + y1) / 2 + 0.025, gz, PZ | PY | NY);
-      if (pat === 1) for (let x = x0 + 0.1; x < x1 - 0.3; x += 0.48) {
+      if (pat === 1 && deco.motif === 'bars') for (let x = x0 + 0.1; x < x1 - 0.3; x += 0.48) {
         w.pushTR(x + 0.24, y0 + 0.35, gz - 0.015, 0, 0, Math.PI / 4); w.box(-0.25, -0.01, -0.006, 0.25, 0.01, 0.006, PZ | NZ); w.pop();
         w.pushTR(x + 0.24, y0 + 0.35, gz - 0.015, 0, 0, -Math.PI / 4); w.box(-0.25, -0.01, -0.006, 0.25, 0.01, 0.006, PZ | NZ); w.pop();
       }
-      // top hood
-      w.mat('roof_galv', { uv: 'local' });
-      w.quad(x0, y1 + 0.18, 0.02, x1, y1 + 0.18, 0.02, x1, y1, gz + 0.12, x0, y1, gz + 0.12);
+      // decorative Thai grille motif (sunrise fans / diamonds / scrolls) in front of the bars
+      if (deco.motif !== 'bars') grilleMotif(w, deco.motif, x0 + 0.03, x1 - 0.03, deco.motif === 'sun' ? (y0 + y1) / 2 : y0 + 0.03, y1 - 0.03, gz + 0.004);
+      // top hood (galvanised) unless the building has concrete eyebrows
+      if (deco.hood <= 0) {
+        w.mat('roof_galv', { uv: 'local' });
+        w.quad(x0, y1 + 0.18, 0.02, x1, y1 + 0.18, 0.02, x1, y1, gz + 0.12, x0, y1, gz + 0.12);
+      }
+      // laundry on hangers hooked onto the grille / a pole through it
+      if (deco.laundry && rng.chance(0.55)) {
+        w.mat('steel_rust', { uv: 'local' });
+        const ly = y1 - 0.12;
+        w.tube([x0 - 0.15, ly, gz + 0.06, x1 + 0.15, ly, gz + 0.06], 0.01, 4);
+        let x = x0 + 0.1;
+        while (x < x1 - 0.4) {
+          const cw = rng.range(0.3, 0.55), ch = rng.range(0.4, 0.7);
+          const den = rng.chance(0.2);
+          w.mat(den ? 'denim' : 'fabric', { tint: den ? 0xffffff : rng.pick(CLOTH), uv: 'local', ao: 0.95 });
+          w.cloth(x, ly - ch, x + cw, ly - 0.02, gz + 0.07, 3, 0, 1);
+          x += cw + rng.range(0.08, 0.3);
+        }
+      }
+      // rust bleeding down the wall from the cage anchors
+      if (this.c.decals && rng.chance(0.4)) { const k = rng.int(0, 3); this.cellDecal('decal_wall_grime_streaks_photo', k % 2, k >> 1, x0 + rng.range(0, Math.max(0.05, x1 - x0 - 0.8)), y0 - rng.range(0.8, 1.5), 0.8, rng.range(0.8, 1.5), 0, 0.6, 0x9a6a48); }
       w.setGroup('base');
     }
     // AC condenser under the window (with drip stain)
@@ -585,6 +696,18 @@ export class Shophouse {
       w.quad(sx - 0.2, yR + 2.1, sz + 0.2, sx + sw + 0.2, yR + 2.1, sz + 0.2, sx + sw + 0.2, yR + 2.35, sz - sd - 0.2, sx - 0.2, yR + 2.35, sz - sd - 0.2);
       w.quad(sx + sw + 0.2, yR + 2.09, sz + 0.2, sx - 0.2, yR + 2.09, sz + 0.2, sx - 0.2, yR + 2.34, sz - sd - 0.2, sx + sw + 0.2, yR + 2.34, sz - sd - 0.2);
       if (rng.chance(0.5)) { w.mat('cement_block', { uv: 'local' }); w.box(sx, yR, sz - sd, sx + sw, yR + 1.1, sz - sd + 0.12, ALL); }
+      // corrugated sheet walls on two sides (real ridges), a door gap on the front
+      w.mat(rng.pick(['corr_rust', 'corr_paint', 'roof_galv']), { uv: 'local', tint: rng.pick([0xffffff, 0x9ab0c0, 0xc8b8a0]) });
+      w.pushT(sx, yR, sz, Math.PI / 2);
+      corrWall(w, 0, sd, 0, 2.1, 0.0);
+      w.pop();
+      w.pushT(sx + sw, yR, sz - sd, -Math.PI / 2);
+      corrWall(w, 0, sd, 0, 2.1, 0.0);
+      w.pop();
+    }
+    // unfinished columns with rebar sticking out (the floor that was never built)
+    if (rng.chance(0.3)) {
+      for (const [x, z] of [[0.18, -0.4], [W - 0.18, -0.4], [0.18, -D + 0.4], [W - 0.18, -D + 0.4]]) if (rng.chance(0.75)) rebar(w, x, yR, z, rng);
     }
     if (rng.chance(0.3)) w.put(P.junkPile(rng.int(0, 5)), rng.range(0.8, W - 0.8), yR, -rng.range(1, D - 1), rng.range(0, 6));
     w.setGroup('base');
@@ -787,6 +910,34 @@ export class Shophouse {
 }
 
 const round2 = (v: number) => Math.round(v * 100) / 100;
+
+/** vertical corrugated wall x0..x1 (local, facing +z) from y0 to y1, ridges vertical */
+export function corrWall(w: WB, x0: number, x1: number, y0: number, y1: number, z: number, per = 0.16, amp = 0.02) {
+  const n = Math.max(2, Math.round((x1 - x0) / (per / 2)));
+  const dx = (x1 - x0) / n;
+  for (let i = 0; i < n; i++) {
+    const xa = x0 + i * dx, xb = xa + dx;
+    const za = z + (i % 2 === 0 ? 0 : amp), zb = z + (i % 2 === 0 ? amp : 0);
+    w.quad(xa, y0, za, xb, y0, zb, xb, y1, zb, xa, y1, za);
+    w.quad(xb, y0, zb - 0.004, xa, y0, za - 0.004, xa, y1, za - 0.004, xb, y1, zb - 0.004);
+  }
+}
+
+/**
+ * corrugated sheet as real ridged geometry: from the back edge (zb, yb) to the front edge (zf, yf) across
+ * x0..x1, ridge period `per`, amplitude `amp` (both faces).
+ */
+export function corrSheet(w: WB, x0: number, x1: number, zb: number, yb: number, zf: number, yf: number, per = 0.16, amp = 0.02) {
+  const n = Math.max(2, Math.round((x1 - x0) / (per / 2)));
+  const dx = (x1 - x0) / n;
+  for (let i = 0; i < n; i++) {
+    const xa = x0 + i * dx, xb = xa + dx;
+    const ha = (i % 2 === 0 ? 0 : amp), hb = (i % 2 === 0 ? amp : 0);
+    // top face: a (front, xa) b (front, xb) c (back, xb) d (back, xa)
+    w.quad(xa, yf + ha, zf, xb, yf + hb, zf, xb, yb + hb, zb, xa, yb + ha, zb);
+    w.quad(xb, yf + hb - 0.004, zf, xa, yf + ha - 0.004, zf, xa, yb + ha - 0.004, zb, xb, yb + hb - 0.004, zb);
+  }
+}
 
 /** deterministic unit dimensions (storeys, floor heights, parapet) — shared by neighbours */
 export function unitDims(u: UnitSpec) {

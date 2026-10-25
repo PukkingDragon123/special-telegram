@@ -74,40 +74,40 @@ interface Live {
 /** looks (letter sizes are metres at the reference distance; lines grow with distance like before) */
 const LOOK: Record<string, Text3DOpts> = {
   say: {
-    font: 'talk', size: 0.042, depth: 0.34, bevel: 0.075, color: 0xfff0d2, side: 0x6a3418, roughness: 0.36, emissive: 0.24,
-    maxWidth: 0.95, valign: 'bottom', anim: { pop: 0.3, rise: 0.45, spin: 1, vanish: 0.26, drift: 0.4 },
+    font: 'talk', size: 0.07, depth: 0.55, bevel: 0.06, color: 0xfff0d2, side: 0x6a3418, roughness: 0.34, emissive: 0.08, shadow: 0.5,
+    maxWidth: 1.5, valign: 'bottom', anim: { pop: 0.3, rise: 0.45, spin: 1, vanish: 0.26, drift: 0.4 },
   },
   saySub: {
-    font: 'ui', size: 0.0175, depth: 0.2, bevel: 0.05, color: 0xefe3cf, side: 0x3b2c22, roughness: 0.5, emissive: 0.2,
-    maxWidth: 0.95, valign: 'bottom', anim: { pop: 0.25, rise: 0.3, spin: 0.6, vanish: 0.22, drift: 0.3 },
+    font: 'ui', size: 0.028, depth: 0.2, bevel: 0.05, color: 0xefe3cf, side: 0x3b2c22, roughness: 0.5, emissive: 0.12, shadow: 0.45,
+    maxWidth: 1.5, valign: 'bottom', anim: { pop: 0.25, rise: 0.3, spin: 0.6, vanish: 0.22, drift: 0.3 },
   },
   shout: {
-    font: 'heavy', size: 0.056, depth: 0.42, bevel: 0.08, color: 0xff6526, side: 0x7d1006, roughness: 0.32, emissive: 0.32,
-    maxWidth: 1.1, valign: 'bottom', anim: { pop: 0.16, rise: 0.0, spin: 0.35, vanish: 0.22, drift: 0.2, shake: 0.012 },
+    font: 'heavy', size: 0.09, depth: 0.6, bevel: 0.07, color: 0xff6526, side: 0x7d1006, roughness: 0.32, emissive: 0.2, shadow: 0.45,
+    maxWidth: 1.7, valign: 'bottom', anim: { pop: 0.16, rise: 0.0, spin: 0.35, vanish: 0.22, drift: 0.2, shake: 0.012 },
   },
   shoutSub: {
-    font: 'ui', size: 0.02, depth: 0.22, bevel: 0.05, color: 0xffd8bf, side: 0x6a1c0c, roughness: 0.45, emissive: 0.25,
-    maxWidth: 1.1, valign: 'bottom', anim: { pop: 0.2, rise: 0.2, spin: 0.5, vanish: 0.2, drift: 0.2 },
+    font: 'ui', size: 0.03, depth: 0.22, bevel: 0.05, color: 0xffd8bf, side: 0x6a1c0c, roughness: 0.45, emissive: 0.2, keyLight: 0.6, shadow: 0.45,
+    maxWidth: 1.7, valign: 'bottom', anim: { pop: 0.2, rise: 0.2, spin: 0.5, vanish: 0.2, drift: 0.2 },
   },
   think: {
-    font: 'hand', size: 0.04, depth: 0.22, bevel: 0.06, color: 0xdfe8ff, side: 0x8e9bd6, roughness: 0.3, emissive: 0.42,
-    opacity: 0.84, rim: 0xc9b8ff, rimStrength: 0.55, maxWidth: 0.9, valign: 'bottom',
+    font: 'hand', size: 0.066, depth: 0.22, bevel: 0.06, color: 0xdfe8ff, side: 0x8e9bd6, roughness: 0.3, emissive: 0.42,
+    opacity: 0.84, rim: 0xc9b8ff, rimStrength: 0.55, shadow: 0.22, maxWidth: 1.4, valign: 'bottom',
     anim: { pop: 0.5, rise: 0.25, spin: 0.5, vanish: 0.4, drift: 0.9, wobble: 0.035 },
   },
   thinkSub: {
-    font: 'ui', size: 0.017, depth: 0.16, bevel: 0.04, color: 0xe9e1ff, side: 0x7d74ad, roughness: 0.4, emissive: 0.35,
-    opacity: 0.8, maxWidth: 0.9, valign: 'bottom', anim: { pop: 0.4, rise: 0.2, spin: 0.4, vanish: 0.35, drift: 0.7, wobble: 0.02 },
+    font: 'ui', size: 0.027, depth: 0.16, bevel: 0.04, color: 0xe9e1ff, side: 0x7d74ad, roughness: 0.4, emissive: 0.35,
+    opacity: 0.8, maxWidth: 1.4, valign: 'bottom', anim: { pop: 0.4, rise: 0.2, spin: 0.4, vanish: 0.35, drift: 0.7, wobble: 0.02 },
   },
   popup: {
-    font: 'heavy', size: 0.06, depth: 0.38, bevel: 0.09, color: 0xffd45a, metalness: 0.85, roughness: 0.24, emissive: 0.16,
+    font: 'heavy', size: 0.09, depth: 0.5, bevel: 0.08, color: 0xffd45a, metalness: 0.85, roughness: 0.24, emissive: 0.1, keyLight: 0.7, shadow: 0.35,
     bevelFace: true, maxWidth: 1.6, valign: 'middle', anim: { pop: 0.36, rise: 0.5, spin: 1.3, vanish: 0.34, drift: -0.7 },
   },
   tag: {
-    font: 'ui', size: 0.06, depth: 0.22, bevel: 0.05, color: 0xfffaf0, side: 0x2a231d, roughness: 0.45, emissive: 0.38,
+    font: 'ui', size: 0.08, depth: 0.22, bevel: 0.05, color: 0xfffaf0, side: 0x2a231d, roughness: 0.45, emissive: 0.3, shadow: 0.55,
     xray: true, castShadow: false, maxWidth: 1.6, valign: 'bottom', anim: { pop: 0.22, rise: 0.2, spin: 0.4, vanish: 0.18, drift: 0.2 },
   },
   tagSub: {
-    font: 'ui', size: 0.032, depth: 0.16, bevel: 0.04, color: 0xd8cdbb, side: 0x26201b, roughness: 0.5, emissive: 0.3,
+    font: 'ui', size: 0.042, depth: 0.16, bevel: 0.04, color: 0xd8cdbb, side: 0x26201b, roughness: 0.5, emissive: 0.3, shadow: 0.5,
     xray: true, castShadow: false, maxWidth: 1.6, valign: 'bottom', anim: { pop: 0.2, rise: 0.15, spin: 0.3, vanish: 0.15, drift: 0.15 },
   },
 };
@@ -132,8 +132,6 @@ function anchorPos(a: Anchor, out: THREE.Vector3): boolean {
   return true;
 }
 
-const UP = new THREE.Vector3(0, 1, 0);
-const _m = new THREE.Matrix4();
 const _q = new THREE.Quaternion();
 const _qt = new THREE.Quaternion();
 const _e = new THREE.Euler();
@@ -368,13 +366,14 @@ export class UI3D {
       if (s < 0.004) { g.visible = false; continue; }
       g.scale.setScalar(s);
 
-      // ---- face the camera with a little lag + living tilt (an object in space, not a sticker)
-      _m.lookAt(_cam, p, UP);
-      _q.setFromRotationMatrix(_m);
-      const t = L.age, sd = L.seed;
+      // ---- turn toward the camera with lag + a living tilt so the extruded sides show (an object in space, not a sticker).
+      // Screen-parallel base: off-centre lines naturally show their inner side through perspective.
+      cam.getWorldQuaternion(_q);
+      const t = L.age, sd = L.seed, side = sd % 2 < 1 ? 1 : -1;
       if (L.kind === 'tag') _e.set(0, 0, 0);
-      else if (L.kind === 'shout') _e.set(Math.sin(t * 2.3 + sd) * 0.05, Math.sin(t * 1.9 + sd) * 0.1, Math.sin(t * 2.7 + sd) * 0.05);
-      else _e.set(-0.05 + Math.sin(t * 0.6 + sd * 2) * 0.05, Math.sin(t * 0.8 + sd) * 0.13, Math.sin(t * 0.9 + sd) * 0.035);
+      else if (L.kind === 'shout') _e.set(-0.1 + Math.sin(t * 2.3 + sd) * 0.06, side * 0.3 + Math.sin(t * 1.9 + sd) * 0.1, side * 0.05 + Math.sin(t * 2.7 + sd) * 0.05);
+      else if (L.kind === 'think') _e.set(-0.08 + Math.sin(t * 0.7 + sd * 2) * 0.08, side * 0.22 + Math.sin(t * 0.6 + sd) * 0.18, Math.sin(t * 0.8 + sd) * 0.07);
+      else _e.set(-0.12 + Math.sin(t * 0.6 + sd * 2) * 0.05, side * 0.26 + Math.sin(t * 0.8 + sd) * 0.12, Math.sin(t * 0.9 + sd) * 0.035);
       _q.multiply(_qt.setFromEuler(_e));
       if (!L.init) { L.quat.copy(_q); L.init = true; }
       else L.quat.slerp(_q, 1 - Math.exp(-dt * (L.kind === 'tag' ? 14 : 5)));
@@ -396,10 +395,9 @@ export class UI3D {
       L.closing += dt;
       if (L.closing >= L.closeDur) { this.dispose(L); return; }
     }
-    _m.lookAt(_cam, g.position, UP);
-    _q.setFromRotationMatrix(_m);
-    const spin = (1 - Ease.outBack(Math.min(1, L.age / 0.6), 2.4)) * 2.4 + Math.sin(L.age * 3 + L.seed) * 0.08;
-    _q.multiply(_qt.setFromEuler(_e.set(0, spin, Math.sin(L.age * 2.2 + L.seed) * 0.04)));
+    (this.camera as THREE.Camera).getWorldQuaternion(_q);
+    const spin = (1 - Ease.outBack(Math.min(1, L.age / 0.6), 2.4)) * 2.4 + 0.22 + Math.sin(L.age * 3 + L.seed) * 0.12;
+    _q.multiply(_qt.setFromEuler(_e.set(-0.1, spin, Math.sin(L.age * 2.2 + L.seed) * 0.05)));
     g.quaternion.copy(_q);
   }
 }

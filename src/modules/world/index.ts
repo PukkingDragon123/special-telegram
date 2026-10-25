@@ -27,6 +27,8 @@ import { buildStreetLife } from './dressing';
 import { loadFoliage, FoliageSys } from './foliage';
 import { installDebug, DebugCam } from './debug';
 import { Weather } from './weather';
+import { installReflection } from './reflect';
+import { installDrainFx, drainsFrame, publicDrains } from './drains';
 
 /**
  * WORLD MODULE — builds ซอยเฮียผัด and its surroundings (see docs/MAP_PLAN.md):
@@ -151,6 +153,7 @@ async function buildWorld(game: Game) {
   }
 
   for (const o of pendingWater.splice(0)) root.add(o);
+  installDrainFx(root);   // buildings: sewer water + drain steam
   // ---------------------------------------------------------------- atmosphere & lights
   tf = performance.now();
   const atmo = new Atmosphere(game);
@@ -195,6 +198,7 @@ async function buildWorld(game: Game) {
     get rain() { return (game.g as any).rain ?? 0; },
     sunDir: atmo.sunDir,
     stats: { meshes: meshes.length, tris: Math.round(tris), buildMs: 0 },
+    drains: publicDrains(),
   };
   game.world = api;
 
@@ -208,6 +212,8 @@ async function buildWorld(game: Game) {
   releaseCpuCopies(game, assets);
   // debug: anchors, fly camera
   const dbg = installDebug(game, root, anchors, nav);
+  const unRefl = installReflection(game, meshes, [atmo.sky, lights.root]);   // buildings: puddle reflections
+  const offR = game.events.on('world:exit', () => { offR(); unRefl(); });
   const weather = new Weather(game, root);
   const casters = meshes.filter((m) => m.mesh.castShadow).map((m) => m.mesh);
   S = { game, root, atmo, lights, details, bases, casters, nav, frameN: 0, dbg, weather, stats: { drawMeshes: meshes.length, tris, buildMs: performance.now() - t0 } };
@@ -261,6 +267,7 @@ function frame(game: Game, dt: number) {
   S.weather.update(dt, _cam, S.atmo);
   realPropsFrame(game, dt);
   S.lights.update(_cam, S.atmo.night, dt);
+  drainsFrame(_cam, S.atmo.night, U.uWet.value, S.atmo.hemi.color);
   U.uWet.value += (((game.g as any).rain ?? 0) - U.uWet.value) * Math.min(1, dt * 0.2);
   // distance-cull small detail meshes
   if ((S.frameN++ & 7) === 0) {

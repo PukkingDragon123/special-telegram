@@ -9,17 +9,64 @@ import { T } from './assets';
 import { M } from './mats';
 import {
   buildMeatTray, buildBasil, buildChiliBag, buildGarlic, buildLongBeans, buildKale, buildBundle, buildPile, buildEgg, buildEggTray,
-  buildBottle, buildPacket, buildPasteBag, buildCucumbers, buildMushrooms, buildKaffir, buildGalangal, buildNoodleBag, BottleSpec,
+  buildBottle, buildPacket, buildPasteBag, buildCucumbers, buildMushrooms, buildKaffir, buildGalangal, buildNoodleBag, BottleSpec, foodPhoto,
 } from './models';
 import {
   buildWok, buildFoodLayers, setFoodSet, FoodLayers, HeapKind, wokY, WOK_R, WOK_D, buildSpatula, buildLadle, buildCleaver, buildRicePaddle,
-  buildSpoonFork, buildBoard, buildMortar, buildPlate, buildBowl, buildTakeaway, buildPlasticBag, buildRicePot, buildGasTank, buildBook,
+  buildSpoonFork, buildBoard, buildMortar, buildPlate, buildBowl, buildTakeaway, buildPlasticBag, buildRicePot, buildGasTank, buildBook, setFriedVariant,
 } from './models-tools';
 import type { WokData } from './recipes';
 import { cookParams } from './recipes';
 import { pickKey, clamp01 } from './util';
 import type { CookFX } from './fx';
-import { mound, planarUV } from './geo';
+import { juice, juiceKick, JP, JuiceKind } from './juice';
+import { riceMoundGeoReal, riceMatReal, leafMat, chiliMat, reliefGeo, reliefMat } from './realfood';
+
+/* ---- juice (squash/stretch/jiggle + impact sound/bits) and Rapier tuning per item kind ---- */
+
+const JUICE: Record<string, JuiceKind> = {
+  pork_minced: 'meat', chicken_minced: 'meat', pork_sliced: 'meat', shrimp: 'shrimp',
+  holy_basil: 'herb', kaffir_lime: 'herb', spring_onion: 'herb', morning_glory: 'herb', kale: 'herb',
+  long_beans: 'veg', lemongrass: 'veg', cucumber: 'veg', mushroom: 'veg',
+  chili: 'chili', garlic: 'bulb', onion: 'bulb', lime: 'bulb', tomato: 'bulb', galangal: 'bulb',
+  egg: 'egg', egg_tray: 'eggTray',
+  sugar: 'packet', msg: 'packet', gravy_starch: 'packet', noodles_wide: 'packet', rice_bag: 'sack',
+  spatula: 'metal', ladle: 'metal', cleaver: 'metal', spoon_fork: 'metal', rice_paddle: 'plastic',
+  chopping_board: 'wood', mortar: 'clay', wok: 'wok', plate: 'plate', bowl: 'plate', takeaway_box: 'foam', plastic_bag: 'paper',
+  rice_pot: 'appliance', recipe_book: 'paper', dish: 'dish',
+};
+type Phys = NonNullable<ItemDef['phys']>;
+const PHYS: Partial<Record<JuiceKind, Phys>> = {
+  meat: { restitution: 0.03, friction: 0.95, linDamp: 0.12, angDamp: 1.3 },
+  shrimp: { restitution: 0.04, friction: 0.9, linDamp: 0.12, angDamp: 1.2 },
+  herb: { restitution: 0.05, friction: 0.9, linDamp: 0.9, angDamp: 2.2 },
+  veg: { restitution: 0.12, friction: 0.8, linDamp: 0.3, angDamp: 1.0 },
+  chili: { restitution: 0.58, friction: 0.45, linDamp: 0.08, angDamp: 0.25, bouncy: true },
+  bulb: { restitution: 0.36, friction: 0.55, linDamp: 0.06, angDamp: 0.35, bouncy: true },
+  egg: { restitution: 0.24, friction: 0.35, linDamp: 0.05, angDamp: 0.55, bouncy: true },
+  eggTray: { restitution: 0.06, friction: 0.85, linDamp: 0.1, angDamp: 1.0 },
+  glass: { restitution: 0.18, friction: 0.45, linDamp: 0.05, angDamp: 0.35 },
+  plastic: { restitution: 0.36, friction: 0.5, linDamp: 0.05, angDamp: 0.3, bouncy: true },
+  packet: { restitution: 0.03, friction: 0.95, linDamp: 0.15, angDamp: 1.4 },
+  sack: { restitution: 0.0, friction: 1.0, linDamp: 0.25, angDamp: 2.5 },
+  metal: { restitution: 0.32, friction: 0.4, linDamp: 0.05, angDamp: 0.3, bouncy: true },
+  wok: { restitution: 0.12, friction: 0.55, linDamp: 0.05, angDamp: 0.5 },
+  plate: { restitution: 0.3, friction: 0.4, linDamp: 0.05, angDamp: 0.4, bouncy: true },
+  foam: { restitution: 0.2, friction: 0.7, linDamp: 0.4, angDamp: 0.8 },
+  wood: { restitution: 0.15, friction: 0.7, linDamp: 0.05, angDamp: 0.6 },
+  clay: { restitution: 0.04, friction: 0.9, linDamp: 0.05, angDamp: 1.2 },
+  dish: { restitution: 0.06, friction: 0.85, linDamp: 0.1, angDamp: 0.9 },
+  paper: { restitution: 0.05, friction: 0.8, linDamp: 0.8, angDamp: 1.5 },
+  appliance: { restitution: 0.05, friction: 0.8, linDamp: 0.05, angDamp: 1.0 },
+};
+export function juiceOf(kind: string, tags?: string[]) {
+  const j = JUICE[kind] ?? (tags?.includes('sauce') ? (tags.includes('glass') ? 'glass' : 'plastic') : undefined);
+  return j ? JP[j] : undefined;
+}
+export function physOf(kind: string, tags?: string[]): Phys | undefined {
+  const j = JUICE[kind] ?? (tags?.includes('sauce') ? (tags.includes('glass') ? 'glass' : 'plastic') : undefined);
+  return j ? PHYS[j] : undefined;
+}
 
 /* =============================================================================================
  * ITEM KINDS owned by the cooking module: ingredients (data.g / data.ml), tools, vessels.
@@ -65,6 +112,8 @@ function anim(extra?: AnimFn): ItemDef['animate'] {
       }
     }
     extra?.(obj, e, dt, game, act, st);
+    if (st.jp === undefined) st.jp = juiceOf(e.k, game.items.def(e.k)?.tags) ?? false;
+    if (st.jp) juice(obj, e, dt, game, st.jp);
   };
 }
 
@@ -80,6 +129,7 @@ function refreshHeap(full: number) {
     const s = heapScale(e, full);
     h.visible = s > 0;
     if (s > 0) h.scale.set(s, Math.max(0.35, s), s);
+    (h.userData.bs ??= new THREE.Vector3()).copy(h.scale);
   };
 }
 
@@ -136,6 +186,7 @@ export function defineCookingItems(game: Game) {
   const items = game.items;
   const def = (d: ItemDef) => {
     if (items.def(d.kind) && d.kind === 'plastic_bag') return; // shops may own it
+    if (!d.phys) d.phys = physOf(d.kind, d.tags);
     items.define(d);
   };
   const ingBase = (k: string) => {
@@ -155,6 +206,7 @@ export function defineCookingItems(game: Game) {
       ...ingBase(k),
       tags: ['ingredient', 'sauce', spec.glassOpacity && spec.glassOpacity > 0.4 ? 'glass' : 'plastic', ...(g.tags ?? [])],
       build: () => buildBottle(k, spec),
+      shape: { type: 'cyl', r: spec.r * 1.02, h: spec.h + (spec.capH ?? 0.02) },
       refresh: refreshLiquid(g.amount),
       animate: anim(),
       hold: HOLD[spec.hold ?? 'bottle'],
@@ -187,7 +239,7 @@ export function defineCookingItems(game: Game) {
   def({ ...ingBase('mushroom'), build: () => buildMushrooms(), refresh: refreshHeap(200), animate: anim(), hold: HOLD.bag });
   def({ ...ingBase('cucumber'), build: () => buildCucumbers(), refresh: refreshHeap(300), animate: anim(), hold: HOLD.bag });
   // ---- eggs
-  def({ kind: 'egg', name: tl('ไข่ไก่', 'egg'), weight: 0.06, price: 5, carry: 'hand', tags: ['ingredient', 'egg'], pickRadius: 0.1, build: () => buildEgg(), animate: anim(), hold: HOLD.egg, data: () => ({}) });
+  def({ kind: 'egg', name: tl('ไข่ไก่', 'egg'), weight: 0.06, price: 5, carry: 'hand', tags: ['ingredient', 'egg'], pickRadius: 0.1, build: (e) => buildEgg(e?.id ?? 0), animate: anim(), hold: HOLD.egg, data: () => ({}), shape: { type: 'ball', r: 0.025 } });
   def({
     kind: 'egg_tray', name: TOOL_META.egg_tray.name, weight: 1.9, price: 130, carry: 'twohand', tags: ['ingredient', 'egg'],
     data: () => ({ n: 10 }), build: () => buildEggTray(),
@@ -224,13 +276,13 @@ export function defineCookingItems(game: Game) {
   // ---- vessels
   def({
     kind: 'plate', name: TOOL_META.plate.name, weight: 0.25, price: 35, carry: 'hand', tags: ['vessel', 'plate', 'stack'],
-    data: () => ({ dirty: false, rice: 0, style: 'flora' }), build: (e) => buildPlate(e.data?.style ?? 'flora'),
+    data: () => ({ dirty: false, rice: 0, style: 'flora' }), build: (e) => buildPlate(e.data?.style ?? 'flora'), shape: { type: 'cyl', r: 0.12, h: 0.024 },
     refresh: (obj, e) => refreshVesselRice(obj, e), animate: anim(), hold: HOLD.plate,
     label: (e) => tl(e.data?.dirty ? 'จานสกปรก' : (e.data?.rice ?? 0) > 1 ? `จาน (ข้าว ${Math.round(e.data.rice)} ก.)` : 'จานเปล่า'),
   });
   def({
     kind: 'bowl', name: TOOL_META.bowl.name, weight: 0.32, price: 45, carry: 'hand', tags: ['vessel', 'bowl', 'stack'],
-    data: () => ({ dirty: false, rice: 0, egg: 0, whisk: 0, sa: {} }), build: () => buildBowl(),
+    data: () => ({ dirty: false, rice: 0, egg: 0, whisk: 0, sa: {} }), build: () => buildBowl(), shape: { type: 'cyl', r: 0.078, h: 0.076 },
     refresh: (obj, e) => refreshBowl(obj, e), animate: anim(), hold: HOLD.plate,
     label: (e) => bowlLabel(e.data),
   });
@@ -350,7 +402,16 @@ function refreshBoard(obj: THREE.Object3D, e: Ent) {
   for (const [k, v] of Object.entries(it)) {
     if (!v || v.g < 0.5) continue;
     const s = Math.min(1, Math.sqrt(v.g / 120));
-    if (chop < 0.25 && (k === 'long_beans')) {
+    const rel = boardRelief(k, chop);
+    if (rel) {
+      // real photo relief of the (chopped) ingredient, piling up as it is cut
+      const m = new THREE.Mesh(reliefGeo(rel, 0.13, 0.13, 0.016, 14), reliefMat('board:' + rel, rel, foodPhoto(rel), { rough: 0.45, sss: k === 'garlic' ? undefined : { color: k === 'chili' ? 0xff3a1a : 0x8ad84a, wrap: 0.4, back: 0.4 } }));
+      const sc = 0.55 + s * 0.6 + chop * 0.25;
+      m.scale.set(sc, 0.7 + s * 0.5, sc);
+      m.position.set((i % 2 ? 1 : -1) * 0.03 * (i > 0 ? 1 : 0), 0.002 + i * 0.004, 0.012 * i);
+      m.rotation.y = i * 1.3 + chop * 2;
+      top.add(m);
+    } else if (chop < 0.25 && (k === 'long_beans')) {
       // still whole: the real bundle photo
       const m = new THREE.Mesh(boardCard(0.28), new THREE.MeshStandardMaterial({ map: T.beansCard(), alphaTest: 0.42, side: THREE.DoubleSide }));
       m.scale.setScalar(0.6 + s * 0.4);
@@ -365,6 +426,17 @@ function refreshBoard(obj: THREE.Object3D, e: Ent) {
       if (chop > 0.5) { const m2 = m.clone(); m2.position.x += 0.04; m2.rotation.y += 2; m2.scale.setScalar(0.75); top.add(m2); }
     }
     i++;
+  }
+}
+/** which real relief photo shows an ingredient on the board at this chop progress */
+function boardRelief(k: string, chop: number): string | null {
+  switch (k) {
+    case 'garlic': return chop < 0.45 ? 'garlic_crushed' : 'garlic_minced_pile';
+    case 'chili': return 'chili_red_bunch';
+    case 'onion': return 'onion_slices';
+    case 'kale': case 'morning_glory': return 'kale_leaf';
+    case 'long_beans': return chop < 0.25 ? 'long_beans_bundle' : null;
+    default: return null;
   }
 }
 const _boardCards = new Map<number, THREE.BufferGeometry>();
@@ -427,16 +499,9 @@ function refreshVesselRice(obj: THREE.Object3D, e: Ent) {
   if (d) d.visible = !!e.data?.dirty;
 }
 
-let _riceGeo: THREE.BufferGeometry | null = null;
-export function riceMoundGeo() {
-  if (!_riceGeo) _riceGeo = planarUV(mound(0.07, 0.045, { seed: 3, detail: 2, rough: 0.16 }), 1 / 0.07);
-  return _riceGeo;
-}
-let _riceMat: THREE.Material | null = null;
-export function riceMat() {
-  if (!_riceMat) { const m = new THREE.MeshStandardMaterial({ map: T.rice(), normalMap: T.riceN(), roughness: 0.62, flatShading: true }); m.normalScale.set(0.7, 0.7); _riceMat = m; }
-  return _riceMat;
-}
+/** real rice-mound photo relief (one ทัพพี ≈ 200 g at scale 1) */
+export function riceMoundGeo() { return riceMoundGeoReal(); }
+export function riceMat() { return riceMatReal(); }
 
 function refreshBowl(obj: THREE.Object3D, e: Ent) {
   refreshVesselRice(obj, e);
@@ -560,6 +625,8 @@ export function applyFoodVisual(L: FoodLayers, d: WokData | undefined, where: 'w
     u.k3.value = Math.min(0.92, Math.max(0, b * 0.95));
     const sauce = ((d.sa?.oyster_sauce ?? 0) + (d.sa?.soy_dark ?? 0) * 2 + (d.sa?.soy_light ?? 0) * 0.5 + (d.sa?.seasoning_sauce ?? 0) * 0.5) / Math.max(40, solids * 0.12);
     u.gloss.value = Math.min(0.8, sauce * 0.6 + (d.oil ?? 0) / 120);
+    L.heapMat.clearcoat = 0.05 + u.gloss.value * 1.1 * (1 - u.k3.value * 0.6);
+    L.heapMat.clearcoatRoughness = 0.22 + u.k3.value * 0.4;
     const dark = Math.min(0.35, sauce * 0.18);
     const curry = (it.curry_paste?.g ?? 0) / Math.max(1, solids);
     L.heapMat.color.setRGB(1 - dark * 0.6 + curry * 0.2, 1 - dark - curry * 0.35, 1 - dark - curry * 0.5);
@@ -574,22 +641,26 @@ export function applyFoodVisual(L: FoodLayers, d: WokData | undefined, where: 'w
   if (L.leaves.visible) {
     const c = it.holy_basil!.c;
     const soggy = c > (cookParams('holy_basil').soggy ?? 3.4);
-    L.leafMat.map = c < 0.35 ? T.basil() : soggy ? T.basilSoggy() : T.basilCooked();
-    const k = Math.min(1.25, Math.sqrt(basil / 18));
-    L.leaves.scale.set(0.6 + k * 0.45, 1, 0.6 + k * 0.45);
-    L.leaves.position.y = (where === 'wok' ? wokY(0) : 0) + (showHeap ? 0.008 + Math.cbrt(solids / 220) * 0.02 : -0.01);
     const burn = Math.min(1, it.holy_basil!.b);
-    L.leafMat.color.setRGB(1 - burn * 0.7, 1 - burn * 0.75, 1 - burn * 0.75);
+    L.leaves.material = leafMat(burn > 0.55 ? 'burnt' : c < 0.35 ? 'fresh' : soggy ? 'soggy' : 'cooked');
+    const k = Math.min(1.25, Math.sqrt(basil / 18));
+    L.leaves.scale.set(0.6 + k * 0.45, 0.8 + k * 0.2, 0.6 + k * 0.45);
+    L.leaves.position.y = (where === 'wok' ? wokY(0) : 0) + (showHeap ? 0.004 + Math.cbrt(solids / 220) * 0.018 : -0.012);
   }
   const chili = (it.chili?.g ?? 0) + (d.sa?.chili_flakes ?? 0);
   L.chili.visible = chili > 1.5;
-  if (L.chili.visible) { L.chili.position.y = L.leaves.position.y + 0.002; const k = Math.min(1.2, chili / 8); L.chili.scale.set(0.7 + k * 0.3, 1, 0.7 + k * 0.3); }
+  if (L.chili.visible) {
+    L.chili.position.y = (where === 'wok' ? wokY(0) : 0) + (showHeap ? 0.02 + Math.cbrt(solids / 220) * 0.02 : 0.006);
+    const k = Math.min(1.2, chili / 8); L.chili.scale.set(0.7 + k * 0.3, 1, 0.7 + k * 0.3);
+    L.chili.material = chiliMat('red', Math.min(1, (it.chili?.c ?? 0.6)));
+  }
   const garlic = it.garlic?.g ?? 0;
   L.bits.visible = garlic > 1.5;
   if (L.bits.visible) {
     const b = Math.min(1, it.garlic!.b), c = Math.min(1, it.garlic!.c);
     (L.bits.material as THREE.MeshStandardMaterial).color.setRGB(1 - b * 0.75 - c * 0.1, 1 - b * 0.8 - c * 0.25, 1 - b * 0.85 - c * 0.45);
-    L.bits.position.y = (where === 'wok' ? wokY(0) : 0) + (showHeap ? 0.012 : 0.0);
+    L.bits.position.y = (where === 'wok' ? wokY(0) : 0) + (showHeap ? 0.016 + Math.cbrt(solids / 220) * 0.012 : 0.0);
+    const gk = Math.min(1.3, Math.sqrt(garlic / 15)); L.bits.scale.set(0.6 + gk * 0.5, 1, 0.6 + gk * 0.5);
   }
   // ---- oil (puddle at the bottom of the paraboloid)
   const oil = d.oil ?? 0;
@@ -637,11 +708,11 @@ export function applyFoodVisual(L: FoodLayers, d: WokData | undefined, where: 'w
     m.rotation.y = i * 1.7;
   }
   if (e && n > 0) {
-    L.eggMat.map = e.b > 0.75 ? T.eggBurnt() : e.cr >= 0.45 ? T.eggCrispy() : T.eggRunny();
+    const v = e.b > 0.75 ? 'burnt' : e.cr >= 0.45 ? 'crispy' : 'runny';
+    for (let i = 0; i < n; i++) setFriedVariant(L.eggs[i], v);
+    // raw egg white sits flatter (it puffs and the lace curls up as it fries)
     const raw = clamp01(1 - e.wh);
-    L.eggMat.color.setRGB(1 - raw * 0.05, 1 - raw * 0.02, 1 + raw * 0.0);
-    L.eggMat.opacity = 1;
-    L.eggMat.roughness = 0.25 + (1 - raw) * 0.2;
+    for (let i = 0; i < n; i++) L.eggs[i].scale.set(1, 0.55 + (1 - raw) * 0.45, 1);
   }
   // ---- omelette
   const om = d.om;
@@ -657,25 +728,110 @@ export function applyFoodVisual(L: FoodLayers, d: WokData | undefined, where: 'w
   }
 }
 
+/** colours of little bits that jump out of the wok, per ingredient (sampled from the real photos) */
+const BIT_COL: Record<string, number[]> = {
+  pork_minced: [0xc98a78, 0x9a5a3c, 0xe0b0a0], chicken_minced: [0xe8c8b0, 0xc8a080], pork_sliced: [0xd89a88, 0xb07060], shrimp: [0xf09070, 0xffc0a0],
+  holy_basil: [0x2f6a1c, 0x4a8a2a, 0x20501a], chili: [0xd8261a, 0xb01810, 0x4a8a24], garlic: [0xf2e6c8, 0xe0c890], long_beans: [0x4f8a2c, 0x6aa040],
+  onion: [0xf0e8d8, 0xe8d0b0], kale: [0x3f7a2c, 0x6a9a50], morning_glory: [0x3f7a26, 0x5a9a30], rice_cooked: [0xf6f2e8, 0xece4d2], egg_scr: [0xf6d040, 0xfff2c0],
+  noodles_wide: [0xe8d8b8, 0xb08850], mushroom: [0x8a7a6a], tomato: [0xd83020], curry_paste: [0xa8341c], lemongrass: [0xd8dca0], galangal: [0xe8cbb0],
+  spring_onion: [0x6aa040], cucumber: [0xc8e0a0], kaffir_lime: [0x4a7a30],
+};
+const SAUCE_COL: Record<string, number> = { oyster_sauce: 0x2a160a, soy_dark: 0x140a06, soy_light: 0x5a2c10, fish_sauce: 0xa85a1a, seasoning_sauce: 0x3a1c0a, sugar: 0xffffff, msg: 0xffffff, white_pepper: 0xe8e0d0, chili_flakes: 0xa82a14, gravy_starch: 0xf0f0f0, lime: 0xe8f0a0, tomyum_paste: 0x8a240c };
+
+interface WokJuice { prev: Record<string, number>; sa: number; oil: number; eggN: number; st: number; hy: number; hv: number; q: number; qv: number; popT: number; hopT: number; y0: number }
+
 function wokAnim(obj: THREE.Object3D, e: Ent, dt: number, game: Game, act: string | undefined, st: any) {
   const wv = obj.userData.wv as WokVis | undefined;
   const d = e.data as WokData | undefined;
   if (!wv || !d) return;
-  const stir = act === 'stir' || (d.st ?? 0) > 0.3;
   const L = wv.layers;
+  const it = d.it ?? {};
+  const T0 = d.T ?? 25;
+  const solids = Object.values(it).reduce((a, v) => a + (v?.g ?? 0), 0) + (d.egg?.n ?? 0) * 50 + (d.om?.n ?? 0) * 50;
+  const saTot = Object.values(d.sa ?? {}).reduce((a: number, v: any) => a + (v ?? 0), 0) as number;
+  const J: WokJuice = (st.wj ??= { prev: {}, sa: saTot, oil: d.oil ?? 0, eggN: d.egg?.n ?? 0, st: d.st ?? 0, hy: 0, hv: 0, q: 0, qv: 0, popT: 0, hopT: 0, y0: 0 });
+  if (!st.wjInit) { st.wjInit = true; for (const [k, v] of Object.entries(it)) J.prev[k] = v?.g ?? 0; }
+  const stir = act === 'stir' || (d.st ?? 0) > 0.3;
+  // world points: food surface centre
+  const surfY = wokY(0) + 0.012 + Math.cbrt(Math.min(1.6, solids / 220)) * 0.025;
+  const p = FX ? obj.localToWorld(new THREE.Vector3(0, surfY, 0)) : null;
+  const hot = T0 > 120;
+  J.popT -= dt; J.hopT -= dt;
+  // ---- ingredients dropped in → they pop, bounce and settle; oil spits; steam bursts
+  if (FX && p) {
+    for (const [k, v] of Object.entries(it)) {
+      const g = v?.g ?? 0, dg = g - (J.prev[k] ?? 0);
+      if (dg > 1.5 && J.popT <= 0) {
+        J.popT = 0.11;
+        const col = BIT_COL[k] ?? [0xb08060];
+        FX.bits(p, col, Math.min(9, 2 + Math.round(dg / 3)), { speed: 0.35, up: hot ? 1.3 : 0.8, size: k === 'holy_basil' ? 0.007 : 0.0045, floor: p.y - 0.01, spread: 0.08, flat: k === 'holy_basil' ? 0.15 : 0.7, life: 0.7 });
+        J.qv -= Math.min(2.2, 0.5 + dg / 12);
+        if (hot && (d.oil ?? 0) > 4) FX.droplets(p, 0xe8b830, 2 + Math.round(Math.min(6, (T0 - 120) / 25)), { speed: 0.9, up: 1.8, floor: p.y - 0.05 });
+        if (hot) FX.steamBurst(p, 2, 0.8);
+      }
+      if (dg > 1.5 || dg < -1.5) J.prev[k] = g;
+    }
+    for (const k of Object.keys(J.prev)) if (!it[k]) J.prev[k] = 0;
+    // sauces splash
+    if (saTot - J.sa > 1.2 && J.popT <= 0) {
+      J.popT = 0.12;
+      const top = Object.entries(d.sa ?? {}).sort((a: any, b: any) => b[1] - a[1])[0]?.[0] ?? 'soy_light';
+      FX.droplets(p, SAUCE_COL[top] ?? 0x3a1c0a, hot ? 5 : 2, { speed: 0.6, up: hot ? 1.6 : 0.8, floor: p.y - 0.03, size: 0.002 });
+      if (hot) FX.steamBurst(p, 3, 1);
+      J.qv -= 0.4;
+    }
+    if (Math.abs(saTot - J.sa) > 1.2) J.sa = saTot;
+    // oil in → shimmering spits when hot
+    const oil = d.oil ?? 0;
+    if (oil - J.oil > 2 && hot) FX.droplets(p, 0xf0c040, 3, { speed: 0.8, up: 1.5, floor: p.y - 0.05 });
+    if (Math.abs(oil - J.oil) > 2) J.oil = oil;
+    // egg cracked in → white splatter + oil burst
+    const en = d.egg?.n ?? 0;
+    if (en > J.eggN) { FX.droplets(p, 0xfff6e8, 4, { speed: 0.5, up: 0.9, floor: p.y - 0.02, size: 0.003 }); if (hot) FX.droplets(p, 0xf0c040, 6, { speed: 1.1, up: 2, floor: p.y - 0.05 }); J.qv -= 0.6; juiceKick(obj, 0, 0, -0.4); }
+    J.eggN = en;
+    // continuous oil spitting on a very hot wok
+    if (T0 > 175 && oil > 8) FX.rate('spit' + e.id, Math.min(6, (T0 - 170) / 30) * (stir ? 2 : 1), dt, () => FX!.droplets(p!, 0xf0c040, 1, { speed: 0.7, up: 1.6, floor: p!.y - 0.05, size: 0.0018 }));
+  }
+  // ---- toss (big jump, chunks fly, lands with a squash) / stir hops
+  const sNow = d.st ?? 0;
+  if (sNow - J.st > 0.75 && solids > 5) {
+    J.hv = 1.25 + Math.min(0.5, solids / 800);
+    if (FX && p) {
+      const cols = Object.keys(it).flatMap((k) => BIT_COL[k] ?? []);
+      FX.bits(p, cols.length ? cols : [0xb08060], 18, { speed: 0.5, up: 1.9, size: 0.005, floor: p.y - 0.01, spread: 0.12, life: 0.9 });
+      if ((d.oil ?? 0) > 3) FX.droplets(p, 0xf0c040, 8, { speed: 1.2, up: 2.2, floor: p.y - 0.06 });
+      if (hot) FX.steamBurst(p, 4, 1.1);
+    }
+    juiceKick(obj, 0, 0.6, -0.6);
+  }
+  J.st = sNow;
+  if (J.hy > 0 || J.hv !== 0) {
+    J.hv -= 9.81 * dt; J.hy += J.hv * dt;
+    if (J.hy <= 0) { J.hy = 0; if (J.hv < -0.3) { J.qv -= Math.min(3, -J.hv * 1.6); if (FX && p) FX.bits(p, Object.keys(it).flatMap((k) => BIT_COL[k] ?? [0xb08060]).slice(0, 6), 6, { speed: 0.4, up: 0.6, floor: p.y - 0.01, spread: 0.1 }); juiceKick(obj, 0, 0, -0.5); } J.hv = 0; }
+  }
+  if (stir && solids > 10 && J.hopT <= 0 && FX && p) {
+    J.hopT = 0.16 + Math.random() * 0.14;
+    const cols = Object.keys(it).flatMap((k) => BIT_COL[k] ?? []);
+    FX.bits(p, cols.length ? cols : [0xb08060], 2 + Math.floor(Math.random() * 3), { speed: 0.3, up: 0.75, size: 0.0045, floor: p.y - 0.008, spread: 0.1, life: 0.5 });
+    J.qv -= 0.35;
+  }
+  // squash spring of the whole food layer (pivot = wok bottom)
+  const n = Math.min(10, Math.ceil(dt * 150)), h = dt / Math.max(1, n);
+  for (let i = 0; i < n; i++) { J.qv += (-140 * J.q - 7 * J.qv) * h; J.q += J.qv * h; }
+  J.q = Math.max(-0.35, Math.min(0.35, J.q));
+  L.root.scale.set(1 - J.q * 0.45, 1 + J.q, 1 - J.q * 0.45);
   if (stir) {
     const t = st.t * 12;
-    L.root.position.y = Math.abs(Math.sin(t)) * 0.008;
+    J.y0 = Math.abs(Math.sin(t)) * 0.008;
     L.root.rotation.y = Math.sin(t * 0.37) * 0.25;
     if (e.holder == null) obj.rotation.z = Math.sin(t * 0.5) * 0.02;
-  } else { L.root.position.y *= 0.8; }
+  } else J.y0 *= 0.8;
+  L.root.position.y = J.y0 + J.hy;
   // smoke / steam / sizzle cues (client-local)
   if (!FX) return;
-  const T0 = d.T ?? 25;
-  const solids = Object.values(d.it ?? {}).reduce((a, v) => a + (v?.g ?? 0), 0) + (d.egg?.n ?? 0) * 50 + (d.om?.n ?? 0) * 50;
-  const p = obj.localToWorld(new THREE.Vector3(0, 0.06, 0));
+  const pp = obj.localToWorld(new THREE.Vector3(0, 0.06, 0));
   const smoke = (d.sm ?? 0);
-  if (smoke > 0.05) FX.rate('wsm' + e.id, smoke * 14, dt, () => FX!.smokePuff(p, 0.7 + smoke * 0.6, (d.ob ?? 0) > 0.4 || Object.values(d.it ?? {}).some((v) => (v?.b ?? 0) > 0.6), 0.16));
-  if ((d.w ?? 0) > 20 && T0 > 92) FX.rate('wst' + e.id, 6 + (d.w ?? 0) / 60, dt, () => FX!.steam(p, 1, 0.2));
-  else if (solids > 20 && T0 > 105) FX.rate('wst' + e.id, Math.min(9, (T0 - 100) / 12), dt, () => FX!.steam(p, 0.8, 0.18));
+  if (smoke > 0.05) FX.rate('wsm' + e.id, smoke * 14, dt, () => FX!.smokePuff(pp, 0.7 + smoke * 0.6, (d.ob ?? 0) > 0.4 || Object.values(d.it ?? {}).some((v) => (v?.b ?? 0) > 0.6), 0.16));
+  if ((d.w ?? 0) > 20 && T0 > 92) FX.rate('wst' + e.id, 6 + (d.w ?? 0) / 60, dt, () => FX!.steam(pp, 1, 0.2));
+  else if (solids > 20 && T0 > 105) FX.rate('wst' + e.id, Math.min(9, (T0 - 100) / 12), dt, () => FX!.steam(pp, 0.8, 0.18));
 }

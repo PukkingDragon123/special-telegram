@@ -124,6 +124,8 @@ export interface WorldAPI {
   root: THREE.Object3D;
   /** Night lights that should switch on at dusk (modules may register theirs too). */
   addNightLight(light: THREE.Light | THREE.Object3D, intensity?: number): void;
+  /** Street drains (manholes / grates with an open shaft), set once the world is built. Critters & water use them. */
+  drains?: { p: [number, number, number]; kind: 'manhole' | 'grate' }[];
 }
 
 // ---------------------------------------------------------------- modules

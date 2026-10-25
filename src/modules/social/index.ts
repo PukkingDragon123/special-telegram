@@ -17,8 +17,9 @@ import { hostTimers, localTimers, READING_MODES, anim } from './state';
 
 /* ============================================================================================
  * MODULE: social — right-click social (slap / high-five / give money), snatch tug-of-war, XP
- * levels + the skill-tree thought cloud (Tab), cardboard sleeping + day transition + morning
- * newspaper, recipe unlock schedule (g.unlocks), day stats history, save/load.
+ * levels + the SKILL HEAVEN (Tab: look up, ascend to a dreamy sky scene where skills are floating
+ * props), cardboard sleeping + day transition + morning newspaper, recipe unlock schedule
+ * (g.unlocks), day stats history, save/load.
  *
  *   player.mode: 'think' · 'tug' · 'sleep' · 'down' (just lost a tug)   (others: 'free')
  *   skill ids (game.hasSkill / game.skillMul): see skills.ts SKILL_IDS
@@ -73,7 +74,7 @@ export default defineModule({
     sleep = installSleep(game, sparks, () => saveApi.save());
     (game as any).social = {
       skills: SKILLS, skillIds: SKILL_IDS, levels: (pl: Ent) => levels(pl), money: (amount: number) => buildMoney(amount),
-      recipesFor: (day: number) => recipesFor(game, day), think: () => think.active, _thinkDebug: () => (think as any).debug,
+      recipesFor: (day: number) => recipesFor(game, day), think: () => think.active, _thinkDebug: () => think.debug, heaven: () => think.heaven,
     };
     // ?continue → load the auto-save as soon as we host (QA / until the menu wires "เล่นต่อ")
     if (params.has('continue')) {

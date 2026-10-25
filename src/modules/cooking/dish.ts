@@ -6,7 +6,12 @@ import { T, cachedMat } from './assets';
 import { M, mesh, gc } from './mats';
 import { mound, planarUV, card, scatter, lathe, dent } from './geo';
 import { buildPlate, buildBowl, buildTakeaway, buildSpoonFork, buildPlasticBag } from './models-tools';
-import { riceMoundGeo, riceMat } from './items';
+import { riceMoundGeo, riceMat, juiceOf, physOf } from './items';
+import { juice, juiceKick } from './juice';
+import { Sound } from '../../core/audio';
+import { pickKey } from './util';
+import { leafScatter, leafMat, chiliBits, chiliMat, chunkScatter, reliefGeo, reliefMat, buildFriedEgg, EggVariant } from './realfood';
+import { Assets } from '../../core/assets';
 import { RECIPES, qualityWord, ISSUE_TH } from './recipes';
 import type { CookFX } from './fx';
 
@@ -22,15 +27,24 @@ export function setDishFX(fx: CookFX) { FX = fx; }
 const heapGeo = (key: string, r: number, h: number, seed: number, squash: [number, number] = [1, 1]) =>
   gc('dishHeap' + key, () => planarUV(mound(r, h, { seed, detail: 2, rough: 0.3, squash }), 1 / (r * 2.2)));
 
-function heapMat(tex: THREE.Texture, normal: THREE.Texture | null, color: number, burn: number, key: string, rough = 0.42) {
+/** glossy street-food heap: real photo tile, crumb normals, clearcoat = the oil/sauce sheen */
+function heapMat(tex: THREE.Texture, normal: THREE.Texture | null, color: number, burn: number, key: string, rough = 0.42, oil = 0.7) {
   const b = Math.round(Math.min(1, burn) * 4) / 4;
   return cachedMat(`dishMat:${key}:${b}`, () => {
-    const m = new THREE.MeshStandardMaterial({ map: tex, roughness: rough, flatShading: true, color });
+    const m = new THREE.MeshPhysicalMaterial({ map: tex, roughness: rough, flatShading: true, color, clearcoat: oil * (1 - b * 0.7), clearcoatRoughness: 0.25 + b * 0.4 });
     if (normal) { m.normalMap = normal; m.normalScale.set(0.9, 0.9); }
     m.color.multiplyScalar(1 - b * 0.55);
     return m;
   });
 }
+const photo = (name: string) => Assets.texture(`textures/food/${name}.png`, { srgb: true, wrap: false });
+/** cooked basil leaves scattered over a heap (3D, real leaf photo) */
+const dishLeaves = (n: number, spread: number, y: number, seed: number) => leafScatter(`dish${n}:${spread}:${seed}`, n, (i, m, r) => {
+  const a = r() * 6.28, rr = Math.sqrt(r()) * spread;
+  m.makeRotationFromEuler(new THREE.Euler((r() - 0.5) * 0.7, r() * 6.28, (r() - 0.5) * 0.6));
+  m.setPosition(Math.cos(a) * rr, y + (1 - rr / spread) * 0.012, Math.sin(a) * rr);
+  return { len: 0.03 + r() * 0.014, wid: 0.022 + r() * 0.008, curl: 0.08, droop: 0.2 };
+}, seed);
 
 const cardM = (key: string, tex: THREE.Texture, color = 0xffffff) => cachedMat('dcard:' + key + color, () => new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.42, side: THREE.DoubleSide, roughness: 0.38, color }));
 
@@ -63,18 +77,22 @@ function buildFood(d: any): THREE.Group {
   const s = Math.cbrt(size);
   const add = (geo: THREE.BufferGeometry, mat: THREE.Material, pos: [number, number, number], sc = 1) => { const m = mesh(geo, mat, pos, undefined, sc); g.add(m); return m; };
   switch (d.recipe) {
-    case 'kaphrao_moo':
-      add(heapGeo('kap', 0.06, 0.026, 3, [1.05, 0.9]), heapMat(T.kaphrao(), T.kaphraoN(), 0xffffff, burn, 'kap'), [fx, 0.004, 0.005], s);
-      if ((vis.herb ?? 1) > 0.15) add(cards('basil', 5, 0.055, 0.04, 0.022, 4), cardM('basilC', T.basilCooked(), burn > 0.5 ? 0x605048 : 0xffffff), [fx, 0.004, 0], s);
-      if ((vis.chili ?? 0) > 0.2) add(cards('chili', 3, 0.035, 0.035, 0.026, 6), cardM('chiliC', T.chiliCard()), [fx, 0.004, 0], s);
+    case 'kaphrao_moo': {
+      const hm = heapMat(T.kaphrao(), T.kaphraoN(), 0xffffff, burn, 'kap', 0.4, 0.85);
+      add(heapGeo('kap', 0.06, 0.026, 3, [1.05, 0.9]), hm, [fx, 0.004, 0.005], s);
+      add(chunkScatter('kapDish', 30, 0.056, 0.024, 0.005, 1 / (0.06 * 2.2), 9), hm, [fx, 0.004, 0.005], s);
+      if ((vis.herb ?? 1) > 0.15) add(dishLeaves(7, 0.045, 0.02, 4), leafMat(burn > 0.5 ? 'burnt' : 'cooked'), [fx, 0.004, 0], s);
+      if ((vis.chili ?? 0) > 0.2) add(chiliBits('dish', 5, 0.04, 6), chiliMat('red', 0.6), [fx, 0.028, 0], s);
       break;
+    }
     case 'phat_phrik_kaeng':
-      add(heapGeo('ppk', 0.06, 0.026, 5), heapMat(T.curry(), T.porkCookedN(), 0xffb090, burn, 'ppk'), [fx, 0.004, 0.005], s);
+      add(heapGeo('ppk', 0.06, 0.026, 5), heapMat(T.curry(), T.porkCookedN(), 0xffb090, burn, 'ppk', 0.4, 0.9), [fx, 0.004, 0.005], s);
+      add(chunkScatter('ppkDish', 22, 0.055, 0.024, 0.005, 1 / (0.06 * 2.2), 11), heapMat(T.curry(), T.porkCookedN(), 0xffb090, burn, 'ppk', 0.4, 0.9), [fx, 0.004, 0.005], s);
       add(heapGeo('ppkb', 0.032, 0.018, 8), heapMat(T.beansCut(), null, 0xffffff, burn, 'beans', 0.35), [fx + 0.02, 0.012, -0.02], s);
       break;
     case 'moo_kratiam':
       add(heapGeo('mk', 0.058, 0.024, 7), heapMat(T.porkCooked(), T.porkCookedN(), 0xffe0b0, burn, 'mk'), [fx, 0.004, 0.005], s);
-      add(cards('garlic', 4, 0.05, 0.035, 0.024, 9), cardM('garlicGold', T.garlicMinced(), burn > 0.4 ? 0x6a5030 : 0xffd890), [fx, 0.004, 0], s);
+      add(reliefGeo('garlic_minced_pile', 0.07, 0.07, 0.012, 12), reliefMat('garlicGold' + (burn > 0.4 ? 'b' : ''), 'garlic_minced_pile', photo('garlic_minced_pile'), { rough: 0.35, color: burn > 0.4 ? 0x6a5030 : 0xffd890, clearcoat: 0.5 }), [fx, 0.022, 0], s);
       add(gc('cuc', () => { const c = new THREE.CylinderGeometry(0.016, 0.016, 0.006, 10); return c; }), cachedMat('cucSlice', () => new THREE.MeshStandardMaterial({ color: 0xd8e8b0, roughness: 0.4 })), [0.075, 0.005, 0.04]);
       break;
     case 'khao_phat':
@@ -85,7 +103,7 @@ function buildFood(d: any): THREE.Group {
     case 'phat_si_io':
     case 'rat_na': {
       add(heapGeo('nd', 0.075, 0.03, 13, [1.15, 0.95]), heapMat(T.noodles(), null, 0xffffff, burn, 'nd', 0.38), [0, 0.004, 0], s);
-      add(cards('kale', 4, 0.07, 0.05, 0.026, 14), cardM('kaleC', T.kaleCard(), 0xc8e0a8), [0, 0.004, 0], s);
+      for (let i = 0; i < 3; i++) add(reliefGeo('kale_leaf', 0.08, 0.08, 0.008, 10, 0.5), reliefMat('kaleCooked', 'kale_leaf', photo('kale_leaf'), { rough: 0.3, color: 0xb8d898, clearcoat: 0.6 }), [Math.cos(i * 2.1) * 0.03, 0.026 + i * 0.003, Math.sin(i * 2.1) * 0.03], s).rotation.y = i * 2.1;
       if (d.recipe === 'rat_na') {
         const gm = cachedMat('gravy', () => new THREE.MeshStandardMaterial({ color: 0x7a4a1c, transparent: true, opacity: 0.72, roughness: 0.08, depthWrite: false }));
         add(gc('gravyBlob', () => mound(0.085, 0.034, { seed: 15, detail: 2, rough: 0.12 })), gm, [0, 0.004, 0], s);
@@ -107,7 +125,7 @@ function buildFood(d: any): THREE.Group {
       break;
     }
     case 'khai_jiao': {
-      const om = mesh(gc('dishOmelet', () => card(0.15, 0.15, 0.028, 6)), cardM('omC', T.omeletteCard(), burn > 0.5 ? 0x8a6040 : 0xffffff), [0.012, 0.04, 0.0]);
+      const om = mesh(reliefGeo('omelette_whole', 0.15, 0.15, 0.026, 18, 0.12), reliefMat('omDish' + (burn > 0.5 ? 'b' : ''), 'omelette_whole', photo('omelette_whole'), { rough: 0.42, color: burn > 0.5 ? 0x8a6040 : 0xffffff, clearcoat: 0.45 }), [0.012, 0.03, 0.0]);
       om.rotation.y = 0.4;
       g.add(om);
       break;
@@ -116,9 +134,13 @@ function buildFood(d: any): THREE.Group {
   }
   // fried egg on top
   if (d.egg && d.egg !== 'none') {
-    const tex = d.egg === 'burnt' ? T.eggBurnt() : d.egg === 'crispy' ? T.eggCrispy() : T.eggRunny();
-    const e = mesh(gc('dishEgg', () => card(0.12, 0.12, 0.012, 6)), cardM('egg' + d.egg, tex, d.egg === 'raw' ? 0xfff8f0 : 0xffffff), [d.recipe === 'khai_dao' ? -0.01 : -0.012, hasRice ? 0.046 : 0.03, 0.012]);
-    e.rotation.set(-0.12, 0.6, 0.06);
+    const v: EggVariant = d.egg === 'burnt' ? 'burnt' : d.egg === 'crispy' ? 'crispy' : 'runny';
+    const onRice = hasRice && !bowl;
+    const e = buildFriedEgg(v, 0.125, onRice ? -3 : 0.18);
+    const rs = Math.cbrt(Math.max(0.01, d.rice ?? 0) / 200);
+    e.position.set(onRice ? rx + 0.004 : 0.0, hasRice ? (bowl ? 0.05 : 0.05 * rs) : 0.004, 0.006);
+    e.rotation.set(hasRice ? -0.08 : 0, 0.6, hasRice ? 0.05 : 0);
+    if (d.egg === 'raw') e.scale.set(1, 0.6, 1);
     g.add(e);
   }
   // spoon & fork across the rim
@@ -151,7 +173,7 @@ export function dishLabel(d: any): TL {
 
 export function defineDish(game: Game) {
   game.items.define({
-    kind: 'dish', name: tl('อาหาร', 'dish'), weight: 0.6, price: 0, carry: 'hand', tags: ['dish', 'food'],
+    kind: 'dish', name: tl('อาหาร', 'dish'), weight: 0.6, price: 0, carry: 'hand', tags: ['dish', 'food'], phys: physOf('dish'),
     data: () => ({ recipe: 'kaphrao_moo', egg: 'none', rice: 200, portion: 150, taste: 0.8, salty: 0, spicy: 0.3, sweet: 0, cooked: 0, temp: 1, issues: ['no_spoon'], vessel: 'plate', plate: 'flora', vis: {} }),
     build: (e) => {
       const g = buildVessel(e.data);
@@ -170,15 +192,29 @@ export function defineDish(game: Game) {
       if (old) top.remove(old);
       top.add(buildFood(e.data));
       if (e.data?.bag && !obj.getObjectByName('dishbag')) addBag(obj);
+      juiceKick(obj, -0.12, 0.5, -0.5);
     },
     animate: (obj, e, dt, game2) => {
       // cart yaw fix (same as other items)
-      if (e.in != null && e.at && game2.state.get(e.in)?.t === 'cart') obj.rotation.y = (e.at[3] ?? 0) - ((e.id * 1.7) % 6.28); else obj.rotation.y = 0;
+      obj.rotation.set(0, e.in != null && e.at && game2.state.get(e.in)?.t === 'cart' ? (e.at[3] ?? 0) - ((e.id * 1.7) % 6.28) : 0, 0);
       const t = e.data?.temp ?? 0;
       if (FX && t > 0.42 && !e.data?.bag) {
         const p = obj.localToWorld(new THREE.Vector3(0, 0.06, 0));
         FX.rate('dish' + e.id, (t - 0.38) * 7, dt, () => FX!.steam(p, 0.45 + t * 0.3, 0.07));
       }
+      // fresh off the wok: lands with a satisfying settle wobble, a puff of steam and a little sparkle
+      if (!obj.userData.born) {
+        obj.userData.born = true;
+        if (t > 0.97) {
+          juiceKick(obj, -0.32, 1.4, -0.9);
+          const p = obj.localToWorld(new THREE.Vector3(0, 0.05, 0));
+          const good = (e.data?.taste ?? 0) >= 0.75;
+          if (FX) { FX.steamBurst(p, 5, 0.9); FX.sparkle(p, good ? 12 : 5, 0.1, good ? 0.2 : 0.6); }
+          Sound.play(pickKey(['food_splat', 'food_soft']), { pos: p, vol: 0.4 });
+          if (good) Sound.play(pickKey(['sparkle_chime']), { pos: p, vol: 0.35, delay: 0.12 });
+        }
+      }
+      juice(obj, e, dt, game2, juiceOf('dish'));
     },
     label: (e) => dishLabel(e.data),
     hold: { pos: [-0.05, -0.02, -0.02], rot: [0.75, 0, 0], scale: 0.85 },

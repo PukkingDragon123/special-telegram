@@ -709,7 +709,7 @@ export class Pets {
     let speed = 0, turn = 0, prevYaw = root.rotation.y;
     const lookV = new THREE.Vector3();
     const inp: QuadInput = { speed: 0, turn: 0, pose: 'stand', wag: 0, eat: false, scratch: false, sniff: false, pant: false, alert: 0, tail: 0.2, look: null };
-    let wagT = 0, happyT = 0, happyK = 0;
+    let wagT = 0, happyT = 0, happyK = 0, glanceT = 2, glanceAway = false;
     return {
       object: root,
       update: (e: Ent, dt: number) => {
@@ -750,7 +750,19 @@ export class Pets {
         inp.tail = st === 'flee' || e.scared ? -1 : st === 'bark' ? 1 : happy ? 0.6 : 0.1;
         inp.swat = st === 'swat';
         const lt = e.look != null ? game.state.get(e.look) : null;
-        if (lt?.p) { lookV.set(lt.p[0], lt.p[1] + (lt.t === 'player' ? 1.5 : 0.8), lt.p[2]); inp.look = lookV; } else inp.look = null;
+        inp.snarl = st === 'bark' && lt?.t === 'ghost' ? 1 : 0;
+        if (lt?.p) { lookV.set(lt.p[0], lt.p[1] + (lt.t === 'player' ? 1.5 : 0.8), lt.p[2]); inp.look = lookV; }
+        else {
+          // client-local: watch the local player's face when they are close (glancing away now and then)
+          inp.look = null;
+          const cam = game.camera;
+          glanceT -= dt;
+          if (glanceT < 0) { glanceAway = !glanceAway; glanceT = glanceAway ? 0.8 + Math.random() * 1.6 : 2.5 + Math.random() * 5; }
+          if (cam && !glanceAway && st !== 'sleep' && st !== 'eat' && st !== 'flee' && st !== 'dead' && speed < 1.2) {
+            cam.getWorldPosition(lookV);
+            if (lookV.distanceToSquared(root.position) < 4.5 * 4.5) inp.look = lookV;
+          }
+        }
         vis.update(dt, inp);
         if (adopted !== !!e.adopted) {
           adopted = !!e.adopted;
@@ -887,6 +899,7 @@ export class PetLab implements SceneDef {
       if (P === 'wag') { inp.wag = 1; inp.tail = 0.6; c.happy = 1; }
       const lk = params.get('look')?.split(',').map(Number);
       if (lk && lk.length === 3) inp.look = new THREE.Vector3(lk[0], lk[1], lk[2]);
+      if (params.get('look') === 'cam') inp.look = this.camera.position;
       this.pets.push({ c, inp, base: c.root.position.clone(), t: 0 });
       if (P === 'bark') c.anim.bark(30);
       return c;

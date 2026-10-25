@@ -151,6 +151,7 @@ export class PostFX {
   smaa: SMAAEffect;
   dof: DepthOfFieldEffect;
   shafts: SunShaftsEffect;
+  private shaftsPass: EffectPass | null = null;
   private mainPass: EffectPass;
   private shaftsOn = true;
   private sunStamp = 0;
@@ -192,6 +193,8 @@ export class PostFX {
     this.shafts = new SunShaftsEffect(28);
     this.mainPass = this.makeMainPass(camera, true);
     this.composer.addPass(this.mainPass);
+    this.shaftsPass = new EffectPass(camera, this.shafts);
+    this.composer.addPass(this.shaftsPass);
 
     this.ca = new ChromaticAberrationEffect({ offset: new THREE.Vector2(0.00055, 0.00045), radialModulation: true, modulationOffset: 0.35 });
     this.caPass = new EffectPass(camera, this.ca);
@@ -203,9 +206,14 @@ export class PostFX {
     this.setLook('thaiDay');
   }
 
-  private makeMainPass(camera: THREE.Camera, shafts: boolean) {
-    const fx: Effect[] = shafts ? [this.shafts, this.bloom, this.tone, this.grade, this.vignette, this.noise] : [this.bloom, this.tone, this.grade, this.vignette, this.noise];
-    return new EffectPass(camera, ...fx);
+  private makeMainPass(camera: THREE.Camera, _shafts: boolean) {
+    return new EffectPass(camera, this.bloom, this.tone, this.grade, this.vignette, this.noise);
+  }
+  /** shafts read the depth texture: they run in their own pass right after the main pass. With AO on and DOF
+   *  off that is an even number of buffer swaps, so they read the buffer that owns the depth attachment and
+   *  write the other one (no feedback loop). Any other pass layout → shafts off. */
+  private syncShaftsPass() {
+    if (this.shaftsPass) this.shaftsPass.enabled = this.shaftsOn && this.ao.enabled && !this.dofPass.enabled;
   }
 
   /** Sun for shafts + aerial haze: world-space direction to the sun, colour (HDR), strengths. Call every frame. */
@@ -251,17 +259,9 @@ export class PostFX {
     }
     this.caPass.enabled = q === 'high' || q === 'ultra';
     this.bloom.intensity = q === 'low' ? 0.35 : 0.55;
-    // shafts/haze shader: off at low (rebuild the merged pass only when that changes)
-    const wantShafts = q !== 'low';
-    if (wantShafts !== this.shaftsOn) {
-      this.shaftsOn = wantShafts;
-      const i = this.composer.passes.indexOf(this.mainPass);
-      this.composer.removePass(this.mainPass);
-      this.mainPass.dispose();
-      this.mainPass = this.makeMainPass(this.camera, wantShafts);
-      this.composer.addPass(this.mainPass, i);
-    }
-    this.smaa.applyPreset(q === 'low' ? SMAAPreset.LOW : q === 'medium' ? SMAAPreset.MEDIUM : SMAAPreset.HIGH);
+    // shafts/haze: off at low
+    this.shaftsOn = q !== 'low';
+    this.syncShaftsPass();
   }
 
   /** Blend towards a grading look. `k`=1 → fully that look. */
@@ -289,6 +289,7 @@ export class PostFX {
   /** Depth of field for menus / skill tree / cutscenes. focusDist in metres. */
   setDOF(on: boolean, focusDist = 3, bokeh = 3) {
     this.dofPass.enabled = on;
+    this.syncShaftsPass();
     if (on) {
       const cam = this.camera as THREE.PerspectiveCamera;
       this.dof.cocMaterial.focusDistance = this.dof.calculateFocusDistance ? (this.dof as any).calculateFocusDistance(new THREE.Vector3(0, 0, -focusDist).applyMatrix4(cam.matrixWorld)) : focusDist / cam.far;

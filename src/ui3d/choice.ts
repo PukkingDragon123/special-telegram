@@ -23,12 +23,12 @@ export interface ChoiceOpts {
 }
 
 const OPT: Text3DOpts = {
-  font: 'talk', size: 0.021, depth: 0.32, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.34,
+  font: 'talk', size: 0.021, depth: 0.32, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.34, shadow: 0.5,
   xray: true, castShadow: false, maxWidth: 0.5, valign: 'bottom', anim: { pop: 0.3, rise: 0.4, spin: 1, vanish: 0.2, drift: 0.3 },
 };
 const OPT_HOT: Partial<Text3DOpts> = { color: 0xffe28a, side: 0x8a3c0a, emissive: 0.85, rim: 0xffb347, rimStrength: 1.3 };
 const SUB: Text3DOpts = {
-  font: 'ui', size: 0.0105, depth: 0.2, bevel: 0.05, color: 0xe9dfcd, side: 0x33271f, roughness: 0.5, emissive: 0.3,
+  font: 'ui', size: 0.0105, depth: 0.2, bevel: 0.05, color: 0xe9dfcd, side: 0x33271f, roughness: 0.5, emissive: 0.3, shadow: 0.5,
   xray: true, castShadow: false, maxWidth: 0.5, valign: 'top', anim: { pop: 0.25, rise: 0.3, spin: 0.5, vanish: 0.2, drift: 0.2 },
 };
 const NUM: Text3DOpts = {
@@ -50,57 +50,74 @@ void main(){
   float sway = (fbm(vec2(y * 2.5 - uT * 0.6, uT * 0.2)) - 0.5) * 0.9 * y + sin(y * 9.0 - uT * 2.0) * 0.05 * y;
   float w = 0.03 + 0.22 * y;
   float d = abs(p.x - 0.5 - sway) / w;
-  float body = smoothstep(1.0, 0.0, d);
+  float body = 1.0 - smoothstep(0.0, 1.0, d);
   float puff = fbm(vec2(p.x * 6.0, y * 5.0 - uT * 1.4));
   float a = body * (0.45 + 0.75 * puff) * smoothstep(0.0, 0.06, y) * (1.0 - smoothstep(0.55, 1.0, y)) * uA;
-  gl_FragColor = vec4(vec3(0.86, 0.85, 0.83), a * 0.55);
+  gl_FragColor = vec4(vec3(0.88, 0.87, 0.85), a * 0.8);
 }`;
 
+const glowFrag = /* glsl */ `
+uniform float uA; varying vec2 vUv;
+void main(){ float d = length(vUv - 0.5) * 2.0; float a = exp(-d * d * 5.0) * uA; gl_FragColor = vec4(vec3(1.0, 0.45, 0.12) * a * 1.6, a); }`;
+
+/** A burning Thai incense stick (ธูป) in a little brass pot: the ember eats along the stick toward the pot. */
 class Incense {
   readonly group = new THREE.Group();
+  private arm = new THREE.Group();
   private paste: THREE.Mesh;
   private ember: THREE.Mesh;
   private ash: THREE.Mesh;
+  private glow: THREE.Mesh;
   private smoke: THREE.Mesh;
   private emberMat: THREE.MeshBasicMaterial;
   private mats: THREE.Material[] = [];
   private geos: THREE.BufferGeometry[] = [];
+  private tmp = new THREE.Vector3();
   constructor(readonly len: number) {
     const mk = <M extends THREE.Material>(m: M) => { m.transparent = true; m.depthTest = false; m.depthWrite = false; this.mats.push(m); return m; };
-    const cyl = (r: number) => { const g = new THREE.CylinderGeometry(r, r, 1, 10, 1); g.rotateZ(Math.PI / 2); g.translate(0.5, 0, 0); this.geos.push(g); return g; };
-    // incense paste (reddish brown, gritty) along +x from the left end
-    this.paste = new THREE.Mesh(cyl(0.0042), mk(new THREE.MeshStandardMaterial({ color: 0x7b3a22, roughness: 0.95, emissive: 0x2a0e06 })));
-    this.paste.position.x = -len / 2;
+    const geo = <G extends THREE.BufferGeometry>(g: G) => { this.geos.push(g); return g; };
+    const cyl = (r: number) => { const g = geo(new THREE.CylinderGeometry(r, r, 1, 12, 1)); g.rotateZ(Math.PI / 2); g.translate(0.5, 0, 0); return g; };
+    const add = (m: THREE.Object3D, parent: THREE.Object3D = this.group, order = 2002) => { m.renderOrder = order; m.frustumCulled = false; parent.add(m); return m; };
+    // brass incense pot (กระถางธูป) with ash-grey sand
+    const prof = [[0, 0], [0.014, 0], [0.02, 0.004], [0.024, 0.014], [0.023, 0.024], [0.026, 0.027], [0.024, 0.029], [0, 0.029]].map(([x, y]) => new THREE.Vector2(x, y));
+    const pot = add(new THREE.Mesh(geo(new THREE.LatheGeometry(prof, 18)), mk(new THREE.MeshStandardMaterial({ color: 0xd2a447, metalness: 0.9, roughness: 0.28, emissive: 0x2a1a04 }))));
+    pot.position.set(-len / 2 - 0.02, -0.03, 0);
+    pot.rotation.x = 0.35;
+    // the stick: rises gently out of the pot to the right
+    this.arm.position.set(-len / 2 - 0.02, -0.003, 0);
+    this.arm.rotation.z = 0.09;
+    this.group.add(this.arm);
+    const handle = add(new THREE.Mesh(cyl(0.0032), mk(new THREE.MeshStandardMaterial({ color: 0xd0202e, roughness: 0.55, emissive: 0x400509 }))), this.arm);
+    handle.scale.x = 0.05;
+    this.paste = add(new THREE.Mesh(cyl(0.0058), mk(new THREE.MeshStandardMaterial({ color: 0x7e3d22, roughness: 0.95, emissive: 0x2c0f06 }))), this.arm) as THREE.Mesh;
+    this.paste.position.x = 0.04;
     this.paste.scale.x = len;
-    // bare red-dyed bamboo handle on the left
-    const handle = new THREE.Mesh(cyl(0.0021), mk(new THREE.MeshStandardMaterial({ color: 0xc8202c, roughness: 0.6, emissive: 0x3a0508 })));
-    handle.position.x = -len / 2 - 0.07;
-    handle.scale.x = 0.07;
-    // glowing ember + drooping grey ash past it
     this.emberMat = mk(new THREE.MeshBasicMaterial({ color: new THREE.Color(3.2, 1.25, 0.3), toneMapped: false }));
-    const eg = new THREE.SphereGeometry(0.0058, 12, 8);
-    this.geos.push(eg);
-    this.ember = new THREE.Mesh(eg, this.emberMat);
-    this.ash = new THREE.Mesh(cyl(0.0039), mk(new THREE.MeshStandardMaterial({ color: 0xa8a39a, roughness: 1, emissive: 0x1a1816 })));
-    this.ash.scale.x = 0.018;
-    const sg = new THREE.PlaneGeometry(0.07, 0.2);
-    sg.translate(0, 0.1, 0);
-    this.geos.push(sg);
-    this.smoke = new THREE.Mesh(sg, mk(new THREE.ShaderMaterial({ vertexShader: smokeVert, fragmentShader: smokeFrag, uniforms: { uT: { value: 0 }, uA: { value: 0 } } })));
-    for (const m of [this.paste, handle, this.ember, this.ash, this.smoke]) { m.renderOrder = 2002; m.frustumCulled = false; this.group.add(m); }
-    this.smoke.renderOrder = 2003;
+    this.ember = add(new THREE.Mesh(geo(new THREE.SphereGeometry(0.0066, 14, 10)), this.emberMat), this.arm, 2003) as THREE.Mesh;
+    this.ash = add(new THREE.Mesh(cyl(0.0052), mk(new THREE.MeshStandardMaterial({ color: 0xb2ada4, roughness: 1, emissive: 0x1c1a18 }))), this.arm) as THREE.Mesh;
+    this.ash.scale.x = 0.02;
+    const gm = mk(new THREE.ShaderMaterial({ vertexShader: smokeVert, fragmentShader: glowFrag, uniforms: { uA: { value: 1 } }, blending: THREE.AdditiveBlending }));
+    this.glow = add(new THREE.Mesh(geo(new THREE.PlaneGeometry(0.07, 0.07)), gm), this.group, 2004) as THREE.Mesh;
+    const sg = geo(new THREE.PlaneGeometry(0.09, 0.26));
+    sg.translate(0, 0.13, 0);
+    this.smoke = add(new THREE.Mesh(sg, mk(new THREE.ShaderMaterial({ vertexShader: smokeVert, fragmentShader: smokeFrag, uniforms: { uT: { value: 0 }, uA: { value: 0 } } }))), this.group, 2005) as THREE.Mesh;
   }
   /** k: remaining fraction 1 → 0 */
   update(k: number, t: number, panic: number) {
-    const x = -this.len / 2 + this.len * Math.max(0.002, k);
-    this.paste.scale.x = this.len * Math.max(0.002, k);
+    const L = this.len * Math.max(0.002, k);
+    this.paste.scale.x = L;
+    const x = 0.04 + L;
     const fl = 0.85 + 0.15 * Math.sin(t * (14 + panic * 30)) + 0.1 * Math.sin(t * 37);
     this.ember.position.set(x + 0.002, 0, 0);
-    this.ember.scale.setScalar(fl * (1 + panic * 0.4));
+    this.ember.scale.setScalar(fl * (1 + panic * 0.35));
     this.emberMat.color.setRGB(3.2 * fl, 1.2 * fl, 0.28);
-    this.ash.position.set(x + 0.004, 0.0005, 0);
-    this.ash.rotation.z = -0.25 - Math.sin(t * 1.3) * 0.05;
-    this.smoke.position.set(x + 0.004, 0.006, -0.01);
+    this.ash.position.set(x + 0.005, 0, 0);
+    this.ash.rotation.z = -0.3 - Math.sin(t * 1.3) * 0.06;
+    this.arm.updateMatrix();
+    const tip = this.tmp.set(x + 0.004, 0, 0).applyMatrix4(this.arm.matrix);
+    this.glow.position.copy(tip).setZ(0.004);
+    this.smoke.position.copy(tip).add(this.tmp.set(0, 0.005, -0.01));
+    (this.glow.material as THREE.ShaderMaterial).uniforms.uA.value = 0.75 * fl * (1 + panic * 0.5);
     const sm = this.smoke.material as THREE.ShaderMaterial;
     sm.uniforms.uT.value = t;
     sm.uniforms.uA.value = Math.min(1, t * 2) * (1 + panic * 0.6);
@@ -148,7 +165,7 @@ export class ChoicePrompt {
       this.items.push({ root, num, main, sub, baseX, hot: false, tint });
     });
     this.incense = new Incense(n >= 3 ? 0.62 : 0.5);
-    this.incense.group.position.set(0, -0.06, -0.9);
+    this.incense.group.position.set(0.02, -0.305, -0.9);
     this.group.add(this.incense.group);
     camera.add(this.group);
     this.sel = Math.floor((n - 1) / 2);

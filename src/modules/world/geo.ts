@@ -171,6 +171,44 @@ export class WB {
     if (o.group) this.group = o.group;
     return this;
   }
+  /**
+   * Window pane with a FAKE INTERIOR (mats.ts INTERIOR_GLSL): quad x0..x1 × y0..y1 on the plane z (facing +z in
+   * the current transform). `emis` = emissive palette index lit at night (0 = dark room), `variant` 0..0.99.
+   */
+  roomPane(x0: number, y0: number, x1: number, y1: number, z: number, emis = 0, emisK = 0.5, variant = 0) {
+    const save = { kind: this.kind, layer: this.layer, ov: this.ov, ovAmt: this.ovAmt, emis: this.emis, tile: this.tile, tileV: this.tileV, uvS: this.uvS, uvMode: this.uvMode, autoDirt: this.autoDirt, tr: this.tr, tg: this.tg, tb: this.tb, ao: this.ao, dirt: this.dirt };
+    this.kind = 'world';
+    this.layer = Math.abs(x1 - x0); this.ov = Math.abs(y1 - y0); this.ovAmt = 2 + Math.min(0.99, Math.max(0, variant));
+    this.emis = emis ? emis + Math.min(0.999, Math.max(0.01, emisK)) : 0;
+    this.tile = 1; this.tileV = 1; this.uvS = 1; this.uvMode = 'face'; this.autoDirt = false; this.tr = this.tg = this.tb = 1; this.ao = 1; this.dirt = 1;
+    this.quad(x0, y0, z, x1, y0, z, x1, y1, z, x0, y1, z, [0, 0, 1, 1]);
+    Object.assign(this, save);
+    return this;
+  }
+  /**
+   * CLOTH strip (laundry, curtains, awning valances): a vertical sheet hanging from the top edge, subdivided
+   * along the height; per-vertex sway weight (top pinned → free bottom) animated by the world vertex shader.
+   * Current material state is used (call mat() first). Both sides are emitted. `sag` bows it outward (+z).
+   */
+  cloth(x0: number, y0: number, x1: number, y1: number, z: number, segs = 3, sag = 0, sway = 1) {
+    const save = this.ovAmt;
+    for (let side = 0; side < 2; side++) {
+      for (let i = 0; i < segs; i++) {
+        const ta = i / segs, tb = (i + 1) / segs;           // 0 = top
+        const ya = y1 - (y1 - y0) * ta, yb = y1 - (y1 - y0) * tb;
+        const za = z + sag * Math.sin(ta * Math.PI * 0.5), zb = z + sag * Math.sin(tb * Math.PI * 0.5);
+        this.ovAmt = 3;
+        if (side === 0) this.quad(x0, yb, zb, x1, yb, zb, x1, ya, za, x0, ya, za, [0, 1 - tb, 1, 1 - ta]);
+        else this.quad(x1, yb, zb - 0.002, x0, yb, zb - 0.002, x0, ya, za - 0.002, x1, ya, za - 0.002, [0, 1 - tb, 1, 1 - ta]);
+        // per-vertex sway weight in the fractional part of ext.z (3.0 pinned … 3.95 free)
+        const B = this.lastBuf!; const o = B.nv - 4;
+        const wb = Math.min(0.95, tb * sway * 0.95), wa = Math.min(0.95, ta * sway * 0.95);
+        B.ext[o * 4 + 2] = 3 + wb; B.ext[(o + 1) * 4 + 2] = 3 + wb; B.ext[(o + 2) * 4 + 2] = 3 + wa; B.ext[(o + 3) * 4 + 2] = 3 + wa;
+      }
+    }
+    this.ovAmt = save;
+    return this;
+  }
   setGroup(g: Group) { this.group = g; return this; }
   setTint(t: number | [number, number, number]) { const c = tintOf(t); this.tr = c[0]; this.tg = c[1]; this.tb = c[2]; return this; }
   setEmis(pal: number, k = 0.8) { this.emis = pal ? pal + Math.min(0.999, Math.max(0, k)) : 0; return this; }

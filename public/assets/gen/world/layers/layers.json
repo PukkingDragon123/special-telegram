@@ -673,6 +673,38 @@
    "orm": "gen/world/layers/paper_o.jpg",
    "metal": 0.002,
    "tile": 0.4
+  },
+  "drain_round": {
+   "src": "g:drain_round",
+   "albedo": "gen/world/layers/drain_round_a.jpg",
+   "normal": "gen/world/layers/drain_round_n.jpg",
+   "orm": "gen/world/layers/drain_round_o.jpg",
+   "metal": 0.506,
+   "from": "textures/world/manhole_round_iron.png"
+  },
+  "drain_square": {
+   "src": "g:drain_square",
+   "albedo": "gen/world/layers/drain_square_a.jpg",
+   "normal": "gen/world/layers/drain_square_n.jpg",
+   "orm": "gen/world/layers/drain_square_o.jpg",
+   "metal": 0.512,
+   "from": "textures/world/manhole_square_bma_albedo.jpg"
+  },
+  "drain_slots": {
+   "src": "g:drain_slots",
+   "albedo": "gen/world/layers/drain_slots_a.png",
+   "normal": "gen/world/layers/drain_slots_n.jpg",
+   "orm": "gen/world/layers/drain_slots_o.jpg",
+   "metal": 0.101,
+   "from": "textures/world/manhole_double_drain_cover_albedo.jpg"
+  },
+  "grate_iron": {
+   "src": "g:grate_iron",
+   "albedo": "gen/world/layers/grate_iron_a.png",
+   "normal": "gen/world/layers/grate_iron_n.jpg",
+   "orm": "gen/world/layers/grate_iron_o.jpg",
+   "metal": 0.418,
+   "from": "textures/world/trench_grate_cast_iron_photo_albedo.jpg"
   }
  }
 }

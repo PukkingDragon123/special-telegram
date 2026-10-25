@@ -1,0 +1,37 @@
+{
+ "egg_fried_crispy": {
+  "yolk": [
+   0.5077,
+   0.5054,
+   0.1139
+  ]
+ },
+ "egg_fried_runny": {
+  "yolk": [
+   0.503,
+   0.6043,
+   0.1511
+  ]
+ },
+ "egg_fried_burnt": {
+  "yolk": [
+   0.5045,
+   0.5113,
+   0.1071
+  ]
+ },
+ "rice_mound_top": {},
+ "basil_bunch_fresh": {},
+ "basil_bunch_cooked": {},
+ "chili_red_bunch": {},
+ "chili_green_pile": {},
+ "garlic_bulbs_bunch": {},
+ "garlic_crushed": {},
+ "garlic_minced_pile": {},
+ "shrimp_raw_pile": {},
+ "omelette_whole": {},
+ "long_beans_bundle": {},
+ "kale_leaf": {},
+ "onion_slices": {},
+ "shallots_sliced": {}
+}

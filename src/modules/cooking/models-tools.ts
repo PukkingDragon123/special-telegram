@@ -4,6 +4,8 @@ import { M, mesh, gc } from './mats';
 import { lathe, mound, leaf, scatter, merge, rbox, tube, bar, dent, blobDisc, planarUV, card } from './geo';
 import { F } from '../../core/fonts';
 import { mulberry } from './util';
+import { leafScatter, leafMat, chiliBits, chiliMat, reliefGeo, reliefMat, friedWhiteGeo, friedWhiteMat, yolkGeo, yolkMat, yolkBase, chunkScatter, EggVariant } from './realfood';
+import { Assets } from '../../core/assets';
 
 /** Visual builders for tools, vessels and appliances. Origin bottom centre, front = +Z. */
 
@@ -64,7 +66,8 @@ const FOOD_SETS: Record<Exclude<HeapKind, 'none'>, () => [THREE.Texture, THREE.T
 
 /** A food material blending raw → cooked → burnt textures (per-instance uniforms). */
 export function blendFoodMat() {
-  const m = new THREE.MeshStandardMaterial({ map: T.porkRaw(), roughness: 0.5, metalness: 0, flatShading: true });
+  // physical: the clearcoat lobe is the glossy oil/sauce sheen of a street stir-fry (driven by `gloss`)
+  const m = new THREE.MeshPhysicalMaterial({ map: T.porkRaw(), roughness: 0.5, metalness: 0, flatShading: true, clearcoat: 0.05, clearcoatRoughness: 0.3 });
   const u = { map2: { value: T.porkCooked() }, map3: { value: T.burnt() }, k2: { value: 0 }, k3: { value: 0 }, gloss: { value: 0 } };
   m.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, u);
@@ -82,7 +85,7 @@ export function blendFoodMat() {
   return m;
 }
 
-export function setFoodSet(m: THREE.MeshStandardMaterial, kind: HeapKind) {
+export function setFoodSet(m: THREE.MeshStandardMaterial | THREE.MeshPhysicalMaterial, kind: HeapKind) {
   if (kind === 'none') return;
   const [a, b] = FOOD_SETS[kind]();
   if (m.map !== a) { m.map = a; m.needsUpdate = false; }
@@ -91,12 +94,38 @@ export function setFoodSet(m: THREE.MeshStandardMaterial, kind: HeapKind) {
 
 export interface FoodLayers {
   root: THREE.Group;
-  heap: THREE.Mesh; heapMat: THREE.MeshStandardMaterial;
+  heap: THREE.Mesh; heapMat: THREE.MeshPhysicalMaterial; chunks: THREE.Mesh;
   leaves: THREE.Mesh; leafMat: THREE.MeshStandardMaterial;
   chili: THREE.Mesh; bits: THREE.Mesh;
   oil: THREE.Mesh; liquid: THREE.Mesh; liquidMat: THREE.MeshStandardMaterial;
-  eggs: THREE.Mesh[]; eggMat: THREE.MeshStandardMaterial;
+  /** fried eggs: group (white relief + 'yolk' group) per egg, variant tracked in userData.v */
+  eggs: THREE.Group[]; eggMat: THREE.MeshStandardMaterial;
   omelet: THREE.Mesh;
+}
+
+const FRIED = 0.15;
+/** swap a fried egg group's geometry/materials to the photo of its doneness */
+export function setFriedVariant(egg: THREE.Group, v: EggVariant) {
+  if (egg.userData.v === v) return;
+  egg.userData.v = v;
+  const w = egg.getObjectByName('white') as THREE.Mesh, y = egg.getObjectByName('yolk') as THREE.Group, ym = y.children[0] as THREE.Mesh;
+  w.geometry = friedWhiteGeo(v, FRIED); w.material = friedWhiteMat(v);
+  ym.geometry = yolkGeo(v, FRIED); ym.material = yolkMat(v);
+  const b = yolkBase(v, FRIED);
+  y.position.set(b[0], b[1], b[2]); ym.position.set(-b[0], 0, -b[2]);
+}
+
+function friedEggGroup() {
+  const g = G();
+  const w = new THREE.Mesh(friedWhiteGeo('runny', FRIED), friedWhiteMat('runny'));
+  w.name = 'white';
+  const y = G(); y.name = 'yolk';
+  const ym = new THREE.Mesh(yolkGeo('runny', FRIED), yolkMat('runny'));
+  y.add(ym);
+  g.add(w, y);
+  g.userData.v = '';
+  setFriedVariant(g, 'runny');
+  return g;
 }
 
 /** Build the (initially hidden) food layer meshes that live inside a wok or on a plate. */
@@ -106,25 +135,23 @@ export function buildFoodLayers(seed = 1): FoodLayers {
   const heapMat = blendFoodMat();
   const heap = mesh(gc('heap' + (seed % 4), () => planarUV(mound(0.1, 0.03, { seed: 20 + (seed % 4), detail: 2, rough: 0.3 }), 1 / 0.16)), heapMat);
   heap.visible = false;
-  // real stir-fried basil sprig photos as little cards on top of the heap
-  const leafMat = new THREE.MeshStandardMaterial({ map: T.basilCooked(), alphaTest: 0.42, side: THREE.DoubleSide, roughness: 0.38 });
-  const leaves = mesh(gc('wokLeafCards', () => scatter(card(0.07, 0.07, 0.01, 2), 14, (i, m, r) => {
-    const a = r() * 6.28, rr = Math.sqrt(r()) * 0.08;
-    m.makeRotationFromEuler(new THREE.Euler((r() - 0.5) * 0.7, r() * 6.28, (r() - 0.5) * 0.7));
-    m.setPosition(Math.cos(a) * rr, 0.024 + (1 - rr / 0.08) * 0.016, Math.sin(a) * rr);
-  }, 33)), leafMat);
-  leaves.visible = false;
-  const chili = mesh(gc('wokChiliCards', () => scatter(card(0.045, 0.045, 0.004, 1), 7, (i, m, r) => {
+  // crumbly chunks riding on the heap (same blend material → raw/cooked/burnt with it)
+  const chunks = mesh(chunkScatter('wok' + (seed % 2), 64, 0.095, 0.03, 0.0045, 1 / 0.16, 40 + (seed % 2)), heapMat);
+  heap.add(chunks);
+  // real holy-basil leaves (3D, wilting colour by doneness)
+  const leafM = leafMat('cooked');
+  const leaves = mesh(leafScatter('wokLeaves', 16, (i, m, r) => {
     const a = r() * 6.28, rr = Math.sqrt(r()) * 0.075;
-    m.makeRotationFromEuler(new THREE.Euler((r() - 0.5) * 0.5, r() * 6.28, (r() - 0.5) * 0.5));
-    m.setPosition(Math.cos(a) * rr, 0.03 + (1 - rr / 0.075) * 0.01, Math.sin(a) * rr);
-  }, 34)), new THREE.MeshStandardMaterial({ map: T.chiliCard(), alphaTest: 0.42, side: THREE.DoubleSide, roughness: 0.3 }));
+    m.makeRotationFromEuler(new THREE.Euler((r() - 0.5) * 0.6, r() * 6.28, (r() - 0.5) * 0.5));
+    m.setPosition(Math.cos(a) * rr, 0.022 + (1 - rr / 0.08) * 0.016, Math.sin(a) * rr);
+    return { len: 0.034 + r() * 0.014, wid: 0.024 + r() * 0.008, curl: 0.1, droop: 0.15 };
+  }, 33), leafM);
+  leaves.visible = false;
+  const chili = mesh(chiliBits('wok', 9, 0.07, 34), chiliMat('red', 0.5));
+  chili.position.y = 0.03;
   chili.visible = false;
-  const bits = mesh(gc('wokGarlicCards', () => scatter(card(0.05, 0.05, 0.004, 1), 6, (i, m, r) => {
-    const a = r() * 6.28, rr = Math.sqrt(r()) * 0.07;
-    m.makeRotationFromEuler(new THREE.Euler((r() - 0.5) * 0.4, r() * 6.28, (r() - 0.5) * 0.4));
-    m.setPosition(Math.cos(a) * rr, 0.012 + (1 - rr / 0.07) * 0.01, Math.sin(a) * rr);
-  }, 35)), new THREE.MeshStandardMaterial({ map: T.garlicMinced(), alphaTest: 0.42, side: THREE.DoubleSide, roughness: 0.5 }));
+  const bitsMat = reliefMat('wokGarlic' + seed, 'garlic_minced_pile', Assets.texture('textures/food/garlic_minced_pile.png', { srgb: true, wrap: false }), { rough: 0.5 }).clone() as THREE.MeshStandardMaterial;
+  const bits = mesh(reliefGeo('garlic_minced_pile', 0.09, 0.09, 0.01, 12), bitsMat, [0.015, 0.012, -0.01]);
   bits.visible = false;
   const oilM = new THREE.MeshStandardMaterial({ map: T.oil(), normalMap: T.oilN(), color: 0xffffff, transparent: true, opacity: 0.82, roughness: 0.05, metalness: 0.15, depthWrite: false });
   const oil = mesh(gc('oilDisc', () => blobDisc(1, { seed: 3, rough: 0.05, thick: 0.001, seg: 22 })), oilM);
@@ -132,19 +159,15 @@ export function buildFoodLayers(seed = 1): FoodLayers {
   const liquidMat = new THREE.MeshStandardMaterial({ color: 0xc8d6d0, transparent: true, opacity: 0.72, roughness: 0.06, metalness: 0.05, depthWrite: false });
   const liquid = mesh(gc('liqDisc', () => { const c = new THREE.CircleGeometry(1, 24); c.rotateX(-Math.PI / 2); return planarUV(c, 0.5); }), liquidMat);
   liquid.visible = false;
-  // fried eggs: real ไข่ดาว cut-out photos on a slightly domed card (texture swapped by doneness)
+  // fried eggs: real ไข่ดาว photos as lacy relief whites + glossy domed yolks (swapped by doneness)
   const eggMat = new THREE.MeshStandardMaterial({ map: T.eggRunny(), alphaTest: 0.4, roughness: 0.3, side: THREE.DoubleSide });
-  const eggs: THREE.Mesh[] = [];
-  for (let i = 0; i < 3; i++) {
-    const e = mesh(gc('eggCard' + i, () => card(0.15, 0.15, 0.012, 6)), eggMat);
-    e.visible = false;
-    eggs.push(e);
-  }
-  const omelet = mesh(gc('omeletCard', () => card(0.2, 0.2, 0.03, 6)), new THREE.MeshStandardMaterial({ map: T.omeletteCard(), alphaTest: 0.4, roughness: 0.45, side: THREE.DoubleSide }));
+  const eggs: THREE.Group[] = [];
+  for (let i = 0; i < 3; i++) { const e = friedEggGroup(); e.visible = false; eggs.push(e); }
+  const omelet = mesh(reliefGeo('omelette_whole', 0.2, 0.2, 0.03, 18, 0.1), reliefMat('omelette', 'omelette_whole', Assets.texture('textures/food/omelette_whole.png', { srgb: true, wrap: false }), { rough: 0.45, clearcoat: 0.4, ccRough: 0.35 }).clone() as THREE.MeshStandardMaterial);
   omelet.visible = false;
   root.add(heap, oil, liquid, leaves, chili, bits, ...eggs, omelet);
   root.traverse((o: any) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
-  return { root, heap, heapMat, leaves, leafMat, chili, bits, oil, liquid, liquidMat, eggs, eggMat, omelet };
+  return { root, heap, heapMat, chunks, leaves, leafMat: leafM, chili, bits, oil, liquid, liquidMat, eggs, eggMat, omelet };
 }
 
 // ------------------------------------------------------------------ utensils

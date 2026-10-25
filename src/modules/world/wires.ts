@@ -59,6 +59,17 @@ function pole(c: PoleCtx, x: number, z: number, y: number, along: THREE.Vector2,
   w.mat('metal_paint', { tint: 0x9a9a94, ov: 'steel_rust', ovAmt: 0.5, uv: 'local' });
   w.box(-0.25, 5.9, -0.22, 0.25, 6.0, 0.22, ALL);
   if (rng.chance(0.55)) { w.mat('plastic', { tint: rng.pick([0x9aa0a0, 0xd8d4c8, 0x5a6a6a]), uv: 'local' }); w.bevelBox(0.12, 4.1, -0.15, 0.45, 4.6, 0.12, 0.02); }
+  if (rng.chance(0.3)) {
+    // big hanging loops of spare fibre (several coils bundled, sagging)
+    w.mat('rubber', { tint: 0x161616, uv: 'local' });
+    const cy = rng.range(4.6, 5.2), R = rng.range(0.4, 0.6);
+    for (let k = 0; k < rng.int(5, 9); k++) {
+      const pts: number[] = [];
+      const rr = R * rng.range(0.85, 1.15), ox = rng.range(-0.06, 0.06);
+      for (let i = 0; i <= 12; i++) { const a = (i / 12) * Math.PI * 2; pts.push(0.3 + ox + Math.sin(a) * 0.06, cy + 0.55 - (1 - Math.cos(a)) * rr * 0.9, Math.sin(a) * rr * 0.55); }
+      w.tube(pts, 0.012, 3);
+    }
+  }
   if (rng.chance(0.5)) {
     w.mat('rubber', { uv: 'local' });
     const cy = rng.range(5.0, 5.7);
@@ -70,7 +81,7 @@ function pole(c: PoleCtx, x: number, z: number, y: number, along: THREE.Vector2,
     }
   }
   // transformer (grey tank with fins, on a platform bracket) + fuse cutouts
-  if (o.transformer) {
+  if (o.transformer && rng.chance(0.5)) {
     w.mat('galv', { tint: 0x9aa09a, ov: 'steel_rust', ovAmt: 0.35, uv: 'local' });
     w.box(-0.5, 4.3, -0.55, 0.5, 4.38, 0.15, ALL);
     w.cyl(0, 4.38, -0.32, 0.32, 0.32, 1.0, 10, 1);
@@ -79,6 +90,25 @@ function pole(c: PoleCtx, x: number, z: number, y: number, along: THREE.Vector2,
     for (const xx of [-0.15, 0, 0.15]) w.cyl(xx, 5.38, -0.32, 0.03, 0.03, 0.18, 6, 1);
     w.mat('rubber', { uv: 'local' });
     for (const xx of [-0.15, 0, 0.15]) w.tube([xx, 5.56, -0.32, xx * 3, h - 1.05, 0], 0.01, 3);
+  } else if (o.transformer) {
+    // rectangular MEA/PEA tank with radiator fins on a concrete cantilever beam (like the Bangkok photos)
+    w.mat('concrete_old', { tint: 0xa8a49c, ov: 'plaster_moldy', ovAmt: 0.6, uv: 'local' });
+    w.box(-0.25, 3.95, -1.25, 0.25, 4.25, 0.18, ALL);
+    w.mat('galv', { tint: 0x8e948e, ov: 'steel_rust', ovAmt: 0.45, uv: 'local' });
+    w.bevelBox(-0.42, 4.25, -1.15, 0.42, 5.35, -0.45, 0.04, true, false);
+    for (let k = 0; k < 9; k++) {
+      const z = -1.1 + k * 0.075;
+      w.box(-0.6, 4.35, z, -0.42, 5.2, z + 0.02, ALL & ~NY); w.box(0.42, 4.35, z, 0.6, 5.2, z + 0.02, ALL & ~NY);
+    }
+    w.mat('metal_paint', { tint: 0x5a5e5a, uv: 'local' });
+    w.box(-0.35, 4.25, -0.45, 0.35, 4.6, -0.36, ALL);
+    w.cyl(0.15, 4.75, -0.43, 0.06, 0.06, 0.04, 8, 1, Math.PI / 2);
+    w.mat('plastic_gloss', { tint: 0x7a5a3a, uv: 'local' });
+    for (const xx of [-0.22, 0, 0.22]) { w.cyl(xx, 5.35, -0.8, 0.04, 0.03, 0.26, 6, 1); w.cyl(xx, 5.43, -0.8, 0.055, 0.055, 0.03, 6, 1); w.cyl(xx, 5.52, -0.8, 0.05, 0.05, 0.03, 6, 1); }
+    w.mat('rubber', { uv: 'local' });
+    for (const xx of [-0.22, 0, 0.22]) w.tube([xx, 5.6, -0.8, xx * 1.5, 6.4, -0.3, xx * 3, h - 1.05, 0], 0.012, 3);
+    // the low-voltage spaghetti out of the side of the tank
+    for (let k = 0; k < 6; k++) w.tube([0.42, 4.5 + k * 0.08, -0.6 - k * 0.05, 0.9, 4.2 + k * 0.1, -0.3, 0.3, 5.8 + k * 0.05, 0.1], 0.014, 3);
   }
   // stickers / posters (loan ads, cable company tags) as decals happen in dressing.ts
   w.pop();
@@ -134,6 +164,22 @@ function span(c: PoleCtx, a: PoleInfo, b: PoleInfo, heavy = 1) {
   }
   // a thick main trunk bundle with cable ties
   w.tube(WB.sagLine(a.x, a.y + 6.0, a.z, b.x, b.y + 6.0, b.z, len * 0.035, 12), 0.05 * heavy, 5);
+  // the infamous MASS: on some spans dozens of cables sag together in a fat, loose bundle
+  if (heavy >= 0.7 && rng.chance(0.45)) {
+    const m = Math.round(rng.range(14, 26) * heavy);
+    const sagM = len * rng.range(0.06, 0.1);
+    for (let i = 0; i < m; i++) {
+      const oa = rng.range(-0.18, 0.18), ob = rng.range(-0.18, 0.18), dy = rng.range(-0.25, 0.25);
+      w.tube(WB.sagLine(a.x + px * oa, a.y + 5.9 + dy, a.z + pz * oa, b.x + px * ob, b.y + 5.9 + dy * 0.7, b.z + pz * ob, sagM * rng.range(0.8, 1.25), 12, rng.range(0.05, 0.25), rng.range(0, 6)), rng.range(0.008, 0.02), 3);
+    }
+    // black cable ties / splice boxes along the bundle
+    w.mat('plastic', { tint: 0x1a1a1a, uv: 'local' }); w.ov = WIRE_FLAG;
+    for (let k = 0; k < 3; k++) {
+      const t = 0.2 + k * 0.3 + rng.range(-0.05, 0.05);
+      const mx = a.x + dx * t, mz = a.z + dz * t, my = a.y + 5.9 - sagM * 4 * t * (1 - t);
+      if (k === 1 && rng.chance(0.5)) w.box(mx - 0.12, my - 0.18, mz - 0.1, mx + 0.12, my + 0.06, mz + 0.1, ALL);
+    }
+  }
   // occasional loose hanging cable
   if (rng.chance(0.35)) {
     const t = rng.range(0.25, 0.75);

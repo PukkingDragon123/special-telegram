@@ -49,5 +49,12 @@ for name, srcs in layers:
             rec['metal'] = round(sum(px.getdata()) / (S * S) / 255.0, 3)
     if res.get('tile'): rec['tile'] = res['tile']
     out[name] = rec
+# keep the extra 'g:' layers baked by bake_arch.py (buildings agent)
+try:
+    prev = json.load(open(os.path.join(OUT, 'layers.json'), encoding='utf-8')).get('layers', {})
+    for k, v in prev.items():
+        if str(v.get('src', '')).startswith('g:') and k not in out: out[k] = v
+except Exception:
+    pass
 json.dump({'size': S, 'layers': out}, open(os.path.join(OUT, 'layers.json'), 'w'), indent=1)
 print('baked', len(out), 'layers →', OUT)

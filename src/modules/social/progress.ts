@@ -78,8 +78,8 @@ export function installProgress(game: Game, sparks: Sparkles) {
     sparks.burst(p, 50, { color: 0xffe28a, color2: 0xfff6d8, speed: 2.2, size: 0.055, life: 1.2, up: 1.2 });
     game.ui.popup(p.clone(), `เลเวลอัป! ${BRANCH_NAME[d.skill].th} Lv.${d.lv}`, { style: { font: F.heavy, size: 66, weight: 800, color: '#ffe066', stroke: '#2a1408', strokeWidth: 9, shadow: 'rgba(0,0,0,0.5)', shadowBlur: 12 }, dur: 2.6, rise: 0.9, scale: 1.1 });
     if (d.id === game.localPlayerId) {
-      game.ui.popup(p.clone().add(new THREE.Vector3(0, -0.22, 0)), '+1 แต้มสกิล · กด Tab เพื่อคิด', { style: { font: F.ui, size: 40, weight: 700, color: '#fff7e0', stroke: '#2a1408', strokeWidth: 6 }, dur: 3, rise: 0.6 });
-      game.interact.hintOnce('social_tab', 'มีแต้มสกิล! กด [Tab] เพื่อคิด… (skill tree)', 6);
+      game.ui.popup(p.clone().add(new THREE.Vector3(0, -0.22, 0)), '+1 แต้มสกิล · กด Tab ขึ้นสวรรค์สกิล', { style: { font: F.ui, size: 40, weight: 700, color: '#fff7e0', stroke: '#2a1408', strokeWidth: 6 }, dur: 3, rise: 0.6 });
+      game.interact.hintOnce('social_tab', 'มีแต้มสกิล! กด [Tab] มองฟ้า… ขึ้นสวรรค์สกิล (skill heaven)', 6);
     }
   });
   game.on('social:unlock', (d: { id: number; skill: string }) => {

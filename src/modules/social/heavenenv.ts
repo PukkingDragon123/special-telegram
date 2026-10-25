@@ -36,10 +36,10 @@ export const SUN_L = new THREE.Vector3(-0.574, 0.3, -0.818).normalize();
 const SKY_ROT = Math.atan2(SUN_VIS.z, SUN_VIS.x) - (0.6045 - 0.5) * Math.PI * 2;
 
 export const COL = {
-  sun: new THREE.Color(1.0, 0.7, 0.4),
-  lit: new THREE.Color(1.12, 1.0, 0.97),
-  shade: new THREE.Color(0.6, 0.55, 0.78),
-  haze: new THREE.Color(0.93, 0.8, 0.88),
+  sun: new THREE.Color(1.0, 0.64, 0.34),
+  lit: new THREE.Color(0.96, 0.88, 0.86),
+  shade: new THREE.Color(0.5, 0.45, 0.68),
+  haze: new THREE.Color(0.76, 0.64, 0.76),
 };
 
 const SEA_Y = -9.5;
@@ -66,8 +66,8 @@ void main() {
   vec2 uv = vec2(fract(phi / 6.2831853 + 0.5), clamp((vv - 0.4375) / 0.5625, 0.002, 0.998));
   vec3 c = texture2D(uSky, uv).rgb;
   float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
-  c = mix(c, vec3(l) * uTint, 0.22);   // pastel
-  c = c * 0.86 + uTint * 0.09;          // lift the grey cloud undersides
+  c = mix(c, vec3(l) * uTint, 0.12);   // pastel
+  c = c * 0.9 + uTint * 0.045;          // lift the grey cloud undersides
   c = mix(c, uHaze, smoothstep(0.03, -0.12, d.y));
   float s = max(dot(d, uSun), 0.0);
   c += uSunCol * (pow(s, 5.0) * 0.28 + pow(s, 48.0) * 1.1 + pow(s, 700.0) * 9.0);
@@ -172,8 +172,8 @@ varying vec3 vW; varying float vD;
 ${NOISE}
 void main() {
   float n = fbm(vec3(vW.xz * 0.028 + vec2(uTime * 0.012, uTime * 0.004), uTime * 0.01));
-  float a = smoothstep(0.42, 0.78, n) * 0.55;
-  a *= smoothstep(6.0, 22.0, vD);            // keep it off the island
+  float a = smoothstep(0.45, 0.8, n) * 0.3;
+  a *= smoothstep(14.0, 45.0, vD);            // keep it off the island
   vec3 vd = normalize(vW - cameraPosition);
   vec3 c = mix(uCol, uHaze, smoothstep(60.0, 380.0, vD)) + uSunCol * pow(max(dot(vd, uSunV), 0.0), 6.0) * 0.6;
   a *= 1.0 - smoothstep(380.0, 700.0, vD);
@@ -232,7 +232,7 @@ void main() {
     a = smoothstep(0.02, 0.3, d);
     float up = smoothstep(-0.7, 0.85, p.y);
     float side = dot(normalize(vec3(p.x, 0.0, 0.6)), normalize(vec3(-uSunV.x, 0.0, -uSunV.z)));
-    col = mix(uShade, uLit, 0.3 + 0.55 * up + 0.15 * side) * (0.82 + 0.36 * n);
+    col = mix(uShade, uLit, 0.45 + 0.45 * up + 0.15 * side) * (0.88 + 0.3 * n);
     float edge = 1.0 - smoothstep(0.02, 0.28, d);
     col += uSunCol * (edge * (0.25 + 2.2 * back) + back * 0.25);
   } else {
@@ -413,7 +413,7 @@ export class HeavenEnv {
     const skyMat = new THREE.ShaderMaterial({
       vertexShader: skyVert, fragmentShader: skyFrag, side: THREE.BackSide, depthWrite: false,
       uniforms: {
-        uSky: { value: skyTex }, uRot: { value: SKY_ROT }, uBright: { value: 1.55 },
+        uSky: { value: skyTex }, uRot: { value: SKY_ROT }, uBright: { value: 0.9 },
         uSun: { value: SUN_VIS.clone() }, uSunCol: { value: COL.sun.clone() }, uHaze: { value: COL.haze.clone() }, uTint: { value: new THREE.Color(1.0, 0.9, 0.96) },
       },
     });
@@ -447,7 +447,7 @@ export class HeavenEnv {
     const rayMat = new THREE.ShaderMaterial({
       vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: rayFrag, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-      uniforms: { uTime: { value: 0 }, uK: { value: 0.9 }, uCol: { value: new THREE.Color(1.0, 0.78, 0.5) } },
+      uniforms: { uTime: { value: 0 }, uK: { value: 0.5 }, uCol: { value: new THREE.Color(1.0, 0.74, 0.45) } },
     });
     this.rays = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), rayMat);
     this.rays.scale.setScalar(900);
@@ -463,7 +463,7 @@ export class HeavenEnv {
       cols.push(c);
     }
     const merged = mergeGeos(cols);
-    const colMat = beamMaterial(0xffe2b0, 0.32);
+    const colMat = beamMaterial(0xffd9a0, 0.2);
     this.columns = new THREE.Mesh(merged, colMat);
     this.columns.renderOrder = 7;
     g.add(this.columns);
@@ -489,10 +489,10 @@ export class HeavenEnv {
     this.feathers = flakes(16, featherTex, { box: 30, size: 0.26, fall: 0.16, curl: 0.5, cells: 1, tint: 0.25, aspect: 1 });
     g.add(this.petals, this.feathers);
     // lights
-    this.hemi = new THREE.HemisphereLight(0xffeef4, 0xc8b4e6, 1.1);
-    this.sun = new THREE.DirectionalLight(0xffc68a, 2.6);
+    this.hemi = new THREE.HemisphereLight(0xffeef4, 0xb8a4d8, 0.75);
+    this.sun = new THREE.DirectionalLight(0xffc68a, 2.2);
     this.sun.position.copy(SUN_L).multiplyScalar(30);
-    this.fill = new THREE.DirectionalLight(0xdfe4ff, 0.85);
+    this.fill = new THREE.DirectionalLight(0xffeee4, 1.1);
     this.fill.position.set(0.3, 0.6, 1).multiplyScalar(30);
     g.add(this.hemi, this.sun, this.sun.target, this.fill, this.fill.target);
     g.traverse((o: any) => { if (o.material?.isShaderMaterial) this.mats.push(o.material); });

@@ -1,0 +1,208 @@
+{
+ "size": 2048,
+ "hipBone": "^pelvis",
+ "headBone": "^head_jnt",
+ "rules": [
+  [
+   "^tail",
+   "chain",
+   1.75
+  ],
+  [
+   "ear_(base|tip)",
+   "chain",
+   0.45
+  ],
+  [
+   "neck_(base|mid)|neck_fat",
+   "back",
+   1.4
+  ],
+  [
+   "^head_jnt",
+   "back",
+   0.6
+  ],
+  [
+   "jaw|lip|mouth|nose|nostril|whisker|tongue",
+   "back",
+   0.3
+  ],
+  [
+   "brow|lid|squint|eye",
+   "back",
+   0.18
+  ],
+  [
+   "^chest",
+   "back",
+   1.2
+  ],
+  [
+   "^pelvis",
+   "back",
+   1.05
+  ],
+  [
+   "spine|COG|breathe|central",
+   "back",
+   1.0
+  ],
+  [
+   "leg_corrective",
+   "down",
+   1.0
+  ],
+  [
+   "hip_jnt",
+   "down",
+   1.2
+  ],
+  [
+   "knee_jnt",
+   "down",
+   0.75
+  ],
+  [
+   "clavicle|shoulder",
+   "down",
+   0.95
+  ],
+  [
+   "elbow",
+   "down",
+   0.6
+  ],
+  [
+   "ankle|foot|toes|ring|pinkie|mid|index|wrist|hand",
+   "down",
+   0.32
+  ]
+ ],
+ "noFurBones": [
+  "eye_jnt",
+  "tongue",
+  "lid_jnt"
+ ],
+ "darkBones": [
+  "nose_jnt",
+  "nostril",
+  "upperlip",
+  "lower_lip",
+  "mouth_corner",
+  "whisker"
+ ],
+ "noFurRects": [
+  [
+   0,
+   0,
+   0.285,
+   0.152
+  ],
+  [
+   0.43,
+   0.0,
+   0.905,
+   0.118
+  ]
+ ],
+ "photoCrop": [
+  0,
+  40,
+  1024,
+  500
+ ],
+ "photoScale": 1.5,
+ "cell": 96,
+ "detailAmt": 0.17,
+ "lowSigma": 5,
+ "palette": {
+  "cream": [
+   200,
+   184,
+   154
+  ],
+  "tan": [
+   170,
+   122,
+   78
+  ],
+  "saddle": [
+   110,
+   76,
+   48
+  ],
+  "dark": [
+   46,
+   36,
+   30
+  ],
+  "satLo": 0.2,
+  "satHi": 0.75,
+  "darkLum": 0.2,
+  "darkAmt": 0.55
+ },
+ "writeFlow": false,
+ "wetBones": [
+  "eye_jnt",
+  "tongue",
+  "nose_jnt",
+  "nostril"
+ ],
+ "wetRects": [
+  [
+   0,
+   0,
+   0.285,
+   0.152
+  ]
+ ],
+ "dust": {
+  "src": "public/assets/textures/pbr/dirt_path_dry/albedo.jpg",
+  "legY": [
+   0.17,
+   0.03
+  ],
+  "belly": 0.4,
+  "amount": 0.55,
+  "color": [
+   112,
+   98,
+   84
+  ],
+  "repeat": 3
+ },
+ "recolor": [
+  {
+   "rect": [
+    0.4,
+    0.115,
+    0.445,
+    0.16
+   ],
+   "color": [
+    176,
+    128,
+    116
+   ],
+   "belowLum": 0.35,
+   "amount": 0.7
+  },
+  {
+   "rect": [
+    0.03,
+    0.43,
+    0.085,
+    0.48
+   ],
+   "color": [
+    176,
+    128,
+    116
+   ],
+   "belowLum": 0.35,
+   "amount": 0.7
+  }
+ ],
+ "breathBones": "spine_[12]|chest|breathe"
+}

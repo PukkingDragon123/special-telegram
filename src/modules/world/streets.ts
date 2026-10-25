@@ -2,6 +2,7 @@ import { RNG } from '../../core/rng';
 import { WB, PY, PX, NX, PZ, NZ } from './geo';
 import type { Atlas, AtlasRect } from './atlas';
 import { SOI, MAIN, CROAD, SW_H, MEDIAN_H, ZEBRAS, SEVEN, CLOSED_HOUSE, MARKET, LOT, SPIRIT_LOT, TEMPLE, OFFICE, WHOLESALE, CANAL, BRIDGE } from './layout';
+import { planDrains, flatHoles, buildDrains, DRAINS } from './drains';
 
 /**
  * STREETS — asphalt, raised sidewalks with real curbs (step-up), painted curb codes, the main road
@@ -88,7 +89,7 @@ function sidewalk(c: Ctx, x0: number, z0: number, x1: number, z1: number, layer:
   for (const e of edges) { if (e.side === 'x0') ax0 += inset; if (e.side === 'x1') ax1 -= inset; if (e.side === 'z0') az0 += inset; if (e.side === 'z1') az1 -= inset; }
   w.mat(layer, { uvS: 1, autoDirt: false, uo: c.rng.range(0, 3), vo: c.rng.range(0, 3) });
   if (uvRot) w.uvMode = 'world';
-  flat(w, ax0, az0, ax1, az1, h, 8);
+  flatHoles(w, ax0, az0, ax1, az1, h, 8);
   for (const e of edges) {
     const f = e.from, t = e.to;
     if (e.side === 'x1') curb(w, e.curb, x1, f ?? z0, x1, t ?? z1, 1, 0, h);
@@ -103,14 +104,16 @@ function sidewalk(c: Ctx, x0: number, z0: number, x1: number, z1: number, layer:
 export function buildStreets(c: Ctx) {
   const w = c.w, rng = c.rng, D = c.decals;
   const VIS = 420; // visual extension beyond the playable bounds (fogged)
+  // real 3D drains & manholes: plan first (separate rng → the rest of the dressing is unaffected), cut holes below
+  planDrains(new RNG(5150));
 
   // ------------------------------------------------------------ asphalt
   w.mat('asphalt_main', { autoDirt: false, group: 'base' });
-  flat(w, -VIS, MAIN.z0, VIS, MAIN.med0, 0, 12);
-  flat(w, -VIS, MAIN.med1, VIS, MAIN.z1, 0, 12);
+  flatHoles(w, -VIS, MAIN.z0, VIS, MAIN.med0, 0, 12);
+  flatHoles(w, -VIS, MAIN.med1, VIS, MAIN.z1, 0, 12);
   S(-VIS, MAIN.z0, VIS, MAIN.z1);
   w.mat('asphalt_soi', { autoDirt: false });
-  flat(w, SOI.x0, SOI.zN, SOI.x1, MAIN.z0, 0, 10);
+  flatHoles(w, SOI.x0, SOI.zN, SOI.x1, MAIN.z0, 0, 10);
   S(SOI.x0, CROAD.z0, SOI.x1, MAIN.z0);
   // canal road
   w.mat('asphalt_soi', { autoDirt: false, uo: 13 });
@@ -190,15 +193,9 @@ export function buildStreets(c: Ctx) {
     }
   }
 
-  // ------------------------------------------------------------ gutters: inlet grates along the curbs
-  w.mat('grate', { autoDirt: false, uv: 'face', group: 'detail' });
-  const grate = (x: number, z: number, along: 'x' | 'z') => {
-    const y = 0.006;
-    if (along === 'x') w.quad(x - 0.5, y, z + 0.16, x + 0.5, y, z + 0.16, x + 0.5, y, z - 0.16, x - 0.5, y, z - 0.16, [0, 0, 1, 0.3125]);
-    else w.quad(x - 0.16, y, z + 0.5, x + 0.16, y, z + 0.5, x + 0.16, y, z - 0.5, x - 0.16, y, z - 0.5, [0, 0, 0.3125, 1]);
-  };
-  for (let z = -8; z > -156; z -= 13 + rng.range(-2, 3)) { grate(SOI.x0 + 0.2, z, 'z'); grate(SOI.x1 - 0.2, z + 6, 'z'); }
-  for (let x = -126; x < 126; x += 15 + rng.range(-2, 2)) { if (Math.abs(x) > 5) grate(x, MAIN.z0 + 0.2, 'x'); grate(x + 7, MAIN.z1 - 0.2, 'x'); }
+  // ------------------------------------------------------------ drains: 3D manholes, covers, gutter grates with shafts + sewer water
+  buildDrains(w, new RNG(5151));
+  w.setGroup('base');
 
   // ------------------------------------------------------------ road markings (decals)
   if (D) {
@@ -237,10 +234,9 @@ export function buildStreets(c: Ctx) {
     groundDecal(w, white, -1.75, 0.006, MAIN.z0 - 0.8, 0.3, 3.5, Math.PI / 2, { alpha: 0.85 });
 
     // ---------------------------------------------------------- manholes, patches, potholes, puddles, oil, gum
-    const mh = D.get('manhole_round_iron') ?? D.get('manhole_round_drain'), me = D.get('manhole_round_electric') ?? mh;
-    for (let z = -12; z > -156; z -= 22 + rng.range(-4, 4)) groundDecal(w, rng.chance(0.7) ? mh : me, rng.range(-1.6, 1.6), 0.008, z, 0.85, 0.85, rng.range(0, 6.28));
-    for (let x = -124; x < 124; x += 26 + rng.range(-5, 5)) groundDecal(w, rng.chance(0.6) ? mh : me, x, 0.008, rng.pick([9, 11.5, 17, 19.5]), 0.85, 0.85, rng.range(0, 6.28));
-    for (let i = 0; i < 26; i++) groundDecal(w, rng.chance(0.5) ? mh : me, rng.chance(0.5) ? rng.range(-5.6, -3.9) : rng.range(3.9, 5.6), SW_H + 0.006, rng.range(-150, -2), 0.7, 0.7, rng.range(0, 6.28));
+    // (manholes are real 3D now: drains.ts)
+    const nearDrain = (x: number, z: number, r: number) => DRAINS.some((d) => Math.abs(d.x - x) < d.sx / 2 + r && Math.abs(d.z - z) < d.sz / 2 + r);
+    const gd: typeof groundDecal = (ww, r, x, y, z, sx, sz, rot, o) => { if (!nearDrain(x, z, Math.max(sx, sz) * 0.5)) groundDecal(ww, r, x, y, z, sx, sz, rot, o); };
     const patch = (cx: number, cy: number) => D.cell('decal_asphalt_patches', cx, cy, 2, 2);
     const pud = (cx: number, cy: number) => (D.has('decal_puddles_photo') && (cx + cy) % 2 === 0 ? D.cell('decal_puddles_photo', cx, cy, 2, 2) : D.cell('decal_puddles', cx, cy, 2, 2));
     const oil = (cx: number, cy: number) => (D.has('decal_oil_stains_photo') && cx === 0 ? D.cell('decal_oil_stains_photo', cx, cy, 2, 2) : D.cell('decal_oil_stains', cx, cy, 2, 2));
@@ -251,7 +247,7 @@ export function buildStreets(c: Ctx) {
       const x = onSoi ? rng.range(-3, 3) : rng.range(-125, 125);
       const z = onSoi ? rng.range(-156, 4) : rng.range(MAIN.z0 + 0.6, MAIN.z1 - 0.6);
       const k = rng.int(0, 3), s = rng.range(0.7, 1.4);
-      groundDecal(w, hole(k % 2, k >> 1), x, 0.0095, z, s * 1.3, s, rng.range(0, 6.28), { alpha: 1, tint: 0x7a7670 });
+      gd(w, hole(k % 2, k >> 1), x, 0.0095, z, s * 1.3, s, rng.range(0, 6.28), { alpha: 1, tint: 0x7a7670 });
     }
     // litter: bags, bottles, cups, foam boxes along gutters & sidewalks (photo atlas 4x5)
     const lit = (i: number) => D.cell('decal_litter_atlas', i % 4, Math.floor(i / 4) % 5, 4, 5);
@@ -262,19 +258,19 @@ export function buildStreets(c: Ctx) {
       else if (t === 1) { x = rng.chance(0.5) ? rng.range(-5.9, -3.8) : rng.range(3.8, 5.9); z = rng.range(-156, 0); y = SW_H + 0.007; }
       else { x = rng.range(-125, 125); z = rng.chance(0.5) ? rng.range(6.05, 6.6) : rng.range(21.4, 21.95); }
       const s = rng.range(0.22, 0.4);
-      groundDecal(w, lit(rng.int(0, 19)), x, y, z, s, s, rng.range(0, 6.28), { alpha: 1 });
+      gd(w, lit(rng.int(0, 19)), x, y, z, s, s, rng.range(0, 6.28), { alpha: 1 });
     }
     // cigarette butts near shops / bus stop
     const cig = D.get('decal_cigarette_butts_photo');
-    for (let i = 0; i < 24; i++) groundDecal(w, cig, rng.chance(0.5) ? rng.range(-5.8, -4) : rng.range(4, 5.8), SW_H + 0.006, rng.range(-150, -1), 0.9, 0.25, rng.range(0, 6.28), { alpha: 0.9 });
-    for (let i = 0; i < 6; i++) groundDecal(w, cig, rng.range(-34, -26), SW_H + 0.006, rng.range(0.8, 4.5), 0.9, 0.25, rng.range(0, 6.28), { alpha: 0.9 });
+    for (let i = 0; i < 24; i++) gd(w, cig, rng.chance(0.5) ? rng.range(-5.8, -4) : rng.range(4, 5.8), SW_H + 0.006, rng.range(-150, -1), 0.9, 0.25, rng.range(0, 6.28), { alpha: 0.9 });
+    for (let i = 0; i < 6; i++) gd(w, cig, rng.range(-34, -26), SW_H + 0.006, rng.range(0.8, 4.5), 0.9, 0.25, rng.range(0, 6.28), { alpha: 0.9 });
     for (let i = 0; i < 70; i++) {
       const onSoi = i < 34;
       const x = onSoi ? rng.range(-3, 3) : rng.range(-125, 125);
       const z = onSoi ? rng.range(-156, 5) : rng.range(MAIN.z0 + 0.5, MAIN.z1 - 0.5);
       const k = rng.int(0, 3);
       const s = rng.range(1.2, 2.8);
-      groundDecal(w, patch(k % 2, k >> 1), x, 0.007, z, s, s * rng.range(0.7, 1.3), rng.range(0, 6.28), { alpha: rng.range(0.7, 1), tint: 0x8c8882 });
+      gd(w, patch(k % 2, k >> 1), x, 0.007, z, s, s * rng.range(0.7, 1.3), rng.range(0, 6.28), { alpha: rng.range(0.7, 1), tint: 0x8c8882 });
     }
     // puddles collect at gutters and potholes (mirror-like)
     for (let i = 0; i < 46; i++) {
@@ -284,7 +280,7 @@ export function buildStreets(c: Ctx) {
       else { x = rng.range(-125, 125); z = rng.chance(0.5) ? rng.range(6.3, 7.2) : rng.range(20.8, 21.7); }
       const k = rng.int(0, 3);
       const s = rng.range(0.8, 2.2);
-      groundDecal(w, pud(k % 2, k >> 1), x, 0.009, z, s * rng.range(1, 1.8), s, rng.range(0, 6.28), { wet: 1, alpha: rng.range(0.75, 1) });
+      gd(w, pud(k % 2, k >> 1), x, 0.009, z, s * rng.range(1, 1.8), s, rng.range(0, 6.28), { wet: 1, alpha: rng.range(0.75, 1) });
     }
     for (let i = 0; i < 60; i++) {
       const k = rng.int(0, 3);
@@ -292,21 +288,21 @@ export function buildStreets(c: Ctx) {
       const x = onSoi ? rng.range(-3.2, 3.2) : rng.range(-125, 125);
       const z = onSoi ? rng.range(-156, 5) : rng.range(MAIN.z0 + 0.6, MAIN.z1 - 0.6);
       const s = rng.range(0.6, 1.6);
-      groundDecal(w, oil(k % 2, k >> 1), x, 0.0085, z, s, s, rng.range(0, 6.28), { alpha: rng.range(0.5, 0.9), rough: 0.35 });
+      gd(w, oil(k % 2, k >> 1), x, 0.0085, z, s, s, rng.range(0, 6.28), { alpha: rng.range(0.5, 0.9), rough: 0.35 });
     }
     // oil drips where motorbikes park on the sidewalks + gum spots
     for (let i = 0; i < 40; i++) {
       const side = rng.chance(0.5) ? -1 : 1;
       const k = rng.int(0, 3);
-      groundDecal(w, oil(k % 2, k >> 1), side * rng.range(4.2, 5.6), SW_H + 0.007, rng.range(-150, -2), rng.range(0.5, 1.1), rng.range(0.5, 1.1), rng.range(0, 6.28), { alpha: 0.6, rough: 0.4 });
+      gd(w, oil(k % 2, k >> 1), side * rng.range(4.2, 5.6), SW_H + 0.007, rng.range(-150, -2), rng.range(0.5, 1.1), rng.range(0.5, 1.1), rng.range(0, 6.28), { alpha: 0.6, rough: 0.4 });
     }
     const gum = D.get('decal_gum_spots_photo') ?? D.get('decal_gum_spots');
     for (let i = 0; i < 40; i++) {
       const side = rng.chance(0.5) ? -1 : 1;
       const z = rng.range(-150, 2);
-      groundDecal(w, gum, side * rng.range(4, 5.8), SW_H + 0.006, z, 1.2, 0.4, rng.range(0, 6.28), { alpha: 0.8 });
+      gd(w, gum, side * rng.range(4, 5.8), SW_H + 0.006, z, 1.2, 0.4, rng.range(0, 6.28), { alpha: 0.8 });
     }
-    for (let i = 0; i < 30; i++) groundDecal(w, gum, rng.range(-120, 120), SW_H + 0.006, rng.chance(0.5) ? rng.range(0.5, 5) : rng.range(22.5, 25.5), 1.2, 0.4, rng.range(0, 6.28), { alpha: 0.8 });
+    for (let i = 0; i < 30; i++) gd(w, gum, rng.range(-120, 120), SW_H + 0.006, rng.chance(0.5) ? rng.range(0.5, 5) : rng.range(22.5, 25.5), 1.2, 0.4, rng.range(0, 6.28), { alpha: 0.8 });
   }
 }
 

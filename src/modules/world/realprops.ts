@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { ConvexHull } from 'three/examples/jsm/math/ConvexHull.js';
 import { Assets } from '../../core/assets';
+import { params } from '../../core/util';
 import type { Game } from '../../game/game';
 import { G, groups } from '../../sim/physics';
 import { PROC_MODELS, ProcModel } from './realprops-proc';
@@ -375,6 +376,7 @@ export class RealProps {
     this.game = game;
     this.root = root;
     current = this;
+    if (params.has('noreal')) { this.placements.length = 0; return; }
     const ids = [...new Set(this.placements.map((p) => p.id))];
     const models = await Promise.all(ids.map((id) => loadModel(id)));
     const q = game.engine.quality;

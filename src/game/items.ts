@@ -55,6 +55,11 @@ export interface ItemDef {
   noPickup?: boolean;
   /** Bigger interaction radius for tiny items */
   pickRadius?: number;
+  /** Rapier tuning of the free body: bounciness, grip, air drag, spin drag; `bouncy` keeps the
+   *  restitution against (non-bouncy) static colliders instead of averaging it away. */
+  phys?: { restitution?: number; friction?: number; linDamp?: number; angDamp?: number; bouncy?: boolean };
+  /** effective density kg/m³ for water buoyancy (water module; < 1000 floats, > 1000 sinks) */
+  density?: number;
 }
 
 export const SLOT_COUNT = 5;
@@ -235,11 +240,17 @@ export class ItemSystem {
       const c = phys.world.createCollider(cd, body);
       phys.tags.set(c.handle, { eid: e.id });
     } else {
-      body = phys.addDynamic(shape, def?.mass ?? def?.weight ?? 0.5, [p[0], p[1] + h, p[2]], e.q, { tag: { eid: e.id }, linvel: vel });
+      const ph = def?.phys;
+      body = phys.addDynamic(shape, def?.mass ?? def?.weight ?? 0.5, [p[0], p[1] + h, p[2]], e.q, { tag: { eid: e.id }, linvel: vel, friction: ph?.friction, restitution: ph?.restitution, damping: ph?.linDamp });
+      if (ph?.angDamp !== undefined) body.setAngularDamping(ph.angDamp);
+      if (ph?.bouncy) body.collider(0)?.setRestitutionCombineRule(phys.R.CoefficientCombineRule.Max);
     }
     (body as any).userData = { h };
     this.bodies.set(e.id, { body, fixed });
   }
+
+  /** HOST: the free (non-fixed) dynamic body of an item, if any (water buoyancy, effects). */
+  bodyOf(id: number): RAPIER.RigidBody | null { const r = this.bodies.get(id); return r && !r.fixed ? r.body : null; }
 
   private dropBody(id: number) {
     const r = this.bodies.get(id);

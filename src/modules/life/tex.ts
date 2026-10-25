@@ -10,8 +10,8 @@ import { proceduralCanvas, ProcKind } from '../../core/proctex';
 const cache = new Map<string, THREE.Texture>();
 const loader = new THREE.TextureLoader();
 
-export function lifeTex(file: string, o: { srgb?: boolean; repeat?: [number, number]; fallback?: string; kind?: ProcKind; clamp?: boolean } = {}): THREE.Texture {
-  const key = file + JSON.stringify(o);
+export function lifeTex(file: string, o: { srgb?: boolean; repeat?: [number, number]; fallback?: string; kind?: ProcKind; clamp?: boolean; flipY?: boolean; onLoad?: () => void } = {}): THREE.Texture {
+  const key = file + JSON.stringify({ ...o, onLoad: undefined });
   const hit = cache.get(key);
   if (hit) return hit;
   // start with a procedural canvas placeholder, swap the image in when it arrives
@@ -22,6 +22,7 @@ export function lifeTex(file: string, o: { srgb?: boolean; repeat?: [number, num
   tex.wrapS = tex.wrapT = o.clamp ? THREE.ClampToEdgeWrapping : THREE.RepeatWrapping;
   tex.anisotropy = 8;
   if (o.repeat) tex.repeat.set(o.repeat[0], o.repeat[1]);
+  if (o.flipY === false) tex.flipY = false;
   cache.set(key, tex);
   const url = Assets.url(file.includes('/') ? file : 'gen/life/tex/' + file);
   loader.load(url, (t) => {
@@ -29,6 +30,7 @@ export function lifeTex(file: string, o: { srgb?: boolean; repeat?: [number, num
     tex.dispose();
     tex.source = t.source;
     tex.needsUpdate = true;
+    o.onLoad?.();
   }, undefined, () => console.warn('[life] missing texture', file));
   return tex;
 }

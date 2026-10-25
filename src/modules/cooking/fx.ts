@@ -58,6 +58,19 @@ void main(){
   gl_FragColor = vec4(col * 1.6, a);
 }`;
 
+const SPARK_FRAG = /* glsl */ `
+varying vec2 vUv; varying vec4 vP;
+void main(){
+  vec2 p = vUv - 0.5;
+  float r = length(p);
+  float rays = max(0.0, 1.0 - abs(p.x) * 26.0) * max(0.0, 1.0 - abs(p.y) * 2.2) + max(0.0, 1.0 - abs(p.y) * 26.0) * max(0.0, 1.0 - abs(p.x) * 2.2);
+  float glow = exp(-r * r * 60.0);
+  float tw = 0.65 + 0.35 * sin(vP.x * 40.0 + vP.y * 30.0);
+  float a = (rays * 0.8 + glow) * tw * vP.w * (1.0 - smoothstep(0.55, 1.0, vP.x)) * smoothstep(0.0, 0.08, vP.x);
+  vec3 col = mix(vec3(1.0, 0.95, 0.8), vec3(1.0, 0.75, 0.35), vP.z);
+  gl_FragColor = vec4(col * 2.2, a);
+}`;
+
 type Kind = 0 | 1 | 2 | 3; // 0 steam, 1 smoke, 2 dark smoke, 3 fire
 
 class Pool {
@@ -131,19 +144,94 @@ class Pool {
   clear() { this.n = 0; this.mesh.count = 0; }
 }
 
+const _m4 = new THREE.Matrix4(), _q4 = new THREE.Quaternion(), _e4 = new THREE.Euler(), _v4 = new THREE.Vector3(), _s4 = new THREE.Vector3(), _c4 = new THREE.Color();
+
+/**
+ * Physical little bits — crumbs, rice grains, leaf flecks, sauce / oil droplets — one InstancedMesh
+ * per look, gravity + bounce + spin, shrink out. Client-local juice only (never networked).
+ */
+class Bits {
+  readonly mesh: THREE.InstancedMesh;
+  private n = 0;
+  private f: Record<string, Float32Array> = {};
+  private col: Float32Array;
+  constructor(readonly max: number, geo: THREE.BufferGeometry, mat: THREE.Material) {
+    this.mesh = new THREE.InstancedMesh(geo, mat, max);
+    this.mesh.frustumCulled = false;
+    this.mesh.castShadow = false;
+    this.mesh.receiveShadow = false;
+    this.mesh.raycast = () => {};
+    this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.col = new Float32Array(max * 3);
+    this.mesh.instanceColor = new THREE.InstancedBufferAttribute(this.col, 3);
+    this.mesh.instanceColor.setUsage(THREE.DynamicDrawUsage);
+    for (const k of ['px', 'py', 'pz', 'vx', 'vy', 'vz', 'age', 'life', 'size', 'floor', 'rx', 'ry', 'rz', 'wx', 'wz', 'flat', 'bounce']) this.f[k] = new Float32Array(max);
+    this.mesh.count = 0;
+  }
+  emit(x: number, y: number, z: number, vx: number, vy: number, vz: number, life: number, size: number, color: THREE.ColorRepresentation, floor: number, flat = 1, bounce = 0.35) {
+    let i = this.n;
+    if (i >= this.max) i = Math.floor(Math.random() * this.max); else this.n++;
+    const f = this.f;
+    f.px[i] = x; f.py[i] = y; f.pz[i] = z; f.vx[i] = vx; f.vy[i] = vy; f.vz[i] = vz; f.age[i] = 0; f.life[i] = life; f.size[i] = size; f.floor[i] = floor;
+    f.rx[i] = Math.random() * 6.28; f.ry[i] = Math.random() * 6.28; f.rz[i] = Math.random() * 6.28; f.wx[i] = (Math.random() - 0.5) * 30; f.wz[i] = (Math.random() - 0.5) * 30;
+    f.flat[i] = flat; f.bounce[i] = bounce;
+    _c4.set(color as any);
+    this.col[i * 3] = _c4.r; this.col[i * 3 + 1] = _c4.g; this.col[i * 3 + 2] = _c4.b;
+  }
+  update(dt: number) {
+    const f = this.f, m = this.mesh.instanceMatrix.array as Float32Array;
+    let w = 0;
+    for (let i = 0; i < this.n; i++) {
+      const age = f.age[i] + dt;
+      if (age >= f.life[i]) continue;
+      if (w !== i) {
+        for (const k in f) f[k][w] = f[k][i];
+        this.col[w * 3] = this.col[i * 3]; this.col[w * 3 + 1] = this.col[i * 3 + 1]; this.col[w * 3 + 2] = this.col[i * 3 + 2];
+      }
+      f.age[w] = age;
+      f.vy[w] -= 9.81 * dt;
+      f.px[w] += f.vx[w] * dt; f.py[w] += f.vy[w] * dt; f.pz[w] += f.vz[w] * dt;
+      if (f.py[w] < f.floor[w]) {
+        f.py[w] = f.floor[w];
+        if (f.vy[w] < -0.25) { f.vy[w] *= -f.bounce[w]; f.vx[w] *= 0.6; f.vz[w] *= 0.6; f.wx[w] *= 0.5; f.wz[w] *= 0.5; }
+        else { f.vy[w] = 0; f.vx[w] *= 0.8; f.vz[w] *= 0.8; f.wx[w] *= 0.7; f.wz[w] *= 0.7; }
+      }
+      f.rx[w] += f.wx[w] * dt; f.rz[w] += f.wz[w] * dt;
+      const k = age / f.life[w];
+      const s = f.size[w] * (k > 0.7 ? 1 - (k - 0.7) / 0.3 : 1) * Math.min(1, age * 25);
+      _e4.set(f.rx[w], f.ry[w], f.rz[w]);
+      _q4.setFromEuler(_e4);
+      _v4.set(f.px[w], f.py[w], f.pz[w]);
+      _s4.set(s, s * f.flat[w], s);
+      _m4.compose(_v4, _q4, _s4);
+      _m4.toArray(m, w * 16);
+      w++;
+    }
+    this.n = w;
+    this.mesh.count = w;
+    if (w) { this.mesh.instanceMatrix.needsUpdate = true; this.mesh.instanceColor!.needsUpdate = true; }
+  }
+  clear() { this.n = 0; this.mesh.count = 0; }
+}
+
+export interface BitsOpts { speed?: number; up?: number; size?: number; life?: number; spread?: number; floor?: number; flat?: number; dir?: THREE.Vector3; bounce?: number; jitter?: number }
+
 export class CookFX {
   readonly root = new THREE.Group();
   private smoke = new Pool(260, SMOKE_FRAG, THREE.NormalBlending);
   private fire = new Pool(90, FIRE_FRAG, THREE.AdditiveBlending);
+  private sparks = new Pool(80, SPARK_FRAG, THREE.AdditiveBlending);
+  private crumbs = new Bits(360, chunkGeo(), new THREE.MeshStandardMaterial({ roughness: 0.62, metalness: 0 }));
+  private drops = new Bits(220, new THREE.IcosahedronGeometry(1, 1), new THREE.MeshStandardMaterial({ roughness: 0.04, metalness: 0.1, envMapIntensity: 1.6, transparent: true, opacity: 0.85 }));
   wind = new THREE.Vector3(0.12, 0, 0.05);
   private acc = new Map<string, number>();
 
   constructor() {
     this.root.name = 'cookfx';
-    this.root.add(this.smoke.mesh, this.fire.mesh);
+    this.root.add(this.smoke.mesh, this.fire.mesh, this.sparks.mesh, this.crumbs.mesh, this.drops.mesh);
   }
   attach(scene: THREE.Object3D) { scene.add(this.root); }
-  detach() { this.root.removeFromParent(); this.smoke.clear(); this.fire.clear(); }
+  detach() { this.root.removeFromParent(); this.smoke.clear(); this.fire.clear(); this.sparks.clear(); this.crumbs.clear(); this.drops.clear(); }
 
   /** Rate-based emission helper: call every frame with a rate (particles/s) and a key. */
   rate(key: string, perSec: number, dt: number, fn: () => void) {
@@ -175,10 +263,61 @@ export class CookFX {
     this.fire.emit(3, p.x + Math.cos(a) * r, p.y, p.z + Math.sin(a) * r, Math.cos(a) * 0.15, 0.5 + Math.random() * 0.4, Math.sin(a) * 0.15, 0.2 + Math.random() * 0.15, 0.05, 0.12 * (0.6 + k), 0.7 * k, 0.6);
   }
 
+  /**
+   * Spray of little physical bits (crumbs, grains, leaf flecks) from p. `color` may be an array to
+   * mix colours. They fly, bounce on `floor` (default p.y) and shrink away.
+   */
+  bits(p: THREE.Vector3, color: THREE.ColorRepresentation | THREE.ColorRepresentation[], n: number, o: BitsOpts = {}) {
+    const sp = o.speed ?? 0.8, up = o.up ?? 1.2, size = o.size ?? 0.004, life = o.life ?? 0.9, spread = o.spread ?? 0.02;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, v = sp * (0.35 + Math.random() * 0.65);
+      const c = Array.isArray(color) ? color[i % color.length] : color;
+      let vx = Math.cos(a) * v, vz = Math.sin(a) * v;
+      if (o.dir) { vx += o.dir.x * sp; vz += o.dir.z * sp; }
+      this.crumbs.emit(p.x + (Math.random() - 0.5) * spread, p.y + Math.random() * spread * 0.5, p.z + (Math.random() - 0.5) * spread,
+        vx, up * (0.5 + Math.random() * 0.8), vz, life * (0.6 + Math.random() * 0.7), size * (0.6 + Math.random() * 0.8), c, o.floor ?? p.y - 0.002, o.flat ?? 0.7, o.bounce ?? 0.35);
+    }
+  }
+  /** Glossy droplets (oil spit, sauce splash, egg white). */
+  droplets(p: THREE.Vector3, color: THREE.ColorRepresentation, n: number, o: BitsOpts = {}) {
+    const sp = o.speed ?? 1.0, up = o.up ?? 1.6, size = o.size ?? 0.0025, life = o.life ?? 0.7;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, v = sp * (0.3 + Math.random() * 0.7);
+      this.drops.emit(p.x + (Math.random() - 0.5) * 0.03, p.y, p.z + (Math.random() - 0.5) * 0.03, Math.cos(a) * v, up * (0.6 + Math.random() * 0.8), Math.sin(a) * v,
+        life * (0.5 + Math.random() * 0.8), size * (0.5 + Math.random()), color, o.floor ?? p.y - 0.01, o.flat ?? 1, o.bounce ?? 0.1);
+    }
+  }
+  /** Little star sparkles (perfect plating / fresh food shine). */
+  sparkle(p: THREE.Vector3, n = 8, spread = 0.12, warm = 0.3) {
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, r = Math.random() * spread;
+      this.sparks.emit(warm as Kind, p.x + Math.cos(a) * r, p.y + Math.random() * spread * 0.6, p.z + Math.sin(a) * r, 0, 0.15 + Math.random() * 0.2, 0,
+        0.5 + Math.random() * 0.6, 0.02, 0.05 + Math.random() * 0.04, 0.9, -0.05);
+    }
+  }
+  /** Steam burst (lid lifted, food hits the plate, ingredient into a hot wok). */
+  steamBurst(p: THREE.Vector3, n = 5, k = 1) { for (let i = 0; i < n; i++) this.steam(p, k * (0.8 + Math.random() * 0.5), 0.1); }
+
   update(dt: number) {
     this.smoke.update(dt, this.wind);
     this.fire.update(dt, this.wind);
+    this.sparks.update(dt, this.wind);
+    this.crumbs.update(dt);
+    this.drops.update(dt);
   }
+}
+
+/** a faceted little crumb (flattened noise rock) */
+function chunkGeo() {
+  const g = new THREE.IcosahedronGeometry(1, 0);
+  const pos = g.getAttribute('position') as THREE.BufferAttribute;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    const k = 0.75 + 0.5 * Math.abs(Math.sin(x * 7.1 + y * 3.3 + z * 5.7));
+    pos.setXYZ(i, x * k, y * k * 0.8, z * k);
+  }
+  g.computeVertexNormals();
+  return g;
 }
 
 // ------------------------------------------------------------------ gas burner flame

@@ -3,6 +3,22 @@ import { T, foodMat, cachedMat, labelInfo } from './assets';
 import { M, mesh, gc } from './mats';
 import { lathe, mound, scatter, merge, rbox, tube, dent, planarUV, card, leaf } from './geo';
 import { mulberry } from './util';
+import { Assets } from '../../core/assets';
+import {
+  withSSS, reliefGeo, reliefMat, leafScatter, leafMat, chiliPile, chiliMat, eggGeo, eggGeoLying, eggShellMat, phModel, chunkScatter,
+} from './realfood';
+
+/** exact real cut-out photo from textures/food (relief meshes need the photo their heightmap came from) */
+export const foodPhoto = (name: string) => Assets.texture(`textures/food/${name}.png`, { srgb: true, wrap: false });
+
+/** raw meat: real mince photo + normal, wet, with a pink subsurface glow */
+export function rawMeatMat(tint: number = 0xffffff) {
+  return cachedMat('rawMeat:' + tint, () => {
+    const m = new THREE.MeshPhysicalMaterial({ map: T.porkRaw(), normalMap: T.porkRawN(), roughness: 0.42, clearcoat: 0.35, clearcoatRoughness: 0.35, color: tint });
+    m.normalScale.set(1.1, 1.1);
+    return withSSS(m, { color: 0xff6a5a, wrap: 0.55, back: 0.35 });
+  });
+}
 
 /**
  * Visual builders for ingredient packs & produce — real photos everywhere: alpha cut-out photo
@@ -55,16 +71,16 @@ export function buildMeatTray(kind: string) {
       m.makeRotationFromEuler(new THREE.Euler(0.15 * (r() - 0.5), r() * 0.6 - 0.3, 0.25 * (r() - 0.5)));
       m.setPosition((i % 3 - 1) * 0.055 + (r() - 0.5) * 0.01, 0.006 + Math.floor(i / 3) * 0.006, (Math.floor(i / 3) % 2 - 0.5) * 0.04);
     }, 3));
-    heap.add(mesh(sl, tileMat('porkSl', T.porkRaw(), T.porkRawN(), { rough: 0.45, color: 0xffd0c8, flat: false })));
+    heap.add(mesh(sl, rawMeatMat(0xffd8d0)));
   } else if (kind === 'shrimp') {
-    const shr = gc('shrimps', () => scatter(shrimpGeo(), 9, (i, m, r) => {
-      m.makeRotationFromEuler(new THREE.Euler(0, r() * 6.28, 0));
-      m.setPosition((i % 3 - 1) * 0.055, 0.008, (Math.floor(i / 3) - 1) * 0.038);
-    }, 4));
-    heap.add(mesh(shr, tileMat('shrimpRaw', T.shrimp(), undefined, { rough: 0.3, color: 0xc8b0a8, flat: false })));
+    // real raw-shrimp pile photo, displaced into a relief (wet, translucent pink-grey)
+    heap.add(mesh(reliefGeo('shrimp_raw_pile', 0.18, 0.13, 0.026, 22), reliefMat('shrimp', 'shrimp_raw_pile', foodPhoto('shrimp_raw_pile'), { rough: 0.28, sss: { color: 0xffb8a8, wrap: 0.5, back: 0.5 }, nScale: 1.2 }), [0, 0.005, 0]));
   } else {
-    const tint = kind === 'chicken_minced' ? 0xffe2d4 : 0xffffff;
-    heap.add(mesh(gc('meatMound', () => planarUV(mound(0.078, 0.032, { seed: 11, detail: 2, rough: 0.28, squash: [1.22, 0.85] }), 1 / 0.12)), tileMat('meatRaw' + tint, T.porkRaw(), T.porkRawN(), { rough: 0.5, color: tint }), [0, 0.006, 0]));
+    const tint = kind === 'chicken_minced' ? 0xffe6da : 0xffffff;
+    const mat = rawMeatMat(tint);
+    heap.add(mesh(gc('meatMound3', () => planarUV(mound(0.078, 0.03, { seed: 11, detail: 3, rough: 0.26, squash: [1.22, 0.85], flat: false }), 1 / 0.12)), mat, [0, 0.006, 0]));
+    // crumbly mince bits break the silhouette (decimated-photoscan chunks, same photo)
+    heap.add(mesh(chunkScatter('mince', 46, 0.074, 0.03, 0.0052, 1 / 0.12, 7), mat, [0, 0.006, 0], undefined, [1.2, 1, 0.84]));
   }
   g.add(heap);
   // cling film + real scale/price sticker photo
@@ -94,7 +110,14 @@ export function buildBasil() {
   const g = G();
   const heap = G();
   heap.name = 'heap';
-  heap.add(cardStack('basilBunch', T.basilBunch(), 0.24, 0.24, 3, 0.02, 7));
+  // real holy-basil bunch photo as a lumpy relief + real leaves standing out of it (translucent)
+  heap.add(mesh(reliefGeo('basil_bunch_fresh', 0.24, 0.24, 0.036, 24, 0.12), reliefMat('basilBunch', 'basil_bunch_fresh', foodPhoto('basil_bunch_fresh'), { rough: 0.45, sss: { color: 0x8ad84a, wrap: 0.6, back: 0.8 } }), [0, 0.003, 0]));
+  heap.add(mesh(leafScatter('basilTop', 12, (i, m, r) => {
+    const a = (i / 12) * Math.PI * 2 + r() * 0.4, rr = 0.025 + r() * 0.06;
+    m.makeRotationFromEuler(new THREE.Euler((r() - 0.5) * 0.5, -a, 0.25 + r() * 0.5));
+    m.setPosition(Math.cos(a) * rr * 0.5, 0.018 + r() * 0.016, Math.sin(a) * rr * 0.5);
+    return { len: 0.045 + r() * 0.02, wid: 0.03 + r() * 0.01, curl: 0.25 };
+  }, 21), leafMat('fresh')));
   heap.add(mesh(gc('band', () => new THREE.TorusGeometry(0.008, 0.0018, 4, 10)), M.rubberBand(), [0, 0.012, 0.06], [0, 0, 0], [1.6, 1.6, 1.6]));
   g.add(heap);
   return g;
@@ -104,24 +127,23 @@ export function buildChiliBag() {
   const g = G();
   const heap = G();
   heap.name = 'heap';
-  heap.add(cardStack('chiliRed', T.chiliCard(), 0.11, 0.11, 3, 0.012, 3));
-  heap.add(mesh(gc('chiliG', () => card(0.07, 0.07, 0.008).translate(0.025, 0.026, 0.02)), cardMat('chiliGreen', T.chiliGreenCard())));
+  // real bird's-eye chilies in 3D (photo strip unwrapped onto curved tapered bodies), red + green
+  const pile = chiliPile('bag', 10, 4, 0.04, 3);
+  if (pile.red) heap.add(mesh(pile.red, chiliMat('red'), [0, 0, 0], [0, 0, 0], 1.25));
+  if (pile.green) heap.add(mesh(pile.green, chiliMat('green'), [0, 0, 0], [0, 0, 0], 1.25));
   g.add(heap);
-  g.add(mesh(gc('smallBag', () => lathe([[0.0001, 0], [0.055, 0.003], [0.062, 0.02], [0.05, 0.04], [0.014, 0.06], [0.007, 0.066], [0.014, 0.08]], 12, { wobble: 0.12, freq: 30, seed: 3 })), M.bagClear(), [0, 0, 0], [0, 0, 0], [1, 1, 0.85]));
+  g.add(mesh(gc('smallBag', () => lathe([[0.0001, 0], [0.055, 0.003], [0.062, 0.02], [0.05, 0.04], [0.014, 0.06], [0.007, 0.066], [0.014, 0.08]], 12, { wobble: 0.12, freq: 30, seed: 3 })), M.bagClear(0xffffff, 0.14), [0, 0, 0], [0, 0, 0], [1, 1, 0.85]));
   g.add(mesh(gc('band', () => new THREE.TorusGeometry(0.008, 0.0018, 4, 10)), M.rubberBand(), [0, 0.062, 0], [Math.PI / 2, 0, 0]));
   return g;
 }
 
-/** Peeled garlic in a clear market bag. */
+/** Thai garlic: the real tied bunch of small purple-skinned bulbs (photo relief). */
 export function buildGarlic() {
   const g = G();
   const heap = G();
   heap.name = 'heap';
-  heap.add(mesh(gc('garlicMound', () => planarUV(mound(0.045, 0.022, { seed: 5, detail: 1, rough: 0.3 }), 1 / 0.09)), cachedMat('garlicBase', () => new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.6, flatShading: true }))));
-  heap.add(cardStack('garlicCloves', T.garlicCard(), 0.1, 0.1, 2, 0.02, 5));
+  heap.add(mesh(reliefGeo('garlic_bulbs_bunch', 0.17, 0.17, 0.042, 22), reliefMat('garlicBunch', 'garlic_bulbs_bunch', foodPhoto('garlic_bulbs_bunch'), { rough: 0.55, sss: { color: 0xfff0e0, wrap: 0.35, back: 0.15 }, nScale: 1.3 }), [0, 0.002, 0], [0, 0.6, 0]));
   g.add(heap);
-  g.add(mesh(gc('smallBag', () => lathe([[0.0001, 0], [0.055, 0.003], [0.062, 0.02], [0.05, 0.04], [0.014, 0.06], [0.007, 0.066], [0.014, 0.08]], 12, { wobble: 0.12, freq: 30, seed: 3 })), M.bagClear(), [0, 0, 0], [0, 0, 0], [1, 1, 0.85]));
-  g.add(mesh(gc('band', () => new THREE.TorusGeometry(0.008, 0.0018, 4, 10)), M.rubberBand(), [0, 0.062, 0], [Math.PI / 2, 0, 0]));
   return g;
 }
 
@@ -129,7 +151,7 @@ export function buildLongBeans() {
   const g = G();
   const heap = G();
   heap.name = 'heap';
-  heap.add(cardStack('beans', T.beansCard(), 0.36, 0.36, 2, 0.015, 9));
+  heap.add(mesh(reliefGeo('long_beans_bundle', 0.36, 0.36, 0.03, 22), reliefMat('beans', 'long_beans_bundle', foodPhoto('long_beans_bundle'), { rough: 0.4, sss: { color: 0x7ac040, wrap: 0.4, back: 0.3 } }), [0, 0.002, 0]));
   g.add(heap);
   return g;
 }
@@ -138,11 +160,9 @@ export function buildKale() {
   const g = G();
   const heap = G();
   heap.name = 'heap';
-  const geo = gc('kaleCards', () => scatter(card(0.2, 0.2, 0.025, 4), 4, (i, m, r) => {
-    m.makeRotationFromEuler(new THREE.Euler((r() - 0.5) * 0.2, i * 0.5 - 0.7, (r() - 0.5) * 0.2));
-    m.setPosition((i - 1.5) * 0.02, 0.006 + i * 0.01, (r() - 0.5) * 0.02);
-  }, 6));
-  heap.add(mesh(geo, cardMat('kale', T.kaleCard())));
+  const geo = reliefGeo('kale_leaf', 0.2, 0.2, 0.012, 16, 0.6);
+  const mat = reliefMat('kale', 'kale_leaf', foodPhoto('kale_leaf'), { rough: 0.38, sss: { color: 0x7ad050, wrap: 0.6, back: 0.8 } });
+  for (let i = 0; i < 4; i++) heap.add(mesh(geo, mat, [(i - 1.5) * 0.02, 0.004 + i * 0.008, (i % 2 - 0.5) * 0.015], [(i % 2 - 0.5) * 0.12, i * 0.5 - 0.7, (i % 3 - 1) * 0.08]));
   g.add(heap);
   return g;
 }
@@ -195,11 +215,17 @@ function bulbGeo(kind: 'onion' | 'lime' | 'tomato' | 'egg' | 'galangal') {
 }
 
 const PRODUCE_MAT: Record<string, () => THREE.Material> = {
-  onion: () => cachedMat('onionSkin', () => new THREE.MeshStandardMaterial({ color: 0xc9894a, roughness: 0.5 })),
-  lime: () => cachedMat('limeSkin', () => new THREE.MeshStandardMaterial({ color: 0x5d9a2a, roughness: 0.45 })),
-  tomato: () => cachedMat('tomatoSkin', () => new THREE.MeshStandardMaterial({ color: 0xc8261a, roughness: 0.3 })),
-  egg: () => M.eggShell(),
-  galangal: () => cachedMat('galangal', () => new THREE.MeshStandardMaterial({ color: 0xe8cbb0, roughness: 0.7 })),
+  onion: () => phModel('yellow_onion', () => bulbGeo('onion').clone(), { rough: 1, sss: { color: 0xffb060, wrap: 0.3, back: 0.2 } }).mat,
+  lime: () => phModel('food_lime_01', () => bulbGeo('lime').clone(), { rot: [Math.PI / 2, 0, 0.2], rough: 1, sss: { color: 0x9ae040, wrap: 0.3, back: 0.2 } }).mat,
+  tomato: () => cachedMat('tomatoSkin', () => withSSS(new THREE.MeshPhysicalMaterial({ color: 0xc8261a, roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.15 }), { color: 0xff3a20, wrap: 0.5, back: 0.5 })),
+  egg: () => eggShellMat(0),
+  galangal: () => phModel('food_ginger_01', () => bulbGeo('galangal').clone(), { tint: 0xfff0ea, rough: 1 }).mat,
+};
+/** real scan geometry for the produce that has one (late-bound, same bounds as the placeholder) */
+const PRODUCE_GEO: Record<string, () => THREE.BufferGeometry> = {
+  onion: () => phModel('yellow_onion', () => bulbGeo('onion').clone()).geo,
+  lime: () => phModel('food_lime_01', () => bulbGeo('lime').clone(), { rot: [Math.PI / 2, 0, 0.2] }).geo,
+  galangal: () => phModel('food_ginger_01', () => bulbGeo('galangal').clone()).geo,
 };
 
 export function buildPile(kind: 'onion' | 'lime' | 'tomato' | 'galangal', max = 5) {
@@ -207,8 +233,8 @@ export function buildPile(kind: 'onion' | 'lime' | 'tomato' | 'galangal', max = 
   const heap = G();
   heap.name = 'heap';
   const r = mulberry(kind.length * 17 + 3);
-  const geo = bulbGeo(kind);
   const mat = PRODUCE_MAT[kind]();
+  const geo = PRODUCE_GEO[kind]?.() ?? bulbGeo(kind);
   const spots: [number, number, number][] = [[0, 0, 0], [0.05, 0, 0.012], [-0.045, 0, 0.018], [0.01, 0, -0.045], [0.022, 0.038, -0.006], [-0.03, 0, -0.04]];
   for (let i = 0; i < max; i++) {
     const s = spots[i % spots.length];
@@ -220,9 +246,9 @@ export function buildPile(kind: 'onion' | 'lime' | 'tomato' | 'galangal', max = 
   return g;
 }
 
-export function buildEgg() {
+export function buildEgg(variant = 0) {
   const g = G();
-  g.add(mesh(bulbGeo('egg'), M.eggShell()));
+  g.add(mesh(eggGeoLying(), eggShellMat(variant)));
   return g;
 }
 
@@ -242,7 +268,7 @@ export function buildEggTray() {
   const r = mulberry(5);
   for (let k = 0; k < 30; k++) {
     const i = k % 6, j = Math.floor(k / 6);
-    const e = mesh(bulbGeo('egg'), M.eggShell(), [(i - 2.5) * 0.05, 0.012, (j - 2) * 0.058], [(r() - 0.5) * 0.3, r() * 6.28, (r() - 0.5) * 0.3], 0.95);
+    const e = mesh(eggGeo(), eggShellMat(k), [(i - 2.5) * 0.05, 0.012, (j - 2) * 0.058], [(r() - 0.5) * 0.3, r() * 6.28, (r() - 0.5) * 0.3], 0.95);
     e.name = 'e' + k;
     eggs.add(e);
   }
@@ -393,8 +419,8 @@ export function buildKaffir() {
 export function buildGalangal() {
   const g = G();
   const heap = G(); heap.name = 'heap';
-  const knob = bulbGeo('galangal');
   const mat = PRODUCE_MAT.galangal();
+  const knob = PRODUCE_GEO.galangal();
   heap.add(mesh(knob, mat, [0, 0, 0], [0, 0.3, 0]), mesh(knob, mat, [0.01, 0.012, 0.02], [0.4, -0.5, 0.2], 0.8), mesh(knob, mat, [-0.02, 0, -0.02], [0, 1.2, 0], 0.7));
   g.add(heap);
   return g;

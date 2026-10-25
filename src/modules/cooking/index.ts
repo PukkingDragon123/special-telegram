@@ -14,6 +14,8 @@ import { RecipeBook } from './book';
 import { bindKit, cookingApi, spawnCartTools, kitchenLab } from './kit';
 import { ANCHORS } from '../../game/mapplan';
 import { pickKey } from './util';
+import { preloadRealFood } from './realfood';
+import { registerFoodSounds, setJuiceFX } from './juice';
 
 /* =============================================================================================
  * MODULE: cooking — the food cart, every ingredient / tool / dish item, the cooking simulation,
@@ -74,9 +76,11 @@ export default defineModule({
   async init(game: Game) {
     bindKit(game);
     (game as any).cooking = cookingApi;
-    await loadCookingManifests();
+    await Promise.all([loadCookingManifests(), preloadRealFood()]);
     setItemFX(fx);
     setDishFX(fx);
+    setJuiceFX(fx);
+    registerFoodSounds();
     defineCookingItems(game);
     defineDish(game);
     installCartIntents(game);
@@ -92,6 +96,7 @@ export default defineModule({
       if (p) fx.flare(p.add(new THREE.Vector3(0, 0.08, 0)), d.k ?? 0.6);
     });
     game.events.on('world:ready', () => {
+      registerFoodSounds();
       if (game.scene) fx.attach(game.scene);
       ensureCart(game);
     });

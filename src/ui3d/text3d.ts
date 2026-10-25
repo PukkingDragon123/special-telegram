@@ -71,8 +71,12 @@ export interface Text3DOpts {
   /** fresnel rim light on bevels/sides: colour + strength */
   rim?: THREE.ColorRepresentation;
   rimStrength?: number;
-  /** bevel takes the face colour instead of the side colour (default false = dark outline ring) */
+  /** chamfer takes (mostly) the face colour; default = mostly the side colour (a dark rim that reads on bright skies) */
   bevelFace?: boolean;
+  /** strength of the built-in view-space key light (default 0.45; 0 = scene lighting only) */
+  keyLight?: number;
+  /** soft letter-shaped contact shadow just behind the lettering (opacity, default 0 = none) — readability on bright skies */
+  shadow?: number;
   anim?: Text3DAnim;
 }
 
@@ -350,7 +354,8 @@ function glyphGeo(rec: FontRec, gid: number, depth: number, bevel: number): Glyp
   const o = outlineOf(rec, gid);
   if (!o) { rec.geos.set(key, null); return null; }
   const cx = (o.minX + o.maxX) / 2, cy = (o.minY + o.maxY) / 2;
-  const bi = bevel * 0.3, bo = bevel * 0.7, bt = bevel;
+  // chamfer mostly INWARD: the silhouette stays the real letterform (tiny Thai loops stay open)
+  const bi = bevel * 0.85, bo = bevel * 0.15, bt = bevel;
   const hasBevel = bevel > 1e-5;
   const P: number[] = [], N: number[] = [], I: number[] = [];
   const COS_SHARP = Math.cos((38 * Math.PI) / 180);
@@ -519,7 +524,7 @@ const VERT_HEAD = /* glsl */ `
 attribute vec4 aGlyph;
 uniform float uT3dTime;
 uniform vec4 uT3dA;   // pop, vanish, wobble, shake
-uniform vec4 uT3dB;   // rise, drift, spin, -
+uniform vec4 uT3dB;   // rise, drift, spin, bevel colour mix
 varying float vT3dFace;
 mat3 t3dR; float t3dS; vec3 t3dO;
 float t3dBack(float t){ float s = 2.2; t -= 1.0; return 1.0 + (s + 1.0) * t * t * t + s * t * t; }
@@ -556,7 +561,7 @@ function patchVert(src: string, lit: boolean, xray: boolean) {
   let s = VERT_HEAD + src;
   if (lit) {
     s = s.replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>
-      t3dSetup(); vT3dFace = smoothstep(0.9, 0.98, objectNormal.z); objectNormal = t3dR * objectNormal;`);
+      t3dSetup(); vT3dFace = objectNormal.z > 0.97 ? 1.0 : smoothstep(0.25, 0.5, objectNormal.z) * uT3dB.w; objectNormal = t3dR * objectNormal;`);
     s = s.replace('#include <begin_vertex>', `#include <begin_vertex>
       transformed = vec3(aGlyph.xy, 0.0) + t3dR * (transformed * t3dS) + t3dO;`);
   } else {
@@ -565,24 +570,32 @@ function patchVert(src: string, lit: boolean, xray: boolean) {
       transformed = vec3(aGlyph.xy, 0.0) + t3dR * (transformed * t3dS) + t3dO;`);
   }
   if (xray) s = s.replace('#include <project_vertex>', `#include <project_vertex>
-      gl_Position.z = (gl_Position.z / gl_Position.w * 0.02 - 0.98) * gl_Position.w;`);
+      gl_Position.z = gl_Position.z * 0.02 - 0.98 * gl_Position.w;`);
   return s;
 }
 
 function patchFrag(src: string) {
-  return `uniform vec3 uT3dSide; uniform vec4 uT3dRim; varying float vT3dFace;\n` + src
+  return `uniform vec3 uT3dSide; uniform vec4 uT3dRim; uniform float uT3dKey; varying float vT3dFace;\n` + src
     .replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( mix( uT3dSide, diffuse, vT3dFace ), opacity );')
     .replace('vec3 totalEmissiveRadiance = emissive;', 'vec3 totalEmissiveRadiance = emissive * mix( 0.3, 1.0, vT3dFace );')
-    .replace('#include <opaque_fragment>', `outgoingLight += uT3dRim.rgb * uT3dRim.a * pow( 1.0 - clamp( dot( normal, normalize( vViewPosition ) ), 0.0, 1.0 ), 2.0 );
+    .replace('#include <opaque_fragment>', `{
+        vec3 t3dV = normalize( vViewPosition );
+        outgoingLight += uT3dRim.rgb * uT3dRim.a * pow( 1.0 - clamp( dot( normal, t3dV ), 0.0, 1.0 ), 2.0 );
+        // view-space key light: lettering always shows its bevels/sides, even backlit or at night
+        vec3 t3dL = normalize( vec3( -0.45, 0.75, 0.55 ) );
+        float t3dNd = max( dot( normal, t3dL ), 0.0 );
+        float t3dSp = pow( max( dot( normal, normalize( t3dL + t3dV ) ), 0.0 ), 40.0 ) * ( 1.0 - roughnessFactor * 0.8 );
+        outgoingLight += uT3dKey * ( diffuseColor.rgb * t3dNd * ( 1.0 - metalnessFactor * 0.6 ) + mix( vec3( 0.5 ), diffuseColor.rgb * 1.8, metalnessFactor ) * t3dSp );
+      }
       #include <opaque_fragment>`);
 }
 
-interface LookMats { mat: THREE.MeshStandardMaterial; depth: THREE.MeshDepthMaterial; dist: THREE.MeshDistanceMaterial }
+interface LookMats { mat: THREE.MeshStandardMaterial; depth: THREE.MeshDepthMaterial; dist: THREE.MeshDistanceMaterial; shadow: THREE.MeshBasicMaterial | null }
 const looks = new Map<string, LookMats>();
 
 interface LookKey {
   color: number; side: number; metal: number; rough: number; emis: number; opacity: number; xray: boolean;
-  rim: number; rimS: number; bevelFace: boolean; a: number[]; b: number[];
+  rim: number; rimS: number; key: number; shadow: number; bevelFace: boolean; a: number[]; b: number[];
 }
 
 function lookOf(k: LookKey): LookMats {
@@ -602,29 +615,39 @@ function lookOf(k: LookKey): LookMats {
     uT3dB: { value: new THREE.Vector4(...k.b) },
     uT3dSide: { value: new THREE.Color(k.side) },
     uT3dRim: { value: new THREE.Vector4(...new THREE.Color(k.rim).toArray(), k.rimS) },
+    uT3dKey: { value: k.key },
   };
   const xray = k.xray;
   mat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, uni);
     sh.vertexShader = patchVert(sh.vertexShader, true, xray);
     sh.fragmentShader = patchFrag(sh.fragmentShader);
-    if (k.bevelFace) sh.vertexShader = sh.vertexShader.replace('smoothstep(0.9, 0.98, objectNormal.z)', 'smoothstep(0.08, 0.3, objectNormal.z)');
   };
-  mat.customProgramCacheKey = () => `t3d${xray ? 'x' : ''}${k.bevelFace ? 'b' : ''}`;
+  mat.customProgramCacheKey = () => `t3d${xray ? 'x' : ''}`;
   const depth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
   depth.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, uni); sh.vertexShader = patchVert(sh.vertexShader, false, false); };
   depth.customProgramCacheKey = () => 't3dDepth';
   const dist = new THREE.MeshDistanceMaterial();
   dist.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, uni); sh.vertexShader = patchVert(sh.vertexShader, false, false); };
   dist.customProgramCacheKey = () => 't3dDist';
-  L = { mat, depth, dist };
+  let shadow: THREE.MeshBasicMaterial | null = null;
+  if (k.shadow > 0) {
+    shadow = new THREE.MeshBasicMaterial({ color: 0x050302, transparent: true, opacity: k.shadow * (k.opacity < 1 ? k.opacity : 1), depthWrite: false });
+    shadow.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, uni);
+      sh.vertexShader = patchVert(sh.vertexShader, false, xray).replace('t3dSetup();', 't3dSetup(); vT3dFace = normal.z > 0.97 ? 1.0 : 0.0;');
+      sh.fragmentShader = 'varying float vT3dFace;\n' + sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n diffuseColor.a *= mix( 0.12, 1.0, vT3dFace );');
+    };
+    shadow.customProgramCacheKey = () => `t3dShadow${xray ? 'x' : ''}`;
+  }
+  L = { mat, depth, dist, shadow };
   looks.set(key, L);
   return L;
 }
 
 // ============================================================================ Text3D
 
-const DEF = { font: 'talk' as Font3D, size: 0.12, depth: 0.18, bevel: 0.04, metalness: 0.05, roughness: 0.42, emissive: 0.12, lineHeight: 1.3 };
+const DEF = { font: 'talk' as Font3D, size: 0.12, depth: 0.18, bevel: 0.04, metalness: 0.05, roughness: 0.42, emissive: 0.06, lineHeight: 1.3 };
 
 function colorNum(c: THREE.ColorRepresentation | undefined, def: number) {
   if (c === undefined || c === null) return def;
@@ -647,6 +670,7 @@ export class Text3D extends THREE.Group {
   private pendingPop = -1;
   private vanishing = false;
   private disposed = false;
+  private shadowMesh: THREE.Mesh | null = null;
 
   constructor(text: string, o: Text3DOpts = {}) {
     super();
@@ -741,9 +765,9 @@ export class Text3D extends THREE.Group {
     return lookOf({
       color, side: colorNum(o.side, sideDef), metal: o.metalness ?? DEF.metalness, rough: o.roughness ?? DEF.roughness,
       emis: o.emissive ?? DEF.emissive, opacity: o.opacity ?? 1, xray: !!o.xray, rim: colorNum(o.rim, 0xffffff), rimS: o.rimStrength ?? 0,
-      bevelFace: !!o.bevelFace,
+      key: o.keyLight ?? 0.45, shadow: o.shadow ?? 0, bevelFace: !!o.bevelFace,
       a: [a.pop ?? 0.32, a.vanish ?? 0.28, a.wobble ?? 0, a.shake ?? 0],
-      b: [a.rise ?? 0.35, a.drift ?? 0.5, a.spin ?? 1, 0],
+      b: [a.rise ?? 0.35, a.drift ?? 0.5, a.spin ?? 1, o.bevelFace ? 0.9 : 0.35],
     });
   }
 
@@ -755,6 +779,15 @@ export class Text3D extends THREE.Group {
     this.mesh.castShadow = this.o.castShadow ?? !this.o.xray;
     this.mesh.receiveShadow = false;
     this.mesh.renderOrder = this.o.xray ? 1001 : 0;
+    if (L.shadow) {
+      if (!this.shadowMesh) {
+        this.shadowMesh = new THREE.Mesh(this.mesh.geometry, L.shadow);
+        this.shadowMesh.frustumCulled = false;
+        this.mesh.add(this.shadowMesh);
+      }
+      this.shadowMesh.material = L.shadow;
+      this.shadowMesh.renderOrder = this.mesh.renderOrder;
+    } else if (this.shadowMesh) { this.shadowMesh.removeFromParent(); this.shadowMesh = null; }
   }
 
   private setTime(i: number, comp: 2 | 3, t: number, upload = true) {
@@ -816,6 +849,11 @@ export class Text3D extends THREE.Group {
     geo.boundingSphere = box.getBoundingSphere(new THREE.Sphere());
     this.mesh.geometry.dispose();
     this.mesh.geometry = geo;
+    if (this.shadowMesh) {
+      this.shadowMesh.geometry = geo;
+      // just behind the letters, nudged down-right like light from the upper left
+      this.shadowMesh.position.set(0.045, -0.06, -depthEm - 0.035);
+    }
     this.mesh.scale.setScalar(em);
     this.ag = agAttr;
     this.ranges = ranges;

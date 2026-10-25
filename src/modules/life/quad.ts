@@ -642,6 +642,10 @@ export interface QuadInput {
   look: THREE.Vector3 | null;
   /** cat: knead / swat with a front paw */
   swat?: boolean;
+  /** lip curl / growl 0..1 (guarding against ghosts) */
+  snarl?: number;
+  /** allow idle yawns (default true) */
+  yawn?: boolean;
   /** float (ghost) — legs dangle */
 }
 
@@ -711,7 +715,7 @@ export interface QuadRigLike {
 
 export class QuadAnimator {
   /** live facial / layer state for drivers (0..1) */
-  readonly face = { blink: 0, pant: 0, eat: 0, bark: 0, sniff: 0, alert: 0, wag: 0, squint: 0, sleep: 0 };
+  readonly face = { blink: 0, pant: 0, eat: 0, bark: 0, sniff: 0, alert: 0, wag: 0, squint: 0, sleep: 0, eyeYaw: 0, eyePitch: 0, yawn: 0, breath: 0, dream: 0, snarl: 0, brow: 0 };
   /** smoothed pose weights (normalised) */
   readonly poseW: Record<QuadPose, number> = { stand: 1, sit: 0, lie: 0, sleep: 0, beg: 0 };
   private cur = new Float32Array(NB * 3);
@@ -732,6 +736,12 @@ export class QuadAnimator {
   private turnK = 0;
   private swatK = 0;
   private sitBlend = 0;
+  private blinkK = 0; private blinkPh = -1;
+  private yawnT = 25 + Math.random() * 30; private yawnPh = -1;
+  private dreamT = 8; private dreamK = 0;
+  private sacT = 0.5; private sacYaw = 0; private sacPitch = 0;
+  private snarlK = 0;
+  private eyeYaw = 0; private eyePitch = 0;
 
   constructor(private rig: QuadRigLike) {}
 
@@ -779,8 +789,10 @@ export class QuadAnimator {
     const addB = (b: number, x: number, y = 0, z = 0) => { T[b * 3] += x; T[b * 3 + 1] += y; T[b * 3 + 2] += z; };
 
     // breathing / idle
-    const breath = Math.sin(this.t * (this.pantK > 0.3 ? 9 : 1.6));
-    addB(QB.chest, breath * (0.012 + this.pantK * 0.02));
+    const sleepW0 = this.w.sleep / tot;
+    const breath = Math.sin(this.t * (this.pantK > 0.3 ? 9 : 1.6 - sleepW0 * 0.6));
+    addB(QB.chest, breath * (0.012 + this.pantK * 0.02 + sleepW0 * 0.012));
+    this.face.breath = breath * (0.55 + sleepW0 * 0.6 + this.pantK * 0.35);
     // tail carriage: -1 tucked .. +1 high
     addB(QB.tail1, this.tailK * (cat ? 0.6 : 0.7) * standW + (this.tailK < 0 ? this.tailK * 0.5 : 0));
     addB(QB.tail2, this.tailK * 0.25);
@@ -831,6 +843,38 @@ export class QuadAnimator {
       addB(QB.el_r, (0.6 - s * 0.4) * this.swatK);
       addB(QB.wr_r, -0.3 * this.swatK);
     }
+    // idle yawn (sitting / lying, not moving): head up, jaw wide, eyes squeezed, tongue curls
+    if (this.yawnPh < 0) {
+      this.yawnT -= dt;
+      if (this.yawnT < 0 && !moving && inp.yawn !== false && this.eatK < 0.1 && this.pantK < 0.3 && sleepW0 < 0.5) { this.yawnPh = 0; this.yawnT = 30 + Math.random() * 40; }
+    } else {
+      this.yawnPh += dt / 2.4;
+      if (this.yawnPh >= 1 || moving) this.yawnPh = -1;
+    }
+    const yk = this.yawnPh < 0 ? 0 : Math.sin(Math.min(1, this.yawnPh * 1.25) * Math.PI) ** 1.5;
+    this.face.yawn = yk;
+    if (yk > 0.001) {
+      addB(QB.jaw, 0.62 * yk); addB(QB.head, -0.28 * yk); addB(QB.neck, -0.1 * yk);
+      addB(QB.ear_l, -0.25 * yk, 0, 0.3 * yk); addB(QB.ear_r, -0.25 * yk, 0, -0.3 * yk);
+    }
+    // dreaming while asleep: paws paddle, ears flick, eyes twitch
+    if (sleepW0 > 0.6) {
+      this.dreamT -= dt;
+      if (this.dreamT < 0) { this.dreamT = 7 + Math.random() * 12; this.dreamK = 1.6; }
+    }
+    this.dreamK = Math.max(0, this.dreamK - dt);
+    const dk = Math.min(1, this.dreamK) * sleepW0;
+    this.face.dream = dk;
+    if (dk > 0.01) {
+      const pd = Math.sin(this.t * 17) * 0.1 * dk, pd2 = Math.sin(this.t * 17 + 1.9) * 0.1 * dk;
+      addB(QB.sh_l, pd); addB(QB.sh_r, pd2); addB(QB.hip_l, pd2 * 0.8); addB(QB.hip_r, pd * 0.8);
+      addB(QB.ear_l, Math.max(0, Math.sin(this.t * 23)) * 0.2 * dk);
+    }
+    // snarl / growl
+    this.snarlK = ease(this.snarlK, inp.snarl ?? 0, 6);
+    this.face.snarl = this.snarlK;
+    if (this.snarlK > 0.01) { addB(QB.jaw, 0.08 * this.snarlK + Math.sin(this.t * 30) * 0.01 * this.snarlK); addB(QB.head, 0.12 * this.snarlK); addB(QB.neck, 0.15 * this.snarlK); }
+    this.face.brow = (inp.pose === 'beg' ? 1 : 0) * (1 - this.snarlK) - this.snarlK - this.alertK * 0.3 * (this.alertK > 0 ? 1 : 0);
     // ears
     addB(QB.ear_l, this.alertK * 0.28, 0, (this.alertK < 0 ? -this.alertK * 0.7 : 0));
     addB(QB.ear_r, this.alertK * 0.28, 0, (this.alertK < 0 ? this.alertK * 0.7 : 0));
@@ -880,13 +924,25 @@ export class QuadAnimator {
     addB(QB.neck, this.lookPitch * 0.4, this.lookYaw * 0.45);
     addB(QB.head, this.lookPitch * 0.6, this.lookYaw * 0.55);
 
-    // blink
+    // eyes lead the head: residual look angle + micro saccades
+    this.sacT -= dt;
+    if (this.sacT < 0) { this.sacT = 0.4 + Math.random() * 1.6; this.sacYaw = (Math.random() - 0.5) * 0.16; this.sacPitch = (Math.random() - 0.5) * 0.08; }
+    const eyT = Math.max(-0.45, Math.min(0.45, wantYaw * lookK - this.lookYaw + this.sacYaw));
+    const epT = Math.max(-0.25, Math.min(0.25, wantPitch * lookK - this.lookPitch + this.sacPitch));
+    this.eyeYaw = ease(this.eyeYaw, eyT, 25); this.eyePitch = ease(this.eyePitch, epT, 25);
+    this.face.eyeYaw = this.eyeYaw; this.face.eyePitch = this.eyePitch;
+    // blink: fast close, slower open; double blinks sometimes; sleeping = closed
     this.blinkT -= dt;
     const sleeping = (this.w.sleep / tot) > 0.6;
-    const blink = this.blinkT < 0.12 && this.blinkT > 0;
-    if (this.blinkT < 0) this.blinkT = 2 + Math.random() * 4;
-    if (rig.eyes) for (const e of rig.eyes) e.scale.y = sleeping || blink ? 0.12 : 0.85;
-    this.face.blink = sleeping || blink ? 1 : 0; this.face.sleep = sleeping ? 1 : 0;
+    if (this.blinkT < 0 && this.blinkPh < 0) { this.blinkPh = 0; this.blinkT = Math.random() < 0.2 ? 0.35 : 2 + Math.random() * 4; }
+    if (this.blinkPh >= 0) {
+      this.blinkPh += dt / 0.2;
+      this.blinkK = this.blinkPh < 0.3 ? this.blinkPh / 0.3 : Math.max(0, 1 - (this.blinkPh - 0.3) / 0.7);
+      if (this.blinkPh >= 1) { this.blinkPh = -1; this.blinkK = 0; }
+    }
+    const lid = Math.max(sleeping ? 1 : 0, this.blinkK, yk * 0.85, dk > 0 ? 0.9 : 0);
+    if (rig.eyes) for (const e of rig.eyes) e.scale.y = 0.85 - lid * 0.73;
+    this.face.blink = lid; this.face.sleep = sleeping ? 1 : 0;
 
     // ---- smooth pose layer
     const rate = 9;

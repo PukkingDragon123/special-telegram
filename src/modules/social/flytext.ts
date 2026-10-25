@@ -171,28 +171,3 @@ export class FlyText {
     this.tex.dispose();
   }
 }
-
-/** A slot that cross-fades FlyTexts (old scatters out, new flies in). */
-export class FlySlot {
-  readonly group = new THREE.Group();
-  private cur: FlyText | null = null;
-  private leaving: FlyText[] = [];
-  key = '';
-  set(key: string, make: () => FlyText | null) {
-    if (key === this.key) return;
-    this.key = key;
-    if (this.cur) { this.cur.leave(); this.leaving.push(this.cur); }
-    this.cur = make();
-    if (this.cur) this.group.add(this.cur.mesh);
-  }
-  clear() { this.set('', () => null); }
-  update(dt: number) {
-    this.cur?.update(dt);
-    for (let i = this.leaving.length - 1; i >= 0; i--) {
-      const f = this.leaving[i];
-      f.update(dt);
-      if (f.gone) { f.dispose(); this.leaving.splice(i, 1); }
-    }
-  }
-  dispose() { this.cur?.dispose(); for (const f of this.leaving) f.dispose(); this.cur = null; this.leaving = []; this.group.removeFromParent(); }
-}

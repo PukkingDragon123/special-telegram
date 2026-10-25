@@ -1,0 +1,36 @@
+{
+ "Barrel_02": {
+  "file": "Barrel_02/Barrel_02.glb",
+  "name": "Barrel 02",
+  "bytes": 73216,
+  "srcTris": 2688,
+  "tris": 1798,
+  "dims": [
+   0.488,
+   0.485,
+   0.88
+  ],
+  "authors": [
+   "Jorge Camacho"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/Barrel_02"
+ },
+ "small_plastic_torch": {
+  "file": "small_plastic_torch/small_plastic_torch.glb",
+  "name": "Small Plastic Torch",
+  "bytes": 47904,
+  "srcTris": 13252,
+  "tris": 1221,
+  "dims": [
+   0.1,
+   0.227,
+   0.055
+  ],
+  "authors": [
+   "Abiyyu Panggalih (Abiyyu_xyz)"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/small_plastic_torch"
+ }
+}

@@ -348,7 +348,7 @@ export class Atmosphere {
     const evening = Math.max(0, 1 - Math.abs(t - 17.2) / 1.6);
     const vis = u.uSunVis.value * (1 - night);
     _sc.copy(sunCol).multiplyScalar(1.0 + warm * 0.5);
-    post.setSun(sd, _sc, vis * (0.1 + 0.5 * morning + 0.35 * evening), vis * (0.05 + 0.1 * warm), 150);
+    post.setSun(sd, _sc, vis * (0.05 + 0.3 * morning + 0.2 * evening), vis * (0.025 + 0.06 * warm), 150);
     if (this.autoLook) post.exposure = 1.0 + 0.12 * night;
   }
 
