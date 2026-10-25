@@ -36,13 +36,13 @@ export const SUN_L = new THREE.Vector3(-0.574, 0.3, -0.818).normalize();
 const SKY_ROT = Math.atan2(SUN_VIS.z, SUN_VIS.x) - (0.6045 - 0.5) * Math.PI * 2;
 
 export const COL = {
-  sun: new THREE.Color(1.0, 0.64, 0.34),
-  lit: new THREE.Color(0.96, 0.88, 0.86),
-  shade: new THREE.Color(0.5, 0.45, 0.68),
-  haze: new THREE.Color(0.76, 0.64, 0.76),
+  sun: new THREE.Color(1.0, 0.58, 0.28),
+  lit: new THREE.Color(1.0, 0.82, 0.66),
+  shade: new THREE.Color(0.3, 0.29, 0.55),
+  haze: new THREE.Color(0.7, 0.6, 0.74),
 };
 
-const SEA_Y = -9.5;
+const SEA_Y = -12;
 
 // ------------------------------------------------------------------ sky dome
 
@@ -66,12 +66,14 @@ void main() {
   vec2 uv = vec2(fract(phi / 6.2831853 + 0.5), clamp((vv - 0.4375) / 0.5625, 0.002, 0.998));
   vec3 c = texture2D(uSky, uv).rgb;
   float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
-  c = mix(c, vec3(l) * uTint, 0.12);   // pastel
-  c = c * 0.9 + uTint * 0.045;          // lift the grey cloud undersides
+  c = max(mix(vec3(l), c, 1.3), vec3(0.0));   // a bit richer than the scan (never negative: NaN in AgX)
+  c *= mix(1.0, 0.72, smoothstep(0.15, 0.95, d.y)) * mix(vec3(1.0), vec3(0.9, 0.92, 1.08), smoothstep(0.1, 0.9, d.y));
+  c = mix(c, uTint * 0.78, smoothstep(0.42, 0.12, dot(c, vec3(0.2126, 0.7152, 0.0722))) * 0.55);  // lift the stormy grey undersides to pastel
+  c = c * 0.94 + uTint * 0.03;
   c = mix(c, uHaze, smoothstep(0.03, -0.12, d.y));
   float s = max(dot(d, uSun), 0.0);
   c += uSunCol * (pow(s, 5.0) * 0.28 + pow(s, 48.0) * 1.1 + pow(s, 700.0) * 9.0);
-  gl_FragColor = vec4(c * uBright, 1.0);
+  gl_FragColor = vec4(max(c * uBright, vec3(0.0)), 1.0);
 }`;
 
 // ------------------------------------------------------------------ cloud sea
@@ -112,8 +114,8 @@ float dome(vec2 p) {
 }
 float seaH(vec2 p) {
   vec2 q = p + uDrift;
-  float h = dome(q * 0.034) * 7.5 + dome(q * 0.085 + 3.7) * 2.8 + dome(q * 0.21 + 9.1) * 1.0;
-  h += (vn(vec3(q * 0.011, 0.0)) - 0.5) * 7.0;
+  float h = dome(q * 0.026) * 11.0 + dome(q * 0.07 + 3.7) * 4.0 + dome(q * 0.18 + 9.1) * 1.4 + dome(q * 0.45 + 1.3) * 0.35;
+  h += (vn(vec3(q * 0.009, 0.0)) - 0.5) * 9.0;
   return h;
 }
 void main() {
@@ -146,19 +148,19 @@ void main() {
     N = normalize(N + vec3(n0 - nx, 0.0, n0 - nz) * 1.6 * near);
   }
   vec3 V = normalize(cameraPosition - vW);
-  float wrap = clamp((dot(N, uL) + 0.55) / 1.55, 0.0, 1.0);
+  float wrap = clamp((dot(N, uL) + 0.35) / 1.35, 0.0, 1.0);
   float ndv = clamp(dot(N, V), 0.0, 1.0);
   float back = pow(clamp(dot(-V, uSunV) * 0.5 + 0.5, 0.0, 1.0), 7.0);
   float rim = pow(1.0 - ndv, 3.0);
-  float ao = mix(0.6, 1.0, smoothstep(-3.0, 8.0, vH)) * (0.86 + 0.28 * n0);
-  vec3 col = mix(uShade, uLit, wrap) * ao;
+  float ao = mix(0.45, 1.0, smoothstep(-4.0, 11.0, vH)) * (0.84 + 0.3 * n0);
+  vec3 col = mix(uShade, uLit, wrap * wrap * (3.0 - 2.0 * wrap)) * ao;
   col += uSunCol * rim * (0.18 + 1.5 * back);
   col += uSunCol * back * 0.3 * smoothstep(0.0, 7.0, vH);
   vec3 vd = normalize(vW - cameraPosition);
   vec3 haze = mix(uHaze, uSunCol * 1.25 + uHaze * 0.4, pow(max(dot(vd, uSunV), 0.0), 10.0));
-  float f = 1.0 - exp(-vD * 0.0038);
-  col = mix(col, haze, clamp(f * f * 1.25, 0.0, 1.0));
-  gl_FragColor = vec4(col, 1.0);
+  float f = 1.0 - exp(-vD * 0.0026);
+  col = mix(col, haze, clamp(f * f * 1.15, 0.0, 1.0));
+  gl_FragColor = vec4(max(col, vec3(0.0)), 1.0);
 }`;
 
 // ------------------------------------------------------------------ mist layer above the sea
@@ -172,7 +174,7 @@ varying vec3 vW; varying float vD;
 ${NOISE}
 void main() {
   float n = fbm(vec3(vW.xz * 0.028 + vec2(uTime * 0.012, uTime * 0.004), uTime * 0.01));
-  float a = smoothstep(0.45, 0.8, n) * 0.3;
+  float a = smoothstep(0.5, 0.82, n) * 0.14;
   a *= smoothstep(14.0, 45.0, vD);            // keep it off the island
   vec3 vd = normalize(vW - cameraPosition);
   vec3 c = mix(uCol, uHaze, smoothstep(60.0, 380.0, vD)) + uSunCol * pow(max(dot(vd, uSunV), 0.0), 6.0) * 0.6;
@@ -229,22 +231,22 @@ void main() {
     float n = fbm(vec3(p * 2.4 + vec2(s, uTime * 0.015), uTime * 0.025 + s));
     d += (n - 0.5) * 0.6;
     d *= smoothstep(-0.98, -0.62, p.y + (n - 0.5) * 0.25);
-    a = smoothstep(0.02, 0.3, d);
+    a = smoothstep(0.02, 0.16, d);
     float up = smoothstep(-0.7, 0.85, p.y);
     float side = dot(normalize(vec3(p.x, 0.0, 0.6)), normalize(vec3(-uSunV.x, 0.0, -uSunV.z)));
-    col = mix(uShade, uLit, 0.45 + 0.45 * up + 0.15 * side) * (0.88 + 0.3 * n);
+    col = mix(uShade, uLit, 0.25 + 0.6 * up + 0.2 * side) * (0.8 + 0.4 * n);
     float edge = 1.0 - smoothstep(0.02, 0.28, d);
     col += uSunCol * (edge * (0.25 + 2.2 * back) + back * 0.25);
   } else {
     float n = fbm(vec3(p.x * 1.3 + uTime * 0.03 + s, p.y * 3.5, s + uTime * 0.02));
-    a = smoothstep(0.35, 0.75, n) * (1.0 - p.y * p.y) * (1.0 - pow(abs(p.x), 3.0)) * 0.5;
+    a = smoothstep(0.4, 0.78, n) * (1.0 - p.y * p.y) * (1.0 - pow(abs(p.x), 3.0)) * 0.3;
     col = mix(uLit, uHaze, 0.25) + uSunCol * back * 0.8;
   }
-  float f = 1.0 - exp(-dist * 0.0036);
-  col = mix(col, uHaze + uSunCol * back * 0.4, clamp(f * f * 1.3, 0.0, 1.0));
+  float f = 1.0 - exp(-dist * 0.0026);
+  col = mix(col, uHaze + uSunCol * back * 0.4, clamp(f * f * 1.15, 0.0, 1.0));
   a *= vEdge * (1.0 - smoothstep(520.0, 760.0, dist)) * smoothstep(1.0, 3.5, dist);
   if (a < 0.004) discard;
-  gl_FragColor = vec4(col, a);
+  gl_FragColor = vec4(max(col, vec3(0.0)), a);
 }`;
 
 // ------------------------------------------------------------------ sunburst god rays
@@ -413,7 +415,7 @@ export class HeavenEnv {
     const skyMat = new THREE.ShaderMaterial({
       vertexShader: skyVert, fragmentShader: skyFrag, side: THREE.BackSide, depthWrite: false,
       uniforms: {
-        uSky: { value: skyTex }, uRot: { value: SKY_ROT }, uBright: { value: 0.9 },
+        uSky: { value: skyTex }, uRot: { value: SKY_ROT }, uBright: { value: 0.82 },
         uSun: { value: SUN_VIS.clone() }, uSunCol: { value: COL.sun.clone() }, uHaze: { value: COL.haze.clone() }, uTint: { value: new THREE.Color(1.0, 0.9, 0.96) },
       },
     });
@@ -447,7 +449,7 @@ export class HeavenEnv {
     const rayMat = new THREE.ShaderMaterial({
       vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: rayFrag, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-      uniforms: { uTime: { value: 0 }, uK: { value: 0.5 }, uCol: { value: new THREE.Color(1.0, 0.74, 0.45) } },
+      uniforms: { uTime: { value: 0 }, uK: { value: 0.32 }, uCol: { value: new THREE.Color(1.0, 0.72, 0.42) } },
     });
     this.rays = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), rayMat);
     this.rays.scale.setScalar(900);
@@ -489,10 +491,10 @@ export class HeavenEnv {
     this.feathers = flakes(16, featherTex, { box: 30, size: 0.26, fall: 0.16, curl: 0.5, cells: 1, tint: 0.25, aspect: 1 });
     g.add(this.petals, this.feathers);
     // lights
-    this.hemi = new THREE.HemisphereLight(0xffeef4, 0xb8a4d8, 0.75);
-    this.sun = new THREE.DirectionalLight(0xffc68a, 2.2);
+    this.hemi = new THREE.HemisphereLight(0xffeef4, 0xa898d0, 0.5);
+    this.sun = new THREE.DirectionalLight(0xffc68a, 2.0);
     this.sun.position.copy(SUN_L).multiplyScalar(30);
-    this.fill = new THREE.DirectionalLight(0xffeee4, 1.1);
+    this.fill = new THREE.DirectionalLight(0xffeee4, 0.8);
     this.fill.position.set(0.3, 0.6, 1).multiplyScalar(30);
     g.add(this.hemi, this.sun, this.sun.target, this.fill, this.fill.target);
     g.traverse((o: any) => { if (o.material?.isShaderMaterial) this.mats.push(o.material); });
@@ -548,7 +550,7 @@ export class HeavenEnv {
       pm.dispose();
       hdr.dispose();
       scene.environment = this.envRT.texture;
-      (scene as any).environmentIntensity = 0.85;
+      (scene as any).environmentIntensity = 0.6;
       (scene as any).environmentRotation?.set?.(0, -SKY_ROT, 0);
     } catch (e) { console.warn('[heaven] env map failed', e); }
   }

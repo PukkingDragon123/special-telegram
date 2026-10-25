@@ -74,7 +74,7 @@ export default defineModule({
     sleep = installSleep(game, sparks, () => saveApi.save());
     (game as any).social = {
       skills: SKILLS, skillIds: SKILL_IDS, levels: (pl: Ent) => levels(pl), money: (amount: number) => buildMoney(amount),
-      recipesFor: (day: number) => recipesFor(game, day), think: () => think.active, _thinkDebug: () => think.debug, heaven: () => think.heaven,
+      recipesFor: (day: number) => recipesFor(game, day), think: () => think.active, _thinkDebug: () => think.debug, heaven: () => think.heaven, heavenQA: () => think.qaEnter(),
     };
     // ?continue → load the auto-save as soon as we host (QA / until the menu wires "เล่นต่อ")
     if (params.has('continue')) {

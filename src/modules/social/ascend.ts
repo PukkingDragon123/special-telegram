@@ -55,7 +55,7 @@ ${NOISE}
 void main() {
   float x = 1.0 - abs(vUv.x - 0.5) * 2.0;
   float along = smoothstep(0.0, 0.2, vUv.y) * (1.0 - smoothstep(0.75, 1.0, vUv.y));
-  float fl = 0.55 + 0.45 * fbm(vec3(vS * 9.0, vUv.y * 3.0 - uTime * 0.6, uTime * 0.1));
+  float fl = 0.55 + 0.45 * vn(vec3(vS * 9.0, vUv.y * 3.0 - uTime * 0.6, uTime * 0.1));
   float a = pow(x, 2.2) * along * fl * uK * 0.42;
   gl_FragColor = vec4(vec3(1.0, 0.86, 0.6) * a, a);
 }`;

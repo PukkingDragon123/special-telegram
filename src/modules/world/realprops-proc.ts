@@ -16,7 +16,7 @@ export interface ProcPart { geom: THREE.BufferGeometry; mat: THREE.Material; tin
 export interface ProcModel { parts: ProcPart[] }
 
 const texCache = new Map<string, Promise<THREE.Texture>>();
-function tex(path: string, srgb = true, neutral = false): Promise<THREE.Texture> {
+export function tex(path: string, srgb = true, neutral = false): Promise<THREE.Texture> {
   const key = path + srgb + neutral;
   let p = texCache.get(key);
   if (!p) {
@@ -27,7 +27,7 @@ function tex(path: string, srgb = true, neutral = false): Promise<THREE.Texture>
 }
 
 /** grey-normalised copy (instance colours recolour it) */
-function greyed(t: THREE.Texture, target = 0.8): THREE.Texture {
+export function greyed(t: THREE.Texture, target = 0.8): THREE.Texture {
   const img = t.image as HTMLImageElement;
   const cv = document.createElement('canvas');
   cv.width = img.width; cv.height = img.height;
@@ -74,12 +74,12 @@ export function lathe(pts: [number, number][], segs: number, o: { k?: number; uR
   return g;
 }
 
-function tubeGeom(points: THREE.Vector3[], r: number, segs = 24, radial = 6) {
+export function tubeGeom(points: THREE.Vector3[], r: number, segs = 24, radial = 6) {
   const c = new THREE.CatmullRomCurve3(points);
   return new THREE.TubeGeometry(c, segs, r, radial, false);
 }
 
-function plasticMat(map: THREE.Texture, normal: THREE.Texture, rough: THREE.Texture, repeat: number, side: THREE.Side = THREE.FrontSide) {
+export function plasticMat(map: THREE.Texture, normal: THREE.Texture, rough: THREE.Texture, repeat: number, side: THREE.Side = THREE.FrontSide) {
   const cl = (t: THREE.Texture) => { const c = t.clone(); c.wrapS = c.wrapT = THREE.RepeatWrapping; c.repeat.set(repeat, repeat); c.needsUpdate = true; return c; };
   const m = new THREE.MeshStandardMaterial({ map: cl(map), normalMap: cl(normal), roughnessMap: cl(rough), roughness: 0.85, metalness: 0, side });
   m.normalScale.set(0.5, 0.5);
@@ -88,13 +88,13 @@ function plasticMat(map: THREE.Texture, normal: THREE.Texture, rough: THREE.Text
 }
 
 /** strip the attributes down to position/normal/uv so parts merge cleanly */
-function clean(g: THREE.BufferGeometry) {
+export function clean(g: THREE.BufferGeometry) {
   const o = g.index ? g.toNonIndexed() : g;
   for (const k of Object.keys(o.attributes)) if (!['position', 'normal', 'uv'].includes(k)) o.deleteAttribute(k);
   if (!o.getAttribute('normal')) o.computeVertexNormals();
   return o;
 }
-const mergeAll = (gs: THREE.BufferGeometry[]) => mergeGeometries(gs.map(clean), false)!;
+export const mergeAll = (gs: THREE.BufferGeometry[]) => mergeGeometries(gs.map(clean), false)!;
 
 // ------------------------------------------------------------------ the Thai plastic stool
 async function thaiStool(): Promise<ProcModel> {

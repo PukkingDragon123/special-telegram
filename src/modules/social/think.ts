@@ -143,7 +143,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
       post.bloom.intensity = local.bloom0 + 0.9 * k;
     } else if (local.phase === 'heaven') {
       post.setLook(HEAVEN_LOOK, 1);
-      post.bloom.intensity = 0.5 + (heaven?.kick ?? 0) * 0.8;
+      post.bloom.intensity = 0.36 + (heaven?.kick ?? 0) * 0.8;
     } else {
       const k = clamp(local.t / 1.0);
       post.bloom.intensity = local.bloom0 + 0.9 * (1 - k);
@@ -308,6 +308,8 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     get debug() { return local ? { phase: local.phase, t: local.t, heaven: heaven?.phase, env: !!heaven?.scene.environment, locked: Input.locked } : null; },
     /** QA helpers */
     get heaven() { return heaven; },
+    /** QA: go straight up (skips the look-up), for quick screenshots */
+    qaEnter() { if (!local && canStart()) start(); if (local && local.phase === 'up') local.t = UP_DUR; },
     stop,
     onUnlock(d: { id: number; skill: string }) {
       if (d.id !== game.localPlayerId || !local || local.phase !== 'heaven') return;

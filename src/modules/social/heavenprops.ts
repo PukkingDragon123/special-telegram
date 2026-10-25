@@ -81,7 +81,7 @@ void main() {
   float ao = mix(0.66, 1.0, crease) * (0.88 + 0.24 * fluff);
   vec3 base = mix(uBottom, uTop, smoothstep(-0.8, 0.8, vUp));
   vec3 col = base * (0.62 + 0.42 * dif) * ao;
-  col += uRim * fres * 0.32 + uSunCol * sss * 0.5;
+  col += uRim * fres * 0.55 + uSunCol * sss * 0.6;
   col += vGlow.rgb * vGlow.a * (0.3 + 0.9 * fres) * (0.55 + 0.45 * smoothstep(-0.3, 0.8, vUp));
   gl_FragColor = vec4(col, 1.0);
 }`;
@@ -118,8 +118,8 @@ export class PuffField {
       vertexShader: puffVert, fragmentShader: puffFrag,
       uniforms: {
         uTime: { value: 0 }, uOff: { value: this.off }, uGlow: { value: this.glow },
-        uL: { value: SUN_L.clone() }, uTop: { value: new THREE.Color(1.0, 0.95, 0.92) }, uBottom: { value: new THREE.Color(0.72, 0.66, 0.88) },
-        uRim: { value: new THREE.Color(1.0, 0.92, 0.8) }, uSunCol: { value: COL.sun.clone() },
+        uL: { value: SUN_L.clone() }, uTop: { value: new THREE.Color(1.05, 0.96, 0.9) }, uBottom: { value: new THREE.Color(0.62, 0.56, 0.84) },
+        uRim: { value: new THREE.Color(1.0, 0.8, 0.52) }, uSunCol: { value: COL.sun.clone() },
       },
     });
     this.mesh = new THREE.Mesh(g, this.mat);
@@ -273,9 +273,9 @@ function patchMaterial(src: THREE.Material, U: PropU): THREE.Material {
       .replace('#include <common>', '#include <common>\nuniform float uStone, uRim, uFlash;\nuniform vec3 uRimCol;')
       .replace('#include <map_fragment>', `#include <map_fragment>
         { float l = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
-          vec3 stone = vec3(l * 0.45 + 0.42) * vec3(0.93, 0.94, 1.0);
+          vec3 stone = vec3(l * 0.4 + 0.2) * vec3(0.86, 0.88, 1.0);
           diffuseColor.rgb = mix(diffuseColor.rgb, stone, uStone);
-          diffuseColor.a *= 1.0 - uStone * 0.3; }`)
+          diffuseColor.a *= 1.0 - uStone * 0.16; }`)
       .replace('#include <opaque_fragment>', `${lit ? `{ float fr = pow(1.0 - clamp(abs(dot(normalize(normal), normalize(vViewPosition))), 0.0, 1.0), 2.4);
           outgoingLight += uRimCol * (fr * uRim); }` : ''}
         outgoingLight += uRimCol * uFlash;
@@ -316,7 +316,7 @@ export interface PropNode {
 
 export interface Cluster { b: Branch; centre: THREE.Vector3; top: number; title: Text3D; sub: Text3D; key: string; at: number }
 
-const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion(), _m = new THREE.Matrix4(), _c = new THREE.Color(), _e = new THREE.Euler();
+const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _m = new THREE.Matrix4(), _c = new THREE.Color(), _e = new THREE.Euler();
 const UP = new THREE.Vector3(0, 1, 0);
 
 const C_GOLD = new THREE.Color(1.0, 0.72, 0.28);
@@ -356,7 +356,7 @@ export class SkillProps {
     for (const b of branches) {
       const list = SKILLS.filter((s) => s.branch === b).sort((a, c) => a.tier - c.tier);
       const centre = clusterCentre(b);
-      const toCam = _v.set(-centre.x, 0, -centre.z).normalize();
+      const toCam = new THREE.Vector3(-centre.x, 0, -centre.z).normalize();
       const right = new THREE.Vector3().crossVectors(UP, toCam).normalize();
       const n = list.length;
       let top = -Infinity;
@@ -371,8 +371,8 @@ export class SkillProps {
         this.nodes.push(node);
         gi++;
       });
-      const title = text3d('', { font: 'bubbly', size: 0.2, color: 0xfff1d2, side: 0x6e3f18, emissive: 0.32, rim: 0xffd890, rimStrength: 0.6, align: 'center', valign: 'bottom', castShadow: false, anim: { pop: 0.4, rise: 0.5, wobble: 0.04 } });
-      const sub = text3d('', { font: 'ui', size: 0.085, color: 0xffe7b8, side: 0x6e3f18, emissive: 0.3, align: 'center', valign: 'top', castShadow: false });
+      const title = text3d('', { font: 'bubbly', size: 0.21, color: 0xffc24a, side: 0x4a2208, emissive: 0.2, metalness: 0.4, roughness: 0.3, rim: 0xfff0c0, rimStrength: 0.8, align: 'center', valign: 'bottom', castShadow: false, anim: { pop: 0.4, rise: 0.5, wobble: 0.04 } });
+      const sub = text3d('', { font: 'ui', size: 0.085, color: 0x4a2a4a, side: 0xfff0e0, emissive: 0.05, bevelFace: true, align: 'center', valign: 'top', castShadow: false });
       this.group.add(title, sub);
       this.clusters.push({ b, centre, top, title, sub, key: '', at: 0 });
     }
@@ -401,7 +401,7 @@ export class SkillProps {
     holder.scale.setScalar(0.001);
     this.group.add(holder);
     const U: PropU = { stone: { value: 1 }, rim: { value: 0 }, rimCol: { value: new THREE.Color(1, 0.8, 0.4) }, flash: { value: 0 } };
-    const size = s.branch === 'life' ? 0.44 : 0.52;
+    const size = s.branch === 'life' ? 0.58 : 0.7;
     const node: PropNode = {
       s, i: this.nodes.length, group: gi, holder, spinner, fit, raw, U, mats: [], base: base.clone(), cur: base.clone(), state: '', stoneK: 1,
       hover: 0, appear: 0, appearAt: 0, bounce: 0, shake: 0, happy: 0, spin: Math.random() * 6, meshCount: -1, ring: null, ringK: 0, sparkT: Math.random(), size,
@@ -422,11 +422,17 @@ export class SkillProps {
     });
     if (count === n.meshCount) return;
     n.meshCount = count;
+    // measure the item on its own (detached, identity parent), visible meshes only
+    n.fit.remove(n.raw);
     n.raw.position.set(0, 0, 0);
-    n.fit.scale.setScalar(1);
     n.raw.updateMatrixWorld(true);
     const b = new THREE.Box3();
-    n.raw.traverse((o: any) => { if (o.isMesh && o.geometry) { o.geometry.computeBoundingBox?.(); if (o.geometry.boundingBox) b.union(_box.copy(o.geometry.boundingBox).applyMatrix4(_m.copy(o.matrixWorld).premultiply(_inv.copy(n.raw.parent!.matrixWorld).invert()))); } });
+    n.raw.traverseVisible((o: any) => {
+      if (!(o.isMesh || o.isSkinnedMesh) || !o.geometry?.attributes?.position) return;
+      if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+      if (o.geometry.boundingBox && !o.geometry.boundingBox.isEmpty()) b.union(_box.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld));
+    });
+    n.fit.add(n.raw);
     if (b.isEmpty()) { n.meshCount = -1; return; }
     const sz = b.getSize(_v), c = b.getCenter(_v2);
     n.raw.position.set(-c.x, -c.y, -c.z);
@@ -549,12 +555,13 @@ export class SkillProps {
       // spin: owned/ready spin, locked lazily; hovered turns to face you; happy = a joyful double spin
       n.spin += dt * (owned ? 0.9 : ready ? 0.7 : 0.25) * (1 - n.hover * 0.85);
       const happySpin = (1 - Math.pow(n.happy, 0.5)) * Math.PI * 4 * (n.happy > 0 ? 1 : 0);
-      _q.setFromEuler(_e.set(0.32 + Math.sin(t * 0.7 + n.i) * 0.12 + Math.sin(t * 42) * n.shake * 0.25, n.spin + happySpin, Math.sin(t * 0.5 + n.i) * 0.1 + Math.sin(t * 30) * n.shake * 0.35));
-      // facing the camera when hovered (with a curious little sway)
+      // holder faces you (yaw); the prop leans its top toward you so plates / woks / boards show their faces
+      n.holder.rotation.set(0, Math.atan2(camLocal.x - n.cur.x, camLocal.z - n.cur.z), 0);
+      _q.setFromEuler(_e.set(0.48 + Math.sin(t * 0.7 + n.i) * 0.12 + Math.sin(t * 42) * n.shake * 0.25, n.spin + happySpin, Math.sin(t * 0.5 + n.i) * 0.1 + Math.sin(t * 30) * n.shake * 0.35));
+      // hovered: stops spinning and turns its best side to you (with a curious little sway)
       if (n.hover > 0.001) {
-        _m.lookAt(camLocal, n.cur, UP);
-        _q2.setFromRotationMatrix(_m).multiply(_q3.setFromEuler(_e.set(0.25, Math.sin(t * 1.4) * 0.35 + happySpin, 0)));
-        _q.slerp(_q2, Ease.inOutCubic(n.hover) * 0.9);
+        _q2.setFromEuler(_e.set(0.4, Math.sin(t * 1.4) * 0.35 + happySpin, Math.sin(t * 1.1) * 0.06));
+        _q.slerp(_q2, Ease.inOutCubic(n.hover) * 0.92);
       }
       n.spinner.quaternion.copy(_q);
       // gold ring for learned props
@@ -608,7 +615,6 @@ export class SkillProps {
 }
 
 const _box = new THREE.Box3();
-const _inv = new THREE.Matrix4();
 
 // ------------------------------------------------------------------ hover info (real 3D text beside the prop)
 
@@ -630,14 +636,14 @@ export class PropInfo {
     const status = flash ?? (st.st === 'owned' ? 'ปลดแล้ว ✓ · learned'
       : st.st === 'ready' ? `คลิกเพื่อเรียน · ใช้ ${s.cost} แต้ม (มี ${sp})`
       : st.why?.th ?? '');
-    const statusCol = flash ? 0xff9a8a : st.st === 'ready' ? 0xffd45a : st.st === 'owned' ? 0xc8ffb0 : 0xe8e0ff;
+    const statusCol = flash ? 0xc0281a : st.st === 'ready' ? 0xb85200 : st.st === 'owned' ? 0x2c7a1e : 0x5c4c86;
     const root = new THREE.Group();
     const opts = { castShadow: false, align: 'left' as const, valign: 'top' as const };
     const lines = [
-      text3d(s.name.th, { ...opts, font: 'bubbly', size: 0.115, color: 0xfff3da, side: 0x6a3a16, emissive: 0.3, rim: 0xffd890, rimStrength: 0.5, maxWidth: 2.0 }),
-      text3d(`ระดับ ${s.tier + 1} · ${s.cost} แต้ม  —  ${status}`, { ...opts, font: 'ui', size: 0.058, color: statusCol, side: 0x4a2a14, emissive: 0.35, maxWidth: 2.1 }),
-      text3d(s.desc.th, { ...opts, font: 'ui', size: 0.056, color: 0xfffaf0, side: 0x553a28, emissive: 0.22, maxWidth: 1.9 }),
-      text3d(`${s.name.en} — ${s.desc.en}`, { ...opts, font: 'ui', size: 0.04, color: 0xf2e6ff, side: 0x4a3a5a, emissive: 0.2, maxWidth: 1.9 }),
+      text3d(s.name.th, { ...opts, font: 'bubbly', size: 0.12, color: 0xffc95a, side: 0x4a2208, emissive: 0.22, metalness: 0.35, roughness: 0.35, rim: 0xfff0c0, rimStrength: 0.7, maxWidth: 2.0 }),
+      text3d(`ระดับ ${s.tier + 1} · ${s.cost} แต้ม  —  ${status}`, { ...opts, font: 'ui', size: 0.06, color: statusCol, side: 0x2a1406, emissive: 0.12, maxWidth: 2.1 }),
+      text3d(s.desc.th, { ...opts, font: 'ui', size: 0.058, color: 0x3b2338, side: 0xfff2e2, emissive: 0.05, bevelFace: true, maxWidth: 1.9 }),
+      text3d(`${s.name.en} — ${s.desc.en}`, { ...opts, font: 'ui', size: 0.042, color: 0x5a4470, side: 0xf6eeff, emissive: 0.05, bevelFace: true, maxWidth: 1.9 }),
     ];
     for (const l of lines) { l.popIn(0.012); root.add(l); }
     this.group.add(root);

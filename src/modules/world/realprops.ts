@@ -7,7 +7,11 @@ import { Assets } from '../../core/assets';
 import { params } from '../../core/util';
 import type { Game } from '../../game/game';
 import { G, groups } from '../../sim/physics';
-import { PROC_MODELS, ProcModel } from './realprops-proc';
+import { PROC_MODELS as BASE_PROC, ProcModel } from './realprops-proc';
+import { TABLE_MODELS } from './realprops-table';
+import { STALL_MODELS } from './realprops-stall';
+
+const PROC_MODELS: Record<string, () => Promise<ProcModel>> = { ...BASE_PROC, ...TABLE_MODELS, ...STALL_MODELS };
 
 /**
  * REAL PROPS — photoscanned Poly Haven models (CC0, public/assets/gen/world/models, fetched and
@@ -32,6 +36,8 @@ export type PropId = string;
 export interface ModelDef {
   /** Poly Haven id (GLB at gen/world/models/<id>/<id>.glb); absent → procedural (PROC_MODELS) */
   file?: string;
+  /** GLB path override (assets-relative), e.g. another module's models */
+  path?: string;
   phys: PhysKind;
   /** kg (dynamic) */
   mass?: number;
@@ -50,8 +56,8 @@ export interface ModelDef {
   rot?: [number, number, number];
   /** extra uniform scale */
   scale?: number;
-  /** origin: bottom centre (default) or bottom-back (wall-mounted, back at z=0) */
-  anchor?: 'bottom' | 'back';
+  /** origin: bottom centre (default), bottom-back (wall-mounted, back at z=0) or top centre (hanging) */
+  anchor?: 'bottom' | 'back' | 'top';
   /** env-map intensity */
   env?: number;
 }
@@ -106,6 +112,38 @@ export const MODELS: Record<PropId, ModelDef> = {
   power_box: M('power_box_01', { phys: 'static', far: 1.0, anchor: 'back' }),
   hydrant: M('fire_hydrant', { phys: 'static', far: 1.2, shadow: true }),
   barrier: M('concrete_road_barrier_02', { phys: 'static', far: 1.6, shadow: true }),
+  // ---- tables & table things (realprops-table.ts)
+  thai_table: { phys: 'dyn', mass: 3.5, friction: 0.6, recolor: true, shadow: true, collider: 'box' },
+  steel_table: { phys: 'dyn', mass: 8, friction: 0.5, shadow: true, collider: 'box' },
+  caddy: { phys: 'dyn', mass: 1.3, friction: 0.5, far: 0.5, collider: 'box' },
+  spoon_cup: { phys: 'dyn', mass: 0.35, friction: 0.5, far: 0.45, collider: 'cyl' },
+  jug: { phys: 'dyn', mass: 1.2, friction: 0.5, recolor: true, far: 0.5 },
+  glass_cup: { phys: 'dyn', mass: 0.25, friction: 0.5, far: 0.4, collider: 'cyl' },
+  tissue: { phys: 'dyn', mass: 0.3, friction: 0.6, recolor: true, far: 0.45, collider: 'box' },
+  styro_box: { phys: 'dyn', mass: 1.5, friction: 0.7, shadow: true, collider: 'box' },
+  // ---- market stall detail (realprops-stall.ts)
+  meat_belly: { phys: 'dyn', mass: 1.4, friction: 0.95, restitution: 0, far: 0.5, collider: 'box' },
+  meat_belly2: { phys: 'dyn', mass: 1.1, friction: 0.95, restitution: 0, far: 0.5, collider: 'box' },
+  meat_ribs: { phys: 'dyn', mass: 1.2, friction: 0.95, restitution: 0, far: 0.5, collider: 'box' },
+  meat_dark: { phys: 'dyn', mass: 0.6, friction: 0.95, restitution: 0, far: 0.45, collider: 'box' },
+  meat_chicken: { phys: 'dyn', mass: 1.5, friction: 0.95, restitution: 0, far: 0.5 },
+  meat_minced: { phys: 'dyn', mass: 1.2, friction: 0.95, restitution: 0, far: 0.5 },
+  chop_block: { phys: 'dyn', mass: 14, friction: 0.8, shadow: true, collider: 'cyl', far: 0.7 },
+  cleaver: { phys: 'dyn', mass: 0.8, friction: 0.6, far: 0.45, collider: 'box' },
+  hanging_scale: { phys: 'none', anchor: 'top', far: 0.7 },
+  egg_tray: { phys: 'dyn', mass: 1.9, friction: 0.8, restitution: 0, far: 0.6, collider: 'box' },
+  egg_shell: { phys: 'none', far: 0.3 },
+  mist_bottle: { phys: 'dyn', mass: 0.6, friction: 0.5, recolor: true, far: 0.45 },
+  bag_bundle: { phys: 'none', anchor: 'top', recolor: true, far: 0.5 },
+  fridge: { phys: 'static', shadow: true, far: 1.2 },
+  radio: M('boombox', { phys: 'dyn', mass: 2.8, friction: 0.6, far: 0.6, collider: 'box' }),
+  cash_tin: M('cleaner_tin_01', { phys: 'dyn', mass: 0.4, friction: 0.5, far: 0.45, collider: 'cyl' }),
+  bulb: M('lightbulb_01', { phys: 'none', anchor: 'top', far: 0.7, env: 1.2 }),
+  bananas: M('bananas', { phys: 'none', far: 0.6 }),
+  knife: M('fish_knife', { phys: 'none', far: 0.4 }),
+  lychee: M('food_lychee_01', { phys: 'none', far: 0.3 }),
+  lime: { path: 'gen/cooking/models/food_lime_01/food_lime_01.glb', file: 'food_lime_01', phys: 'none', far: 0.3 },
+  onion: { path: 'gen/cooking/models/yellow_onion/yellow_onion.glb', file: 'yellow_onion', phys: 'none', far: 0.3 },
 };
 
 // ------------------------------------------------------------------ model loading
@@ -179,7 +217,7 @@ function finishModel(parts: ModelPart[], def: ModelDef): Model {
   const box = new THREE.Box3();
   for (const p of parts) { p.geom.computeBoundingBox(); box.union(p.geom.boundingBox!); }
   const c = box.getCenter(new THREE.Vector3());
-  const off = new THREE.Vector3(-c.x, -box.min.y, def.anchor === 'back' ? -box.min.z : -c.z);
+  const off = new THREE.Vector3(-c.x, def.anchor === 'top' ? -box.max.y : -box.min.y, def.anchor === 'back' ? -box.min.z : -c.z);
   for (const p of parts) { p.geom.translate(off.x, off.y, off.z); p.geom.computeBoundingBox(); p.geom.computeBoundingSphere(); }
   box.translate(off);
   // convex hull points (subsampled for big meshes)
@@ -207,7 +245,7 @@ function finishModel(parts: ModelPart[], def: ModelDef): Model {
 }
 
 async function loadGlb(def: ModelDef): Promise<Model | null> {
-  const gltf = await loader.loadAsync(Assets.url(`gen/world/models/${def.file}/${def.file}.glb`));
+  const gltf = await loader.loadAsync(Assets.url(def.path ?? `gen/world/models/${def.file}/${def.file}.glb`));
   gltf.scene.updateMatrixWorld(true);
   const byMat = new Map<THREE.Material, THREE.BufferGeometry[]>();
   gltf.scene.traverse((o) => {
@@ -337,6 +375,13 @@ export class RealProps {
   /** my own scatter footprints (avoid overlapping clutter) */
   private occ = new Map<number, [number, number, number][]>();
   stats = { instances: 0, bodies: 0, dynamic: 0, awake: 0, visible: 0, drawn: 0, buildMs: 0 };
+  /** plain objects (animated fans, swinging meat, wind tarps…) added to the world root at build */
+  readonly objects: THREE.Object3D[] = [];
+  /** per-frame animators, run only when the camera is within `r` metres of `p` */
+  readonly anims: { p: THREE.Vector3; r: number; fn: (dt: number, t: number) => void }[] = [];
+  private animT = 0;
+  addObject(o: THREE.Object3D) { this.objects.push(o); return o; }
+  animate(p: THREE.Vector3, r: number, fn: (dt: number, t: number) => void) { this.anims.push({ p, r, fn }); }
 
   /** world builders: register one prop. y = surface height. */
   add(id: PropId, x: number, y: number, z: number, yaw = 0, o: PlaceOpts = {}) {
@@ -376,6 +421,7 @@ export class RealProps {
     this.game = game;
     this.root = root;
     current = this;
+    for (const o of this.objects) root.add(o);
     if (params.has('noreal')) { this.placements.length = 0; return; }
     const ids = [...new Set(this.placements.map((p) => p.id))];
     const models = await Promise.all(ids.map((id) => loadModel(id)));
@@ -508,6 +554,11 @@ export class RealProps {
     });
     this.stats.awake = awake;
     this.kickByNpcs(game, dt);
+    this.animT += dt;
+    if (this.anims.length) {
+      cam.getWorldPosition(_v);
+      for (const a of this.anims) if (a.p.distanceToSquared(_v) < a.r * a.r) a.fn(dt, this.animT);
+    }
     // culling / compaction
     cam.getWorldPosition(_v);
     const dir = cam.getWorldDirection(new THREE.Vector3());
@@ -598,6 +649,7 @@ export class RealProps {
 
   dispose() {
     for (const b of this.batches) for (const m of b.meshes) m.removeFromParent();
+    for (const o of this.objects) o.removeFromParent();
     this.batches = [];
     this.byHandle.clear();
     this.dynList = [];

@@ -27,7 +27,7 @@ export const HEAVEN_Y = 2600;
 const EYE = 1.62;
 const inCubic = (t: number) => t * t * t;
 
-const HEAVEN_LOOK = { lift: [0.008, 0.004, 0.014] as [number, number, number], gamma: [1.0, 0.99, 1.02] as [number, number, number], gain: [1.06, 1.0, 0.98] as [number, number, number], saturation: 1.22, contrast: 1.08, tint: [1.02, 0.99, 1.0] as [number, number, number] };
+const HEAVEN_LOOK = { lift: [0.008, 0.004, 0.014] as [number, number, number], gamma: [1.0, 0.99, 1.02] as [number, number, number], gain: [1.06, 1.0, 0.98] as [number, number, number], saturation: 1.18, contrast: 1.12, tint: [1.02, 0.99, 1.0] as [number, number, number] };
 export { HEAVEN_LOOK };
 
 // ------------------------------------------------------------------ white veil in front of a camera
@@ -73,8 +73,8 @@ class PointsHud {
         if (!o.isMesh) return;
         o.material = (Array.isArray(o.material) ? o.material : [o.material]).map((m: any) => {
           const k = m.clone();
-          if (k.metalness !== undefined) { k.metalness = 0.55; k.roughness = Math.max(0.3, k.roughness ?? 0.4); }
-          if (k.emissive && k.map) { k.emissive.setScalar(0.35); k.emissiveMap = k.map; }
+          if (k.metalness !== undefined) { k.metalness = 0.3; k.roughness = Math.max(0.3, k.roughness ?? 0.4); }
+          if (k.emissive && k.map) { k.emissive.setScalar(0.65); k.emissiveMap = k.map; }
           return k;
         });
         if (o.material.length === 1) o.material = o.material[0];
@@ -82,7 +82,7 @@ class PointsHud {
       this.group.add(c);
       this.coins.push(c);
     }
-    this.text = text3d('', { font: 'ui', size: 0.022, color: 0xfff0cc, side: 0x5a3414, emissive: 0.4, align: 'center', valign: 'top', castShadow: false, rim: 0xffd890, rimStrength: 0.4 });
+    this.text = text3d('', { font: 'ui', size: 0.024, color: 0xffc24a, side: 0x3a1a06, emissive: 0.3, metalness: 0.3, roughness: 0.35, align: 'center', valign: 'top', castShadow: false, rim: 0xfff0c0, rimStrength: 0.6 });
     this.text.position.set(0, -0.045, 0);
     this.group.add(this.text);
   }
@@ -191,10 +191,10 @@ export class SkillHeaven {
     this.hud.set(me.sp ?? 0);
     this.info.show(null, me, null);
     for (const w of this.welcome) w.dispose();
-    const a = text3d('สวรรค์สกิล', { font: 'display', size: 0.42, color: 0xfff0c8, side: 0x8a5420, emissive: 0.4, rim: 0xffd27a, rimStrength: 0.8, align: 'center', valign: 'bottom', castShadow: false, anim: { pop: 0.5, rise: 0.8, spin: 1.2 } });
-    const b = text3d('เล็งแล้วคลิกเพื่อเรียนสกิล · Tab กลับลงไป', { font: 'ui', size: 0.1, color: 0xfff6e6, side: 0x6a4024, emissive: 0.35, align: 'center', valign: 'top', castShadow: false });
-    const c = text3d('SKILL HEAVEN — aim & click to learn · Tab to go back', { font: 'ui', size: 0.065, color: 0xf0e4ff, side: 0x4a3a5a, emissive: 0.3, align: 'center', valign: 'top', castShadow: false });
-    a.position.set(0, 4.15, -7.5); b.position.set(0, 4.02, -7.5); c.position.set(0, 3.84, -7.5);
+    const a = text3d('สวรรค์สกิล', { font: 'display', size: 0.42, color: 0xffc24a, side: 0x4a2208, emissive: 0.25, metalness: 0.45, roughness: 0.3, rim: 0xfff0c0, rimStrength: 0.9, align: 'center', valign: 'bottom', castShadow: false, anim: { pop: 0.5, rise: 0.8, spin: 1.2 } });
+    const b = text3d('เล็งแล้วคลิกเพื่อเรียนสกิล · Tab กลับลงไป', { font: 'ui', size: 0.15, color: 0x4a2a4a, side: 0xfff0e0, emissive: 0.05, bevelFace: true, align: 'center', valign: 'top', castShadow: false });
+    const c = text3d('SKILL HEAVEN — aim & click to learn · Tab to go back', { font: 'ui', size: 0.1, color: 0x5a4470, side: 0xf6eeff, emissive: 0.05, bevelFace: true, align: 'center', valign: 'top', castShadow: false });
+    a.position.set(0, 6.3, -8.0); b.position.set(0, 6.15, -8.0); c.position.set(0, 5.9, -8.0);
     for (const t of [a, b, c]) { t.reveal = 0; this.root.add(t); }
     this.welcome = [a, b, c];
     Sound.play('social_heaven_arrive', { vol: 0.8 });
@@ -226,6 +226,13 @@ export class SkillHeaven {
     this.lookYaw = Math.atan2(-d.x, -d.z) - this.yaw;
     this.lookPitch = Math.atan2(d.y, Math.hypot(d.x, d.z)) - this.basePitch();
     return true;
+  }
+  /** QA: what the props look like right now */
+  qaInfo() {
+    return {
+      yaw: +this.curYaw.toFixed(3), pitch: +this.curPitch.toFixed(3), hovered: this.props.hovered?.s.id ?? null,
+      nodes: this.props.nodes.map((n) => ({ id: n.s.id, st: n.state, meshes: n.meshCount, fit: +n.fit.scale.x.toFixed(3), sc: +n.holder.scale.x.toFixed(2), pos: n.cur.toArray().map((v) => +v.toFixed(2)) })),
+    };
   }
   private basePitch() { return this.phase === 'arrive' ? THREE.MathUtils.lerp(1.05, 0.06, Ease.inOutCubic(clamp(this.t / 2.0))) : 0.06; }
 

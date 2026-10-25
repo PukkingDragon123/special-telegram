@@ -7,6 +7,7 @@ import { flat, groundDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
 import { EMIS } from './mats';
 import { MARKET } from './layout';
+import { WindCloth, dressMarketStalls } from './realprops-market';
 
 /**
  * FRESH MARKET (ตลาดสด) — steel-post shed with corrugated gable roofs + fibreglass skylights,
@@ -27,7 +28,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     const yaw = a.yaw ?? 0;
     const fx = -Math.sin(yaw), fz = -Math.cos(yaw);  // facing direction
     const px = a.p[0], pz = a.p[2];
-    const pts = [[px - fz * 1.6 - fx * 2.6, pz + fx * 1.6 - fz * 2.6], [px + fz * 1.6 + fx * 3.1, pz - fx * 1.6 + fz * 3.1]];
+    const pts = [[px - fz * 2.9 - fx * 2.6, pz + fx * 2.9 - fz * 2.6], [px + fz * 2.9 + fx * 3.1, pz - fx * 2.9 + fz * 3.1]];
     reserved.push([Math.min(pts[0][0], pts[1][0]), Math.min(pts[0][1], pts[1][1]), Math.max(pts[0][0], pts[1][0]), Math.max(pts[0][1], pts[1][1])]);
   };
   for (const n of ['auntie_stall', 'butcher_stall', 'veg_stall', 'egg_stall']) res(n);
@@ -146,7 +147,8 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     if (x > 25) addIsland(x, -56.6, x + 4, -53.4); // centre east of the egg stall
   }
   const goods = ['chili', 'lime', 'veg', 'fruit', 'fish', 'herbs', 'dried', 'flowers', 'banana', 'garlic', 'shrimp', 'egg', 'meat', 'rice'];
-  for (const isl of islands) stall(c, isl.r, y0, rng, goods);
+  const cloth = new WindCloth();
+  for (const isl of islands) stall(c, isl.r, y0, rng, goods, cloth);
 
   // tubes + light points over the aisles
   w.setGroup('detail');
@@ -164,13 +166,18 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     const x = rng.range(9, 48.5), z = rng.chance(0.5) ? rng.range(-79.3, -78.9) : rng.range(-40.9, -40.6);
     if (!free([x - 0.4, z - 0.4, x + 0.4, z + 0.4])) continue;
     const st = rng.int(1, 4);
-    for (let k = 0; k < st; k++) w.put(c.props.crate(rng.pick(PLASTIC_COLORS)), x, y0 + k * 0.31, z, rng.range(-0.1, 0.1));
+    for (let k = 0; k < st; k++) w.put(c.props.crate(rng.pick(PLASTIC_COLORS)), x, y0 + k * 0.254, z, rng.range(-0.1, 0.1));
+    if (rng.chance(0.3)) c.props.real.add('styro_box', x + 0.6, y0, z, rng.range(-0.2, 0.2));
   }
   w.setGroup('base');
+  // micro detail around the functional stalls + wind-blown cloth (one mesh)
+  dressMarketStalls({ ...c, rng }, cloth);
+  const cm = cloth.build();
+  if (cm) { c.props.real.addObject(cm); c.props.real.animate(new THREE.Vector3((M.x0 + M.x1) / 2, 3, (M.z0 + M.z1) / 2), 90, (_dt, t) => { cloth.uTime.value = t; }); }
 }
 
 /** one decorative market stall (back-to-back stalls on deep islands) */
-function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: string[]) {
+function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: string[], cloth: WindCloth) {
   const w = c.w, P = c.props;
   const [x0, z0, x1, z1] = r;
   const deep = z1 - z0 > 4;
@@ -204,16 +211,28 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
     w.put(P.stool(rng.pick(PLASTIC_COLORS)), (a + cc) / 2 + rng.range(-1, 1), y0, deep ? (b < z0 + 0.1 ? d + 0.5 : b - 0.5) : d + 0.45, rng.range(0, 6));
     w.setGroup('base');
   }
-  // tarp or umbrella above (colourful)
+  // tarp or umbrella above (colourful, sagging, moving in the wind)
   w.setGroup('detail');
   if (rng.chance(0.55)) {
-    w.mat('tarp', { tint: rng.pick([0x2a5ab0, 0xd03030, 0x2a8a4a, 0xe8c020, 0xe06a20]), uv: 'local', ao: 0.95 });
+    const col = rng.pick([0x2a5ab0, 0xd03030, 0x2a8a4a, 0xe8c020, 0xe06a20]);
     const y = 3.1 + rng.range(-0.2, 0.3);
-    w.quad(x0 - 0.2, y - 0.25, z1 + 0.3, x1 + 0.2, y - 0.25, z1 + 0.3, x1 + 0.2, y, z0 - 0.3, x0 - 0.2, y, z0 - 0.3);
-    w.quad(x1 + 0.2, y - 0.26, z1 + 0.3, x0 - 0.2, y - 0.26, z1 + 0.3, x0 - 0.2, y - 0.01, z0 - 0.3, x1 + 0.2, y - 0.01, z0 - 0.3);
+    cloth.tarp(new THREE.Vector3(x0 - 0.2, y - 0.25, z1 + 0.3), new THREE.Vector3(x1 + 0.2, y - 0.25, z1 + 0.3), new THREE.Vector3(x1 + 0.2, y, z0 - 0.3), new THREE.Vector3(x0 - 0.2, y, z0 - 0.3), col, rng.range(0.1, 0.22));
     w.mat('rubber', { uv: 'local' });
-    for (const x of [x0 - 0.2, x1 + 0.2]) w.tube([x, y, z0 - 0.3, x, 4.85, z0 - 0.3], 0.004, 3);
-  } else if (rng.chance(0.5)) w.put(P.umbrella(rng.pick([0xc03020, 0x2a62b8, 0xe0b020])), (x0 + x1) / 2, y0, (z0 + z1) / 2, rng.range(0, 6));
+    for (const x of [x0 - 0.2, x1 + 0.2]) { w.tube([x, y, z0 - 0.3, x, 4.85, z0 - 0.3], 0.004, 3); w.tube([x, y - 0.25, z1 + 0.3, x, 4.85, z1 + 0.3], 0.004, 3); }
+  } else if (rng.chance(0.5)) {
+    const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+    w.mat('steel_rust', { uv: 'local' }); w.cyl(cx, y0, cz, 0.022, 0.022, 2.3, 6, 1);
+    w.mat('concrete_old', { uv: 'local' }); w.cyl(cx, y0, cz, 0.2, 0.18, 0.14, 10, 1);
+    cloth.umbrella(new THREE.Vector3(cx, y0, cz), 1.3, 2.42, rng.pick([0xc03020, 0x2a62b8, 0xe0b020]));
+  }
+  // a bare bulb on a cord, styrofoam boxes, sometimes a radio or a sleeping cat-sized sack of rice
+  if (rng.chance(0.5)) {
+    const bx = (x0 + x1) / 2 + rng.range(-1, 1), bz = (z0 + z1) / 2;
+    w.mat('rubber', { uv: 'local' }); w.tube([bx, 3.0, bz, bx + 0.02, 2.6, bz, bx, 2.25, bz], 0.004, 3);
+    c.props.real.add('bulb', bx, 2.25, bz, 0);
+    c.lights.add({ p: new THREE.Vector3(bx, 2.15, bz), color: new THREE.Color(0xffc890), intensity: 5, range: 6, glow: 0.4, kind: 'custom' });
+  }
+  if (rng.chance(0.5)) c.props.real.add('styro_box', x1 + 0.25, y0, (z0 + z1) / 2 + rng.range(-0.8, 0.8), rng.range(-0.3, 0.3));
   w.setGroup('base');
 }
 

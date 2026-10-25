@@ -6,6 +6,21 @@ import { tl } from '../../core/util';
 import { lathe, rbox, leg, tube, merge, mesh, group, mat, plastic, pbr, photo, flat, frontArc, band, wobble } from './geo';
 import { messMaterial, waterMaterial } from './fx';
 import { posterMaterial, signMaterials } from './menuposter';
+import { realPropObject } from '../world/realprops';
+
+/** real modelled furniture (world/realprops*): Thai moulded stool, monobloc photoscan, modelled tables
+ *  with their condiment caddy + spoon cup. Visual only — sizes match SEAT_H / TABLE_H / TABLE_SIZE. */
+function realStool(color: 'red' | 'blue') { return realPropObject('thai_stool', { color: color === 'red' ? 0xc8261c : 0x1f5ec0 }); }
+function realChair() { return realPropObject('monobloc', { color: 0xeee9dc }); }
+function realTable(kind: 'table_plastic' | 'table_steel') {
+  const g = new THREE.Group();
+  g.add(realPropObject(kind === 'table_plastic' ? 'thai_table' : 'steel_table', { color: 0x2a62b8 }));
+  const [W, Dp] = TABLE_SIZE[kind], H = TABLE_H[kind];
+  const caddy = realPropObject('caddy', { shadow: false }); caddy.position.set(-W / 2 + 0.12, H, -Dp / 2 + 0.11); caddy.rotation.y = 0.3;
+  const cup = realPropObject('spoon_cup', { shadow: false }); cup.position.set(-W / 2 + 0.27, H, -Dp / 2 + 0.08);
+  g.add(caddy, cup);
+  return g;
+}
 
 /* =============================================================================================
  * Furniture & service item kinds owned by the restaurant (see docs/ARCHITECTURE.md §13).
@@ -315,6 +330,8 @@ function water20() {
   return group(new THREE.Mesh(bot, photo('gen/shops/water20.png', { alpha: true, rough: 0.15, side: D2 })));
 }
 
+void stool; void chair; void plasticTable; void steelTable;
+
 // ------------------------------------------------------------------ definitions
 
 export function defineFurniture(game: Game) {
@@ -323,20 +340,20 @@ export function defineFurniture(game: Game) {
 
   for (const c of ['red', 'blue'] as const) def({
     kind: 'stool_' + c, name: tl(c === 'red' ? 'เก้าอี้พลาสติกแดง' : 'เก้าอี้พลาสติกฟ้า', `${c} plastic stool`), weight: 0.7, price: 65, carry: 'head', fixed: true,
-    tags: ['furniture', 'seat'], shape: { type: 'box', size: [0.36, 0.44, 0.36] }, build: () => stool(c), hold: { pos: [0, -0.1, 0], rot: [0.2, 0.4, 0], scale: 0.6 },
+    tags: ['furniture', 'seat'], shape: { type: 'box', size: [0.36, 0.44, 0.36] }, build: () => realStool(c), hold: { pos: [0, -0.1, 0], rot: [0.2, 0.4, 0], scale: 0.6 },
   });
-  def({ kind: 'chair_plastic', name: tl('เก้าอี้พลาสติกมีพนัก', 'plastic chair'), weight: 1.6, price: 150, carry: 'head', fixed: true, tags: ['furniture', 'seat'], shape: { type: 'box', size: [0.5, 0.84, 0.5] }, build: () => chair(), hold: { pos: [0, -0.2, -0.1], rot: [0.3, 0.4, 0], scale: 0.5 } });
+  def({ kind: 'chair_plastic', name: tl('เก้าอี้พลาสติกมีพนัก', 'plastic chair'), weight: 1.6, price: 150, carry: 'head', fixed: true, tags: ['furniture', 'seat'], shape: { type: 'box', size: [0.5, 0.84, 0.5] }, build: () => realChair(), hold: { pos: [0, -0.2, -0.1], rot: [0.3, 0.4, 0], scale: 0.5 } });
   def({
     kind: 'table_plastic', name: tl('โต๊ะพลาสติก', 'plastic table'), weight: 4, slots: 2, price: 390, carry: 'twohand', fixed: true, tags: ['furniture', 'table'],
     shape: { type: 'box', size: [0.8, 0.66, 0.62] }, data: () => ({ mess: 0 }),
-    build: (e) => { const g = plasticTable(); addMess(g, e, 0.8, 0.62, TABLE_H.table_plastic); return g; },
+    build: (e) => { const g = realTable('table_plastic'); addMess(g, e, 0.8, 0.62, TABLE_H.table_plastic); return g; },
     refresh: (o, e) => { const m = o.getObjectByName('mess') as THREE.Mesh; if (m) (m.material as THREE.ShaderMaterial).uniforms.uMess.value = e.data?.mess ?? 0; },
     label: (e) => tl((e.data?.mess ?? 0) > 0.25 ? 'โต๊ะ (สกปรก)' : 'โต๊ะพลาสติก', 'table'), hold: { pos: [0, -0.35, -0.2], rot: [0.3, 0, 0], scale: 0.45 },
   });
   def({
     kind: 'table_steel', name: tl('โต๊ะสแตนเลส', 'stainless table'), weight: 9, slots: 3, price: 1290, carry: 'twohand', fixed: true, tags: ['furniture', 'table'],
     shape: { type: 'box', size: [0.9, 0.71, 0.62] }, data: () => ({ mess: 0 }),
-    build: (e) => { const g = steelTable(); addMess(g, e, 0.9, 0.62, TABLE_H.table_steel); return g; },
+    build: (e) => { const g = realTable('table_steel'); addMess(g, e, 0.9, 0.62, TABLE_H.table_steel); return g; },
     refresh: (o, e) => { const m = o.getObjectByName('mess') as THREE.Mesh; if (m) (m.material as THREE.ShaderMaterial).uniforms.uMess.value = e.data?.mess ?? 0; },
     label: (e) => tl((e.data?.mess ?? 0) > 0.25 ? 'โต๊ะสแตนเลส (สกปรก)' : 'โต๊ะสแตนเลส', 'stainless table'), hold: { pos: [0, -0.35, -0.2], rot: [0.3, 0, 0], scale: 0.4 },
   });

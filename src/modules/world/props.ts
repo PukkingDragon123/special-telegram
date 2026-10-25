@@ -466,6 +466,7 @@ export function makeProps(w: WB) {
     plasticChair: (col: number) => asReal(plasticChair(col), (m) => real.addMatrix('monobloc', m, { color: col })),
     chairStack: (col: number, n: number) => asReal(chairStack(col, n), (m, sd) => { for (let i = 0; i < n; i++) real.addMatrix('monobloc', local(m, 0, i * 0.075, -i * 0.012, (h(sd + i) - 0.5) * 0.08), { color: col, phys: 'none' }); }),
     crate: (col: number) => asReal(crate(col), (m) => real.addMatrix('crate', m, { color: col })),
+    plasticTable: (col: number) => asReal(plasticTable(col), (m) => real.addMatrix('thai_table', m, { color: col })),
     bucket: (col: number) => asReal(bucket(col), (m) => real.addMatrix('bucket', m, { color: col })),
     lpgTank: (col: number) => asReal(lpgTank(col), (m) => real.addMatrix('lpg_small', m, { color: col })),
     trashBag: (k: number) => asReal(trashBag(k), (m) => real.addMatrix('trashbag', m)),
@@ -498,7 +499,7 @@ export function makeProps(w: WB) {
     real,
     ...realT,
     acUnit, waterTankSteel, waterTankBlue, antenna, dish,
-    plasticTable, basket, wok, pot,
+    basket, wok, pot,
     motorbike, pickup, umbrella, barrier, tube, spiritHouse, atm, phoneBooth, cart, vestRail, bench, signBoxStand,
     C,
   };

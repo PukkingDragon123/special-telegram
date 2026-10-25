@@ -6,6 +6,8 @@ import type { FoliageSys } from './foliage';
 import { weeds, pottedPlant, bananaTree, coconutPalm, bougainvillea } from './foliage';
 import { flat, groundDecal, wallDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
+import { dressSoi, tableSetting } from './realprops-dress';
+import { THAI_TABLE, STEEL_TABLE } from './realprops-table';
 import { EMIS } from './mats';
 import { SW_H, SOI, MAIN, CROAD, ZEBRAS, POLES_SOI, POLES_SOI_E, POLES_MAIN_N, POLES_MAIN_S } from './layout';
 
@@ -97,13 +99,25 @@ export function buildStreetLife(c: Ctx) {
     else w.put(P.junkPile(rng.int(0, 5)), x, SW_H, z, rng.range(0, 6));
   }
 
+  // ---------------------------------------------------------------- real-prop clutter: brooms, drums, tyres, pots, LPG, chairs…
+  dressSoi({ ...c, rng }, okT);
+
   // ---------------------------------------------------------------- street food stalls (decor, not interactive)
   const foodStall = (x: number, z: number, yaw: number) => {
     if (!okT(x, z, 1.4)) return;
     w.put(P.cart(rng.pick([0x2a5a9a, 0xc03020, 0x2a7a3a, 0xe0b020])), x, SW_H, z, yaw);
     w.put(P.umbrella(rng.pick([0xc03020, 0x2a62b8, 0xe0b020, 0x2a8a3e, 0xe06a20])), x + Math.cos(yaw) * 0.2, SW_H, z - Math.sin(yaw) * 0.2, rng.range(0, 6));
-    for (let k = 0; k < rng.int(2, 5); k++) w.put(P.stool(rng.pick(PLASTIC_COLORS)), x + rng.range(-1.4, 1.4), SW_H, z + rng.range(-1.4, 1.4), rng.range(0, 6));
-    if (rng.chance(0.6)) w.put(P.plasticTable(rng.pick([0xe8e4dc, 0x2a62b8, 0xc0302a])), x + rng.range(-1.2, 1.2), SW_H, z + rng.range(0.8, 1.4), rng.range(-0.2, 0.2));
+    // a proper table with its condiment caddy, tissues, spoons, jug & glasses, stools around it
+    const steel = rng.chance(0.4);
+    const tx = x + (Math.abs(x) < 7 ? -Math.sign(x) * 0.15 : rng.range(-0.8, 0.8)), tz = z + (Math.abs(x) < 7 ? rng.pick([-1.5, 1.5]) : 1.3), ty = rng.range(-0.2, 0.2);
+    P.real.add(steel ? 'steel_table' : 'thai_table', tx, SW_H, tz, ty, steel ? {} : { color: rng.pick([0xe8e4dc, 0x2a62b8, 0xc0302a]) });
+    tableSetting(P.real, tx, SW_H + (steel ? STEEL_TABLE.H : THAI_TABLE.H), tz, ty, rng, steel);
+    const sc = rng.pick(PLASTIC_COLORS);
+    for (const [lx, lz] of [[0.68, 0], [-0.68, 0], [0, 0.55], [0, -0.55]] as [number, number][]) {
+      if (!rng.chance(0.75)) continue;
+      const c0 = Math.cos(ty), s0 = Math.sin(ty);
+      w.put(P.stool(rng.chance(0.8) ? sc : rng.pick(PLASTIC_COLORS)), tx + lx * c0 + lz * s0 + rng.range(-0.05, 0.05), SW_H, tz - lx * s0 + lz * c0 + rng.range(-0.05, 0.05), rng.range(0, 6));
+    }
     c.phys.box([x, 0.75, z], [1.6, 1.5, 1.0], yaw);
     c.lights.add({ p: new THREE.Vector3(x, SW_H + 2.0, z), color: new THREE.Color(0xfff0d0), intensity: 5, range: 6, glow: 0.35, kind: 'custom' });
   };
