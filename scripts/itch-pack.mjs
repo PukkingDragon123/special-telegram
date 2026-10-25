@@ -51,7 +51,7 @@ fs.writeFileSync(path.join(OUT, 'assets', 'pak', 'index.json'), JSON.stringify(i
 
 const loader = `<script>
 (() => {
-  const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', json: 'application/json', mp3: 'audio/mpeg', ogg: 'audio/ogg', woff2: 'font/woff2', hdr: 'application/octet-stream', glb: 'model/gltf-binary', txt: 'text/plain', svg: 'image/svg+xml' };
+  const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', json: 'application/json', mp3: 'audio/mpeg', ogg: 'audio/ogg', woff2: 'font/woff2', hdr: 'application/octet-stream', glb: 'model/gltf-binary', txt: 'text/plain', svg: 'image/svg+xml', wasm: 'application/wasm', ttf: 'font/ttf', otf: 'font/otf', ktx2: 'image/ktx2', bin: 'application/octet-stream', gltf: 'model/gltf+json' };
   const base = new URL('.', location.href).href;
   const ofetch = window.fetch.bind(window);
   const idxP = ofetch(base + 'assets/pak/index.json').then((r) => r.json());
