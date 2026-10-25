@@ -15,10 +15,20 @@ Four agents work at the same time in this tree:
 | **buildings** | `src/modules/world/{mats,shophouse,buildings,streets,geo,sky,lights,wires,canal,signs,foliage,weather,layout}.ts`, `src/core/postfx.ts`, `public/assets/gen/world/` (not `models/`, except own downloads via the shared script) |
 | **food** | `src/modules/cooking/*` food/ingredient/dish visuals + physics feel (not furniture items), small generic hooks in `src/game/items.ts`, `public/assets/gen/cooking/` |
 | **creatures** | `src/modules/life/{creature,quad,pets,tex}.ts`, `src/modules/characters/*`, `scripts/life/`, `public/assets/gen/{life,characters}/` |
+| **alive** | new `src/modules/escape/` (police "wanted" cinematic at the map edges) and new `src/modules/critters/` (cockroaches, flies, rats, ants), `public/assets/gen/{escape,critters}/` |
+| **water** | new `src/modules/water/` (buoyancy, splashes, sloshing containers, spills, puddle ripples, taps/hoses, sewer water), `public/assets/gen/water/` |
 | **lead** | `src/modules/menu/*` (album cover + newspaper on the main menu), integration |
 
 Follow-up from the client: "make textured and model hyper realistic, add cooler and polish models, make dogs have rig fur, the food
 have physic bouncy super polish satisfying, use new font too, and make menu show the album cover and newspaper".
+
+Third client message: "make the market and stall and building feel alive, have real sewer portholes (manholes), and
+make when you try to get out you see a police and you hide because you are wanted, have like cinematic; make the stalls
+and shop and world really feel alive, have roaches and better table and have micro detail like the butcher have meat
+counter blood knife etc, and water physic etc too".
+Manholes and drain grates: **buildings** (real 3D covers and grates with sewer water visible below). It publishes their
+positions as `game.world.drains: {p:[x,y,z], kind:'manhole'|'grate'}[]` for **alive** (roaches/rats) and **water**.
+Market and stall micro detail and better tables: **props**.
 
 `src/modules/world/index.ts` is shared by props + buildings: keep edits there to a few lines, re-read before every edit.
 
