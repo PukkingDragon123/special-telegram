@@ -14,3 +14,4 @@ references/user/
 references/food/labels_parody/
 *.zip
 dist-itch/
+*.z0[0-9]
