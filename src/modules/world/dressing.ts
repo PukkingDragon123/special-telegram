@@ -90,12 +90,11 @@ export function buildStreetLife(c: Ctx) {
     const x = side * rng.range(5.3, 5.8), z = rng.range(-150, -2);
     if (!okT(x, z, 0.8)) continue;
     const t = rng.int(0, 4);
-    if (t === 0) for (let k = 0; k < rng.int(1, 3); k++) w.put(P.crate(rng.pick(PLASTIC_COLORS)), x, SW_H + k * 0.31, z, rng.range(-0.2, 0.2));
-    else if (t === 1) w.put(P.stoolStack(rng.pick(PLASTIC_COLORS), rng.int(4, 9)), x, SW_H, z, 0);
+    if (t === 0) for (let k = 0; k < rng.int(1, 3); k++) w.put(P.crate(rng.pick(PLASTIC_COLORS)), x, SW_H + k * 0.254, z, rng.range(-0.2, 0.2));
+    else if (t === 1) { w.put(P.stoolStack(rng.pick(PLASTIC_COLORS), rng.int(4, 9)), x, SW_H, z, 0); c.phys.box([x, 0.4, z], [0.38, 0.8, 0.38]); }
     else if (t === 2) w.put(P.bucket(rng.pick(PLASTIC_COLORS)), x, SW_H, z, 0);
     else if (t === 3) w.put(P.cardboardPile(rng.int(0, 3)), x, SW_H, z, rng.range(0, 6));
     else w.put(P.junkPile(rng.int(0, 5)), x, SW_H, z, rng.range(0, 6));
-    c.phys.box([x, 0.4, z], [0.6, 0.8, 0.6]);
   }
 
   // ---------------------------------------------------------------- street food stalls (decor, not interactive)

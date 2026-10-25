@@ -24,6 +24,30 @@ export interface LayerDef {
   metal?: number;
   /** fallback flat colour */
   color?: number;
+  /** puddles collect on this (flat, outdoors) 0..1 — default from the name */
+  pud?: number;
+  /** rising damp / moss / algae at the foot of walls 0..1 — default from the name */
+  moss?: number;
+}
+
+/** default puddle / weathering response per layer name */
+function layerPud(L: LayerDef) {
+  if (L.pud !== undefined) return L.pud;
+  const n = L.name;
+  if (n.startsWith('asphalt')) return 1;
+  if (n === 'concrete_road' || n === 'concrete_wet' || n === 'mud') return 1;
+  if (n === 'concrete_old' || n === 'footpath' || n === 'laterite' || n === 'roof_slab') return 0.75;
+  if (n.startsWith('tile_') || n.startsWith('pavers') || n === 'tiles_terracotta' || n === 'dirt') return 0.55;
+  if (n === 'gravel' || n === 'tactile' || n === 'grate' || n === 'drain_cover') return 0.35;
+  return 0;
+}
+function layerMoss(L: LayerDef) {
+  if (L.moss !== undefined) return L.moss;
+  const n = L.name;
+  if (n.startsWith('plaster') || n.startsWith('wall_') || n.startsWith('concrete') || n === 'cement_block' || n === 'temple_wall') return 1;
+  if (n === 'brick' || n === 'curb' || n.startsWith('curb_')) return 0.7;
+  if (n === 'tiles_wall' || n === 'marble' || n === 'footpath') return 0.35;
+  return 0;
 }
 
 /** The layer table. Order = array index. */
@@ -147,7 +171,7 @@ export const EMIS: Record<string, { i: number; c: number; day: number }> = {
   traffic: { i: 15, c: 0xff4020, day: 1.0 },  // traffic lights
 };
 
-export interface WorldTex { alb: THREE.DataArrayTexture; nra: THREE.DataArrayTexture; metal: Float32Array; rough: Float32Array; tiles: [number, number][]; size: number }
+export interface WorldTex { alb: THREE.DataArrayTexture; nra: THREE.DataArrayTexture; metal: Float32Array; rough: Float32Array; tiles: [number, number][]; size: number; pud: Float32Array; moss: Float32Array }
 
 /** shared uniforms for every world material */
 export const U = {
@@ -161,6 +185,12 @@ export const U = {
   uEmisDay: { value: new Float32Array(16) },
   uEmisScale: { value: 6.0 },
   uSunDir: { value: new THREE.Vector3(0, 1, 0) },
+  /** base dampness of the streets (Thai puddles never dry) 0..1; rain adds on top (uWet) */
+  uDamp: { value: 0.32 },
+  /** planar reflection of the street (reflect.ts): texture + projective matrix + on/off */
+  uRefl: { value: null as THREE.Texture | null },
+  uReflMat: { value: new THREE.Matrix4() },
+  uReflOn: { value: 0 },
 };
 for (const k in EMIS) {
   const e = EMIS[k];
@@ -314,7 +344,9 @@ export async function loadWorldTextures(size: number, worldManifest: WorldManife
     t.needsUpdate = true;
     return t;
   };
-  return { alb: mk(alb, true), nra: mk(nra, false), metal, rough, tiles, size };
+  const pud = Float32Array.from(LAYERS.map(layerPud));
+  const moss = Float32Array.from(LAYERS.map(layerMoss));
+  return { alb: mk(alb, true), nra: mk(nra, false), metal, rough, tiles, size, pud, moss };
 }
 
 /** lookup for the geometry builder */
@@ -380,8 +412,112 @@ vWPos = wPos4.xyz;
 vWNrm = normalize(mat3(modelMatrix) * objectNormal);`);
 }
 
+/** layer index helper for shader defines */
+const LI = (n: string) => (LAYER_INDEX.get(n) ?? 0).toFixed(1);
+
+/**
+ * FAKE INTERIORS ("interior mapping"): a window pane quad (uv 0..1, aExtra = [paneW, paneH, 2 + variant, emissive])
+ * shows a whole room behind the glass by ray-casting a box in the fragment shader: floor (tiles / terrazzo /
+ * wood), plaster walls & ceiling from the texture arrays, a wardrobe / shelf and a bed or table at different
+ * depths, curtains, a ceiling tube at night. Rooms are seeded from the pane position — every window differs.
+ */
+const INTERIOR_GLSL = /* glsl */`
+vec3 wRoomTex(vec2 uv, float layer) { return texture(uAlb, vec3(uv, layer)).rgb; }
+vec3 wInterior(vec3 wp, vec3 nW, vec2 uv, vec4 ex, out float glassDirt) {
+  float W = max(ex.x, 0.3), H = max(ex.y, 0.3);
+  vec3 N = normalize(nW);
+  vec3 T = normalize(cross(vec3(0.0, 1.0, 0.0), N));
+  vec3 org = wp - T * (uv.x * W) - vec3(0.0, uv.y * H, 0.0);
+  vec3 sp = floor(org * 2.0 + 0.5);
+  float s1 = wHash13(sp + 0.31), s2 = wHash13(sp + 17.3), s3 = wHash13(sp + 41.9), s4 = wHash13(sp + 73.1), s5 = wHash13(sp + 5.7);
+  vec3 V = normalize(wp - cameraPosition);
+  vec3 rd = vec3(dot(V, T), V.y, max(-dot(V, N), 0.02));
+  rd.x = abs(rd.x) < 1e-4 ? 1e-4 : rd.x; rd.y = abs(rd.y) < 1e-4 ? 1e-4 : rd.y;
+  vec3 ro = vec3(uv.x * W, uv.y * H, 0.0);
+  float sill = 0.85 + s2 * 0.3;
+  float D = 3.0 + s1 * 3.0;
+  float x0 = -0.3 - s3 * 1.1, x1 = W + 0.3 + s4 * 1.1;
+  float y0 = -sill, y1 = 2.8 - sill;
+  float tX = ((rd.x > 0.0 ? x1 : x0) - ro.x) / rd.x;
+  float tY = ((rd.y > 0.0 ? y1 : y0) - ro.y) / rd.y;
+  float tZ = (D - ro.z) / rd.z;
+  float t = min(min(tX, tY), tZ);
+  vec3 p = ro + rd * t;
+  // wall paint: pastel blues, greens, creams, pinks (Thai rooms), tinted plaster photo
+  vec3 paint = mix(mix(vec3(0.86, 0.84, 0.76), vec3(0.62, 0.78, 0.84), step(0.5, s5)), mix(vec3(0.72, 0.84, 0.66), vec3(0.9, 0.74, 0.72), step(0.5, s4)), step(0.62, s3));
+  float flL = s2 < 0.4 ? ${LI('tiles_floor')} : s2 < 0.7 ? ${LI('terrazzo')} : ${LI('wood_old')};
+  vec3 col;
+  float edge;
+  if (t == tZ) { col = wRoomTex(p.xy * 0.45, ${LI('plaster_dirty')}) * paint; edge = min(min(p.x - x0, x1 - p.x), min(p.y - y0, y1 - p.y)); }
+  else if (t == tY) {
+    if (rd.y < 0.0) { col = wRoomTex(p.xz * 0.7, flL) * 0.85; edge = min(min(p.x - x0, x1 - p.x), D - p.z); }
+    else { col = wRoomTex(p.xz * 0.4, ${LI('plaster')}) * vec3(0.92); edge = min(min(p.x - x0, x1 - p.x), D - p.z); }
+  } else { col = wRoomTex(p.zy * 0.45, ${LI('plaster_dirty')}) * paint * 0.92; edge = min(min(p.y - y0, y1 - p.y), D - p.z); }
+  float ao = 0.55 + 0.45 * smoothstep(0.0, 0.6, edge);
+  // wardrobe / shelf against the back wall
+  float fa = x0 + (x1 - x0) * (0.1 + 0.5 * s4), fb = fa + 0.8 + s5 * 1.0, fh = 1.6 + s3 * 0.6, fd = 0.55;
+  float tf = (D - fd - ro.z) / rd.z; vec3 pf = ro + rd * tf;
+  if (tf < t && pf.x > fa && pf.x < fb && pf.y < y0 + fh) {
+    t = tf; p = pf; ao = 0.8;
+    col = s1 > 0.5 ? wRoomTex(pf.xy * 0.8, ${LI('wood_paint')}) * vec3(0.75, 0.6, 0.45) : wRoomTex(pf.xy * 0.8, ${LI('plastic')}) * vec3(0.8, 0.82, 0.86);
+    col *= 0.85 + 0.15 * step(0.04, abs(fract((pf.x - fa) / max(0.3, (fb - fa) * 0.5)) - 0.5));
+  }
+  // bed / table top
+  float th = y0 + 0.5 + s2 * 0.25, tz0 = 0.9 + s5 * 0.8, tz1 = tz0 + 1.2 + s1 * 0.8;
+  float ta = x0 + (x1 - x0) * 0.55 * s3, tb = ta + 1.0 + s4 * 0.9;
+  float tt = (th - ro.y) / rd.y; vec3 pt = ro + rd * tt;
+  if (rd.y < 0.0 && tt > 0.0 && tt < t && pt.z > tz0 && pt.z < tz1 && pt.x > ta && pt.x < tb) {
+    t = tt; p = pt; ao = 0.9;
+    col = wRoomTex(pt.xz * 1.2, ${LI('fabric')}) * mix(vec3(0.85, 0.5, 0.5), vec3(0.5, 0.6, 0.85), s5);
+  }
+  // lighting: daylight from the window falling off with depth / the room lamp at night
+  float lit = step(0.5, ex.w);
+  vec3 lampC = lit > 0.5 ? uEmisCol[int(floor(ex.w))] : vec3(1.0);
+  float dayL = (0.38 * exp(-p.z * 0.35) + 0.08) * (1.0 - uNight);
+  vec3 L = vec3(dayL) * vec3(1.0, 0.98, 0.94) + lampC * (lit * uNight * (0.5 + 0.35 * exp(-abs(p.z - D * 0.5) * 0.4)));
+  vec3 room = col * ao * L;
+  // ceiling tube
+  if (t == tY && rd.y > 0.0 && abs(p.z - D * 0.45) < 0.05 && abs(p.x - W * 0.5) < 0.6) room += lampC * lit * uNight * 3.0;
+  // curtains just behind the glass: half drawn, fully drawn sheer, or none
+  float cs = s4;
+  float tc = (0.06 - ro.z) / rd.z; vec3 pc = ro + rd * tc;
+  float cov = cs < 0.3 ? step(pc.x, W * (0.25 + 0.4 * s1)) : cs < 0.55 ? step(W * (0.45 + 0.4 * s2), pc.x) : cs < 0.75 ? 1.0 : 0.0;
+  if (cov > 0.0) {
+    float folds = 0.72 + 0.28 * sin(pc.x * 26.0 + sin(pc.y * 3.0 + s1 * 6.0) * 1.5);
+    vec3 cc = wRoomTex(pc.xy * 1.5, ${LI('fabric')}) * mix(mix(vec3(0.9, 0.86, 0.75), vec3(0.75, 0.25, 0.22), step(0.6, s5)), vec3(0.35, 0.5, 0.75), step(0.82, s2)) * folds;
+    float sheer = cs > 0.55 ? 0.62 : 0.94;
+    // lit from inside at night (glows), from the window by day
+    vec3 cl = cc * ((0.36 + 0.1 * folds) * (1.0 - uNight) + lampC * lit * uNight * 0.75);
+    room = mix(room, cl, sheer * cov);
+  }
+  glassDirt = wNoise(wp * vec3(5.0, 3.0, 5.0)) * 0.6 + wNoise(wp * 23.0) * 0.4;
+  return room;
+}
+`;
+
+/** rain ripples on puddles (expanding rings in a jittered grid) → normal xy offset */
+const RIPPLE_GLSL = /* glsl */`
+vec2 wRipple(vec2 p, float t) {
+  vec2 acc = vec2(0.0);
+  for (int i = 0; i < 2; i++) {
+    vec2 q = p * 2.6 + float(i) * 7.31;
+    vec2 c = floor(q); vec2 f = fract(q) - 0.5;
+    float h = wHash13(vec3(c, float(i) * 3.7));
+    f -= (vec2(wHash13(vec3(c, 9.1)), wHash13(vec3(c, 4.3))) - 0.5) * 0.5;
+    float ph = fract(t * 0.9 + h);
+    float r = length(f);
+    float R = ph * 0.45;
+    float ring = sin((r - R) * 46.0) * smoothstep(0.09, 0.0, abs(r - R)) * (1.0 - ph);
+    acc += f / max(r, 1e-3) * ring;
+  }
+  return acc * 0.35;
+}
+`;
+
 /**
  * The world PBR material (texture arrays). cutout=true → alpha tested (albedo.a) variant.
+ * Extras: procedural puddles & wet sheen with planar reflections (reflect.ts), rain ripples, rising damp + moss
+ * at the foot of walls, grime overlay, fake interiors behind windows, night emissive palette.
  */
 export function makeWorldMaterial(tex: WorldTex, cutout = false): THREE.MeshStandardMaterial {
   const m = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 1, vertexColors: true, side: cutout ? THREE.DoubleSide : THREE.FrontSide });
@@ -389,11 +525,13 @@ export function makeWorldMaterial(tex: WorldTex, cutout = false): THREE.MeshStan
   const uniforms = {
     uAlb: { value: tex.alb }, uNra: { value: tex.nra },
     uMetal: { value: tex.metal }, uRoughL: { value: tex.rough },
+    uPud: { value: tex.pud }, uMoss: { value: tex.moss },
     uNormalScale: { value: 1.0 },
   };
   const NL = Math.max(1, tex.metal.length);   // one entry per texture-array layer
   m.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms, U);
+    if (!U.uRefl.value) U.uRefl.value = dummyTex();
     injectWorldVertex(shader);
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>
@@ -401,63 +539,126 @@ uniform sampler2DArray uAlb;
 uniform sampler2DArray uNra;
 uniform float uMetal[${NL}];
 uniform float uRoughL[${NL}];
+uniform float uPud[${NL}];
+uniform float uMoss[${NL}];
 uniform float uNormalScale;
 uniform vec3 uEmisCol[16];
 uniform float uEmisDay[16];
 uniform float uEmisScale;
 uniform float uNight;
 uniform float uWet;
+uniform float uDamp;
 uniform float uTime;
+uniform sampler2D uRefl;
+uniform mat4 uReflMat;
+uniform float uReflOn;
 varying vec2 vUvT;
 varying vec4 vExt;
 varying vec3 vWPos;
 varying vec3 vWNrm;
 ${NOISE_GLSL}
-${TANGENT_GLSL}`)
+${TANGENT_GLSL}
+${INTERIOR_GLSL}
+${RIPPLE_GLSL}`)
       .replace('#include <map_fragment>', `
-float wL0 = floor(vExt.x + 0.5);
-vec4 albT = texture(uAlb, vec3(vUvT, wL0));
-vec4 nraT = texture(uNra, vec3(vUvT, wL0));
-${cutout ? 'if (albT.a < 0.5) discard;' : ''}
-vec3 baseCol = albT.rgb * vColor.rgb;
+vec3 wp = vWPos;
+bool wRoom = vExt.z > 1.5;
+float wL0 = wRoom ? 0.0 : floor(vExt.x + 0.5);
+float wL1 = wRoom ? 0.0 : max(0.0, floor(vExt.y + 0.5));
+vec4 albT = vec4(1.0);
+vec4 nraT = vec4(0.5, 0.5, 0.08, 1.0);
+vec3 baseCol;
+vec3 roomEmis = vec3(0.0);
+float glassDirt = 0.0;
 float ovA = 0.0;
-float wL1 = floor(vExt.y + 0.5);
-if (vExt.z > 0.001) {
-  vec3 wp = vWPos;
-  float blot = wFbm(wp * vec3(0.42, 0.16, 0.42) + vec3(3.1, 0.0, 7.7));
-  float streak = wNoise(vec3((wp.x + wp.z) * 2.6, wp.y * 0.18, 1.3)) * wNoise(vec3((wp.x - wp.z) * 0.9, wp.y * 0.05, 4.1));
-  float bottom = 1.0 - smoothstep(0.0, 1.7, wp.y - 0.1);
-  float m = blot * 1.15 + streak * 0.55 + bottom * 0.55 - 0.42;
-  ovA = smoothstep(0.18, 0.62, m) * vExt.z;
-  vec2 ouv = vUvT * 0.71 + vec2(0.37, 0.11);
-  vec4 albO = texture(uAlb, vec3(ouv, wL1));
-  vec4 nraO = texture(uNra, vec3(ouv, wL1));
-  baseCol = mix(baseCol, albO.rgb * mix(vec3(1.0), vColor.rgb, 0.25), ovA);
-  nraT = mix(nraT, nraO, ovA);
+float puddle = 0.0, damp = 0.0;
+if (wRoom) {
+  roomEmis = wInterior(wp, vWNrm, vUvT, vExt, glassDirt);
+  baseCol = vec3(0.012, 0.013, 0.014);
+} else {
+  albT = texture(uAlb, vec3(vUvT, wL0));
+  nraT = texture(uNra, vec3(vUvT, wL0));
+  ${cutout ? 'if (albT.a < 0.5) discard;' : ''}
+  baseCol = albT.rgb * vColor.rgb;
+  if (vExt.z > 0.001) {
+    float blot = wFbm(wp * vec3(0.42, 0.16, 0.42) + vec3(3.1, 0.0, 7.7));
+    float streak = wNoise(vec3((wp.x + wp.z) * 2.6, wp.y * 0.18, 1.3)) * wNoise(vec3((wp.x - wp.z) * 0.9, wp.y * 0.05, 4.1));
+    float bottom = 1.0 - smoothstep(0.0, 1.7, wp.y - 0.1);
+    float m = blot * 1.15 + streak * 0.7 + bottom * 0.55 - 0.42;
+    ovA = smoothstep(0.18, 0.62, m) * vExt.z;
+    vec2 ouv = vUvT * 0.71 + vec2(0.37, 0.11);
+    vec4 albO = texture(uAlb, vec3(ouv, wL1));
+    vec4 nraO = texture(uNra, vec3(ouv, wL1));
+    baseCol = mix(baseCol, albO.rgb * mix(vec3(1.0), vColor.rgb, 0.25), ovA);
+    nraT = mix(nraT, nraO, ovA);
+  }
+  // --- weathering at the foot of walls: rising damp band, black algae, green moss in the cracks
+  float mossK = uMoss[int(wL0)];
+  if (mossK > 0.0 && abs(vWNrm.y) < 0.6) {
+    float hb = wp.y - 0.12;
+    float nb = wNoise(vec3(wp.x * 1.7 + wp.z * 1.7, 0.0, 2.0));
+    float band = 1.0 - smoothstep(0.0, 0.55 + 0.6 * nb, hb);
+    float n = wFbm(wp * vec3(1.6, 3.2, 1.6));
+    float moss = smoothstep(0.42, 0.72, band * (0.55 + n * 0.9)) * mossK;
+    baseCol *= 1.0 - band * 0.32 * mossK;
+    baseCol = mix(baseCol, baseCol * vec3(0.5, 0.58, 0.34) + vec3(0.006, 0.012, 0.0), moss * 0.85);
+    // dark water streaks running down from ledges (stretched vertical noise)
+    float st = wNoise(vec3((wp.x + wp.z) * 7.0, wp.y * 0.35, 8.3));
+    baseCol *= 1.0 - smoothstep(0.62, 0.9, st) * 0.22 * mossK;
+  }
+  // --- puddles & wet ground (outdoor flat surfaces): organic blobs, a darker damp rim, mirror water
+  float pudK = uPud[int(wL0)] * smoothstep(0.84, 0.95, vColor.a);
+  if (pudK > 0.0 && vWNrm.y > 0.85) {
+    float wetAmt = clamp(max(uDamp, uWet * 1.1), 0.0, 1.0);
+    float n = wFbm(vec3(wp.xz * 0.21, 1.7)) + wNoise(vec3(wp.xz * 1.9, 5.0)) * 0.1 + wNoise(vec3(wp.xz * 7.0, 9.0)) * 0.03;
+    float thr = mix(0.78, 0.5, wetAmt);
+    puddle = smoothstep(thr, thr + 0.035, n) * pudK;
+    damp = smoothstep(thr - 0.14 - 0.1 * wetAmt, thr, n) * pudK;
+  }
 }
-// wet surfaces (rain) — darker and glossier on upward faces
-float wetK = uWet * smoothstep(0.55, 0.95, vWNrm.y);
-baseCol *= mix(1.0, 0.62, wetK);
+float wetK = max(uWet * smoothstep(0.55, 0.95, vWNrm.y), damp * 0.85);
+baseCol *= mix(1.0, 0.58, wetK);
+baseCol *= mix(1.0, 0.5, puddle);
 diffuseColor.rgb *= baseCol * (0.52 + 0.48 * vColor.a);
 `)
       .replace('#include <color_fragment>', '')
       .replace('#include <roughnessmap_fragment>', `
-float roughnessFactor = clamp(roughness * nraT.b * uRoughL[int(wL0)] * mix(1.0, 0.25, wetK), 0.03, 1.0);`)
+float roughnessFactor = clamp(roughness * nraT.b * uRoughL[int(wL0)] * mix(1.0, 0.32, wetK), 0.03, 1.0);
+roughnessFactor = mix(roughnessFactor, 0.035, puddle);
+if (wRoom) roughnessFactor = 0.04 + 0.22 * glassDirt;`)
       .replace('#include <metalnessmap_fragment>', `
-float metalnessFactor = metalness * mix(uMetal[int(wL0)], uMetal[int(wL1)], ovA);`)
+float metalnessFactor = wRoom ? 0.0 : metalness * mix(uMetal[int(wL0)], uMetal[int(wL1)], ovA);`)
       .replace('#include <normal_fragment_maps>', `
-{
+if (!wRoom) {
   vec3 mapN = vec3(nraT.xy * 2.0 - 1.0, 0.0);
-  mapN.xy *= uNormalScale * (1.0 - wetK * 0.7);
+  mapN.xy *= uNormalScale * (1.0 - wetK * 0.55) * (1.0 - puddle * 0.97);
+  if (puddle > 0.01 && uWet > 0.03) mapN.xy += wRipple(wp.xz, uTime) * puddle * min(1.0, uWet * 2.0);
   mapN.z = sqrt(max(0.0, 1.0 - dot(mapN.xy, mapN.xy)));
   normal = wPerturb(-vViewPosition, normal, vUvT, mapN, faceDirection);
 }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-if (vExt.w > 0.5) {
+totalEmissiveRadiance += roomEmis;
+if (vExt.w > 0.5 && !wRoom) {
   int pi = int(floor(vExt.w));
   float ek = fract(vExt.w);
   totalEmissiveRadiance += uEmisCol[pi] * ek * mix(uEmisDay[pi], 1.0, uNight) * uEmisScale;
 }`)
+      .replace('#include <lights_fragment_maps>', `#include <lights_fragment_maps>
+#if defined( RE_IndirectSpecular )
+{
+  // planar street reflection in puddles and on wet ground (rough wet → blurrier mip)
+  float mirK = clamp(puddle + wetK * 0.7, 0.0, 1.0);
+  if (uReflOn > 0.5 && mirK > 0.002) {
+    vec4 rp = uReflMat * vec4(wp, 1.0);
+    vec2 ruv = rp.xy / rp.w;
+    vec3 nWr = inverseTransformDirection(normal, viewMatrix);
+    ruv += nWr.xz * (0.025 + 0.04 * (1.0 - puddle));
+    vec3 rc = textureLod(uRefl, ruv, material.roughness * 6.0).rgb;
+    float inb = smoothstep(0.0, 0.03, ruv.x) * smoothstep(1.0, 0.97, ruv.x) * smoothstep(0.0, 0.03, ruv.y) * smoothstep(1.0, 0.97, ruv.y);
+    radiance = mix(radiance, rc, mirK * inb);
+  }
+}
+#endif`)
       .replace('#include <aomap_fragment>', `
 {
   float ambientOcclusion = vColor.a * mix(1.0, nraT.a, 0.9);
@@ -468,8 +669,14 @@ if (vExt.w > 0.5) {
   #endif
 }`);
   };
-  m.customProgramCacheKey = () => (cutout ? 'world-cut-v1' : 'world-v1');
+  m.customProgramCacheKey = () => (cutout ? 'world-cut-v2' : 'world-v2');
   return m;
+}
+
+let _dummy: THREE.Texture | null = null;
+function dummyTex() {
+  if (!_dummy) { _dummy = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1); _dummy.needsUpdate = true; }
+  return _dummy;
 }
 
 /** Depth material for alpha-tested world geometry (shadows of grilles/fences). */

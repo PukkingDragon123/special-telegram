@@ -1,8 +1,15 @@
+import * as THREE from 'three';
 import { WB, Template, ALL, SIDES, PY, NY, PX, NX, PZ, NZ } from './geo';
+import { RealProps } from './realprops';
 
 /**
  * PROP TEMPLATES — low-poly, PBR/photo textured street furniture, built once and stamped
  * (merged) into the chunk meshes. Origin = bottom centre, facing +Z unless noted.
+ *
+ * REAL PROPS: the small street clutter (stools, chairs, crates, buckets, LPG tanks, trash bags, bins,
+ * cardboard, cones, junk) is no longer stamped as boxes: `w.put()` of those templates is intercepted
+ * and becomes photoscanned / modelled instanced props with physics (realprops.ts). `P.real` is the
+ * registry for direct placement. The box templates stay as the fallback inside other templates.
  */
 
 export type Props = ReturnType<typeof makeProps>;
@@ -446,11 +453,53 @@ export function makeProps(w: WB) {
     w.pushTR(0, 0, -0.2, 0.22, 0, 0); w.box(-0.32, 0, -0.01, 0.32, 0.95, 0.01, ALL); w.pop();
   }));
 
+  // ------------------------------------------------------------------ real props: intercept w.put of clutter templates
+  const real = new RealProps();
+  const realOf = new WeakMap<Template, (m: THREE.Matrix4, seed: number) => void>();
+  const asReal = (t: Template, fn: (m: THREE.Matrix4, seed: number) => void) => { realOf.set(t, fn); return t; };
+  const local = (m: THREE.Matrix4, x: number, y: number, z: number, yaw = 0, rx = 0, rz = 0) =>
+    m.clone().multiply(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rx, yaw, rz, 'YXZ')), new THREE.Vector3(1, 1, 1)));
+  const h = (n: number) => { const v = Math.sin(n * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+  const realT = {
+    stool: (col: number) => asReal(stool(col), (m) => real.addMatrix('thai_stool', m, { color: col })),
+    stoolStack: (col: number, n: number) => asReal(stoolStack(col, n), (m, sd) => { for (let i = 0; i < n; i++) real.addMatrix('thai_stool', local(m, 0, i * 0.068, 0, (h(sd + i) - 0.5) * 0.5), { color: col, phys: 'none' }); }),
+    plasticChair: (col: number) => asReal(plasticChair(col), (m) => real.addMatrix('monobloc', m, { color: col })),
+    chairStack: (col: number, n: number) => asReal(chairStack(col, n), (m, sd) => { for (let i = 0; i < n; i++) real.addMatrix('monobloc', local(m, 0, i * 0.075, -i * 0.012, (h(sd + i) - 0.5) * 0.08), { color: col, phys: 'none' }); }),
+    crate: (col: number) => asReal(crate(col), (m) => real.addMatrix('crate', m, { color: col })),
+    bucket: (col: number) => asReal(bucket(col), (m) => real.addMatrix('bucket', m, { color: col })),
+    lpgTank: (col: number) => asReal(lpgTank(col), (m) => real.addMatrix('lpg_small', m, { color: col })),
+    trashBag: (k: number) => asReal(trashBag(k), (m) => real.addMatrix('trashbag', m)),
+    bin: (col: number) => asReal(bin(col), (m) => real.addMatrix('drum', m, { color: col })),
+    cone: () => asReal(cone(), (m) => real.addMatrix('cone', m, { color: 0xe85a10 })),
+    cardboardPile: (k: number) => asReal(cardboardPile(k), (m) => {
+      real.addMatrix('cardboard', local(m, -0.05, 0, -0.02, k * 0.7));
+      if (k % 3 !== 2) real.addMatrix('cardboard', local(m, 0.02, 0.336, 0.0, k * 0.7 + 0.3 + k * 0.2));
+      real.addMatrix('cardboard', local(m, 0.42, 0, 0.12, 1.2 + k, 0, Math.PI / 2 * (k % 2)));
+    }),
+    junkPile: (k: number) => asReal(junkPile(k), (m) => {
+      real.addMatrix('tyre', local(m, -0.25, 0, 0.1, k));
+      if (k % 2 === 0) real.addMatrix('tyre', local(m, -0.25, 0.165, 0.1, k + 1));
+      real.addMatrix('cement', local(m, 0.35, 0, -0.15, 0.4 + k * 0.6));
+      if (k % 3 !== 1) real.addMatrix('wood_crate', local(m, 0.1, 0, 0.55, 1.4 + k));
+      if (k % 2 === 1) real.addMatrix('jerrycan', local(m, -0.6, 0, -0.35, k * 1.3), { color: 0xc8402a });
+    }),
+  };
+  let seedN = 0;
+  const put0 = w.put.bind(w);
+  w.put = ((t: Template, x: number, y: number, z: number, yaw = 0, s: number | [number, number, number] = 1, opts: { tint?: number | [number, number, number]; group?: any; rx?: number; rz?: number } = {}) => {
+    const fn = realOf.get(t);
+    if (!fn || w.target) { put0(t, x, y, z, yaw, s, opts); return; }
+    const sc = typeof s === 'number' ? s : s[1];
+    const lm = new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(opts.rx ?? 0, yaw, opts.rz ?? 0, 'YXZ')), new THREE.Vector3(sc, sc, sc));
+    fn(w.M.clone().multiply(lm), ++seedN);
+  }) as typeof w.put;
+
   return {
+    real,
+    ...realT,
     acUnit, waterTankSteel, waterTankBlue, antenna, dish,
-    stool, stoolStack, plasticChair, chairStack, plasticTable, basket, bucket, crate,
-    trashBag, bin, cardboardPile, lpgTank, wok, pot,
-    motorbike, pickup, umbrella, barrier, cone, tube, spiritHouse, atm, phoneBooth, cart, vestRail, bench, junkPile, signBoxStand,
+    plasticTable, basket, wok, pot,
+    motorbike, pickup, umbrella, barrier, tube, spiritHouse, atm, phoneBooth, cart, vestRail, bench, signBoxStand,
     C,
   };
 }

@@ -1,0 +1,53 @@
+{
+ "food_ginger_01": {
+  "file": "food_ginger_01/food_ginger_01.glb",
+  "name": "Food Ginger 01",
+  "bytes": 85548,
+  "srcTris": 7205,
+  "tris": 1664,
+  "dims": [
+   0.24,
+   0.147,
+   0.575
+  ],
+  "authors": [
+   "Oliver Harries"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/food_ginger_01"
+ },
+ "food_lime_01": {
+  "file": "food_lime_01/food_lime_01.glb",
+  "name": "Food Lime 01",
+  "bytes": 82640,
+  "srcTris": 8100,
+  "tris": 2278,
+  "dims": [
+   0.06,
+   0.061,
+   0.075
+  ],
+  "authors": [
+   "Oliver Harries"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/food_lime_01"
+ },
+ "yellow_onion": {
+  "file": "yellow_onion/yellow_onion.glb",
+  "name": "Yellow Onion",
+  "bytes": 72112,
+  "srcTris": 5444,
+  "tris": 1418,
+  "dims": [
+   0.072,
+   0.069,
+   0.086
+  ],
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/yellow_onion"
+ }
+}

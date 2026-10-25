@@ -175,7 +175,7 @@ const KEYS: Key[] = [
   { t: 24.5, zenith: 0x05080f, horizon: 0x141622, haze: 0x181a24, ground: 0x0b0b0d, cloudLit: 0x26262e, cloudDark: 0x0f0f14, fog: 0x15161e, fogD: 0.011, hemiSky: 0x1a2038, hemiGround: 0x120e0b, hemiI: 0.14, env: ['night', 'night', 0], envI: 0.3 },
 ];
 
-const _ca = new THREE.Color(), _cb = new THREE.Color();
+const _ca = new THREE.Color(), _cb = new THREE.Color(), _sc = new THREE.Color();
 function lerpHex(a: number, b: number, k: number, out: THREE.Color) {
   _ca.setHex(a); _cb.setHex(b);
   return out.copy(_ca).lerp(_cb, k);
@@ -196,6 +196,8 @@ export class Atmosphere {
   private envKey = '';
   private envTimer = 0;
   private shadowHalf = 34;
+  /** shadow frustum length along the view direction (the box is elongated so far facades keep their shadows) */
+  private shadowLen = 80;
   /** blended values for this frame (read by other systems) */
   night = 0;
   sunElev = 0;
@@ -226,14 +228,16 @@ export class Atmosphere {
     this.sun.name = 'sun';
     this.sun.castShadow = true;
     const q = game.engine.quality;
-    const ms = q === 'ultra' ? 4096 : q === 'high' ? 2048 : q === 'medium' ? 2048 : 1024;
-    this.shadowHalf = q === 'low' ? 26 : 34;
-    this.sun.shadow.mapSize.set(ms, ms);
+    // non-square map: x = across the view, y = along the view (far side of the soi still gets shadows)
+    const ms = q === 'ultra' ? [4096, 8192] : q === 'high' ? [2048, 4096] : q === 'medium' ? [2048, 3072] : [1024, 1536];
+    this.shadowHalf = q === 'low' ? 24 : 32;
+    this.shadowLen = q === 'low' ? 40 : q === 'medium' ? 62 : 76;
+    this.sun.shadow.mapSize.set(ms[0], ms[1]);
     const sc = this.sun.shadow.camera;
-    sc.left = -this.shadowHalf; sc.right = this.shadowHalf; sc.top = this.shadowHalf; sc.bottom = -this.shadowHalf;
-    sc.near = 1; sc.far = 320;
-    this.sun.shadow.bias = -0.00035;
-    this.sun.shadow.normalBias = 0.025;
+    sc.left = -this.shadowHalf; sc.right = this.shadowHalf; sc.top = this.shadowLen; sc.bottom = -this.shadowLen;
+    sc.near = 1; sc.far = 340;
+    this.sun.shadow.bias = -0.0003;
+    this.sun.shadow.normalBias = 0.03;
     this.sun.shadow.radius = 3;
     this.root.add(this.sun, this.sun.target);
 
@@ -285,7 +289,7 @@ export class Atmosphere {
     this.fog.density = a.fogD + (b.fogD - a.fogD) * k;
     lerpHex(a.hemiSky, b.hemiSky, k, this.hemi.color);
     lerpHex(a.hemiGround, b.hemiGround, k, this.hemi.groundColor);
-    this.hemi.intensity = a.hemiI + (b.hemiI - a.hemiI) * k;
+    this.hemi.intensity = (a.hemiI + (b.hemiI - a.hemiI) * k) * 0.8;
     u.uCover.value = this.cover;
 
     // sun
@@ -308,7 +312,7 @@ export class Atmosphere {
     const moonK = THREE.MathUtils.smoothstep(night, 0.6, 1.0);
     if (sunUp > 0.001) {
       this.sun.color.copy(sunCol);
-      this.sun.intensity = 3.1 * sunUp * (1 - warm * 0.25);
+      this.sun.intensity = 4.4 * sunUp * (1 - warm * 0.3);
       this.lightDir.copy(sd);
     } else {
       this.sun.color.setRGB(0.55, 0.65, 1.0);
@@ -338,6 +342,14 @@ export class Atmosphere {
 
     // post look
     if (this.autoLook) this.applyLook(t, night, dt);
+    // sun shafts between the buildings (strongest in the low morning sun) + humid Mie haze toward the sun
+    const post = game.engine.post;
+    const morning = Math.max(0, 1 - Math.abs(t - 7.6) / 2.4);
+    const evening = Math.max(0, 1 - Math.abs(t - 17.2) / 1.6);
+    const vis = u.uSunVis.value * (1 - night);
+    _sc.copy(sunCol).multiplyScalar(1.0 + warm * 0.5);
+    post.setSun(sd, _sc, vis * (0.1 + 0.5 * morning + 0.35 * evening), vis * (0.05 + 0.1 * warm), 150);
+    if (this.autoLook) post.exposure = 1.0 + 0.12 * night;
   }
 
   readonly lightDir = new THREE.Vector3(0, 1, 0);
@@ -346,25 +358,31 @@ export class Atmosphere {
   private _m = new THREE.Matrix4();
   private _mi = new THREE.Matrix4();
 
+  private _up = new THREE.Vector3();
+  private _r = new THREE.Vector3();
   private updateShadow(camera: THREE.Camera) {
     const cam = camera as THREE.PerspectiveCamera;
     cam.getWorldDirection(this._f);
     this._f.y = 0;
     if (this._f.lengthSq() < 1e-4) this._f.set(0, 0, -1);
     this._f.normalize();
-    const c = this._c.copy(cam.position).addScaledVector(this._f, this.shadowHalf * 0.45);
-    c.y = 0;
-    // snap to shadow texel grid in light space (no shimmering)
     const L = this.lightDir.lengthSq() > 0 ? this.lightDir : this.sunDir;
-    this._m.lookAt(new THREE.Vector3(0, 0, 0), L.clone().negate(), new THREE.Vector3(0, 1, 0));
-    this._mi.copy(this._m).invert();
-    const texel = (this.shadowHalf * 2) / this.sun.shadow.mapSize.x;
-    const lp = c.clone().applyMatrix4(this._mi);
-    lp.x = Math.round(lp.x / texel) * texel;
-    lp.y = Math.round(lp.y / texel) * texel;
-    c.copy(lp.applyMatrix4(this._m));
+    // light-space "up" = view forward projected onto the plane facing the light → the long side of the box
+    const up = this._up.copy(this._f).addScaledVector(L, -this._f.dot(L));
+    if (up.lengthSq() < 1e-4) up.set(0, 1, 0).addScaledVector(L, -L.y);
+    up.normalize();
+    const right = this._r.crossVectors(up, L).normalize();
+    // box centre: ahead of the camera (most of the length in front, ~12 m behind)
+    const fwd = this.shadowLen - 12;
+    const c = this._c.copy(cam.position).addScaledVector(this._f, fwd * 0.92);
+    c.y = 0;
+    // snap to the texel grid in light space (no shimmering when walking)
+    const tx = (this.shadowHalf * 2) / this.sun.shadow.mapSize.x, ty = (this.shadowLen * 2) / this.sun.shadow.mapSize.y;
+    const a = c.dot(right), b = c.dot(up);
+    c.addScaledVector(right, Math.round(a / tx) * tx - a).addScaledVector(up, Math.round(b / ty) * ty - b);
+    this.sun.shadow.camera.up.copy(up);
     this.sun.target.position.copy(c);
-    this.sun.position.copy(c).addScaledVector(L, 160);
+    this.sun.position.copy(c).addScaledVector(L, 170);
     this.sun.target.updateMatrixWorld();
   }
 
@@ -397,7 +415,7 @@ export class Atmosphere {
     return Math.min(1, (t - 17.9) / 1.7);
   }
 
-  private look = { lift: [0, 0, 0] as [number, number, number], gamma: [1, 1, 1] as [number, number, number], gain: [1, 1, 1] as [number, number, number], tint: [1, 1, 1] as [number, number, number], saturation: 1, contrast: 1 };
+  private look = { lift: [0, 0, 0] as [number, number, number], gamma: [1, 1, 1] as [number, number, number], gain: [1, 1, 1] as [number, number, number], tint: [1, 1, 1] as [number, number, number], saturation: 1, contrast: 1, split: 0 };
   private applyLook(t: number, night: number, dt: number) {
     const post = this.game.engine.post;
     // weights
@@ -416,10 +434,13 @@ export class Atmosphere {
     mix3('lift', 0); mix3('gamma', 1); mix3('gain', 1); mix3('tint', 1);
     this.look.saturation = (L.thaiDay.saturation ?? 1) * d + (L.golden.saturation ?? 1) * g + (L.night.saturation ?? 1) * n;
     this.look.contrast = (L.thaiDay.contrast ?? 1) * d + (L.golden.contrast ?? 1) * g + (L.night.contrast ?? 1) * n;
+    this.look.split = (L.thaiDay.split ?? 0) * d + (L.golden.split ?? 0) * g + (L.night.split ?? 0) * n;
     post.setLook(this.look, 1 - Math.exp(-dt * 4));
   }
 
   dispose() {
+    this.game.engine.post.setSun(null);
+    this.game.engine.post.exposure = 1;
     this.envRT?.dispose();
     this.pmrem.dispose();
     this.skyMat.dispose();

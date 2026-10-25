@@ -14,6 +14,7 @@ import { NightLights } from './lights';
 import { buildNav, Nav } from './nav';
 import { buildStreets, buildBaseGround, Ctx } from './streets';
 import { makeProps } from './props';
+import { preloadRealProps, realPropsFrame } from './realprops';
 import { buildRows, ShopCtx } from './shophouse';
 import { ROWS, groundHeight } from './layout';
 import { loadSigns, SignSys } from './signs';
@@ -159,6 +160,7 @@ async function buildWorld(game: Game) {
   lights.build();
   root.add(lights.root);
   game.scene!.add(root);
+  tf = performance.now(); await props.real.build(game, root); TIMES.realProps = Math.round(performance.now() - tf);
   if (params.has('time') && game.isHost) {
     const t = Number(params.get('time'));
     if (Number.isFinite(t)) game.g.time = Math.min(23.95, Math.max(4, t));
@@ -257,6 +259,7 @@ function frame(game: Game, dt: number) {
   S.atmo.update(dt, cam);
   cam.getWorldPosition(_cam);
   S.weather.update(dt, _cam, S.atmo);
+  realPropsFrame(game, dt);
   S.lights.update(_cam, S.atmo.night, dt);
   U.uWet.value += (((game.g as any).rain ?? 0) - U.uWet.value) * Math.min(1, dt * 0.2);
   // distance-cull small detail meshes
@@ -282,7 +285,7 @@ function frame(game: Game, dt: number) {
 
 export default defineModule({
   id: 'world',
-  init(game) { startPreload(game); preloadHdris(); },
+  init(game) { startPreload(game); preloadHdris(); preloadRealProps(); },
   async buildWorld(game) { await buildWorld(game); },
   frame,
   hostUpdate(game, dt) { if (S && S.game === game && game.g.scene === 'world') S.weather.host(dt); },

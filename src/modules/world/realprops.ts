@@ -295,7 +295,7 @@ interface Inst {
   batch: Batch;
   m: Float32Array;          // current world matrix (16)
   home: THREE.Matrix4;
-  x: number; y: number; z: number; r: number;
+  x: number; y: number; z: number; r: number; s: number;
   color: THREE.Color | null;
   body: RAPIER.RigidBody | null;
   dyn: boolean;
@@ -409,7 +409,7 @@ export class RealProps {
       const batch: Batch = { id, def, model, meshes, inst: [], matAttr, colAttr, far: baseFar * (def.far ?? 1), dirty: true };
       this.batches.push(batch);
       for (const p of list) {
-        const inst: Inst = { batch, m: new Float32Array(16), home: p.m.clone(), x: 0, y: 0, z: 0, r: model.radius, color: p.color, body: null, dyn: false, moved: false, kickT: 0, cell: -1 };
+        const inst: Inst = { batch, m: new Float32Array(16), home: p.m.clone(), x: 0, y: 0, z: 0, r: model.radius * p.m.getMaxScaleOnAxis(), s: p.m.getMaxScaleOnAxis(), color: p.color, body: null, dyn: false, moved: false, kickT: 0, cell: -1 };
         p.m.toArray(inst.m);
         inst.x = inst.m[12]; inst.y = inst.m[13]; inst.z = inst.m[14];
         if (phys && R && p.phys !== 'none') this.makeBody(inst, p.phys, phys);
@@ -497,7 +497,7 @@ export class RealProps {
       awake++;
       const t = b.translation(), r = b.rotation();
       if (t.y < -8 || Math.abs(t.x) > 400 || Math.abs(t.z) > 400) { this.resetInst(inst); return; }
-      _m.compose(_v.set(t.x, t.y, t.z), _q.set(r.x, r.y, r.z, r.w), _s.setScalar(inst.home.elements[0] ** 2 + inst.home.elements[1] ** 2 + inst.home.elements[2] ** 2 > 0 ? Math.hypot(inst.home.elements[0], inst.home.elements[1], inst.home.elements[2]) : 1));
+      _m.compose(_v.set(t.x, t.y, t.z), _q.set(r.x, r.y, r.z, r.w), _s.setScalar(inst.s));
       _m.toArray(inst.m);
       inst.x = t.x; inst.y = t.y; inst.z = t.z;
       inst.moved = true;
@@ -606,5 +606,5 @@ export class RealProps {
 
 let current: RealProps | null = null;
 /** world module frame hook */
-export function realPropsFrame(game: Game, dt: number) { if (current && game.scene && current['root']?.parent) current.frame(game, dt); }
+export function realPropsFrame(game: Game, dt: number) { if (current && game.scene && current["root"]?.parent === game.scene) current.frame(game, dt); }
 export function realProps() { return current; }
