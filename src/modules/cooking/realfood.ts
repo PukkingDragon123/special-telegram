@@ -426,7 +426,7 @@ export function buildFriedEgg(v: EggVariant, size = 0.14, curl = 0.18) {
 
 // ------------------------------------------------------------------ rice mound
 
-export function riceMoundGeoReal() { return reliefGeo('rice_mound_top', 0.15, 0.15, 0.046, 24, 0); }
+export function riceMoundGeoReal() { return reliefGeo('rice_mound_top', 0.155, 0.155, 0.036, 24, 0); }
 export function riceMatReal() {
   return reliefMat('riceMound', 'rice_mound_top', T.riceMound(), { rough: 0.6, sss: { color: 0xfff8ec, wrap: 0.25, back: 0.2 }, nScale: 1.6, alphaTest: 0.35 });
 }

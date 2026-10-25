@@ -136,9 +136,9 @@ function buildFood(d: any): THREE.Group {
   if (d.egg && d.egg !== 'none') {
     const v: EggVariant = d.egg === 'burnt' ? 'burnt' : d.egg === 'crispy' ? 'crispy' : 'runny';
     const onRice = hasRice && !bowl;
-    const e = buildFriedEgg(v, 0.125, onRice ? -3 : 0.18);
+    const e = buildFriedEgg(v, 0.125, onRice ? -2.2 : 0.18);
     const rs = Math.cbrt(Math.max(0.01, d.rice ?? 0) / 200);
-    e.position.set(onRice ? rx + 0.004 : 0.0, hasRice ? (bowl ? 0.05 : 0.05 * rs) : 0.004, 0.006);
+    e.position.set(onRice ? rx + 0.004 : 0.0, hasRice ? (bowl ? 0.05 : 0.037 * rs) : 0.004, 0.006);
     e.rotation.set(hasRice ? -0.08 : 0, 0.6, hasRice ? 0.05 : 0);
     if (d.egg === 'raw') e.scale.set(1, 0.6, 1);
     g.add(e);

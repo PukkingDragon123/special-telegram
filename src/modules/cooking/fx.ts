@@ -36,7 +36,7 @@ void main(){
   float age = vP.x;
   float n = fbm(vUv * 2.6 + vec2(vP.y * 17.0, vP.y * 9.0 - age * 1.2));
   float n2 = fbm(vUv * 6.0 - vec2(age * 0.8, vP.y * 5.0));
-  float mask = smoothstep(1.0, 0.15, r + (n - 0.5) * 1.1 + (n2 - 0.5) * 0.35);
+  float mask = smoothstep(1.0, 0.15, r + (n - 0.5) * 1.1 + (n2 - 0.5) * 0.35) * smoothstep(1.0, 0.72, r);
   float a = mask * vP.w * smoothstep(0.0, 0.1, age) * (1.0 - smoothstep(0.45, 1.0, age));
   vec3 col = vP.z < 0.5 ? vec3(0.96, 0.97, 0.98) : (vP.z < 1.5 ? vec3(0.46, 0.44, 0.42) : vec3(0.12, 0.1, 0.09));
   col *= 0.78 + 0.32 * n;

@@ -36,6 +36,8 @@ export interface JuiceProfile {
   drops?: { color: number; n: number };
   /** pick-up squash strength */
   pick?: number;
+  /** Thai onomatopoeia popped (local 3D text) on really hard hits */
+  word?: string[];
 }
 
 // ------------------------------------------------------------------ sounds (own CC0 / Mixkit files)
@@ -67,25 +69,25 @@ export function registerFoodSounds() {
 
 const P = (p: JuiceProfile) => p;
 export const JP = {
-  meat: P({ k: 150, c: 6.5, squash: 0.055, wob: 0.16, wk: 85, wc: 4.5, stretch: 0.05, heap: 0.9, snd: ['food_plap'], sndSoft: ['food_soft', 'drop_soft'], extra: ['food_jelly'], hard: 1.8, vol: 0.95, bits: { color: [0xd98a86, 0xbf6a64, 0xf2b8ae], n: 5, size: 0.0045 }, pick: 1.3 }),
-  shrimp: P({ k: 170, c: 7, squash: 0.05, wob: 0.15, wk: 90, wc: 5, stretch: 0.05, heap: 1.4, snd: ['food_plap'], sndSoft: ['food_soft'], vol: 0.8, bits: { color: [0xe8c0b0, 0xd89a8a], n: 4, size: 0.004 } }),
-  herb: P({ k: 110, c: 5.5, squash: 0.07, wob: 0.24, wk: 55, wc: 3.5, stretch: 0.07, heap: 0.7, snd: ['food_squish'], sndSoft: ['food_soft'], vol: 0.55, bits: { color: [0x3f7f24, 0x5a9a30, 0x78b040], n: 7, size: 0.006, flat: 0.15 }, pick: 1.4 }),
-  veg: P({ k: 150, c: 6, squash: 0.06, wob: 0.18, wk: 70, wc: 4.5, stretch: 0.06, heap: 0.8, snd: ['food_squish', 'food_soft'], sndSoft: ['food_soft'], vol: 0.6, bits: { color: [0x4f8a2c, 0x6aa040], n: 5, size: 0.005, flat: 0.3 } }),
-  chili: P({ k: 360, c: 8, squash: 0.05, wob: 0.13, wk: 190, wc: 7, stretch: 0.08, heap: 0.6, snd: ['food_rattle'], sndSoft: ['food_tok'], extra: ['plastic_bag_rustle'], hard: 2.0, vol: 0.7, pitch: 1.15, bits: { color: [0xd8261a, 0xb81a10, 0x5a9a2a], n: 3, size: 0.0035 } }),
-  bulb: P({ k: 320, c: 9, squash: 0.04, wob: 0.11, wk: 170, wc: 7, stretch: 0.05, heap: 0.5, snd: ['food_tok', 'food_rattle'], sndSoft: ['food_tok'], vol: 0.65, bits: { color: [0xe8dcc0, 0xc9a070], n: 3, size: 0.003 } }),
-  egg: P({ k: 420, c: 10, squash: 0.03, wob: 0.14, wk: 240, wc: 6, stretch: 0.07, snd: ['food_shell'], sndSoft: ['food_tok'], vol: 0.6, pitch: 1.2, pick: 0.8 }),
+  meat: P({ k: 150, c: 6.5, squash: 0.055, wob: 0.16, wk: 85, wc: 4.5, stretch: 0.05, heap: 0.9, snd: ['food_plap'], sndSoft: ['food_soft', 'drop_soft'], extra: ['food_jelly'], hard: 1.8, vol: 0.95, bits: { color: [0xd98a86, 0xbf6a64, 0xf2b8ae], n: 5, size: 0.0045 }, pick: 1.3, word: ['แปะ!', 'ตุบ!'] }),
+  shrimp: P({ k: 170, c: 7, squash: 0.05, wob: 0.15, wk: 90, wc: 5, stretch: 0.05, heap: 1.4, snd: ['food_plap'], sndSoft: ['food_soft'], vol: 0.8, bits: { color: [0xe8c0b0, 0xd89a8a], n: 4, size: 0.004 }, word: ['แปะ!'] }),
+  herb: P({ k: 110, c: 5.5, squash: 0.07, wob: 0.24, wk: 55, wc: 3.5, stretch: 0.07, heap: 0.7, snd: ['food_squish'], sndSoft: ['food_soft'], vol: 0.55, bits: { color: [0x3f7f24, 0x5a9a30, 0x78b040], n: 7, size: 0.006, flat: 0.15 }, pick: 1.4, word: ['ฟึ่บ!'] }),
+  veg: P({ k: 150, c: 6, squash: 0.06, wob: 0.18, wk: 70, wc: 4.5, stretch: 0.06, heap: 0.8, snd: ['food_squish', 'food_soft'], sndSoft: ['food_soft'], vol: 0.6, bits: { color: [0x4f8a2c, 0x6aa040], n: 5, size: 0.005, flat: 0.3 }, word: ['ฟึ่บ!'] }),
+  chili: P({ k: 360, c: 8, squash: 0.05, wob: 0.13, wk: 190, wc: 7, stretch: 0.08, heap: 0.6, snd: ['food_rattle'], sndSoft: ['food_tok'], extra: ['plastic_bag_rustle'], hard: 2.0, vol: 0.7, pitch: 1.15, bits: { color: [0xd8261a, 0xb81a10, 0x5a9a2a], n: 3, size: 0.0035 }, word: ['ดึ๋ง!', 'เด้ง!'] }),
+  bulb: P({ k: 320, c: 9, squash: 0.04, wob: 0.11, wk: 170, wc: 7, stretch: 0.05, heap: 0.5, snd: ['food_tok', 'food_rattle'], sndSoft: ['food_tok'], vol: 0.65, bits: { color: [0xe8dcc0, 0xc9a070], n: 3, size: 0.003 }, word: ['ป๊อก!', 'เด้ง!'] }),
+  egg: P({ k: 420, c: 10, squash: 0.03, wob: 0.14, wk: 240, wc: 6, stretch: 0.07, snd: ['food_shell'], sndSoft: ['food_tok'], vol: 0.6, pitch: 1.2, pick: 0.8, word: ['ก๊อก!'] }),
   eggTray: P({ k: 260, c: 10, squash: 0.03, wob: 0.08, wk: 160, wc: 8, stretch: 0.02, snd: ['cardboard', 'food_soft'], extra: ['food_shell'], vol: 0.7 }),
-  glass: P({ k: 650, c: 16, squash: 0.012, wob: 0.07, wk: 320, wc: 9, stretch: 0.025, snd: ['drop_glass'], sndSoft: ['drop_glass', 'food_tok'], vol: 0.8, drops: { color: 0x3a1c08, n: 0 } }),
-  plastic: P({ k: 420, c: 12, squash: 0.02, wob: 0.09, wk: 220, wc: 8, stretch: 0.03, snd: ['drop_plastic'], sndSoft: ['drop_plastic'], vol: 0.8 }),
-  packet: P({ k: 130, c: 6, squash: 0.065, wob: 0.12, wk: 75, wc: 5.5, stretch: 0.04, snd: ['food_thud', 'drop_soft'], sndSoft: ['food_soft'], extra: ['sprinkle'], hard: 2.4, vol: 0.85 }),
-  sack: P({ k: 85, c: 6, squash: 0.08, wob: 0.06, wk: 50, wc: 5, stretch: 0.02, snd: ['food_thud'], sndSoft: ['drop_soft'], extra: ['body_thud'], hard: 2.5, vol: 1, pick: 1.6 }),
-  metal: P({ k: 900, c: 22, squash: 0.008, wob: 0.06, wk: 380, wc: 6, stretch: 0.02, snd: ['drop_metal'], sndSoft: ['drop_metal'], vol: 0.75 }),
-  wok: P({ k: 700, c: 18, squash: 0.012, wob: 0.07, wk: 260, wc: 5, stretch: 0.015, heap: 0.8, snd: ['drop_metal'], extra: ['wok_toss'], hard: 3, vol: 0.9 }),
-  plate: P({ k: 700, c: 12, squash: 0.012, wob: 0.09, wk: 420, wc: 2.8, stretch: 0.02, snd: ['plate_down', 'dishes_stack'], sndSoft: ['plate_down'], vol: 0.7 }),
+  glass: P({ k: 650, c: 16, squash: 0.012, wob: 0.07, wk: 320, wc: 9, stretch: 0.025, snd: ['drop_glass'], sndSoft: ['drop_glass', 'food_tok'], vol: 0.8, drops: { color: 0x3a1c08, n: 0 }, word: ['เคร้ง!'] }),
+  plastic: P({ k: 420, c: 12, squash: 0.02, wob: 0.09, wk: 220, wc: 8, stretch: 0.03, snd: ['drop_plastic'], sndSoft: ['drop_plastic'], vol: 0.8, word: ['ป๊อก!'] }),
+  packet: P({ k: 130, c: 6, squash: 0.065, wob: 0.12, wk: 75, wc: 5.5, stretch: 0.04, snd: ['food_thud', 'drop_soft'], sndSoft: ['food_soft'], extra: ['sprinkle'], hard: 2.4, vol: 0.85, word: ['ตุบ!'] }),
+  sack: P({ k: 85, c: 6, squash: 0.08, wob: 0.06, wk: 50, wc: 5, stretch: 0.02, snd: ['food_thud'], sndSoft: ['drop_soft'], extra: ['body_thud'], hard: 2.5, vol: 1, pick: 1.6, word: ['ตุ้บ!!'] }),
+  metal: P({ k: 900, c: 22, squash: 0.008, wob: 0.06, wk: 380, wc: 6, stretch: 0.02, snd: ['drop_metal'], sndSoft: ['drop_metal'], vol: 0.75, word: ['แก๊ง!'] }),
+  wok: P({ k: 700, c: 18, squash: 0.012, wob: 0.07, wk: 260, wc: 5, stretch: 0.015, heap: 0.8, snd: ['drop_metal'], extra: ['wok_toss'], hard: 3, vol: 0.9, word: ['โครม!'] }),
+  plate: P({ k: 700, c: 12, squash: 0.012, wob: 0.09, wk: 420, wc: 2.8, stretch: 0.02, snd: ['plate_down', 'dishes_stack'], sndSoft: ['plate_down'], vol: 0.7, word: ['กริ๊ง!'] }),
   foam: P({ k: 200, c: 8, squash: 0.04, wob: 0.1, wk: 120, wc: 6, stretch: 0.03, snd: ['food_soft', 'drop_plastic'], vol: 0.5 }),
-  wood: P({ k: 650, c: 18, squash: 0.01, wob: 0.05, wk: 260, wc: 8, stretch: 0.01, snd: ['drop_wood'], vol: 0.85 }),
-  clay: P({ k: 700, c: 20, squash: 0.008, wob: 0.04, wk: 260, wc: 10, stretch: 0.01, snd: ['drop_wood', 'body_thud'], extra: ['body_thud'], hard: 2.5, vol: 0.9 }),
-  dish: P({ k: 260, c: 8, squash: 0.035, wob: 0.13, wk: 150, wc: 4.5, stretch: 0.03, heap: 1.1, snd: ['plate_down'], sndSoft: ['plate_down'], extra: ['food_splat'], hard: 1.6, vol: 0.75, bits: { color: [0xf4efe4, 0xe8e0cc, 0x6a3a1c], n: 6, size: 0.003 } }),
+  wood: P({ k: 650, c: 18, squash: 0.01, wob: 0.05, wk: 260, wc: 8, stretch: 0.01, snd: ['drop_wood'], vol: 0.85, word: ['ป้อก!'] }),
+  clay: P({ k: 700, c: 20, squash: 0.008, wob: 0.04, wk: 260, wc: 10, stretch: 0.01, snd: ['drop_wood', 'body_thud'], extra: ['body_thud'], hard: 2.5, vol: 0.9, word: ['ตุ้บ!'] }),
+  dish: P({ k: 260, c: 8, squash: 0.035, wob: 0.13, wk: 150, wc: 4.5, stretch: 0.03, heap: 1.1, snd: ['plate_down'], sndSoft: ['plate_down'], extra: ['food_splat'], hard: 1.6, vol: 0.75, bits: { color: [0xf4efe4, 0xe8e0cc, 0x6a3a1c], n: 6, size: 0.003 }, word: ['แปะ!'] }),
   paper: P({ k: 200, c: 9, squash: 0.03, wob: 0.06, wk: 120, wc: 8, stretch: 0.02, snd: ['paper_rustle', 'drop_soft'], vol: 0.6 }),
   appliance: P({ k: 600, c: 18, squash: 0.01, wob: 0.04, wk: 220, wc: 9, stretch: 0.01, snd: ['drop_metal', 'body_thud'], vol: 0.9 }),
 };
@@ -194,7 +196,7 @@ export function juice(obj: THREE.Object3D, e: Ent, dt: number, game: Game, prof:
     if (sp > 2.2 && st.acc < 0.2) stretchT = Math.min(0.3, (sp - 2) * prof.stretch);
   } else { st.vx = st.vy = st.vz = 0; }
   st.cool -= dt;
-  if (st.pend > 0) { st.pend -= dt; if (st.pend <= 0) impact(obj, st, prof, st.pendHit, st.pvx, st.pvz); }
+  if (st.pend > 0) { st.pend -= dt; if (st.pend <= 0) impact(obj, st, prof, st.pendHit, st.pvx, st.pvz, game); }
   // ---- springs (sub-stepped: stiff springs at low fps)
   const n = Math.min(12, Math.ceil(dt * 150)), h = dt / Math.max(1, n);
   const hk = prof.k * 0.55, hc = prof.c * 0.6;
@@ -245,10 +247,10 @@ export function juice(obj: THREE.Object3D, e: Ent, dt: number, game: Game, prof:
       if (o.name === 'yolk') { o.rotation.x = st.wx * 1.5 + hs * 0.3; o.rotation.z = st.wz * 1.5; }
     }
   }
-  void game;
 }
 
-function impact(obj: THREE.Object3D, st: JState, prof: JuiceProfile, hit: number, vx: number, vz: number) {
+let wordT = 0;
+function impact(obj: THREE.Object3D, st: JState, prof: JuiceProfile, hit: number, vx: number, vz: number, game: Game) {
   st.cool = 0.09;
   st.sv -= hit * prof.squash * 7;
   const hv = Math.hypot(vx, vz);
@@ -267,4 +269,10 @@ function impact(obj: THREE.Object3D, st: JState, prof: JuiceProfile, hit: number
       { speed: 0.35 + hit * 0.16, up: 0.5 + hit * 0.28, size: prof.bits.size, floor: pos.y + 0.001, flat: prof.bits.flat, spread: 0.05 });
   }
   if (FX && prof.drops && prof.drops.n > 0 && hit > 2.2) FX.droplets(pos, prof.drops.color, prof.drops.n, { floor: pos.y + 0.001 });
+  // a comic Thai sound-word on really hard hits (local 3D text, rate-limited)
+  const now = performance.now() / 1000;
+  if (prof.word && hit > 3.2 && now - wordT > 0.6) {
+    wordT = now;
+    try { game.ui?.popup(pos.clone().add(new THREE.Vector3(0, 0.12, 0)), prof.word[Math.floor(Math.random() * prof.word.length)], { scale: 0.45, dur: 0.85, rise: 0.3 }); } catch { /* ui not ready */ }
+  }
 }
