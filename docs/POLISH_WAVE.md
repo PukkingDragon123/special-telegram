@@ -12,12 +12,13 @@ Four agents work at the same time in this tree:
 | **text3d** | `src/ui3d/*` (bubbles, text, choice, cloud, new `text3d.ts`), `public/assets/gen/text3d/`, and the minimum call-site changes in modules that draw their OWN bubbles/labels (it replaces them with the new API) |
 | **heaven** | `src/modules/social/*` (think mode, skill visuals, flytext, cloud), `public/assets/gen/social/` |
 | **props** | `src/modules/world/{props,dressing,market,rural}.ts`, new `src/modules/world/realprops*.ts`, `scripts/polyhaven.mjs`, `public/assets/gen/world/models/`, plus the `build` visuals of furniture/prop items in `restaurant`/`shops`/`cooking` (visual only) |
-| **buildings** | `src/modules/world/{mats,shophouse,buildings,streets,geo,sky,lights,wires,canal,signs,foliage,weather,layout}.ts`, `src/core/postfx.ts`, `public/assets/gen/world/` (not `models/`, except own downloads via the shared script) |
+| **buildings** | `src/modules/world/{mats,shophouse,buildings,streets,geo,sky,lights,wires,canal,signs,foliage,weather,layout}.ts`, `public/assets/gen/world/` (postfx.ts handed over to **look**) (not `models/`, except own downloads via the shared script) |
 | **food** | `src/modules/cooking/*` food/ingredient/dish visuals + physics feel (not furniture items), small generic hooks in `src/game/items.ts`, `public/assets/gen/cooking/` |
 | **creatures** | `src/modules/life/{creature,quad,pets,tex}.ts`, `src/modules/characters/*`, `scripts/life/`, `public/assets/gen/{life,characters}/` |
 | **alive** | new `src/modules/escape/` (police "wanted" cinematic at the map edges) and new `src/modules/critters/` (cockroaches, flies, rats, ants), `public/assets/gen/{escape,critters}/` |
 | **water** | new `src/modules/water/` (buoyancy, splashes, sloshing containers, spills, puddle ripples, taps/hoses, sewer water), `public/assets/gen/water/` |
 | **assets** | shared detailed-model library `public/assets/gen/lib/` + `catalog.json`, `src/modules/world/{lib,clutter}.ts`, `scripts/objaverse.mjs`, `scripts/blender/` (see `docs/ART_STYLE.md`) |
+| **look** | `src/core/{postfx,engine,ink}.ts` (taken over from buildings), new `src/modules/anime/`: hi-res rendering, ink outlines, soft cel bands, goofy anime FX |
 | **lead** | `src/modules/menu/*` (album cover + newspaper on the main menu), integration |
 
 Follow-up from the client: "make textured and model hyper realistic, add cooler and polish models, make dogs have rig fur, the food

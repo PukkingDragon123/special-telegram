@@ -124,8 +124,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     Input.onUnlock = () => stop();
     Overlay.crosshair(false);
     game.interact.clear();
-    opening = new SkyOpening();
-    game.scene.add(opening.group);
+    if (!(window as any).__hvNoOpen) { opening = new SkyOpening(); game.scene.add(opening.group); }
     veil.attach(game.camera);
     veil.k = 0;
     Sound.play('social_heaven_ascend', { vol: 0.9 });
@@ -228,7 +227,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     }
     _feet.copy(pl.pos);
     // external mode shows the body; the camera sits inside the head, so keep our own body first-person
-    if (local.phase !== 'heaven') { const rig = rigOf(game, me.id); if (rig && rig.mode !== 'fp') rig.setFirstPerson?.(true); }
+    if (local.phase !== 'heaven' && !(window as any).__hvNoFp) { const rig = rigOf(game, me.id); if (rig && rig.mode !== 'fp') rig.setFirstPerson?.(true); }
     if (local.phase === 'up') {
       const k = Ease.inOutCubic(clamp(t / 1.5));
       placeWorldCam(THREE.MathUtils.lerp(local.p0, LOOK_UP, k), 0, 0, THREE.MathUtils.lerp(local.fov0, 80, k));

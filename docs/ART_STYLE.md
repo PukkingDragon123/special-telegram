@@ -7,12 +7,32 @@ working on the same thing."
 **Everyone builds to this sheet.** If your screenshot doesn't match it, it isn't done.
 
 ## 1. The look in one line
-**Photo-real indie realism.** Think Chilla's Art (`references/user/ref2_chillas_art_convenience_store.webp`,
-`ref3_chillas_art_kotatsu_room.jpg`), Cooking Simulator (`ref1_cooking_simulator_counter.jpg`) and photoscanned Thai
-food (`ref5`). Real photo/scan textures on detailed mid-poly models, in a dense, dirty, lived-in Bangkok soi
-(`references/streets/web/*.jpg`: look at at least 10 of them before you build anything).
+**Inked realism with goofy anime energy.** Client, Oct 25: "make the game super high resolution, with a black-line cartoony
+effect, more goofy anime-like, but still detailed and realistic, a little more low poly, with realistic polish".
 
-Not: cartoon, flat colour, plastic toy, voxel, "2005 game", boxes with a photo stuck on.
+- **Forms:** clean, slightly simplified low-to-mid-poly shapes with strong, readable silhouettes. Keep bevels and the key small
+  parts, and bake fine detail (screws, seams, grain, dents) into the normal and albedo maps instead of geometry.
+- **Surfaces:** real photo and scan textures with full PBR, grime and age. The realism lives in the textures.
+- **Ink:** bold black outlines on every object.
+  - A screen-space edge pass (depth plus normals) draws the outlines and creases, with lines that vary slightly like hand-inked ones.
+  - Characters, animals and hero props also get a thicker inverted-hull silhouette.
+  - Line weight scales with resolution and fades with distance, so far clutter doesn't turn into black noise.
+- **Light:** PBR lighting gently stepped toward 2–3 soft cel bands, with crisp anime-style shadow edges. It still reads as
+  real materials, just a bit more graphic. Colours are warm, saturated and sunny.
+- **Goofy anime energy:**
+  - over-the-top reactions and effects: speed lines, sweat drops, anger veins (💢), "!"/"?" marks, impact frames with
+    halftone flashes, dust puffs, sparkles, comic sound-words in 3D text;
+  - squash-and-stretch on characters and props;
+  - exaggerated, funny animation timing.
+- **Resolution:** very high and crisp. Render at native device resolution or above (supersampled on `ultra`), with sharp
+  textures and no muddy blur. Depth of field and film grain only where they help.
+
+References for textures and grime: Chilla's Art (`references/user/ref2_chillas_art_convenience_store.webp`,
+`ref3_chillas_art_kotatsu_room.jpg`), Cooking Simulator (`ref1_cooking_simulator_counter.jpg`), photoscanned Thai food (`ref5`),
+and the dense, dirty, lived-in Bangkok soi (`references/streets/web/*.jpg`: look at at least 10 before you build anything).
+
+Not: flat-shaded cel cartoon without textures, plastic toy, voxel, "2005 game", boxes with a photo stuck on, noisy over-dense
+meshes that ink into black mush.
 
 ## 2. Hard rules
 1. **No visible primitives.** A finished asset is never a raw box, cylinder or plane.
@@ -62,7 +82,7 @@ Not: cartoon, flat colour, plastic toy, voxel, "2005 game", boxes with a photo s
    - heavy or fixed ones get static colliders;
    - food and soft things use the food juice layer (`src/modules/cooking/juice.ts`).
 9. **Performance** (polished, but shippable):
-   - triangle budget: props 500–15k tris by size; hero assets up to about 40k;
+   - triangle budget ("a little more low poly"): small props 200–3k tris, medium 2–8k, big or hero up to about 20k. Simplify Sketchfab imports to budget with `gltf-transform simplify` or a bpy decimate, keeping the silhouette, and bake the lost detail into the normal map;
    - LOD or impostor for far things;
    - InstancedMesh for repeats; shared materials;
    - meshopt-compressed GLB (`npx -y @gltf-transform/cli optimize --compress meshopt --texture-compress webp`) and the three `MeshoptDecoder`;
