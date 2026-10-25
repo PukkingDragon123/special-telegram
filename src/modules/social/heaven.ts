@@ -27,7 +27,7 @@ export const HEAVEN_Y = 2600;
 const EYE = 1.62;
 const inCubic = (t: number) => t * t * t;
 
-const HEAVEN_LOOK = { lift: [0.008, 0.004, 0.014] as [number, number, number], gamma: [1.0, 0.99, 1.02] as [number, number, number], gain: [1.06, 1.0, 0.98] as [number, number, number], saturation: 1.18, contrast: 1.12, tint: [1.02, 0.99, 1.0] as [number, number, number] };
+const HEAVEN_LOOK = { lift: [0.008, 0.004, 0.014] as [number, number, number], gamma: [1.0, 0.99, 1.02] as [number, number, number], gain: [1.06, 1.0, 0.98] as [number, number, number], saturation: 1.2, contrast: 1.16, tint: [1.02, 0.99, 1.0] as [number, number, number] };
 export { HEAVEN_LOOK };
 
 // ------------------------------------------------------------------ white veil in front of a camera
@@ -107,7 +107,7 @@ class PointsHud {
       c.scale.setScalar(s + (target - s) * damp(10, dt));
       c.visible = c.scale.x > 0.01;
       c.position.set((i - (n - 1) / 2) * 0.058, Math.sin(this.t * 2 + i * 0.8) * 0.006, 0);
-      c.rotation.set(Math.PI / 2 - 0.35, 0, this.t * 1.4 + i * 0.6);
+      c.rotation.set(Math.PI / 2 - 0.3, this.t * 1.4 + i * 0.6, Math.sin(this.t + i) * 0.08);
     });
   }
   dispose() { this.text.dispose(); this.group.removeFromParent(); }
@@ -179,7 +179,7 @@ export class SkillHeaven {
   arrive() {
     this.phase = 'arrive';
     this.t = 0;
-    this.yaw = 0; this.pitch = 0; this.lookYaw = 0; this.lookPitch = 0; this.curYaw = 0; this.curPitch = 1.05;
+    this.yaw = 0; this.pitch = 0; this.lookYaw = 0; this.lookPitch = 0; this.curYaw = 0; this.curPitch = 0.8;
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.fov = 82;
     this.camera.updateProjectionMatrix();
@@ -235,7 +235,7 @@ export class SkillHeaven {
       nodes: this.props.nodes.map((n) => ({ id: n.s.id, st: n.state, meshes: n.meshCount, fit: +n.fit.scale.x.toFixed(3), sc: +n.holder.scale.x.toFixed(2), pos: n.cur.toArray().map((v) => +v.toFixed(2)) })),
     };
   }
-  private basePitch() { return this.phase === 'arrive' ? THREE.MathUtils.lerp(1.05, 0.06, Ease.inOutCubic(clamp(this.t / 2.0))) : 0.06; }
+  private basePitch() { return this.phase === 'arrive' ? THREE.MathUtils.lerp(0.8, 0.06, Ease.inOutCubic(clamp(this.t / 2.0))) : 0.06; }
 
   onUnlocked(skill: string) {
     const n = this.props.nodes.find((x) => x.s.id === skill);
@@ -278,7 +278,7 @@ export class SkillHeaven {
     let basePitch = 0.06, y = EYE, fov = 66;
     if (this.phase === 'arrive') {
       const k = clamp(t / 2.0);
-      basePitch = THREE.MathUtils.lerp(1.05, 0.06, Ease.inOutCubic(k));
+      basePitch = THREE.MathUtils.lerp(0.8, 0.06, Ease.inOutCubic(k));
       y = EYE + 5.5 * Math.pow(1 - clamp(t / 1.8), 3);
       fov = THREE.MathUtils.lerp(82, 66, Ease.outCubic(clamp(t / 1.6)));
       this.veil.k = 1 - Ease.inOutCubic(clamp(t / 1.0));

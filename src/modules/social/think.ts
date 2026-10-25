@@ -227,6 +227,8 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
       if (local.phase === 'heaven' ? !heaven?.leaving : true) stop(true);
     }
     _feet.copy(pl.pos);
+    // external mode shows the body; the camera sits inside the head, so keep our own body first-person
+    if (local.phase !== 'heaven') { const rig = rigOf(game, me.id); if (rig && rig.mode !== 'fp') rig.setFirstPerson?.(true); }
     if (local.phase === 'up') {
       const k = Ease.inOutCubic(clamp(t / 1.5));
       placeWorldCam(THREE.MathUtils.lerp(local.p0, LOOK_UP, k), 0, 0, THREE.MathUtils.lerp(local.fov0, 80, k));

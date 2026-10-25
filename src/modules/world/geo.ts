@@ -16,7 +16,7 @@ import * as THREE from 'three';
  *   fol       : x = wind weight, y = phase, z = stiffness
  */
 
-export type Kind = 'world' | 'cut' | 'sign' | 'decal' | 'fol' | 'glass';
+export type Kind = 'world' | 'cut' | 'sign' | 'decal' | 'fol' | 'glass' | 'room';
 export type Group = 'base' | 'detail';
 export type UVMode = 'world' | 'local' | 'face';
 
@@ -177,7 +177,7 @@ export class WB {
    */
   roomPane(x0: number, y0: number, x1: number, y1: number, z: number, emis = 0, emisK = 0.5, variant = 0) {
     const save = { kind: this.kind, layer: this.layer, ov: this.ov, ovAmt: this.ovAmt, emis: this.emis, tile: this.tile, tileV: this.tileV, uvS: this.uvS, uvMode: this.uvMode, autoDirt: this.autoDirt, tr: this.tr, tg: this.tg, tb: this.tb, ao: this.ao, dirt: this.dirt };
-    this.kind = 'world';
+    this.kind = 'room';
     this.layer = Math.abs(x1 - x0); this.ov = Math.abs(y1 - y0); this.ovAmt = 2 + Math.min(0.99, Math.max(0, variant));
     this.emis = emis ? emis + Math.min(0.999, Math.max(0.01, emisK)) : 0;
     this.tile = 1; this.tileV = 1; this.uvS = 1; this.uvMode = 'face'; this.autoDirt = false; this.tr = this.tg = this.tb = 1; this.ao = 1; this.dirt = 1;
@@ -242,7 +242,7 @@ export class WB {
 
   bucketAt(wx: number, wz: number, kind = this.kind, group = this.group): Buf {
     // only world & foliage keep a separate (distance-culled) detail group; decals are always detail
-    if (kind === 'sign' || kind === 'glass' || kind === 'cut') group = 'base';
+    if (kind === 'sign' || kind === 'glass' || kind === 'cut' || kind === 'room') group = 'base';
     else if (kind === 'decal') group = 'detail';
     if (this.target) {
       let b = this.target.bufs[kind];
@@ -549,6 +549,7 @@ export class WB {
       m.receiveShadow = true;
       if (kind === 'decal') m.renderOrder = 1;
       if (kind === 'glass') { m.renderOrder = 3; m.castShadow = false; }
+      if (kind === 'room') m.castShadow = false;
       out.push({ mesh: m, kind, group });
     }
     this.buckets.clear();

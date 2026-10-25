@@ -41,6 +41,8 @@ interface CreatureSpec {
   tail: RegExp;      // capture (\d+) for the order
   tongue: RegExp;
   clips: { idle: string; sit?: string; shake?: string; roll?: string; dead?: string };
+  /** the rig's rest pose & idle clip are SITTING (the cat): procedural stand-up deltas [bone, x, y, z] + COG lift (m) */
+  stand?: { rot: [string, number, number, number][]; y: number };
   fur: FurCfg;
   face: { lidU: number; lidL: number; squint: number; lidMove?: number; lidOpen?: number };
   /** bone groups for translation-driven facial poses (browIn, browOut, corner, lipUp, squint) */
@@ -78,20 +80,27 @@ export const SPECS: Record<Species, CreatureSpec> = {
     species: 'cat',
     map: {
       cog: /^j_body/, hips: /^j_hips/, spine: /^j_spine_2/, spine2: /^j_spine_3/, chest: /^j_spine_4/, neck: /^j_neck_base/, neck2: /^j_neck_1/, head: /^j_head/, jaw: /^j_jaw/,
-      ear_l: /^j_l_ear/, ear_r: /^j_r_ear/,
+      ear_l: /^j_l_ear/, ear_r: /^j_r_ear/, eye_l: /^j_l_eye_/, eye_r: /^j_r_eye_/,
       lidu_l: /^j_l_upper_eyelid/, lidl_l: /^j_l_lower_eyelid/, lidu_r: /^j_r_upper_eyelid/, lidl_r: /^j_r_lower_eyelid/,
       sh_l: /^j_l_humerous/, el_l: /^j_l_elbow/, wr_l: /^j_l_wrist/, sh_r: /^j_r_humerous/, el_r: /^j_r_elbow/, wr_r: /^j_r_wrist/,
       hip_l: /^j_l_femur/, kn_l: /^j_l_knee/, ho_l: /^j_l_ankle/, hip_r: /^j_r_femur/, kn_r: /^j_r_knee/, ho_r: /^j_r_ankle/,
+      paw_l: /^j_l_ball/, paw_r: /^j_r_ball/,
     },
     tail: /^j_tail_(\d)/,
     tongue: /^j_tongue_(back|mid|tip)/,
-    clips: { idle: 'idle' },
+    clips: { idle: 'idle', sit: 'idle' },
+    stand: {
+      rot: [['cog', 0.87, 0, 0], ['sh_l', -0.87, 0, 0], ['sh_r', -0.87, 0, 0], ['hip_l', 0.33, 0, 0], ['hip_r', 0.33, 0, 0],
+        ['kn_l', -2.04, 0, 0], ['kn_r', -2.04, 0, 0], ['ho_l', 2.29, 0, 0], ['ho_r', 2.29, 0, 0], ['paw_l', -1.45, 0, 0], ['paw_r', -1.45, 0, 0], ['neck', -0.6, 0, 0]],
+      y: 0.1,
+    },
     fur: {
       len: 0.014, shells: 22, gravity: 0.25, lie: 0.7, density: 1100, clump: 190, clumpK: 0.45, ao: 0.5, tip: [1.25, 1.22, 1.2],
       kk: [110, 34, 0.22, 0.12], wrap: 0.4, sheen: 0.7, wet: 0.15, fins: 650,
       albedo: 'cat_albedo.jpg', fur: 'cat_fur.jpg', rules: 'gen/life/data/fur_cat.json', breath: 0.004,
     },
     face: { lidU: 0.55, lidL: -0.3, squint: 0.0 },
+    groups: { browIn: /^j_[lr]_inner_eyebrow/, browOut: /^j_[lr]_outer_eyebrow/ },
     headH: 0.4,
   },
 };
@@ -207,7 +216,11 @@ const SH_MAP_F = /* glsl */`
     float dith = fHash(floor(gl_FragCoord.xy));
     if (furMaskG < 0.5 || yy > sl || abs(fx) > w || vFinVis < dith * 0.9 + 0.05) discard;
   #endif
-  float ao = mix(uBaseAO, 1.0, pow(hh, 0.65));
+  #ifdef FUR_FIN
+    float ao = mix(0.72, 1.0, hh);            // fins only show at the silhouette: no deep root occlusion
+  #else
+    float ao = mix(uBaseAO, 1.0, pow(hh, 0.65));
+  #endif
   #if !defined(FUR_SHELL) && !defined(FUR_FIN)
     if (!gl_FrontFacing) ao = max(ao, 0.8);   // thin parts seen from behind (inner ears) carry no shells
   #endif
@@ -483,6 +496,13 @@ export class Creature implements QuadRigLike {
       } else if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; }
     });
     if (!skel) throw new Error('creature without skeleton');
+    // unlit (KHR_materials_unlit) parts → lit PBR (wet eyes, whiskers) so they sit in the scene lighting
+    this.model.traverse((o: any) => {
+      if (!o.isMesh || o === this.body) return;
+      const m = o.material as THREE.MeshBasicMaterial;
+      if (!m || !(m as any).isMeshBasicMaterial) return;
+      o.material = new THREE.MeshStandardMaterial({ map: m.map, color: m.color, transparent: m.transparent, alphaTest: m.alphaTest, side: m.side, depthWrite: m.depthWrite, roughness: 0.22, metalness: 0 });
+    });
     const S = skel as THREE.Skeleton;
     this.bl = S.bones.slice();
     // hierarchy order (parents before children)
@@ -631,7 +651,7 @@ export class Creature implements QuadRigLike {
       const f = new THREE.SkinnedMesh(fd.fins, m);
       f.bind(body.skeleton, body.bindMatrix);
       f.position.copy(body.position); f.quaternion.copy(body.quaternion); f.scale.copy(body.scale);
-      f.frustumCulled = false; f.castShadow = false; f.receiveShadow = true; f.renderOrder = 2;
+      f.frustumCulled = false; f.castShadow = false; f.receiveShadow = false; f.renderOrder = 2;
       body.parent!.add(f);
       this.fins = f;
       this.shellMats.push(m);
@@ -674,8 +694,11 @@ export class Creature implements QuadRigLike {
       if (o.t > o.dur || inp.speed > 0.4) { this.oneShot = null; osW = 0; }
     }
     const idle = this.actions[this.spec.clips.idle], sit = this.spec.clips.sit ? this.actions[this.spec.clips.sit] : null;
-    if (idle) idle.setEffectiveWeight(Math.max(0, 1 - sitW) * (1 - osW));
-    if (sit) sit.setEffectiveWeight(sitW * (1 - osW));
+    if (this.spec.stand) { if (idle) idle.setEffectiveWeight(sitW * (1 - osW)); }
+    else {
+      if (idle) idle.setEffectiveWeight(Math.max(0, 1 - sitW) * (1 - osW));
+      if (sit) sit.setEffectiveWeight(sitW * (1 - osW));
+    }
     for (const k of ['shake', 'roll', 'dead'] as const) {
       const n = this.spec.clips[k];
       if (n && this.actions[n]) this.actions[n].setEffectiveWeight(this.oneShot?.name === n ? osW : 0);
@@ -747,6 +770,16 @@ export class Creature implements QuadRigLike {
         continue;
       }
       add(N[name], x, y, z);
+    }
+    // sitting rig → stand it up for stand / walk / lie / sleep (procedural poses then work from a standing base)
+    const stS = this.spec.stand;
+    if (stS) {
+      const W = this.anim.poseW;
+      const k = Math.max(0, 1 - W.sit - W.beg) * fade;
+      if (k > 0.001) {
+        for (const [bn, x, y, z] of stS.rot) add(N[bn], x, y, z, k);
+        rootY += stS.y * k;
+      }
     }
     // beg = authored sit clip + forepaws raised, head up
     const bw = this.clipPoses.has('beg') ? this.anim.poseW.beg * fade : 0;

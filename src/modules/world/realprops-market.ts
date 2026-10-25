@@ -501,7 +501,8 @@ function snackStrips(mg: Merge, Fr: Frame, y0: number, rng: RNG) {
       for (let i = 0; i < pa.count; i++) pa.setZ(i, (1 - Math.abs(pa.getX(i)) / 0.065) * 0.02);
       g.computeVertexNormals();
       const p = Fr.at(sx, 0, 0.36).setY(y0 + 2.2 - k * 0.2);
-      mg.add('bag:' + bags[(k + Math.round(sx * 10)) % 3], photoMat(bags[(k + Math.round(sx * 10)) % 3], { alpha: true, rough: 0.35, side: THREE.DoubleSide }), g, M4(p, Fr.yaw + (rng.next() - 0.5) * 0.3, 0.05));
+      const bag = bags[(((k + Math.round(sx * 10)) % 3) + 3) % 3];
+      mg.add('bag:' + bag, photoMat(bag, { alpha: true, rough: 0.35, side: THREE.DoubleSide }), g, M4(p, Fr.yaw + (rng.next() - 0.5) * 0.3, 0.05));
     }
   }
 }

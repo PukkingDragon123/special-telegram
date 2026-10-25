@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Assets } from '../../core/assets';
+import { RNG } from '../../core/rng';
 import { GEN } from './fx';
 
 /* ============================================================================================
@@ -44,6 +45,16 @@ export const COL = {
 
 const SEA_Y = -12;
 
+/** seeded so the heaven always has the same (art-directed) layout */
+let R = new RNG(20261025);
+const rand = () => R.next();
+/** azimuth (atan2 z,x) helper: keep big clouds out of the sun's sector */
+const SUN_AZ = Math.atan2(-0.818, -0.574);
+function awayFromSun(a: number, half: number) {
+  const d = Math.atan2(Math.sin(a - SUN_AZ), Math.cos(a - SUN_AZ));
+  return Math.abs(d) < half ? SUN_AZ + Math.sign(d || 1) * half : a;
+}
+
 // ------------------------------------------------------------------ sky dome
 
 const skyVert = /* glsl */ `
@@ -65,10 +76,12 @@ void main() {
   float vv = asin(clamp(d.y, -1.0, 1.0)) / 3.14159265 + 0.5;
   vec2 uv = vec2(fract(phi / 6.2831853 + 0.5), clamp((vv - 0.4375) / 0.5625, 0.002, 0.998));
   vec3 c = texture2D(uSky, uv).rgb;
+  vec3 cb = texture2D(uSky, uv, 3.5).rgb;            // soft version for the stormy patches
+  c = mix(c, cb, smoothstep(0.5, 0.22, dot(cb, vec3(0.2126, 0.7152, 0.0722))));
   float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
   c = max(mix(vec3(l), c, 1.3), vec3(0.0));   // a bit richer than the scan (never negative: NaN in AgX)
-  c *= mix(1.0, 0.72, smoothstep(0.15, 0.95, d.y)) * mix(vec3(1.0), vec3(0.9, 0.92, 1.08), smoothstep(0.1, 0.9, d.y));
-  c = mix(c, uTint * 0.78, smoothstep(0.42, 0.12, dot(c, vec3(0.2126, 0.7152, 0.0722))) * 0.55);  // lift the stormy grey undersides to pastel
+  c *= mix(vec3(1.0), vec3(0.84, 0.88, 1.12), smoothstep(0.1, 0.95, d.y));   // bluer, deeper zenith
+  c = mix(c, uTint * 0.8, smoothstep(0.5, 0.15, dot(c, vec3(0.2126, 0.7152, 0.0722))) * 0.75);   // lift the stormy grey undersides to pastel
   c = c * 0.94 + uTint * 0.03;
   c = mix(c, uHaze, smoothstep(0.03, -0.12, d.y));
   float s = max(dot(d, uSun), 0.0);
@@ -370,7 +383,7 @@ function flakes(n: number, map: THREE.Texture, o: { box: number; size: number; f
   g.setAttribute('position', plane.getAttribute('position'));
   g.setAttribute('uv', plane.getAttribute('uv'));
   const s = new Float32Array(n * 4);
-  for (let i = 0; i < n * 4; i++) s[i] = Math.random();
+  for (let i = 0; i < n * 4; i++) s[i] = rand();
   g.setAttribute('aS', new THREE.InstancedBufferAttribute(s, 4));
   g.instanceCount = n;
   const m = new THREE.ShaderMaterial({
@@ -407,6 +420,7 @@ export class HeavenEnv {
   readonly fill: THREE.DirectionalLight;
 
   constructor(columnSpots: THREE.Vector3[]) {
+    R = new RNG(20261025);
     const g = this.group;
     // sky
     const skyTex = Assets.texture(HV + 'sky_pastel_4k.jpg', { wrap: false });
@@ -473,9 +487,9 @@ export class HeavenEnv {
     const n = 380;
     const pos = new Float32Array(n * 3), d = new Float32Array(n * 4);
     for (let i = 0; i < n; i++) {
-      const a = Math.random() * Math.PI * 2, r = 2.5 + Math.pow(Math.random(), 0.7) * 26;
-      pos[i * 3] = Math.cos(a) * r; pos[i * 3 + 1] = -6 + Math.random() * 20; pos[i * 3 + 2] = Math.sin(a) * r;
-      d[i * 4] = 0.5 + Math.random() * 1.5; d[i * 4 + 1] = Math.random() * 10; d[i * 4 + 2] = 0.4 + Math.random(); d[i * 4 + 3] = 0.6 + Math.random() * 0.9;
+      const a = rand() * Math.PI * 2, r = 2.5 + Math.pow(rand(), 0.7) * 26;
+      pos[i * 3] = Math.cos(a) * r; pos[i * 3 + 1] = -6 + rand() * 20; pos[i * 3 + 2] = Math.sin(a) * r;
+      d[i * 4] = 0.5 + rand() * 1.5; d[i * 4 + 1] = rand() * 10; d[i * 4 + 2] = 0.4 + rand(); d[i * 4 + 3] = 0.6 + rand() * 0.9;
     }
     const tg = new THREE.BufferGeometry();
     tg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -503,17 +517,17 @@ export class HeavenEnv {
   private makeBillboards() {
     const items: { b: THREE.Vector3; h: number; seed: number; asp: number; drift: number; kind: number }[] = [];
     for (let i = 0; i < 30; i++) {
-      const a = Math.random() * Math.PI * 2, r = 70 + Math.pow(Math.random(), 0.8) * 420;
-      items.push({ b: new THREE.Vector3(Math.cos(a) * r, SEA_Y + 1 + Math.random() * 3, Math.sin(a) * r), h: 26 + Math.random() * 60 * (r / 300 + 0.4), seed: Math.random(), asp: 1.2 + Math.random() * 0.8, drift: 0, kind: 0 });
+      const a = awayFromSun(rand() * Math.PI * 2, 0.42), r = 70 + Math.pow(rand(), 0.8) * 420;
+      items.push({ b: new THREE.Vector3(Math.cos(a) * r, SEA_Y + 1 + rand() * 3, Math.sin(a) * r), h: 26 + rand() * 60 * (r / 300 + 0.4), seed: rand(), asp: 1.2 + rand() * 0.8, drift: 0, kind: 0 });
     }
     // a few nearer, smaller puffs rising out of the sea below the clusters
     for (let i = 0; i < 9; i++) {
-      const a = Math.random() * Math.PI * 2, r = 22 + Math.random() * 30;
-      items.push({ b: new THREE.Vector3(Math.cos(a) * r, SEA_Y + 2, Math.sin(a) * r), h: 9 + Math.random() * 8, seed: Math.random(), asp: 1.3 + Math.random() * 0.6, drift: 0, kind: 0 });
+      const a = awayFromSun(rand() * Math.PI * 2, 0.6), r = 22 + rand() * 30;
+      items.push({ b: new THREE.Vector3(Math.cos(a) * r, SEA_Y + 2, Math.sin(a) * r), h: 9 + rand() * 8, seed: rand(), asp: 1.3 + rand() * 0.6, drift: 0, kind: 0 });
     }
     for (let i = 0; i < 18; i++) {
-      const a = Math.random() * Math.PI * 2, r = 9 + Math.random() * 60;
-      items.push({ b: new THREE.Vector3(Math.cos(a) * r, -5 + Math.random() * 14, Math.sin(a) * r), h: 1.6 + Math.random() * 2.8, seed: Math.random(), asp: 4 + Math.random() * 4, drift: (Math.random() < 0.5 ? -1 : 1) * (0.25 + Math.random() * 0.5), kind: 1 });
+      const a = rand() * Math.PI * 2, r = 9 + rand() * 60;
+      items.push({ b: new THREE.Vector3(Math.cos(a) * r, -5 + rand() * 14, Math.sin(a) * r), h: 1.6 + rand() * 2.8, seed: rand(), asp: 4 + rand() * 4, drift: (rand() < 0.5 ? -1 : 1) * (0.25 + rand() * 0.5), kind: 1 });
     }
     items.sort((p, q) => q.b.length() - p.b.length());
     const n = items.length;

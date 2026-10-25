@@ -205,6 +205,10 @@ export class Atmosphere {
   readonly moonDir = new THREE.Vector3(-0.35, 0.72, -0.6).normalize();
   autoLook = true;
   overrideTime: number | null = null;
+  /** lighting balance (key light vs ambient fill); tweakable from the console via window.__atmo */
+  sunScale = 1;
+  fillScale = 1;
+  exposure = 1;
   cover = 0.45;
 
   constructor(private game: Game) {
@@ -252,6 +256,7 @@ export class Atmosphere {
     });
     this.envScene.add(new THREE.Mesh(new THREE.SphereGeometry(10, 48, 24), this.envMat));
     this.pmrem = new THREE.PMREMGenerator(game.engine.renderer);
+    (window as any).__atmo = this;
   }
 
   async loadHdris() {
@@ -290,7 +295,7 @@ export class Atmosphere {
     this.fog.density = a.fogD + (b.fogD - a.fogD) * k;
     lerpHex(a.hemiSky, b.hemiSky, k, this.hemi.color);
     lerpHex(a.hemiGround, b.hemiGround, k, this.hemi.groundColor);
-    this.hemi.intensity = (a.hemiI + (b.hemiI - a.hemiI) * k) * 0.8;
+    this.hemi.intensity = (a.hemiI + (b.hemiI - a.hemiI) * k) * 0.8 * this.fillScale;
     u.uCover.value = this.cover;
 
     // sun
@@ -313,7 +318,7 @@ export class Atmosphere {
     const moonK = THREE.MathUtils.smoothstep(night, 0.6, 1.0);
     if (sunUp > 0.001) {
       this.sun.color.copy(sunCol);
-      this.sun.intensity = 4.4 * sunUp * (1 - warm * 0.3);
+      this.sun.intensity = 4.4 * sunUp * (1 - warm * 0.3) * this.sunScale;
       this.lightDir.copy(sd);
     } else {
       this.sun.color.setRGB(0.55, 0.65, 1.0);
@@ -335,7 +340,7 @@ export class Atmosphere {
     const envI = a.envI + (b.envI - a.envI) * k;
     const key = `${s0[0]}|${s1[0]}|${mixK.toFixed(2)}`;
     if (key !== this.envKey && this.envTimer <= 0) this.bakeEnv(s0[0], s1[0], mixK, key);
-    if (game.scene) game.scene.environmentIntensity = envI;
+    if (game.scene) game.scene.environmentIntensity = envI * this.fillScale;
 
     // sky follows camera
     this.sky.position.copy(camera.position);
@@ -350,7 +355,7 @@ export class Atmosphere {
     const vis = u.uSunVis.value * (1 - night);
     _sc.copy(sunCol).multiplyScalar(1.0 + warm * 0.5);
     post.setSun(sd, _sc, vis * (0.05 + 0.3 * morning + 0.2 * evening), vis * (0.025 + 0.06 * warm), 150);
-    if (this.autoLook) post.exposure = 1.0 + 0.12 * night;
+    if (this.autoLook) post.exposure = (1.0 + 0.12 * night) * this.exposure;
   }
 
   readonly lightDir = new THREE.Vector3(0, 1, 0);

@@ -57,3 +57,16 @@ Also uses the shared libraries credited by the research agents (textures/pbr, te
 | gen/world/signs/int_ceramics.jpg | Cats in kitchenware shop | Londo Mollari | by-sa 2.0 | https://www.flickr.com/photos/25981243@N00/429663222 |
 | gen/world/signs/int_narrow_shop.jpg | Shop at Sampeng Lane - Chinatown | Jorge Lascar | by 2.0 | https://www.flickr.com/photos/8721758@N06/4510174719 |
 | gen/world/signs/int_plates.jpg | 365 x29 Dinner Plates of Faith | David Masters | by 2.0 | https://www.flickr.com/photos/25652278@N03/3668547763 |
+
+## Buildings polish wave (Oct 25): derived texture-array layers (`src/modules/world/tools/bake_arch.py`)
+
+Cropped/re-baked 512² layers in `public/assets/gen/world/layers/` (alpha holes, crops), all derived from the street photos above:
+
+| file | derived from | source / licence |
+|---|---|---|
+| `drain_round_{a,n,o}` | `textures/world/manhole_round_iron.png` (+ `_normal`, `manhole_round_drain_orm`) | see `manhole_round_*` in R1-streets.md (unknown web image) |
+| `drain_square_{a,n,o}` | `textures/world/manhole_square_bma_*` (cover cropped from its concrete surround) | Turbo Kholodilnik, Wikimedia Commons, CC BY-SA 2.0 |
+| `drain_slots_{a,n,o}` | `textures/world/manhole_double_drain_cover_*` (slots → alpha holes) | Turbo Kholodilnik, Wikimedia Commons, CC BY-SA 2.0 |
+| `grate_iron_{a,n,o}` | `textures/world/trench_grate_cast_iron_photo_*` (gaps → alpha) | see `trench_grate_*` in R1-streets.md (unknown web image) |
+
+The mask noise used by the world shader (`mats.ts noiseTex()`) is generated at runtime (procedural masks only, no art).

@@ -115,6 +115,7 @@ export const MODELS: Record<PropId, ModelDef> = {
   barrier: M('concrete_road_barrier_02', { phys: 'static', far: 1.6, shadow: true }),
   // ---- vehicles (realprops-vehicle.ts) — callers add their own static colliders
   scooter: { phys: 'none', recolor: true, shadow: true, far: 1.3 },
+  food_cart: { phys: 'none', recolor: true, shadow: true, far: 1.5 },
   // ---- tables & table things (realprops-table.ts)
   thai_table: { phys: 'dyn', mass: 3.5, friction: 0.6, recolor: true, shadow: true, collider: 'box' },
   steel_table: { phys: 'dyn', mass: 8, friction: 0.5, shadow: true, collider: 'box' },
@@ -450,7 +451,7 @@ export class RealProps {
         if (p.tint && colAttr) im.instanceColor = colAttr;
         im.count = 0;
         im.frustumCulled = false;
-        im.castShadow = !!def.shadow;
+        im.castShadow = !!def.shadow && p === model.parts[0];   // the main part carries the shadow
         im.receiveShadow = true;
         im.name = 'real:' + id;
         im.matrixAutoUpdate = false;

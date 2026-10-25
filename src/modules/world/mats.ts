@@ -659,24 +659,17 @@ varying vec3 vWPos;
 varying vec3 vWNrm;
 ${NOISE_GLSL}
 ${TANGENT_GLSL}
-${INTERIOR_GLSL}
 ${RIPPLE_GLSL}`)
       .replace('#include <map_fragment>', `
 vec3 wp = vWPos;
-bool wRoom = vExt.z > 1.5 && vExt.z < 2.999;
-float wL0 = wRoom ? 0.0 : floor(vExt.x + 0.5);
-float wL1 = wRoom ? 0.0 : max(0.0, floor(vExt.y + 0.5));
+float wL0 = floor(vExt.x + 0.5);
+float wL1 = max(0.0, floor(vExt.y + 0.5));
 vec4 albT = vec4(1.0);
 vec4 nraT = vec4(0.5, 0.5, 0.08, 1.0);
 vec3 baseCol;
-vec3 roomEmis = vec3(0.0);
-float glassDirt = 0.0;
 float ovA = 0.0;
 float puddle = 0.0, damp = 0.0;
-if (wRoom) {
-  roomEmis = wInterior(wp, vWNrm, vUvT, vExt, glassDirt);
-  baseCol = vec3(0.012, 0.013, 0.014);
-} else {
+{
   albT = texture(uAlb, vec3(vUvT, wL0));
   nraT = texture(uNra, vec3(vUvT, wL0));
   ${cutout ? 'if (albT.a < 0.5) discard;' : ''}
@@ -745,12 +738,11 @@ diffuseColor.rgb *= baseCol * (0.52 + 0.48 * vColor.a);
       .replace('#include <color_fragment>', '')
       .replace('#include <roughnessmap_fragment>', `
 float roughnessFactor = clamp(roughness * nraT.b * uRoughL[int(wL0)] * mix(1.0, 0.32, wetK), 0.03, 1.0);
-roughnessFactor = mix(roughnessFactor, 0.035, puddle);
-if (wRoom) roughnessFactor = 0.04 + 0.22 * glassDirt;`)
+roughnessFactor = mix(roughnessFactor, 0.035, puddle);`)
       .replace('#include <metalnessmap_fragment>', `
-float metalnessFactor = wRoom ? 0.0 : metalness * mix(uMetal[int(wL0)], uMetal[int(wL1)], ovA);`)
+float metalnessFactor = metalness * mix(uMetal[int(wL0)], uMetal[int(wL1)], ovA);`)
       .replace('#include <normal_fragment_maps>', `
-if (!wRoom) {
+{
   vec3 mapN = vec3(nraT.xy * 2.0 - 1.0, 0.0);
   mapN.xy *= uNormalScale * (1.0 - wetK * 0.55) * (1.0 - puddle * 0.97);
   if (puddle > 0.01 && uWet > 0.03) mapN.xy += wRipple(wp.xz, uTime) * puddle * min(1.0, uWet * 2.0);
@@ -758,8 +750,7 @@ if (!wRoom) {
   normal = wPerturb(-vViewPosition, normal, vUvT, mapN, faceDirection);
 }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-totalEmissiveRadiance += roomEmis;
-if (vExt.w > 0.5 && !wRoom) {
+if (vExt.w > 0.5) {
   int pi = int(floor(vExt.w));
   float ek = fract(vExt.w);
   totalEmissiveRadiance += uEmisCol[pi] * ek * mix(uEmisDay[pi], 1.0, uNight) * uEmisScale;
@@ -790,7 +781,44 @@ if (vExt.w > 0.5 && !wRoom) {
   #endif
 }`);
   };
-  m.customProgramCacheKey = () => (cutout ? 'world-cut-v3' : 'world-v3');
+  m.customProgramCacheKey = () => (cutout ? 'world-cut-v4' : 'world-v4');
+  return m;
+}
+
+/**
+ * Window panes with fake interiors (WB.roomPane, kind 'room'): glass that reflects the sky (low roughness,
+ * fresnel from the PBR model) over a ray-cast room drawn as emissive (INTERIOR_GLSL). Own small program so
+ * the main world shader stays lean.
+ */
+export function makeRoomMaterial(tex: WorldTex): THREE.MeshStandardMaterial {
+  const m = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.06, metalness: 0, vertexColors: false, envMapIntensity: 1.1 });
+  m.name = 'world-room';
+  m.onBeforeCompile = (shader) => {
+    if (!U.uNoise.value) U.uNoise.value = noiseTex();
+    Object.assign(shader.uniforms, { uAlb: { value: tex.alb } }, U);
+    injectWorldVertex(shader);
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>
+uniform sampler2DArray uAlb;
+uniform sampler2D uNoise;
+uniform vec3 uEmisCol[16];
+uniform float uNight;
+uniform float uTime;
+varying vec2 vUvT;
+varying vec4 vExt;
+varying vec3 vWPos;
+varying vec3 vWNrm;
+${NOISE_GLSL}
+${INTERIOR_GLSL}`)
+      .replace('#include <map_fragment>', `
+float glassDirt = 0.0;
+vec3 roomEmis = wInterior(vWPos, vWNrm, vUvT, vExt, glassDirt);
+diffuseColor.rgb = vec3(0.012, 0.013, 0.014);`)
+      .replace('#include <roughnessmap_fragment>', `float roughnessFactor = 0.04 + 0.22 * glassDirt;`)
+      .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+totalEmissiveRadiance += roomEmis;`);
+  };
+  m.customProgramCacheKey = () => 'world-room-v1';
   return m;
 }
 

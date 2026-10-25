@@ -545,13 +545,13 @@ export class SkillProps {
       _v.y += bob;
       _v2.copy(camLocal).sub(_v);
       const dist = _v2.length();
-      _v.addScaledVector(_v2.normalize(), Math.min(1.1, dist * 0.24) * Ease.inOutCubic(n.hover));
+      _v.addScaledVector(_v2.normalize(), Math.min(1.4, dist * 0.3) * Ease.inOutCubic(n.hover));
       _v.x += Math.sin(t * 38) * n.shake * 0.05;
       n.cur.copy(_v);
       n.holder.position.copy(_v);
       const pop = n.appear <= 0 ? 0.001 : Ease.outBack(n.appear, 2.2);
       const bounce = Math.sin(n.bounce * 13) * n.bounce * 0.3;
-      n.holder.scale.setScalar(Math.max(0.001, pop * (1 + n.hover * 0.22 + bounce)));
+      n.holder.scale.setScalar(Math.max(0.001, pop * (1 + n.hover * 0.42 + bounce)));
       // spin: owned/ready spin, locked lazily; hovered turns to face you; happy = a joyful double spin
       n.spin += dt * (owned ? 0.9 : ready ? 0.7 : 0.25) * (1 - n.hover * 0.85);
       const happySpin = (1 - Math.pow(n.happy, 0.5)) * Math.PI * 4 * (n.happy > 0 ? 1 : 0);

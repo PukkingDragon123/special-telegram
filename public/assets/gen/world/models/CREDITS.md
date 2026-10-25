@@ -20,7 +20,7 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Fish Knife (`fish_knife`) | https://polyhaven.com/a/fish_knife | Mateusz Sadek | 42 KB |
 | Folding Wooden Stool (`folding_wooden_stool`) | https://polyhaven.com/a/folding_wooden_stool | Ulan Cabanilla | 107 KB |
 | Food Lychee 01 (`food_lychee_01`) | https://polyhaven.com/a/food_lychee_01 | Oliver Harries | 36 KB |
-| Hand Truck (`hand_truck`) | https://polyhaven.com/a/hand_truck | Mutanzom3D | 205 KB |
+| Hand Truck (`hand_truck`) | https://polyhaven.com/a/hand_truck | Mutanzom3D | 203 KB |
 | Industrial Plastic Container (`industrial_pastic_container`) | https://polyhaven.com/a/industrial_pastic_container | Galo Benivegna | 134 KB |
 | Jug 01 (`jug_01`) | https://polyhaven.com/a/jug_01 | Kuutti Siitonen | 43 KB |
 | Lightbulb 01 (`lightbulb_01`) | https://polyhaven.com/a/lightbulb_01 | Josh Dean | 24 KB |
@@ -33,7 +33,7 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Plastic Crate 02 (`plastic_crate_02`) | https://polyhaven.com/a/plastic_crate_02 | Fabi_G | 110 KB |
 | Plastic Jerrycan (`plastic_jerrycan`) | https://polyhaven.com/a/plastic_jerrycan | Ulan Cabanilla | 128 KB |
 | Plastic Monobloc Chair 01 (`plastic_monobloc_chair_01`) | https://polyhaven.com/a/plastic_monobloc_chair_01 | Kuutti Siitonen | 122 KB |
-| Potted Plant 02 (`potted_plant_02`) | https://polyhaven.com/a/potted_plant_02 | Rico Cilliers | 205 KB |
+| Potted Plant 02 (`potted_plant_02`) | https://polyhaven.com/a/potted_plant_02 | Rico Cilliers | 165 KB |
 | Potted Plant 04 (`potted_plant_04`) | https://polyhaven.com/a/potted_plant_04 | James Ray Cock | 146 KB |
 | Power Box 01 (`power_box_01`) | https://polyhaven.com/a/power_box_01 | Rico Cilliers, Yann Kervran | 136 KB |
 | Propane Tank (`propane_tank`) | https://polyhaven.com/a/propane_tank | Slinc | 97 KB |
@@ -50,4 +50,19 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Wooden Display Shelves 01 (`wooden_display_shelves_01`) | https://polyhaven.com/a/wooden_display_shelves_01 | James Ray Cock | 76 KB |
 | Worn Metal Rack (`worn_metal_rack`) | https://polyhaven.com/a/worn_metal_rack | Luca B | 102 KB |
 
-Total: 4.5 MB in 44 models.
+Total: 4.4 MB in 44 models.
+
+
+## Photo-derived textures (props agent)
+
+`_stall/meat.jpg` (butcher counter cuts) is cropped and graded from these openly licensed photos (via Openverse):
+
+| photo | author | licence | source |
+|---|---|---|---|
+| A black circular plate holds four thick pieces of raw pork belly. The pork belly has a distinct layering of pink meat and white fat, showcasing its marbled appearance. The slices are stacked unevenly, with some pieces leaning against each other. | Yam B Chhetri | CC0 1.0 | https://wordpress.org/photos/photo/5306a119c9/ |
+| Nine Racks of Raw Ribs | Au Kirk | BY 2.0 | https://www.flickr.com/photos/64441474@N06/8352582252 |
+| Spicy-Chicken-Thighs_Raw__42552 | Public Domain Photos | BY 2.0 | https://www.flickr.com/photos/28958738@N06/6861365772 |
+
+Other stall/table textures reuse files already in `public/assets` (see their manifests): PP plastic, brushed stainless,
+styrofoam, cardboard, tamarind board, LPG paint (textures/props), produce heaps / kradong / scale / Lay's bags /
+fridge front (gen/shops), product labels (img/labels), egg shell (gen/cooking), temple-fair poster (img/posters).

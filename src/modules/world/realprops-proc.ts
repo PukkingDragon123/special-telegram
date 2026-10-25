@@ -108,7 +108,7 @@ async function thaiStool(): Promise<ProcModel> {
     [0.140, H - 0.034], [0.150, H - 0.031], [0.155, H - 0.022], [0.1555, H - 0.011], [0.152, H - 0.003], [0.144, H],
     [0.09, H + 0.0015], [0.034, H + 0.001], [0.027, H - 0.002], [0.024, H - 0.008], [0.024, H - 0.024], [0.032, H - 0.027],
     [0.128, H - 0.027], [0.140, H - 0.034],
-  ], 40, { k: 1 });
+  ], 24, { k: 1 });
   // skirt: unwrapped outline with 4 round-topped arches, tessellated and wrapped onto the cone
   const L = 2 * Math.PI * rBase, a = 0.098, ys = 0.165;
   const sh = new THREE.Shape();
@@ -121,8 +121,8 @@ async function thaiStool(): Promise<ProcModel> {
     sh.lineTo(c + a, 0);
   }
   sh.lineTo(L, 0); sh.lineTo(L, Hs); sh.lineTo(0, Hs); sh.lineTo(0, 0);
-  let flat: THREE.BufferGeometry = new THREE.ShapeGeometry(sh, 12);
-  flat = new TessellateModifier(0.03, 10).modify(flat);
+  let flat: THREE.BufferGeometry = new THREE.ShapeGeometry(sh, 6);
+  flat = new TessellateModifier(0.07, 6).modify(flat);
   const fp = flat.getAttribute('position') as THREE.BufferAttribute;
   const n = fp.count;
   const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), uvs = new Float32Array(n * 2);
@@ -147,25 +147,25 @@ async function thaiStool(): Promise<ProcModel> {
   for (let k = 0; k < 4; k++) {
     const c0 = L * k / 4;
     const pts: THREE.Vector3[] = [];
-    for (let t = -1; t <= 1.001; t += 0.25) {
+    for (let t = -1; t <= 1.001; t += 0.5) {
       const U = c0 + t * legHalf, th = (U / L) * Math.PI * 2, r = rBase + 0.003;
       pts.push(new THREE.Vector3(r * Math.sin(th), 0.006, r * Math.cos(th)));
     }
-    beads.push(tubeGeom(pts, 0.006, 8, 5));
+    beads.push(tubeGeom(pts, 0.006, 4, 4));
   }
-  const ring = lathe([[rBase - (rBase - rTop) * (Hs - 0.085) / Hs + 0.004, Hs - 0.088], [rBase - (rBase - rTop) * (Hs - 0.083) / Hs + 0.007, Hs - 0.084], [rBase - (rBase - rTop) * (Hs - 0.079) / Hs + 0.004, Hs - 0.08]], 40);
+  const ring = lathe([[rBase - (rBase - rTop) * (Hs - 0.085) / Hs + 0.004, Hs - 0.088], [rBase - (rBase - rTop) * (Hs - 0.083) / Hs + 0.007, Hs - 0.084], [rBase - (rBase - rTop) * (Hs - 0.079) / Hs + 0.004, Hs - 0.08]], 24);
   const body = mergeAll([seat, ...beads, ring]);
   // embossed floral band: a strip just proud of the skirt, between the ring and the seat
   const by0 = Hs - 0.078, by1 = Hs - 0.004;
   const r0 = rBase - (rBase - rTop) * by0 / Hs + 0.0018, r1 = rBase - (rBase - rTop) * by1 / Hs + 0.0018;
-  const bandG = lathe([[r0, by0], [r1, by1]], 48, { k: 1 });
+  const bandG = lathe([[r0, by0], [r1, by1]], 32, { k: 1 });
   const bu = bandG.getAttribute('uv') as THREE.BufferAttribute;
-  for (let i = 0; i < bu.count; i++) { const s = Math.floor(i / 2); bu.setXY(i, (s / 48) * 2, i % 2); }
+  for (let i = 0; i < bu.count; i++) { const s = Math.floor(i / 2); bu.setXY(i, (s / 32) * 2, i % 2); }
   const plastic = plasticMat(map, nrm, rgh, 3);
   const plasticD = plasticMat(map, nrm, rgh, 3, THREE.DoubleSide);
   const bandMat = new THREE.MeshStandardMaterial({ map: band, normalMap: nrm, roughness: 0.6, metalness: 0, side: THREE.DoubleSide });
   bandMat.envMapIntensity = 0.6;
-  return { parts: [{ geom: clean(body), mat: plastic, tint: true }, { geom: clean(skirt), mat: plasticD, tint: true }, { geom: clean(bandG), mat: bandMat, tint: true }] };
+  return { parts: [{ geom: clean(skirt), mat: plasticD, tint: true }, { geom: clean(body), mat: plastic, tint: true }, { geom: clean(bandG), mat: bandMat, tint: true }] };
 }
 
 // ------------------------------------------------------------------ PP bucket with a steel bail

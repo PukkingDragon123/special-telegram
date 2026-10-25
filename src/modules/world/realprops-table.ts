@@ -133,12 +133,12 @@ async function caddy(): Promise<ProcModel> {
   const fill: THREE.BufferGeometry[][] = [[], [], [], []];
   for (let i = 0; i < 4; i++) {
     const [x, z] = pos[i];
-    jars.push(lathe([[0, 0.012], [jarR - 0.004, 0.012], [jarR, 0.018], [jarR, jarH - 0.01], [jarR - 0.004, jarH], [jarR - 0.006, jarH], [jarR - 0.0045, jarH - 0.01], [jarR - 0.0045, 0.018], [0, 0.016]], 16).translate(x, 0, z));
-    lids.push(lathe([[jarR - 0.003, jarH - 0.006], [jarR + 0.002, jarH - 0.004], [jarR + 0.002, jarH + 0.008], [jarR - 0.004, jarH + 0.011], [0.0, jarH + 0.012]], 16).translate(x, 0, z));
+    jars.push(lathe([[0, 0.012], [jarR - 0.004, 0.012], [jarR, 0.018], [jarR, jarH - 0.01], [jarR - 0.004, jarH], [jarR - 0.006, jarH], [jarR - 0.0045, jarH - 0.01], [jarR - 0.0045, 0.018], [0, 0.016]], 10).translate(x, 0, z));
+    lids.push(lathe([[jarR - 0.003, jarH - 0.006], [jarR + 0.002, jarH - 0.004], [jarR + 0.002, jarH + 0.008], [jarR - 0.004, jarH + 0.011], [0.0, jarH + 0.012]], 10).translate(x, 0, z));
     // spoon handle through the lid notch
     lids.push(new THREE.BoxGeometry(0.008, 0.07, 0.0025).rotateZ(0.25).translate(x + 0.012, jarH + 0.03, z));
     const lvl = [0.06, 0.055, 0.05, 0.064][i];
-    fill[i].push(lathe([[0, 0.016], [jarR - 0.0055, 0.016], [jarR - 0.0055, lvl], [0, lvl + (i === 1 || i === 2 ? 0.006 : 0)]], 14).translate(x, 0, z));
+    fill[i].push(lathe([[0, 0.016], [jarR - 0.0055, 0.016], [jarR - 0.0055, lvl], [0, lvl + (i === 1 || i === 2 ? 0.006 : 0)]], 8).translate(x, 0, z));
   }
   // wire rack: base plate + rails + carry handle
   const base = slab(roundRect(0.165, 0.165, 0.02), 0.012, 0.006, 0.002, 4);

@@ -257,9 +257,9 @@
  "hand_truck": {
   "file": "hand_truck/hand_truck.glb",
   "name": "Hand Truck",
-  "bytes": 210140,
+  "bytes": 207708,
   "srcTris": 13220,
-  "tris": 5496,
+  "tris": 5264,
   "dims": [
    0.593,
    0.693,
@@ -274,9 +274,9 @@
  "industrial_pastic_container": {
   "file": "industrial_pastic_container/industrial_pastic_container.glb",
   "name": "Industrial Plastic Container",
-  "bytes": 137076,
+  "bytes": 137116,
   "srcTris": 7118,
-  "tris": 4190,
+  "tris": 4184,
   "dims": [
    0.476,
    0.631,
@@ -478,9 +478,9 @@
  "potted_plant_02": {
   "file": "potted_plant_02/potted_plant_02.glb",
   "name": "Potted Plant 02",
-  "bytes": 209748,
+  "bytes": 168604,
   "srcTris": 69806,
-  "tris": 7953,
+  "tris": 3537,
   "dims": [
    0.701,
    0.657,

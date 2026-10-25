@@ -157,11 +157,10 @@ async function eggTray(): Promise<ProcModel> {
   const W = 0.3, cups: THREE.BufferGeometry[] = [], eggs: THREE.BufferGeometry[] = [];
   const sheet = slab(roundRect(W, W, 0.015), 0.006, 0.002, 3).translate(0, 0.012, 0);
   cups.push(sheet);
-  const egg = lathe([[0, 0], [0.012, 0.002], [0.02, 0.012], [0.022, 0.026], [0.019, 0.042], [0.011, 0.054], [0, 0.057]], 10);
+  const egg = lathe([[0, 0], [0.016, 0.004], [0.022, 0.024], [0.017, 0.046], [0, 0.057]], 7);
   for (let i = 0; i < 6; i++) for (let j = 0; j < 5; j++) {
     const x = -W / 2 + 0.025 + i * 0.05, z = -W / 2 + 0.03 + j * 0.06;
-    cups.push(lathe([[0.0, 0.0], [0.016, 0.0], [0.022, 0.012], [0.024, 0.018]], 8).translate(x, 0, z));
-    if (i < 5 && j < 4) cups.push(new THREE.ConeGeometry(0.011, 0.04, 6).translate(x + 0.025, 0.035, z + 0.03));
+    if (i < 5 && j < 4 && (i + j) % 2 === 0) cups.push(new THREE.ConeGeometry(0.011, 0.04, 4).translate(x + 0.025, 0.035, z + 0.03));
     const tilt = (hash(i * 7 + j) - 0.5) * 0.3;
     eggs.push(egg.clone().applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(tilt + (j % 2 ? 1.5 : 1.3), hash(i + j * 3) * 3, 0)).setPosition(x, 0.028, z)));
   }
