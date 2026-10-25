@@ -30,6 +30,7 @@ public/assets/textures/{faces,clothing,hair} (research agent, see its credits).
 | fab/grid_red.jpg | https://ambientcg.com/a/Fabric067 | ambientCG (Lennart Demes) | CC0 |
 | fab/stripe_check.jpg | https://ambientcg.com/a/Fabric078 | ambientCG (Lennart Demes) | CC0 |
 | fab/quilted.jpg | https://ambientcg.com/a/Fabric047 | ambientCG (Lennart Demes) | CC0 |
+| fab/skin_pores.jpg | [Nothin but skin](https://www.flickr.com/photos/12836528@N00/2188851719) (sharpest crop, high-pass, seamless 256², overlaid on bare-skin regions) | kevin dooley | CC BY 2.0 |
 
 ## Sculpted rigged bodies + animation library
 

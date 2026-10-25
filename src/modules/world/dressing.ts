@@ -8,6 +8,7 @@ import { flat, groundDecal, wallDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
 import { dressSoi, tableSetting } from './realprops-dress';
 import { THAI_TABLE, STEEL_TABLE } from './realprops-table';
+import { propHeight } from './realprops';
 import { EMIS } from './mats';
 import { SW_H, SOI, MAIN, CROAD, ZEBRAS, POLES_SOI, POLES_SOI_E, POLES_MAIN_N, POLES_MAIN_S } from './layout';
 
@@ -111,7 +112,7 @@ export function buildStreetLife(c: Ctx) {
     const steel = rng.chance(0.4);
     const tx = x + (Math.abs(x) < 7 ? -Math.sign(x) * 0.15 : rng.range(-0.8, 0.8)), tz = z + (Math.abs(x) < 7 ? rng.pick([-1.5, 1.5]) : 1.3), ty = rng.range(-0.2, 0.2);
     P.real.add(steel ? 'steel_table' : 'thai_table', tx, SW_H, tz, ty, steel ? {} : { color: rng.pick([0xe8e4dc, 0x2a62b8, 0xc0302a]) });
-    tableSetting(P.real, tx, SW_H + (steel ? STEEL_TABLE.H : THAI_TABLE.H), tz, ty, rng, steel);
+    tableSetting(P.real, tx, SW_H + (steel ? propHeight('steel_table', STEEL_TABLE.H) : propHeight('thai_table', THAI_TABLE.H)), tz, ty, rng, steel);
     const sc = rng.pick(PLASTIC_COLORS);
     for (const [lx, lz] of [[0.68, 0], [-0.68, 0], [0, 0.55], [0, -0.55]] as [number, number][]) {
       if (!rng.chance(0.75)) continue;

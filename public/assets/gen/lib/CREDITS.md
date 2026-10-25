@@ -8,5 +8,10 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 |---|---|---|---|---|
 | `thai_stool` | Thai plastic stool (เก้าอี้พลาสติก) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_furniture.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `thai_table_steel` | Stainless folding street table (โต๊ะพับสแตนเลส) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `lpg_15kg` | LPG cylinder 15 kg (ถังแก๊ส) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `tamarind_board` | Tamarind wood chopping block (เขียงมะขาม) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `bottle_beer_chang` | Chang beer bottle (เบียร์ช้าง) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `bottle_fish_sauce_tiparos` | Fish sauce bottle, Tiparos (น้ำปลาทิพรส) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `condiment_caddy` | Condiment caddy, 4 jars (พวงเครื่องปรุง) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
 
-Total: 2 models, 0.1 MB.
+Total: 7 models, 0.6 MB.

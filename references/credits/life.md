@@ -7,7 +7,7 @@ All files shipped under `public/assets/gen/life/`. Models come from Sketchfab vi
 | file | source | author | licence | use |
 |---|---|---|---|---|
 | models/dog.glb | [Animated Dog, Shiba Inu](https://sketchfab.com/3d-models/9abfce885a834399b2c3ccaed51cd474) | quander | by | stray dog (decimated 33k→10k tris, whiskers removed, toe weights merged, clips renamed) |
-| models/cat.glb | [Cat [Murdered: Soul Suspect]](https://sketchfab.com/3d-models/836312def1b84e588866500a2bf79f0f) | mark2580 | by | stray cat (rotated, rescaled) |
+| models/cat.glb | [Cat [Murdered: Soul Suspect]](https://sketchfab.com/3d-models/836312def1b84e588866500a2bf79f0f) | mark2580 | by | stray cat — Objaverse GLB re-rooted without Blender (`scripts/life/glb_root_fix.py`: scale 0.0175, -90° Y, clip → idle; the Blender round-trip broke this FBX-derived rig); sitting rig stood up procedurally in creature.ts |
 | models/ghost_scooter.glb | [Old Scooter](https://sketchfab.com/3d-models/5e9b5072b2224ba982366490ad5f31d9) | ribitis | by | headless ghost rider scooter + traffic scooters (base plane removed, rescaled) |
 | models/ghost_white.glb | [Samara (The Ring)](https://sketchfab.com/3d-models/57ab1a21d63744dfab12c54c7d139ddb) | CoryRichards | by | long-haired woman in white / Nang Tani (decimated 40k→11k) |
 | models/krasue_hair.glb | [Samara (The Ring)](https://sketchfab.com/3d-models/57ab1a21d63744dfab12c54c7d139ddb) | CoryRichards | by | krasue hair (hair mesh only) |
@@ -34,6 +34,14 @@ All files shipped under `public/assets/gen/life/`. Models come from Sketchfab vi
 | tex/amulet_table.jpg, tex/amulet_face.jpg | [amulet market](https://www.flickr.com/photos/54369147@N00/4140805879) | mimolag | CC BY 2.0 | crop |
 | tex/rose_yellow.jpg | [Yellow Rose](https://www.flickr.com/photos/49694447@N00/8201972752) | Kumaravel | CC BY 2.0 | crop; weekday tint at runtime |
 | tex/garland_jasmine.jpg, tex/garland_rose.jpg | [These decorative bright yellow marigold garland arrangements](https://www.flickr.com/photos/124476447@N02/15948584746) | UpSticksNGo | CC BY 2.0 | crop |
+
+## Fur (shell + fin fur, baked by `scripts/life/bake_fur.py`, comb rules in `data/fur_dog.json`, `data/fur_cat.json`)
+
+| file | source photo | author | licence | processing |
+|---|---|---|---|---|
+| tex/dog_albedo.jpg, tex/dog_fur.jpg, tex/cat_albedo.jpg, tex/cat_fur.jpg | [Coarse Fur](https://www.flickr.com/photos/146348689@N08/24952672127) | CodeHole | CC BY-SA 2.0 | flattened, seamless, resampled ALONG the per-texel strand flow (bone-chain comb rasterised into the model atlas, cell-rotated synthesis) → strand detail + shell strand-density map; dog colours = model atlas low-frequency layout recoloured to a real Thai soi-dog palette sampled from the photos below |
+| (dust blotches in the albedos) | public/assets/textures/pbr/dirt_path_dry (Poly Haven "dirt_floor") | eye-candy.xyz | CC0 | luminance as street-grime mask on paws / belly |
+| (colour reference only, not shipped) | [Thai street dog](https://www.flickr.com/photos/91994044@N00/5855237593) · [Soi Dog](https://www.flickr.com/photos/29443624@N05/2755519472) · [soi dog, pondering](https://www.flickr.com/photos/44124401641@N01/5065289628) | quinet · Thai Dogs · istolethetv | CC BY 2.0 | fawn / cream / saddle colours sampled |
 
 ## Sounds
 

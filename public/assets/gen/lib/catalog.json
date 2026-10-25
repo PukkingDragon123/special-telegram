@@ -54,5 +54,151 @@
   "title": "Stainless folding street table (โต๊ะพับสแตนเลส)",
   "friction": 0.5,
   "collider": "box"
+ },
+ {
+  "id": "lpg_15kg",
+  "file": "kitchen/lpg_15kg.glb",
+  "category": "kitchen",
+  "tags": [
+   "lpg",
+   "gas",
+   "cylinder",
+   "tank",
+   "cooking",
+   "thai",
+   "red"
+  ],
+  "size_m": [
+   0.3,
+   0.655,
+   0.3
+  ],
+  "tris": 2200,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 29.0,
+  "bytes": 103464,
+  "title": "LPG cylinder 15 kg (ถังแก๊ส)",
+  "friction": 0.45,
+  "collider": "cyl"
+ },
+ {
+  "id": "tamarind_board",
+  "file": "kitchen/tamarind_board.glb",
+  "category": "kitchen",
+  "tags": [
+   "chopping board",
+   "block",
+   "wood",
+   "tamarind",
+   "butcher",
+   "kitchen",
+   "thai"
+  ],
+  "size_m": [
+   0.384,
+   0.075,
+   0.382
+  ],
+  "tris": 900,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 6.0,
+  "bytes": 128016,
+  "title": "Tamarind wood chopping block (เขียงมะขาม)",
+  "friction": 0.75,
+  "far": 0.8,
+  "collider": "cyl"
+ },
+ {
+  "id": "bottle_beer_chang",
+  "file": "packaged/bottle_beer_chang.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "drink",
+   "thai",
+   "brand",
+   "beer_chang_bottle"
+  ],
+  "size_m": [
+   0.074,
+   0.279,
+   0.074
+  ],
+  "tris": 666,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.94,
+  "bytes": 19532,
+  "title": "Chang beer bottle (เบียร์ช้าง)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "bottle_fish_sauce_tiparos",
+  "file": "packaged/bottle_fish_sauce_tiparos.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "sauce",
+   "thai",
+   "brand",
+   "fish_sauce_tiparos"
+  ],
+  "size_m": [
+   0.075,
+   0.277,
+   0.075
+  ],
+  "tris": 848,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.98,
+  "bytes": 24672,
+  "title": "Fish sauce bottle, Tiparos (น้ำปลาทิพรส)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "condiment_caddy",
+  "file": "tableware/condiment_caddy.glb",
+  "category": "tableware",
+  "tags": [
+   "condiment",
+   "caddy",
+   "table",
+   "fish sauce",
+   "chili",
+   "sugar",
+   "vinegar",
+   "thai"
+  ],
+  "size_m": [
+   0.168,
+   0.208,
+   0.168
+  ],
+  "tris": 3717,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 1.4,
+  "bytes": 177816,
+  "title": "Condiment caddy, 4 jars (พวงเครื่องปรุง)",
+  "friction": 0.5,
+  "far": 0.6,
+  "collider": "box"
  }
 ]

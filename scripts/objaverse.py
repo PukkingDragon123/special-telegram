@@ -148,6 +148,30 @@ def cmd_search(a):
     if a.json: json.dump(hits, open(a.json, 'w'), indent=1, ensure_ascii=False)
 
 
+def cmd_batch(a):
+    """queries file: one per line `name ;; regex ;; min_faces ;; max_faces ;; exclude-regex` → <out>/<name>.jpg sheets + <out>/<name>.json"""
+    qs = []
+    for line in open(a.file):
+        if not line.strip() or line.startswith('#'): continue
+        f = [x.strip() for x in line.split(' ;; ')] + ['', '', '', '']
+        qs.append({'name': f[0], 'pat': re.compile(f[1], re.I), 'min': int(f[2] or 500), 'max': int(f[3] or 300000),
+                   'neg': re.compile(f[4], re.I) if f[4] else None, 'hits': []})
+    for r in load_index():
+        if r['tex'] < 1: continue
+        for q in qs:
+            if not (q['min'] <= r['faces'] <= q['max']): continue
+            if not q['pat'].search(r['name'] + ' ' + r['tags']): continue
+            if q['neg'] and q['neg'].search(r['name'] + ' ' + r['tags'] + ' ' + r['desc']): continue
+            q['hits'].append(r)
+    os.makedirs(a.out, exist_ok=True)
+    for q in qs:
+        h = sorted(q['hits'], key=score, reverse=True)[:a.n]
+        print(f"== {q['name']}: {len(q['hits'])} hits")
+        show(h)
+        json.dump(h, open(os.path.join(a.out, q['name'] + '.json'), 'w'), indent=1, ensure_ascii=False)
+        if h: sheet([(x['uid'], x['thumb'], f"{x['name'][:26]} ♥{x['likes']} {x['faces']//1000}k") for x in h], os.path.join(a.out, q['name'] + '.jpg'))
+
+
 def show(hits):
     for i, h in enumerate(hits):
         print(f"{i:2d} {h['uid']} ♥{h['likes']:4d} f{h['faces']:7d} t{h['tex']}@{h['texres']:4d} {h['size']/1e6:5.1f}MB {h['lic']:5s} {h['user'][:14]:14s} {h['name'][:50]}")
@@ -256,6 +280,7 @@ def main():
     s.add_argument('--min-tex', type=int, default=1); s.add_argument('--exclude', default='')
     s.add_argument('--name-only', action='store_true'); s.add_argument('--static', action='store_true')
     s.add_argument('--sheet'); s.add_argument('--json'); s.set_defaults(fn=cmd_search)
+    s = sp.add_parser('batch'); s.add_argument('file'); s.add_argument('--out', required=True); s.add_argument('-n', type=int, default=24); s.set_defaults(fn=cmd_batch)
     s = sp.add_parser('sketchfab'); s.add_argument('query'); s.add_argument('-n', type=int, default=24)
     s.add_argument('--sort', default='-likeCount'); s.add_argument('--all', action='store_true'); s.add_argument('--sheet'); s.set_defaults(fn=cmd_sketchfab)
     s = sp.add_parser('thumbs'); s.add_argument('uids', nargs='+'); s.add_argument('--sheet', required=True); s.set_defaults(fn=cmd_thumbs)

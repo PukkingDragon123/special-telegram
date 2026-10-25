@@ -6,7 +6,7 @@ import { tl } from '../../core/util';
 import { lathe, rbox, leg, tube, merge, mesh, group, mat, plastic, pbr, photo, flat, frontArc, band, wobble } from './geo';
 import { messMaterial, waterMaterial } from './fx';
 import { posterMaterial, signMaterials } from './menuposter';
-import { realPropObject } from '../world/realprops';
+import { realPropObject, propHeight } from '../world/realprops';
 
 /** real modelled furniture (world/realprops*): Thai moulded stool, monobloc photoscan, modelled tables
  *  with their condiment caddy + spoon cup. Visual only — sizes match SEAT_H / TABLE_H / TABLE_SIZE. */
@@ -14,8 +14,11 @@ function realStool(color: 'red' | 'blue') { return realPropObject('thai_stool', 
 function realChair() { return realPropObject('monobloc', { color: 0xeee9dc }); }
 function realTable(kind: 'table_plastic' | 'table_steel') {
   const g = new THREE.Group();
-  g.add(realPropObject(kind === 'table_plastic' ? 'thai_table' : 'steel_table', { color: 0x2a62b8 }));
   const [W, Dp] = TABLE_SIZE[kind], H = TABLE_H[kind];
+  const id = kind === 'table_plastic' ? 'thai_table' : 'steel_table';
+  const t = realPropObject(id, { color: 0x2a62b8 });
+  t.scale.y = H / propHeight(id, H);   // keep the gameplay table height exact whatever model is used
+  g.add(t);
   const caddy = realPropObject('caddy', { shadow: false }); caddy.position.set(-W / 2 + 0.12, H, -Dp / 2 + 0.11); caddy.rotation.y = 0.3;
   const cup = realPropObject('spoon_cup', { shadow: false }); cup.position.set(-W / 2 + 0.27, H, -Dp / 2 + 0.08);
   g.add(caddy, cup);

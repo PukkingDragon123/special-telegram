@@ -200,7 +200,7 @@ print('photo strand angle', round(math.degrees(photo_ang), 1))
 S = SIZE
 flS = cv2.resize(fl, (S, S), interpolation=cv2.INTER_LINEAR)
 ang = np.arctan2(flS[..., 1], flS[..., 0])           # target angle in image coords (x right, y down)
-scale = CFG.get('photoScale', 2.0) * S / 2048          # source px per atlas px
+scale = CFG.get('photoScale', 2.0) * 2048 / S          # source px per atlas px (photoScale is given for a 2048 atlas)
 CELL = CFG.get('cell', 96) * S // 2048
 rng = np.random.default_rng(7)
 ys, xs = np.mgrid[0:S, 0:S].astype(np.float32)

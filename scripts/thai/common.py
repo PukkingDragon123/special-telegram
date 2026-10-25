@@ -407,13 +407,16 @@ def pbr(name, tex=None, tile=1.0, color=None, rough=None, rough_mul=1.0, metal=N
     return m
 
 
-def label_mat(name, path, rough=0.35, metal=0.0, w=None, clamp=True, alpha=False):
+def label_mat(name, path, rough=0.35, metal=0.0, w=None, clamp=True, alpha=False, tint=None):
     """a printed label / photo decal mapped 0..1 on UVMap (no tiling)"""
     m, nt, bsdf = _nodes(name)
     L = nt.links.new
     uvn = nt.nodes.new('ShaderNodeUVMap'); uvn.uv_map = 'UVMap'
     t = _tex_node(nt, img(path if os.path.isabs(path) else os.path.join(ROOT, 'public/assets', path)), uvn.outputs['UV'], ext='EXTEND' if clamp else 'REPEAT')
     col = t.outputs['Color']
+    if tint is not None:
+        mx = nt.nodes.new('ShaderNodeMix'); mx.data_type = 'RGBA'; mx.blend_type = 'MULTIPLY'; mx.inputs['Factor'].default_value = 1
+        mx.inputs['B'].default_value = (*tint, 1); L(col, mx.inputs['A']); col = mx.outputs['Result']
     if w: col = weather(nt, col, **w)
     L(col, bsdf.inputs['Base Color'])
     bsdf.inputs['Roughness'].default_value = rough; bsdf.inputs['Metallic'].default_value = metal

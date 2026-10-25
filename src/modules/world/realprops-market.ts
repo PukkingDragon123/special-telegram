@@ -8,7 +8,7 @@ import { ALL, SIDES } from './geo';
 import type { ShopCtx } from './shophouse';
 import { groundDecal, wallDecal } from './streets';
 import { wallShrine } from './archkit';
-import { RealProps, realPropObject } from './realprops';
+import { RealProps, realPropObject, propHeight } from './realprops';
 import { makeFlyFan } from './realprops-stall';
 import { STEEL_TABLE } from './realprops-table';
 import { PLASTIC_COLORS } from './props';
@@ -297,7 +297,7 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
   // =============================================================== BUTCHER
   if (A.butcher_stall) {
     const B = new Frame(A.butcher_stall);
-    const y0 = B.o.y, ct = y0 + STEEL_TABLE.H;
+    const y0 = B.o.y, ct = y0 + propHeight('steel_table', STEEL_TABLE.H);
     const side = B.yaw + Math.PI / 2;
     // two stainless side counters (static: blood decals live on them)
     for (const sx of [-1, 1]) { const p = B.at(sx * 2.05, 0, 0.95); real.add('steel_table', p.x, p.y, p.z, side, { phys: 'static' }); }
@@ -339,7 +339,7 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
     // left counter: tamarind block + cleaver stuck in it, a second cleaver, knives on a magnetic strip
     const bp = B.at(-2.05, 0, 0.85);
     real.add('chop_block', bp.x, ct, bp.z, rng.range(0, 6));
-    real.add('cleaver', bp.x + 0.02, ct + 0.11 - 0.024, bp.z, side + 0.5, { rz: 0.1, phys: 'none' });
+    real.add('cleaver', bp.x + 0.02, ct + propHeight('chop_block', 0.11) - 0.024, bp.z, side + 0.5, { rz: 0.1, phys: 'none' });
     const c2 = B.at(-2.2, 0, 1.22); real.add('cleaver', c2.x, ct + 0.002, c2.z, side + 0.3, { rx: -Math.PI / 2, phys: 'none' });
     const kb0 = B.at(-2.05, 0, 1.36);
     w.mat('wood_old', { uv: 'local', group: 'detail' });

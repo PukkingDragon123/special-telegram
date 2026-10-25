@@ -1,28 +1,153 @@
 {
- "size": 2048,
- "hipBone": "^j_hips", "headBone": "^j_head",
+ "size": 1024,
+ "hipBone": "^j_hips",
+ "headBone": "^j_head",
  "rules": [
-  ["^j_tail", "chain", 1.25],
-  ["_ear_", "chain", 0.45],
-  ["neck", "back", 1.2],
-  ["^j_head", "back", 0.6],
-  ["jaw|tongue", "back", 0.35],
-  ["eyebrow|eyelid|_eye_", "back", 0.25],
-  ["^j_chest|^j_spine_4", "back", 1.05],
-  ["^j_body|^j_spine|^j_hips|^j_root", "back", 1.0],
-  ["scap|humerous|femur", "down", 0.9],
-  ["elbow|knee|forearm", "down", 0.6],
-  ["wrist|palm|finger|ankle|ball|toe", "down", 0.3]
+  [
+   "^j_tail",
+   "chain",
+   1.25
+  ],
+  [
+   "_ear_",
+   "chain",
+   0.45
+  ],
+  [
+   "neck",
+   "back",
+   1.2
+  ],
+  [
+   "^j_head",
+   "back",
+   0.6
+  ],
+  [
+   "jaw|tongue",
+   "back",
+   0.35
+  ],
+  [
+   "eyebrow|eyelid|_eye_",
+   "back",
+   0.25
+  ],
+  [
+   "^j_chest|^j_spine_4",
+   "back",
+   1.05
+  ],
+  [
+   "^j_body|^j_spine|^j_hips|^j_root",
+   "back",
+   1.0
+  ],
+  [
+   "scap|humerous|femur",
+   "down",
+   0.9
+  ],
+  [
+   "elbow|knee|forearm",
+   "down",
+   0.6
+  ],
+  [
+   "wrist|palm|finger|ankle|ball|toe",
+   "down",
+   0.3
+  ]
  ],
- "noFurBones": ["j_[lr]_eye_\\d", "tongue"],
- "wetBones": ["j_[lr]_eye_\\d", "tongue"],
+ "noFurBones": [
+  "j_[lr]_eye_\\d",
+  "tongue"
+ ],
+ "wetBones": [
+  "j_[lr]_eye_\\d",
+  "tongue"
+ ],
  "breathBones": "j_spine_[234]|j_chest",
- "materials": [0],
- "noFurRects": [[0.02, 0.0, 0.37, 0.12], [0.62, 0.0, 0.92, 0.07], [0.02, 0.15, 0.24, 0.43], [0.39, 0.69, 0.47, 0.89], [0.59, 0.69, 0.67, 0.89], [0.7, 0.75, 1.0, 0.95], [0.08, 0.63, 0.12, 0.67]],
- "wetRects": [[0.02, 0.15, 0.24, 0.43]],
- "maskMinLum": -1, "maskMaxRed": 0.2,
- "photoCrop": [0, 40, 1024, 500],
- "photoScale": 1.2, "cell": 96,
- "detailAmt": 0.32, "lowSigma": 4,
- "dust": {"src": "public/assets/textures/pbr/dirt_path_dry/albedo.jpg", "legY": [0.08, 0.015], "belly": 0.25, "amount": 0.3, "color": [92, 84, 76], "repeat": 3}
+ "materials": [
+  0
+ ],
+ "noFurRects": [
+  [
+   0.02,
+   0.0,
+   0.37,
+   0.12
+  ],
+  [
+   0.62,
+   0.0,
+   0.92,
+   0.07
+  ],
+  [
+   0.02,
+   0.15,
+   0.24,
+   0.43
+  ],
+  [
+   0.39,
+   0.69,
+   0.47,
+   0.89
+  ],
+  [
+   0.59,
+   0.69,
+   0.67,
+   0.89
+  ],
+  [
+   0.7,
+   0.75,
+   1.0,
+   0.95
+  ],
+  [
+   0.08,
+   0.63,
+   0.12,
+   0.67
+  ]
+ ],
+ "wetRects": [
+  [
+   0.02,
+   0.15,
+   0.24,
+   0.43
+  ]
+ ],
+ "maskMinLum": -1,
+ "maskMaxRed": 0.2,
+ "photoCrop": [
+  0,
+  40,
+  1024,
+  500
+ ],
+ "photoScale": 1.2,
+ "cell": 96,
+ "detailAmt": 0.32,
+ "lowSigma": 4,
+ "dust": {
+  "src": "public/assets/textures/pbr/dirt_path_dry/albedo.jpg",
+  "legY": [
+   0.08,
+   0.015
+  ],
+  "belly": 0.25,
+  "amount": 0.3,
+  "color": [
+   92,
+   84,
+   76
+  ],
+  "repeat": 3
+ }
 }

@@ -11,6 +11,7 @@ import { PROC_MODELS as BASE_PROC, ProcModel } from './realprops-proc';
 import { TABLE_MODELS } from './realprops-table';
 import { STALL_MODELS } from './realprops-stall';
 import { VEHICLE_MODELS } from './realprops-vehicle';
+import { libEntry } from './lib';
 
 const PROC_MODELS: Record<string, () => Promise<ProcModel>> = { ...BASE_PROC, ...TABLE_MODELS, ...STALL_MODELS, ...VEHICLE_MODELS };
 
@@ -149,6 +150,28 @@ export const MODELS: Record<PropId, ModelDef> = {
   lime: { path: 'gen/cooking/models/food_lime_01/food_lime_01.glb', file: 'food_lime_01', phys: 'none', far: 0.3 },
   onion: { path: 'gen/cooking/models/yellow_onion/yellow_onion.glb', file: 'yellow_onion', phys: 'none', far: 0.3 },
 };
+
+/**
+ * Shared-library models (public/assets/gen/lib, assets agent) replace my stand-ins as soon as they are in the
+ * catalog (lib.ts registers them as `lib:<id>`; index.ts awaits loadLib() before the build steps).
+ */
+export const PREFER_LIB: Record<string, string[]> = {
+  thai_stool: ['thai_stool'], steel_table: ['thai_table_steel'], caddy: ['condiment_caddy'], chop_block: ['tamarind_board', 'chopping_block'],
+  lpg: ['lpg_15kg'], lpg_small: ['lpg_15kg'], fly_fan: ['fly_fan'], food_cart: ['food_cart', 'rot_khen_cart'], thai_table: ['thai_table_plastic', 'plastic_table'],
+  basket: ['kradong', 'basket_woven'], pot_ceramic: ['ong_jar', 'water_jar'],
+};
+/** the id actually used for a placement (library model when available) */
+export function resolveProp(id: PropId): PropId {
+  const alts = PREFER_LIB[id];
+  if (alts) for (const a of alts) if (MODELS['lib:' + a]) return 'lib:' + a;
+  return id;
+}
+/** height of a model's top surface in metres (tables: where the setting goes) */
+export function propHeight(id: PropId, fallback: number): number {
+  const r = resolveProp(id);
+  if (r.startsWith('lib:')) { const e = libEntry(r.slice(4)); if (e) return e.size_m[1]; }
+  return fallback;
+}
 
 // ------------------------------------------------------------------ model loading
 
@@ -301,6 +324,7 @@ export function preloadRealProps(ids: PropId[] = Object.keys(MODELS)) { for (con
  * fill in when the model is loaded. Origin bottom centre, facing +Z. `color` tints recolourable parts.
  */
 export function realPropObject(id: PropId, o: { color?: THREE.ColorRepresentation; shadow?: boolean } = {}): THREE.Group {
+  id = resolveProp(id);
   const g = new THREE.Group();
   g.name = 'real:' + id;
   const fill = (m: Model) => {
@@ -389,16 +413,15 @@ export class RealProps {
 
   /** world builders: register one prop. y = surface height. */
   add(id: PropId, x: number, y: number, z: number, yaw = 0, o: PlaceOpts = {}) {
-    const def = MODELS[id];
-    if (!def) { console.warn('[realprops] unknown prop', id); return; }
     _q.setFromEuler(_e.set(o.rx ?? 0, yaw, o.rz ?? 0, 'YXZ'));
     const s = o.scale ?? 1;
     const m = new THREE.Matrix4().compose(_v.set(x, y, z), _q, _s.set(s, s, s));
     this.addMatrix(id, m, o);
   }
   addMatrix(id: PropId, m: THREE.Matrix4, o: PlaceOpts = {}) {
+    id = resolveProp(id);
     const def = MODELS[id];
-    if (!def) return;
+    if (!def) { console.warn('[realprops] unknown prop', id); return; }
     this.placements.push({ id, m, color: o.color !== undefined ? new THREE.Color(o.color) : null, phys: o.phys ?? def.phys });
   }
 

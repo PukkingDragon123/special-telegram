@@ -15,6 +15,7 @@ import { buildNav, Nav } from './nav';
 import { buildStreets, buildBaseGround, Ctx } from './streets';
 import { makeProps } from './props';
 import { preloadRealProps, realPropsFrame } from './realprops';
+import { loadLib } from './lib';
 import { buildRows, ShopCtx } from './shophouse';
 import { ROWS, groundHeight } from './layout';
 import { loadSigns, SignSys } from './signs';
@@ -103,6 +104,7 @@ const TIMES: Record<string, number> = {};
 async function buildWorld(game: Game) {
   const t0 = performance.now();
   const assets = await startPreload(game);
+  await loadLib().catch(() => []);   // shared library models (lib:<id>) must be registered before props are placed
   TIMES.preloadWait = performance.now() - t0;
   const tex = assets.tex;
   const root = new THREE.Group();

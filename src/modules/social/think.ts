@@ -53,6 +53,7 @@ interface Local {
   veilFrom: number;
   openK: number;
   landed: boolean;
+  fpFrames: number;
 }
 
 export function installThink(game: Game, sparks: Sparkles, canStart: () => boolean) {
@@ -114,7 +115,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     const post = game.engine.post;
     local = {
       phase: 'up', t: 0, p0: pl.pitch, pFrom: LOOK_UP, yaw: pl.yaw, fov0: game.camera.fov, bloom0: post.bloom.intensity, ao0: !!post.ao.enabled,
-      amb0: (Sound as any).volumes?.amb ?? 0.8, prevMusic: (Sound as any).musicKey ?? '', prevUnlock: Input.onUnlock, popped: false, veilFrom: 0, openK: 0, landed: false,
+      amb0: (Sound as any).volumes?.amb ?? 0.8, prevMusic: (Sound as any).musicKey ?? '', prevUnlock: Input.onUnlock, popped: false, veilFrom: 0, openK: 0, landed: false, fpFrames: 0,
     };
     // hand the camera over WITHOUT dropping pointer lock (mouse-look continues in heaven)
     const setLock = Input.setWantLock;
@@ -124,7 +125,8 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     Input.onUnlock = () => stop();
     Overlay.crosshair(false);
     game.interact.clear();
-    if (!(window as any).__hvNoOpen) { opening = new SkyOpening(); game.scene.add(opening.group); }
+    opening = new SkyOpening();
+    game.scene.add(opening.group);
     veil.attach(game.camera);
     veil.k = 0;
     Sound.play('social_heaven_ascend', { vol: 0.9 });
@@ -193,6 +195,7 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     post.ao.enabled = local.ao0;
     local.phase = 'down';
     local.t = 0;
+    local.fpFrames = 0;
     local.pFrom = LOOK_UP;
     local.veilFrom = 1;
     local.openK = 1;
@@ -227,7 +230,8 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     }
     _feet.copy(pl.pos);
     // external mode shows the body; the camera sits inside the head, so keep our own body first-person
-    if (local.phase !== 'heaven' && !(window as any).__hvNoFp) { const rig = rigOf(game, me.id); if (rig && rig.mode !== 'fp') rig.setFirstPerson?.(true); }
+    // (the player view flips the rig back once, on its next update; re-hide only for the first frames — calling it every frame rebuilds materials)
+    if (local.phase !== 'heaven' && local.fpFrames < 4) { local.fpFrames++; rigOf(game, me.id)?.setFirstPerson?.(true); }
     if (local.phase === 'up') {
       const k = Ease.inOutCubic(clamp(t / 1.5));
       placeWorldCam(THREE.MathUtils.lerp(local.p0, LOOK_UP, k), 0, 0, THREE.MathUtils.lerp(local.fov0, 80, k));

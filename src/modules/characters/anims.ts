@@ -219,16 +219,17 @@ def('slap', { loop: false, dur: 1.15, fade: 0.08, face: 'shock', pose: (c) => {
 def('get_slapped', { loop: false, dur: 1.2, fade: 0.04, face: 'shock', pose: (c) => {
   base(c);
   const pb = c.pb, k = c.k;
-  const snap = track(k, [[0, 0], [0.07, 1], [0.35, 0.8], [0.7, 0.35], [1, 0]]);
-  pb.neck(4 * snap, -28 * snap, 10 * snap);
-  pb.head(6 * snap, -38 * snap, 18 * snap);
-  pb.chest(-4 * snap, -12 * snap, 6 * snap);
-  pb.spine(-6 * snap, -6 * snap, 4 * snap);
+  // anime timing: whip past the target, wobble back, overshoot the rest pose, settle
+  const snap = track(k, [[0, 0], [0.05, 1.3], [0.14, 0.92], [0.26, 1.08], [0.5, 0.62], [0.72, -0.14], [0.86, 0.06], [1, 0]]);
+  pb.neck(6 * snap, -38 * snap, 14 * snap);
+  pb.head(8 * snap, -52 * snap, 26 * snap);
+  pb.chest(-6 * snap, -18 * snap, 9 * snap);
+  pb.spine(-8 * snap, -9 * snap, 6 * snap);
   // hand to the cheek
   const hand = env(k, 0.2, 0.42, 0.82, 1);
   pb.arm(L, lerp(10, 70, hand), lerp(10, -20, hand), lerp(0, 40, hand), lerp(15, 150, hand), lerp(0, -30, hand));
   pb.arm(R, 20 + 30 * snap, 40 * snap + 10, 0, 30 + 40 * snap, 0);
-  if (c.posture === 'stand') { pb.p.hp[0] += -0.05 * snap; pb.legSA(L, 0, 12 * snap + 4, 12 * snap, 0); }
+  if (c.posture === 'stand') { pb.p.hp[0] += -0.08 * snap; pb.p.hp[1] += 0.03 * Math.max(0, snap - 0.9); pb.legSA(L, 0, 18 * snap + 4, 16 * snap, 0); }
 } });
 
 def('highfive', { loop: false, dur: 0.95, fade: 0.1, pose: (c) => {
@@ -344,8 +345,8 @@ def('drunk', { loop: true, dur: 1, loco: true, face: 'drunk', posture: 'stand', 
 def('celebrate', { loop: true, dur: 0.9, posture: 'stand', fade: 0.15, pose: (c) => {
   const pb = c.pb, t = c.t;
   const u = (t / 0.9) % 1;
-  const jump = Math.max(0, sin(u * TAU)) * 0.09;
-  const crouch = Math.max(0, -sin(u * TAU)) * 0.06;
+  const jump = Math.max(0, sin(u * TAU)) * 0.14;
+  const crouch = Math.max(0, -sin(u * TAU)) * 0.08;
   pb.hips(0, jump - crouch, 0, 4, 0, 0);
   const kn = crouch * 500;
   pb.leg(L, kn * 0.5, 8, kn, jump > 0.02 ? 15 : 0); pb.leg(R, kn * 0.5, 8, kn, jump > 0.02 ? 15 : 0);

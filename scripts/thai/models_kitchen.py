@@ -152,9 +152,10 @@ def condiment_caddy():
 def tamarind_board():
     R, T = 0.19, 0.075
     rnd = random.Random(3)
-    top = C.label_mat('board_top', 'textures/props/tamarind_board_top_used.jpg', rough=0.75, w=dict(dirt=0.3, grime=0.1, dirt_col=(0.15, 0.08, 0.04)))
-    bot = C.label_mat('board_bot', 'textures/props/tamarind_board_top.jpg', rough=0.8, w=dict(dirt=0.4, grime=0.3, dirt_col=(0.12, 0.08, 0.04)))
-    side = C.pbr('board_side', files={'albedo': 'props/tamarind_board_side_tile.jpg', 'normal': 'props/tamarind_board_side_tile_n.jpg'}, tile=0.25, rough=0.8,
+    wood = (0.78, 0.6, 0.42)
+    top = C.label_mat('board_top', 'textures/props/tamarind_board_top_used.jpg', rough=0.75, tint=wood, w=dict(dirt=0.45, grime=0.35, dirt_col=(0.15, 0.08, 0.04), seed=2))
+    bot = C.label_mat('board_bot', 'textures/props/tamarind_board_top.jpg', rough=0.8, tint=wood, w=dict(dirt=0.4, grime=0.3, dirt_col=(0.12, 0.08, 0.04)))
+    side = C.pbr('board_side', files={'albedo': 'props/tamarind_board_side_tile.jpg', 'normal': 'props/tamarind_board_side_tile_n.jpg'}, tile=0.25, rough=0.8, tint=(0.7, 0.55, 0.4),
                  metal=0.0, w=dict(dirt=0.5, grime=0.35, streak=0.3, dirt_col=(0.12, 0.07, 0.03), seed=5))
     # irregular round (trunk section) with soft, worn edges
     N = 64
