@@ -200,5 +200,1093 @@
   "friction": 0.5,
   "far": 0.6,
   "collider": "box"
+ },
+ {
+  "id": "Barrel_01",
+  "file": "../world/models/Barrel_01/Barrel_01.glb",
+  "category": "containers",
+  "tags": [
+   "Barrel",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.563,
+   0.88,
+   0.563
+  ],
+  "tris": 1998,
+  "license": "CC0-1.0",
+  "author": "Jorge Camacho (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/Barrel_01",
+  "physics": "dynamic",
+  "mass_kg": 22.0,
+  "bytes": 122916,
+  "title": "Barrel_01",
+  "friction": 0.5,
+  "collider": "cyl"
+ },
+ {
+  "id": "WetFloorSign_01",
+  "file": "../world/models/WetFloorSign_01/WetFloorSign_01.glb",
+  "category": "containers",
+  "tags": [
+   "WetFloorSign",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.3,
+   0.63,
+   0.359
+  ],
+  "tris": 228,
+  "license": "CC0-1.0",
+  "author": "Fran Calvente (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/WetFloorSign_01",
+  "physics": "dynamic",
+  "mass_kg": 0.9,
+  "bytes": 46716,
+  "title": "Wet Floor Sign 01",
+  "friction": 0.6
+ },
+ {
+  "id": "bananas",
+  "file": "../world/models/bananas/bananas.glb",
+  "category": "food",
+  "tags": [
+   "bananas",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.6,
+   0.179,
+   0.244
+  ],
+  "tris": 2496,
+  "license": "CC0-1.0",
+  "author": "Alexander Shulha (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/bananas",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 79352,
+  "title": "Bananas"
+ },
+ {
+  "id": "barrel_03",
+  "file": "../world/models/barrel_03/barrel_03.glb",
+  "category": "containers",
+  "tags": [
+   "barrel",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.634,
+   0.93,
+   0.639
+  ],
+  "tris": 1473,
+  "license": "CC0-1.0",
+  "author": "Serhii Khromov (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/barrel_03",
+  "physics": "dynamic",
+  "mass_kg": 22.0,
+  "bytes": 93132,
+  "title": "Barrel 03",
+  "friction": 0.5,
+  "tint": true,
+  "collider": "cyl"
+ },
+ {
+  "id": "boombox",
+  "file": "../world/models/boombox/boombox.glb",
+  "category": "electrical",
+  "tags": [
+   "boombox",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.724,
+   0.47,
+   0.186
+  ],
+  "tris": 2082,
+  "license": "CC0-1.0",
+  "author": "Thomas Paul Mouilleron (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/boombox",
+  "physics": "dynamic",
+  "mass_kg": 2.8,
+  "bytes": 192684,
+  "title": "Boombox",
+  "friction": 0.6,
+  "collider": "box"
+ },
+ {
+  "id": "can_rusted",
+  "file": "../world/models/can_rusted/can_rusted.glb",
+  "category": "containers",
+  "tags": [
+   "can",
+   "rusted",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.125,
+   0.151,
+   0.125
+  ],
+  "tris": 1562,
+  "license": "CC0-1.0",
+  "author": "Rahul Chaudhary (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/can_rusted",
+  "physics": "dynamic",
+  "mass_kg": 0.3,
+  "bytes": 115588,
+  "title": "Can Rusted",
+  "friction": 0.5
+ },
+ {
+  "id": "cardboard_box_01",
+  "file": "../world/models/cardboard_box_01/cardboard_box_01.glb",
+  "category": "containers",
+  "tags": [
+   "cardboard",
+   "box",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.387,
+   0.342,
+   0.516
+  ],
+  "tris": 800,
+  "license": "CC0-1.0",
+  "author": "Rahul Chaudhary (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/cardboard_box_01",
+  "physics": "dynamic",
+  "mass_kg": 1.2,
+  "bytes": 82304,
+  "title": "Cardboard Box 01",
+  "friction": 0.75,
+  "collider": "box"
+ },
+ {
+  "id": "cement_bag",
+  "file": "../world/models/cement_bag/cement_bag.glb",
+  "category": "containers",
+  "tags": [
+   "cement",
+   "bag",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.462,
+   0.18,
+   0.7
+  ],
+  "tris": 844,
+  "license": "CC0-1.0",
+  "author": "PierreB3D (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/cement_bag",
+  "physics": "dynamic",
+  "mass_kg": 25.0,
+  "bytes": 49340,
+  "title": "Cement Bag",
+  "friction": 0.9,
+  "collider": "box"
+ },
+ {
+  "id": "ceramic_pot",
+  "file": "../world/models/ceramic_pot/ceramic_pot.glb",
+  "category": "plants",
+  "tags": [
+   "ceramic",
+   "pot",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.656,
+   0.372,
+   0.502
+  ],
+  "tris": 1500,
+  "license": "CC0-1.0",
+  "author": "Aron Łyczek (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/ceramic_pot",
+  "physics": "dynamic",
+  "mass_kg": 14.0,
+  "bytes": 82164,
+  "title": "Ceramic Pot",
+  "friction": 0.7
+ },
+ {
+  "id": "cleaner_tin_01",
+  "file": "../world/models/cleaner_tin_01/cleaner_tin_01.glb",
+  "category": "containers",
+  "tags": [
+   "cleaner",
+   "tin",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.088,
+   0.13,
+   0.088
+  ],
+  "tris": 762,
+  "license": "CC0-1.0",
+  "author": "Tom Phillips (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/cleaner_tin_01",
+  "physics": "dynamic",
+  "mass_kg": 0.4,
+  "bytes": 32252,
+  "title": "Cleaner Tin 01",
+  "friction": 0.5,
+  "collider": "cyl"
+ },
+ {
+  "id": "concrete_road_barrier_02",
+  "file": "../world/models/concrete_road_barrier_02/concrete_road_barrier_02.glb",
+  "category": "street",
+  "tags": [
+   "concrete",
+   "road",
+   "barrier",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   1.567,
+   1.112,
+   0.442
+  ],
+  "tris": 1500,
+  "license": "CC0-1.0",
+  "author": "Amal Kumar (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/concrete_road_barrier_02",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 130648,
+  "title": "Concrete Road Barrier 02"
+ },
+ {
+  "id": "dustpan",
+  "file": "../world/models/dustpan/dustpan.glb",
+  "category": "containers",
+  "tags": [
+   "dustpan",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.332,
+   0.1,
+   0.368
+  ],
+  "tris": 598,
+  "license": "CC0-1.0",
+  "author": "Balen (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/dustpan",
+  "physics": "dynamic",
+  "mass_kg": 0.3,
+  "bytes": 99980,
+  "title": "Dustpan",
+  "friction": 0.6
+ },
+ {
+  "id": "fire_hydrant",
+  "file": "../world/models/fire_hydrant/fire_hydrant.glb",
+  "category": "street",
+  "tags": [
+   "fire",
+   "hydrant",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.875,
+   0.799,
+   0.318
+  ],
+  "tris": 2992,
+  "license": "CC0-1.0",
+  "author": "Gonçalo Felício (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/fire_hydrant",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 184980,
+  "title": "Fire Hydrant"
+ },
+ {
+  "id": "fish_knife",
+  "file": "../world/models/fish_knife/fish_knife.glb",
+  "category": "kitchenware",
+  "tags": [
+   "fish",
+   "knife",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.029,
+   0.216,
+   0.016
+  ],
+  "tris": 525,
+  "license": "CC0-1.0",
+  "author": "Mateusz Sadek (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/fish_knife",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 42972,
+  "title": "Fish Knife"
+ },
+ {
+  "id": "folding_wooden_stool",
+  "file": "../world/models/folding_wooden_stool/folding_wooden_stool.glb",
+  "category": "furniture",
+  "tags": [
+   "folding",
+   "wooden",
+   "stool",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.528,
+   0.442,
+   0.547
+  ],
+  "tris": 1500,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/folding_wooden_stool",
+  "physics": "dynamic",
+  "mass_kg": 2.2,
+  "bytes": 109528,
+  "title": "Folding Wooden Stool",
+  "friction": 0.6
+ },
+ {
+  "id": "food_lychee_01",
+  "file": "../world/models/food_lychee_01/food_lychee_01.glb",
+  "category": "food",
+  "tags": [
+   "food",
+   "lychee",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.041,
+   0.051,
+   0.042
+  ],
+  "tris": 120,
+  "license": "CC0-1.0",
+  "author": "Oliver Harries (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/food_lychee_01",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 37256,
+  "title": "Food Lychee 01"
+ },
+ {
+  "id": "hand_truck",
+  "file": "../world/models/hand_truck/hand_truck.glb",
+  "category": "street",
+  "tags": [
+   "hand",
+   "truck",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.593,
+   1.403,
+   0.693
+  ],
+  "tris": 5264,
+  "license": "CC0-1.0",
+  "author": "Mutanzom3D (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/hand_truck",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 207708,
+  "title": "Hand Truck"
+ },
+ {
+  "id": "industrial_pastic_container",
+  "file": "../world/models/industrial_pastic_container/industrial_pastic_container.glb",
+  "category": "containers",
+  "tags": [
+   "industrial",
+   "pastic",
+   "container",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.476,
+   0.423,
+   0.631
+  ],
+  "tris": 4184,
+  "license": "CC0-1.0",
+  "author": "Galo Benivegna (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/industrial_pastic_container",
+  "physics": "dynamic",
+  "mass_kg": 2.5,
+  "bytes": 137116,
+  "title": "Industrial Plastic Container",
+  "friction": 0.55,
+  "tint": true,
+  "collider": "box"
+ },
+ {
+  "id": "lightbulb_01",
+  "file": "../world/models/lightbulb_01/lightbulb_01.glb",
+  "category": "electrical",
+  "tags": [
+   "lightbulb",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.06,
+   0.1,
+   0.06
+  ],
+  "tris": 336,
+  "license": "CC0-1.0",
+  "author": "Josh Dean (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/lightbulb_01",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 24324,
+  "title": "Lightbulb 01"
+ },
+ {
+  "id": "metal_stool_02",
+  "file": "../world/models/metal_stool_02/metal_stool_02.glb",
+  "category": "furniture",
+  "tags": [
+   "metal",
+   "stool",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.448,
+   0.458,
+   0.473
+  ],
+  "tris": 1999,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/metal_stool_02",
+  "physics": "dynamic",
+  "mass_kg": 3.5,
+  "bytes": 119908,
+  "title": "Metal Stool 02",
+  "friction": 0.5
+ },
+ {
+  "id": "multi_cleaner_5_litre",
+  "file": "../world/models/multi_cleaner_5_litre/multi_cleaner_5_litre.glb",
+  "category": "containers",
+  "tags": [
+   "multi",
+   "cleaner",
+   "litre",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.219,
+   0.3,
+   0.106
+  ],
+  "tris": 800,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/multi_cleaner_5_litre",
+  "physics": "dynamic",
+  "mass_kg": 2.0,
+  "bytes": 51332,
+  "title": "Multi Cleaner 5 Litre",
+  "friction": 0.45
+ },
+ {
+  "id": "old_tyre",
+  "file": "../world/models/old_tyre/old_tyre.glb",
+  "category": "containers",
+  "tags": [
+   "old",
+   "tyre",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.6,
+   0.6,
+   0.165
+  ],
+  "tris": 1998,
+  "license": "CC0-1.0",
+  "author": "MP (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/old_tyre",
+  "physics": "dynamic",
+  "mass_kg": 8.0,
+  "bytes": 113452,
+  "title": "Old Tyre",
+  "friction": 0.95,
+  "collider": "cyl"
+ },
+ {
+  "id": "planter_pot_clay",
+  "file": "../world/models/planter_pot_clay/planter_pot_clay.glb",
+  "category": "plants",
+  "tags": [
+   "planter",
+   "pot",
+   "clay",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.266,
+   0.222,
+   0.263
+  ],
+  "tris": 1000,
+  "license": "CC0-1.0",
+  "author": "Amal Kumar (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/planter_pot_clay",
+  "physics": "dynamic",
+  "mass_kg": 3.0,
+  "bytes": 65172,
+  "title": "Planter Pot Clay",
+  "friction": 0.7,
+  "collider": "cyl"
+ },
+ {
+  "id": "plastic_bottle_gallon",
+  "file": "../world/models/plastic_bottle_gallon/plastic_bottle_gallon.glb",
+  "category": "containers",
+  "tags": [
+   "plastic",
+   "bottle",
+   "gallon",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.166,
+   0.274,
+   0.126
+  ],
+  "tris": 800,
+  "license": "CC0-1.0",
+  "author": "Rahul Chaudhary (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/plastic_bottle_gallon",
+  "physics": "dynamic",
+  "mass_kg": 1.0,
+  "bytes": 36468,
+  "title": "Plastic Bottle Gallon",
+  "friction": 0.45
+ },
+ {
+  "id": "plastic_broom",
+  "file": "../world/models/plastic_broom/plastic_broom.glb",
+  "category": "containers",
+  "tags": [
+   "plastic",
+   "broom",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.416,
+   1.198,
+   0.567
+  ],
+  "tris": 1198,
+  "license": "CC0-1.0",
+  "author": "L (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/plastic_broom",
+  "physics": "dynamic",
+  "mass_kg": 0.5,
+  "bytes": 56128,
+  "title": "Plastic Broom",
+  "friction": 0.6
+ },
+ {
+  "id": "plastic_crate_02",
+  "file": "../world/models/plastic_crate_02/plastic_crate_02.glb",
+  "category": "containers",
+  "tags": [
+   "plastic",
+   "crate",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.506,
+   0.254,
+   0.406
+  ],
+  "tris": 3000,
+  "license": "CC0-1.0",
+  "author": "Fabi_G (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/plastic_crate_02",
+  "physics": "dynamic",
+  "mass_kg": 1.6,
+  "bytes": 112180,
+  "title": "Plastic Crate 02",
+  "friction": 0.55,
+  "tint": true,
+  "collider": "box"
+ },
+ {
+  "id": "plastic_jerrycan",
+  "file": "../world/models/plastic_jerrycan/plastic_jerrycan.glb",
+  "category": "containers",
+  "tags": [
+   "plastic",
+   "jerrycan",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.268,
+   0.318,
+   0.341
+  ],
+  "tris": 1498,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/plastic_jerrycan",
+  "physics": "dynamic",
+  "mass_kg": 4.0,
+  "bytes": 130640,
+  "title": "Plastic Jerrycan",
+  "friction": 0.5,
+  "tint": true
+ },
+ {
+  "id": "plastic_monobloc_chair_01",
+  "file": "../world/models/plastic_monobloc_chair_01/plastic_monobloc_chair_01.glb",
+  "category": "furniture",
+  "tags": [
+   "plastic",
+   "monobloc",
+   "chair",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.642,
+   0.88,
+   0.628
+  ],
+  "tris": 2498,
+  "license": "CC0-1.0",
+  "author": "Kuutti Siitonen (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+  "physics": "dynamic",
+  "mass_kg": 2.4,
+  "bytes": 124896,
+  "title": "Plastic Monobloc Chair 01",
+  "friction": 0.55,
+  "tint": true
+ },
+ {
+  "id": "potted_plant_02",
+  "file": "../world/models/potted_plant_02/potted_plant_02.glb",
+  "category": "plants",
+  "tags": [
+   "potted",
+   "plant",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.701,
+   0.841,
+   0.657
+  ],
+  "tris": 3537,
+  "license": "CC0-1.0",
+  "author": "Rico Cilliers (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/potted_plant_02",
+  "physics": "dynamic",
+  "mass_kg": 9.0,
+  "bytes": 168604,
+  "title": "Potted Plant 02",
+  "friction": 0.7,
+  "collider": "cyl"
+ },
+ {
+  "id": "potted_plant_04",
+  "file": "../world/models/potted_plant_04/potted_plant_04.glb",
+  "category": "plants",
+  "tags": [
+   "potted",
+   "plant",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.17,
+   0.268,
+   0.186
+  ],
+  "tris": 4022,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/potted_plant_04",
+  "physics": "dynamic",
+  "mass_kg": 1.5,
+  "bytes": 149572,
+  "title": "Potted Plant 04",
+  "friction": 0.7,
+  "collider": "cyl"
+ },
+ {
+  "id": "power_box_01",
+  "file": "../world/models/power_box_01/power_box_01.glb",
+  "category": "street",
+  "tags": [
+   "power",
+   "box",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.377,
+   0.503,
+   0.418
+  ],
+  "tris": 4027,
+  "license": "CC0-1.0",
+  "author": "Rico Cilliers, Yann Kervran (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/power_box_01",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 139372,
+  "title": "Power Box 01"
+ },
+ {
+  "id": "propane_tank",
+  "file": "../world/models/propane_tank/propane_tank.glb",
+  "category": "containers",
+  "tags": [
+   "propane",
+   "tank",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.337,
+   0.554,
+   0.337
+  ],
+  "tris": 2331,
+  "license": "CC0-1.0",
+  "author": "Slinc (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/propane_tank",
+  "physics": "dynamic",
+  "mass_kg": 9.0,
+  "bytes": 99360,
+  "title": "Propane Tank",
+  "friction": 0.45,
+  "tint": true,
+  "collider": "cyl"
+ },
+ {
+  "id": "small_lpg_tank",
+  "file": "../world/models/small_lpg_tank/small_lpg_tank.glb",
+  "category": "containers",
+  "tags": [
+   "small",
+   "lpg",
+   "tank",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.41,
+   0.642,
+   0.409
+  ],
+  "tris": 2000,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/small_lpg_tank",
+  "physics": "dynamic",
+  "mass_kg": 17.0,
+  "bytes": 140212,
+  "title": "Small Lpg Tank",
+  "friction": 0.45,
+  "tint": true,
+  "collider": "cyl"
+ },
+ {
+  "id": "steel_frame_shelves_02",
+  "file": "../world/models/steel_frame_shelves_02/steel_frame_shelves_02.glb",
+  "category": "furniture",
+  "tags": [
+   "steel",
+   "frame",
+   "shelves",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.593,
+   2.142,
+   0.502
+  ],
+  "tris": 3000,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/steel_frame_shelves_02",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 81016,
+  "title": "Steel Frame Shelves 02"
+ },
+ {
+  "id": "street_rat",
+  "file": "../world/models/street_rat/street_rat.glb",
+  "category": "critters",
+  "tags": [
+   "street",
+   "rat",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.032,
+   0.034,
+   0.148
+  ],
+  "tris": 801,
+  "license": "CC0-1.0",
+  "author": "Sean Buckley (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/street_rat",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 119764,
+  "title": "Street Rat"
+ },
+ {
+  "id": "trashbag",
+  "file": "../world/models/trashbag/trashbag.glb",
+  "category": "containers",
+  "tags": [
+   "trashbag",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.528,
+   0.575,
+   0.463
+  ],
+  "tris": 2428,
+  "license": "CC0-1.0",
+  "author": "Benny Weimer (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/trashbag",
+  "physics": "dynamic",
+  "mass_kg": 3.5,
+  "bytes": 110444,
+  "title": "Trashbag",
+  "friction": 0.9
+ },
+ {
+  "id": "utility_box_01",
+  "file": "../world/models/utility_box_01/utility_box_01.glb",
+  "category": "street",
+  "tags": [
+   "utility",
+   "box",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.52,
+   1.12,
+   0.432
+  ],
+  "tris": 2500,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/utility_box_01",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 89620,
+  "title": "Utility Box 01"
+ },
+ {
+  "id": "wicker_basket_01",
+  "file": "../world/models/wicker_basket_01/wicker_basket_01.glb",
+  "category": "containers",
+  "tags": [
+   "wicker",
+   "basket",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.383,
+   0.117,
+   0.295
+  ],
+  "tris": 2374,
+  "license": "CC0-1.0",
+  "author": "Kuutti Siitonen (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/wicker_basket_01",
+  "physics": "dynamic",
+  "mass_kg": 0.5,
+  "bytes": 138048,
+  "title": "Wicker Basket 01",
+  "friction": 0.7,
+  "collider": "box"
+ },
+ {
+  "id": "wicker_basket_02",
+  "file": "../world/models/wicker_basket_02/wicker_basket_02.glb",
+  "category": "containers",
+  "tags": [
+   "wicker",
+   "basket",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.375,
+   0.218,
+   0.271
+  ],
+  "tris": 2500,
+  "license": "CC0-1.0",
+  "author": "Kuutti Siitonen (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/wicker_basket_02",
+  "physics": "dynamic",
+  "mass_kg": 0.8,
+  "bytes": 178800,
+  "title": "Wicker Basket 02",
+  "friction": 0.7
+ },
+ {
+  "id": "wooden_broom",
+  "file": "../world/models/wooden_broom/wooden_broom.glb",
+  "category": "containers",
+  "tags": [
+   "wooden",
+   "broom",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.49,
+   1.454,
+   0.113
+  ],
+  "tris": 2820,
+  "license": "CC0-1.0",
+  "author": "Balen (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/wooden_broom",
+  "physics": "dynamic",
+  "mass_kg": 0.6,
+  "bytes": 216964,
+  "title": "Wooden Broom",
+  "friction": 0.6
+ },
+ {
+  "id": "wooden_crate_01",
+  "file": "../world/models/wooden_crate_01/wooden_crate_01.glb",
+  "category": "containers",
+  "tags": [
+   "wooden",
+   "crate",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.825,
+   0.35,
+   0.409
+  ],
+  "tris": 1498,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/wooden_crate_01",
+  "physics": "dynamic",
+  "mass_kg": 6.0,
+  "bytes": 103528,
+  "title": "Wooden Crate 01",
+  "friction": 0.7,
+  "collider": "box"
+ },
+ {
+  "id": "wooden_display_shelves_01",
+  "file": "../world/models/wooden_display_shelves_01/wooden_display_shelves_01.glb",
+  "category": "furniture",
+  "tags": [
+   "wooden",
+   "display",
+   "shelves",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   1.078,
+   1.556,
+   0.372
+  ],
+  "tris": 3000,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/wooden_display_shelves_01",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 77372,
+  "title": "Wooden Display Shelves 01"
+ },
+ {
+  "id": "worn_metal_rack",
+  "file": "../world/models/worn_metal_rack/worn_metal_rack.glb",
+  "category": "furniture",
+  "tags": [
+   "worn",
+   "metal",
+   "rack",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.915,
+   1.9,
+   0.6
+  ],
+  "tris": 3046,
+  "license": "CC0-1.0",
+  "author": "Luca B (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/worn_metal_rack",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 104068,
+  "title": "Worn Metal Rack"
  }
 ]

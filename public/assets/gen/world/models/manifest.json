@@ -288,23 +288,6 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/industrial_pastic_container"
  },
- "jug_01": {
-  "file": "jug_01/jug_01.glb",
-  "name": "Jug 01",
-  "bytes": 43796,
-  "srcTris": 5770,
-  "tris": 1596,
-  "dims": [
-   0.275,
-   0.168,
-   0.211
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/jug_01"
- },
  "lightbulb_01": {
   "file": "lightbulb_01/lightbulb_01.glb",
   "name": "Lightbulb 01",

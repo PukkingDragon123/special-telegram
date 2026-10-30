@@ -22,7 +22,6 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Food Lychee 01 (`food_lychee_01`) | https://polyhaven.com/a/food_lychee_01 | Oliver Harries | 36 KB |
 | Hand Truck (`hand_truck`) | https://polyhaven.com/a/hand_truck | Mutanzom3D | 203 KB |
 | Industrial Plastic Container (`industrial_pastic_container`) | https://polyhaven.com/a/industrial_pastic_container | Galo Benivegna | 134 KB |
-| Jug 01 (`jug_01`) | https://polyhaven.com/a/jug_01 | Kuutti Siitonen | 43 KB |
 | Lightbulb 01 (`lightbulb_01`) | https://polyhaven.com/a/lightbulb_01 | Josh Dean | 24 KB |
 | Metal Stool 02 (`metal_stool_02`) | https://polyhaven.com/a/metal_stool_02 | Ulan Cabanilla | 117 KB |
 | Multi Cleaner 5 Litre (`multi_cleaner_5_litre`) | https://polyhaven.com/a/multi_cleaner_5_litre | James Ray Cock | 50 KB |
@@ -50,7 +49,7 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Wooden Display Shelves 01 (`wooden_display_shelves_01`) | https://polyhaven.com/a/wooden_display_shelves_01 | James Ray Cock | 76 KB |
 | Worn Metal Rack (`worn_metal_rack`) | https://polyhaven.com/a/worn_metal_rack | Luca B | 102 KB |
 
-Total: 4.4 MB in 44 models.
+Total: 4.4 MB in 43 models.
 
 
 ## Photo-derived textures (props agent)

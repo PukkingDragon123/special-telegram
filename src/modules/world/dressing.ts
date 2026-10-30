@@ -7,6 +7,7 @@ import { weeds, pottedPlant, bananaTree, coconutPalm, bougainvillea } from './fo
 import { flat, groundDecal, wallDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
 import { dressSoi, tableSetting } from './realprops-dress';
+import { WindCloth } from './realprops-market';
 import { THAI_TABLE, STEEL_TABLE } from './realprops-table';
 import { propHeight } from './realprops';
 import { EMIS } from './mats';
@@ -104,10 +105,17 @@ export function buildStreetLife(c: Ctx) {
   dressSoi({ ...c, rng }, okT);
 
   // ---------------------------------------------------------------- street food stalls (decor, not interactive)
+  const cloth = new WindCloth();
   const foodStall = (x: number, z: number, yaw: number) => {
     if (!okT(x, z, 1.4)) return;
     w.put(P.cart(rng.pick([0x2a5a9a, 0xc03020, 0x2a7a3a, 0xe0b020])), x, SW_H, z, yaw);
-    w.put(P.umbrella(rng.pick([0xc03020, 0x2a62b8, 0xe0b020, 0x2a8a3e, 0xe06a20])), x + Math.cos(yaw) * 0.2, SW_H, z - Math.sin(yaw) * 0.2, rng.range(0, 6));
+    { // umbrella: concrete-bucket base, steel pole, sagging canopy that moves in the wind
+      const ux = x + Math.cos(yaw) * 0.2, uz = z - Math.sin(yaw) * 0.2;
+      w.mat('steel_rust', { uv: 'local' }); w.cyl(ux, SW_H, uz, 0.022, 0.022, 2.3, 6, 1);
+      w.mat('plastic', { tint: 0x2a62b8, uv: 'local' }); w.cyl(ux, SW_H, uz, 0.16, 0.18, 0.27, 12, 1);
+      w.mat('concrete_old', { uv: 'local' }); w.cyl(ux, SW_H + 0.24, uz, 0.15, 0.15, 0.02, 12, 1);
+      cloth.umbrella(new THREE.Vector3(ux, SW_H, uz), 1.25, 2.42, rng.pick([0xc03020, 0x2a62b8, 0xe0b020, 0x2a8a3e, 0xe06a20]));
+    }
     // a proper table with its condiment caddy, tissues, spoons, jug & glasses, stools around it
     const steel = rng.chance(0.4);
     const tx = x + (Math.abs(x) < 7 ? -Math.sign(x) * 0.15 : rng.range(-0.8, 0.8)), tz = z + (Math.abs(x) < 7 ? rng.pick([-1.5, 1.5]) : 1.3), ty = rng.range(-0.2, 0.2);
@@ -131,6 +139,8 @@ export function buildStreetLife(c: Ctx) {
   foodStall(64, 3.2, 0);
   foodStall(-90, 3.2, 0);
   foodStall(12, -156.7, Math.PI);
+  const cm = cloth.build();
+  if (cm) { P.real.addObject(cm); P.real.animate(new THREE.Vector3(0, 2, -60), 400, (_dt, t) => { cloth.uTime.value = t; }); }
 
   // ---------------------------------------------------------------- bus stop shelter (bus_stop anchor)
   {

@@ -3,7 +3,7 @@ import { defineModule } from '../../game/contracts';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import { Input } from '../../core/input';
-import { addInkHull, removeInkHull } from '../../core/ink';
+import { addInkHull, removeInkHull, inkHullCount, InkSettings, CEL } from '../../core/ink';
 import { Fx, SpeedLines, Puffs, Sparkles, sweatDrop, angerVein, popMark, soundWord } from './fx';
 
 /* =============================================================================================
@@ -427,6 +427,7 @@ export default defineModule({
     A.wire();
     game.engine.onLate((f) => A?.late(f.rawDt > 0 ? Math.min(0.1, f.dt || f.rawDt) : 0));
     (window as any).__anime = A;
+    (window as any).__ink = { hulls: inkHullCount, settings: InkSettings, cel: CEL };
   },
   frame(game, dt) {
     if (game.chars && !(game.chars as any).__inkHooked) hookCharacters(game);
