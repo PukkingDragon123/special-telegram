@@ -1450,6 +1450,62 @@
   "collider": "cyl"
  },
  {
+  "id": "bottle_beer_singha",
+  "file": "packaged/bottle_beer_singha.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "drink",
+   "thai",
+   "brand",
+   "beer_singha_bottle"
+  ],
+  "size_m": [
+   0.074,
+   0.279,
+   0.074
+  ],
+  "tris": 666,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.94,
+  "bytes": 18672,
+  "title": "Singha beer bottle (เบียร์สิงห์)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "bottle_dark_soy",
+  "file": "packaged/bottle_dark_soy.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "sauce",
+   "thai",
+   "brand",
+   "dark_soy_healthy_boy"
+  ],
+  "size_m": [
+   0.076,
+   0.249,
+   0.076
+  ],
+  "tris": 848,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.9,
+  "bytes": 22076,
+  "title": "Healthy Boy dark soy sauce (ซีอิ๊วดำ)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
   "id": "bottle_fanta_red",
   "file": "packaged/bottle_fanta_red.glb",
   "category": "packaged",
@@ -1478,6 +1534,34 @@
   "collider": "cyl"
  },
  {
+  "id": "bottle_fish_sauce_squid",
+  "file": "packaged/bottle_fish_sauce_squid.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "sauce",
+   "thai",
+   "brand",
+   "fish_sauce_squid"
+  ],
+  "size_m": [
+   0.076,
+   0.276,
+   0.076
+  ],
+  "tris": 656,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.97,
+  "bytes": 17996,
+  "title": "Fish sauce bottle, Squid brand (น้ำปลาตราปลาหมึก)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
   "id": "bottle_fish_sauce_tiparos",
   "file": "packaged/bottle_fish_sauce_tiparos.glb",
   "category": "packaged",
@@ -1501,6 +1585,90 @@
   "mass_kg": 0.98,
   "bytes": 24672,
   "title": "Fish sauce bottle, Tiparos (น้ำปลาทิพรส)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "bottle_golden_mountain",
+  "file": "packaged/bottle_golden_mountain.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "sauce",
+   "thai",
+   "brand",
+   "seasoning_sauce_golden_mountain"
+  ],
+  "size_m": [
+   0.072,
+   0.243,
+   0.072
+  ],
+  "tris": 656,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.76,
+  "bytes": 17980,
+  "title": "Golden Mountain seasoning sauce (ซอสภูเขาทอง)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "bottle_light_soy",
+  "file": "packaged/bottle_light_soy.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "sauce",
+   "thai",
+   "brand",
+   "light_soy_healthy_boy"
+  ],
+  "size_m": [
+   0.07,
+   0.266,
+   0.07
+  ],
+  "tris": 656,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.79,
+  "bytes": 21108,
+  "title": "Healthy Boy light soy sauce (ซีอิ๊วขาวเด็กสมบูรณ์)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "bottle_oyster_sauce",
+  "file": "packaged/bottle_oyster_sauce.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "sauce",
+   "thai",
+   "brand",
+   "oyster_sauce_maekrua"
+  ],
+  "size_m": [
+   0.076,
+   0.252,
+   0.076
+  ],
+  "tris": 656,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.88,
+  "bytes": 20100,
+  "title": "Maekrua oyster sauce (ซอสหอยนางรมแม่ครัว)",
   "friction": 0.45,
   "far": 0.4,
   "collider": "cyl"
