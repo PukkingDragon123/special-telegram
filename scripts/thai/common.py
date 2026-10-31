@@ -660,21 +660,27 @@ def bake_export(name, objs, out_glb, size=1024, ao_samples=24, ao_mix=0.45, marg
     off = Vector((-(mn.x + mx.x) / 2, -mx.y if origin == 'back' else -(mn.y + mx.y) / 2, -mx.z if origin == 'top' else -mn.z))
     for o in parts: o.data.transform(Matrix.Translation(off))
     if keep_parts:
+        groups = [vg.name for vg in body.vertex_groups if vg.name.startswith('part:')]
+        before = set(bpy.context.scene.objects)
         select_only([body])
         bpy.ops.object.mode_set(mode='EDIT')
-        for vg in list(body.vertex_groups):
+        for gname in groups[:-1]:
             bpy.ops.mesh.select_all(action='DESELECT')
-            body.vertex_groups.active_index = vg.index
+            body.vertex_groups.active_index = body.vertex_groups[gname].index
             bpy.ops.object.vertex_group_select()
             bpy.ops.mesh.separate(type='SELECTED')
         bpy.ops.object.mode_set(mode='OBJECT')
-        for o in list(bpy.context.scene.objects):
-            if o.type == 'MESH' and o != body and o.vertex_groups and o not in nob:
-                vg = [g.name for g in o.vertex_groups if g.name.startswith('part:')]
-                used = {g.group for v in o.data.vertices for g in v.groups if g.weight > 0.5}
-                nm_ = next((o.vertex_groups[i].name for i in used), None)
-                if nm_: o.name = nm_.split(':', 1)[1]
-                parts.append(o)
+        def majority(o):
+            cnt = {}
+            for v in o.data.vertices:
+                for g in v.groups:
+                    if g.weight > 0.5: cnt[g.group] = cnt.get(g.group, 0) + 1
+            return o.vertex_groups[max(cnt, key=cnt.get)].name.split(':', 1)[1] if cnt else None
+        for o in [o for o in bpy.context.scene.objects if o not in before] + [body]:
+            nm_ = majority(o)
+            if nm_:
+                o.name = nm_; o.data.name = nm_
+            if o is not body: parts.append(o)
     dims = mx - mn
     select_only(parts)
     os.makedirs(os.path.dirname(out_glb), exist_ok=True)

@@ -37,7 +37,9 @@ def load_cat():
             try: frag = json.load(open(part))
             except Exception as e: print('bad fragment', part, e); continue
             ids = {e['id'] for e in frag}
-            cat = [e for e in cat if e['id'] not in ids] + frag
+            files = {e['file'] for e in frag}
+            # fragment entries replace any entry with the same id OR the same file (no duplicate ids for one model)
+            cat = [e for e in cat if e['id'] not in ids and e['file'] not in files] + frag
     return cat
 
 
@@ -265,6 +267,16 @@ for m in bpy.data.materials:
                 if not any(k in nm for k in ('leaf', 'leaves', 'grass', 'foliage', 'alpha', 'cutout', 'decal', 'plant', 'net', 'mesh', 'fence', 'hair')):
                     m.node_tree.links.remove(n.inputs['Alpha'].links[0]); n.inputs['Alpha'].default_value = 1
 print('NORMALISED', json.dumps({'scale': s, 'size': [size.x * s, size.y * s, size.z * s], 'meshes': len(meshes)}))
+if opt.get('decimate'):
+    # Blender collapse decimation (works across UV seams of photoscans, where meshopt simplify stalls)
+    tot = sum(sum(len(p.vertices) - 2 for p in o.data.polygons) for o in meshes)
+    r = min(1.0, opt['decimate'] / max(1, tot))
+    if r < 0.98:
+        for o in meshes:
+            m = o.modifiers.new('dec', 'DECIMATE'); m.decimate_type = 'COLLAPSE'; m.ratio = r
+            bpy.context.view_layer.objects.active = o
+            bpy.ops.object.modifier_apply(modifier=m.name)
+    print('DECIMATED', tot, '->', sum(sum(len(p.vertices) - 2 for p in o.data.polygons) for o in meshes))
 if opt.get('rebake'):
     # decimate to the budget and bake the full-detail original onto one new atlas (albedo×AO, ORM, normal)
     sys.path.insert(0, opt['thai'])
@@ -307,7 +319,7 @@ def cmd_import(a):
     norm = os.path.join(CACHE, a.id + '.norm.glb')
     opt = {'height': a.height, 'length': a.length, 'width': a.width, 'maxdim': a.maxdim, 'rot': [float(v) for v in a.rot.split(',')],
            'drop': a.drop, 'keep_anim': a.keep_anim, 'keep_alpha': a.keep_alpha, 'rebake': a.rebake, 'tris': a.tris, 'id': a.id.replace('/', '_'),
-           'ray': a.ray, 'thai': os.path.join(ROOT, 'scripts/thai'), 'alpha': a.alpha_mask, 'anchor': a.anchor}
+           'ray': a.ray, 'thai': os.path.join(ROOT, 'scripts/thai'), 'alpha': a.alpha_mask, 'anchor': a.anchor, 'decimate': a.decimate}
     out = run_blender(NORMALISE, raw, norm, json.dumps(opt))
     print('  ' + next((l for l in out.splitlines() if l.startswith('NORMALISED')), '?'))
     a.license = LIC_NAME[meta['lic']]
@@ -449,6 +461,7 @@ def main():
     for k in ('height', 'length', 'width', 'maxdim'): s.add_argument('--' + k, type=float)
     s.add_argument('--rot', default='0,0,0'); s.add_argument('--drop'); s.add_argument('--keep-anim', action='store_true'); s.add_argument('--keep-alpha', action='store_true')
     s.add_argument('--author'); s.add_argument('--no-index', action='store_true')
+    s.add_argument('--decimate', type=int, help='Blender collapse-decimate to about this many triangles before optimising (photoscans)')
     s.add_argument('--rebake', type=int, help='decimate to --tris and bake the original onto one new atlas of this size'); s.add_argument('--ray', type=float, default=0.02)
     s.set_defaults(fn=cmd_import, license='', source='')
     s = sp.add_parser('preview'); s.add_argument('glb'); s.add_argument('out'); s.add_argument('--size', type=int, default=512)

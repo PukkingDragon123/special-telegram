@@ -6,16 +6,11 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 
 | id | model | author | licence | source |
 |---|---|---|---|---|
-| `ac_old` | ac_old | jennybria | CC-BY-4.0 | https://sketchfab.com/3d-models/502124e1278e4f9cba041b610e7f2e27 |
-| `ac_rusted` | ac_rusted | zeee7 | CC-BY-4.0 | https://sketchfab.com/3d-models/b327c7ee12f348de9c0b6081e7355f2a |
-| `ac_window` | ac_window | ixMkc1 | CC-BY-4.0 | https://sketchfab.com/3d-models/dd16906812c243efb345fb9953cd084b |
 | `arch/ac_old` | arch/ac_old | jennybria | CC-BY-4.0 | https://sketchfab.com/3d-models/502124e1278e4f9cba041b610e7f2e27 |
 | `arch/ac_rusted` | arch/ac_rusted | zeee7 | CC-BY-4.0 | https://sketchfab.com/3d-models/b327c7ee12f348de9c0b6081e7355f2a |
 | `arch/ac_window` | arch/ac_window | ixMkc1 | CC-BY-4.0 | https://sketchfab.com/3d-models/dd16906812c243efb345fb9953cd084b |
 | `arch/thai_pole` | arch/thai_pole | buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py) | custom (project) |  |
 | `arch/thai_pole_arms` | arch/thai_pole_arms | buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py) | custom (project) |  |
-| `thai_pole` | thai_pole | buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py) | custom (project) |  |
-| `thai_pole_arms` | thai_pole_arms | buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py) | custom (project) |  |
 | `Barrel_01` | Barrel_01 | Jorge Camacho (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/Barrel_01 |
 | `WetFloorSign_01` | Wet Floor Sign 01 | Fran Calvente (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/WetFloorSign_01 |
 | `barrel_03` | Barrel 03 | Serhii Khromov (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/barrel_03 |
@@ -38,6 +33,8 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `wicker_basket_02` | Wicker Basket 02 | Kuutti Siitonen (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/wicker_basket_02 |
 | `wooden_broom` | Wooden Broom | Balen (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/wooden_broom |
 | `wooden_crate_01` | Wooden Crate 01 | James Ray Cock (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/wooden_crate_01 |
+| `cockroach` | American cockroach | CK (sketchfab.com/xcellf) | CC-BY-4.0 | https://sketchfab.com/3d-models/cead55b8aa8643d48d67240bad028592 |
+| `housefly` | Housefly, Musca domestica (scan) | Digital Archive of Natural History (DiNArDa) (sketchfab.com/disc3d) | CC0-1.0 | https://sketchfab.com/3d-models/157900941156422fbd9dcdfc38a3be19 |
 | `street_rat` | Street Rat | Sean Buckley (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/street_rat |
 | `boombox` | Boombox | Thomas Paul Mouilleron (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/boombox |
 | `lightbulb_01` | Lightbulb 01 | Josh Dean (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/lightbulb_01 |
@@ -84,9 +81,12 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `power_box_01` | Power Box 01 | Rico Cilliers, Yann Kervran (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/power_box_01 |
 | `utility_box_01` | Utility Box 01 | James Ray Cock (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/utility_box_01 |
 | `condiment_caddy` | Condiment caddy, 4 jars (พวงเครื่องปรุง) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `cctv_box` | CCTV box camera with wall bracket | Smoggybeard (sketchfab.com/Smoggybeard) | CC-BY-4.0 | https://sketchfab.com/3d-models/e69d5eb37ffb4f188e4d3c84a5d79cdc |
+| `cctv_bullet` | CCTV bullet camera | Just8 (sketchfab.com/Just8) | CC-BY-4.0 | https://sketchfab.com/3d-models/281b2b84260447e49ab4a6b34bf78697 |
 | `transformer` | Pole-mounted distribution transformer (หม้อแปลงไฟฟ้า) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `transformer_platform` | Transformer platform: steel channel beams + braces (between two poles 2 m apart) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `scooter_cub` | Honda Super Cub C70 moped (photogrammetry) | Bandit.545 (sketchfab.com/Bandit.545) | CC-BY-4.0 | https://sketchfab.com/3d-models/33afed83974d4534bb2f4d43a593e530 |
 | `scooter_wave` | Underbone moped, Honda Wave / SYM E-SR 110 type (photogrammetry) | Bandit.545 (sketchfab.com/Bandit.545) | CC-BY-4.0 | https://sketchfab.com/3d-models/518a7d5a4a0b41218650ee0823320f5a |
+| `tuktuk` | Thai tuk-tuk (ตุ๊กตุ๊ก) | iraida (sketchfab.com/iraida) | CC-BY-4.0 | https://sketchfab.com/3d-models/916b76665fb9458cac7473bd446cdd98 |
 
-Total: 82 models, 12.7 MB.
+Total: 82 models, 12.9 MB.

@@ -1,80 +1,5 @@
 [
  {
-  "id": "ac_old",
-  "file": "arch/ac_old.glb",
-  "category": "arch",
-  "tags": [
-   "ac",
-   "hvac",
-   "rooftop",
-   "duct",
-   "old"
-  ],
-  "size_m": [
-   0.97,
-   0.72,
-   1.09
-  ],
-  "tris": 1800,
-  "license": "CC-BY-4.0",
-  "author": "jennybria",
-  "source_url": "https://sketchfab.com/3d-models/502124e1278e4f9cba041b610e7f2e27",
-  "physics": "static",
-  "mass_kg": 60,
-  "note": "Sketchfab \"Old air conditioner\" via Objaverse mirror; rooftop unit on a stand with duct elbow",
-  "bytes": 266112
- },
- {
-  "id": "ac_rusted",
-  "file": "arch/ac_rusted.glb",
-  "category": "arch",
-  "tags": [
-   "ac",
-   "air conditioner",
-   "condenser",
-   "facade",
-   "rusty",
-   "wall"
-  ],
-  "size_m": [
-   0.82,
-   0.6,
-   0.32
-  ],
-  "tris": 1600,
-  "license": "CC-BY-4.0",
-  "author": "zeee7",
-  "source_url": "https://sketchfab.com/3d-models/b327c7ee12f348de9c0b6081e7355f2a",
-  "physics": "static",
-  "mass_kg": 35,
-  "note": "Sketchfab \"Rusted Air Conditioner\" via Objaverse mirror; backdrop wall removed, scaled to a Thai split-type condenser, decimated, origin back-bottom-centre, front +Z",
-  "bytes": 130456
- },
- {
-  "id": "ac_window",
-  "file": "arch/ac_window.glb",
-  "category": "arch",
-  "tags": [
-   "ac",
-   "window unit",
-   "old",
-   "facade"
-  ],
-  "size_m": [
-   0.44,
-   0.5,
-   0.58
-  ],
-  "tris": 1800,
-  "license": "CC-BY-4.0",
-  "author": "ixMkc1",
-  "source_url": "https://sketchfab.com/3d-models/dd16906812c243efb345fb9953cd084b",
-  "physics": "static",
-  "mass_kg": 30,
-  "note": "Sketchfab \"Old Air Conditioner\" via Objaverse mirror; window-type unit, origin at its back",
-  "bytes": 342464
- },
- {
   "id": "arch/ac_old",
   "file": "arch/ac_old.glb",
   "category": "arch",
@@ -176,55 +101,6 @@
  },
  {
   "id": "arch/thai_pole_arms",
-  "file": "arch/thai_pole_arms.glb",
-  "category": "arch",
-  "tags": [
-   "thai",
-   "crossarm",
-   "insulator",
-   "utility"
-  ],
-  "size_m": [
-   1.8,
-   1.25,
-   0.16
-  ],
-  "tris": 2468,
-  "license": "custom (project)",
-  "author": "buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py)",
-  "source_url": "",
-  "physics": "none",
-  "mass_kg": 40,
-  "note": "galvanised crossarm set (1.8 m + 1.4 m, braces, bolt plates, 5 porcelain pin insulators); origin = pole axis at the pole top",
-  "bytes": 75244
- },
- {
-  "id": "thai_pole",
-  "file": "arch/thai_pole.glb",
-  "category": "arch",
-  "tags": [
-   "thai",
-   "electric pole",
-   "concrete pole",
-   "utility",
-   "mea"
-  ],
-  "size_m": [
-   0.26,
-   9.0,
-   0.26
-  ],
-  "tris": 472,
-  "license": "custom (project)",
-  "author": "buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py)",
-  "source_url": "",
-  "physics": "static",
-  "mass_kg": 1200,
-  "note": "custom Thai prestressed concrete pole; real PBR photo textures baked (albedo×AO, normal, ORM); scale Y for other heights",
-  "bytes": 210532
- },
- {
-  "id": "thai_pole_arms",
   "file": "arch/thai_pole_arms.glb",
   "category": "arch",
   "tags": [
@@ -813,6 +689,61 @@
   "title": "Wooden Crate 01",
   "friction": 0.7,
   "collider": "box"
+ },
+ {
+  "id": "cockroach",
+  "file": "critters/cockroach.glb",
+  "category": "critters",
+  "tags": [
+   "cockroach",
+   "roach",
+   "insect",
+   "critter",
+   "pest"
+  ],
+  "size_m": [
+   0.024,
+   0.018,
+   0.04
+  ],
+  "tris": 1495,
+  "license": "CC-BY-4.0",
+  "author": "CK (sketchfab.com/xcellf)",
+  "source_url": "https://sketchfab.com/3d-models/cead55b8aa8643d48d67240bad028592",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 83260,
+  "title": "American cockroach",
+  "far": 0.3,
+  "uid": "cead55b8aa8643d48d67240bad028592"
+ },
+ {
+  "id": "housefly",
+  "file": "critters/housefly.glb",
+  "category": "critters",
+  "tags": [
+   "fly",
+   "housefly",
+   "musca domestica",
+   "insect",
+   "critter",
+   "pest"
+  ],
+  "size_m": [
+   0.009,
+   0.004,
+   0.007
+  ],
+  "tris": 1496,
+  "license": "CC0-1.0",
+  "author": "Digital Archive of Natural History (DiNArDa) (sketchfab.com/disc3d)",
+  "source_url": "https://sketchfab.com/3d-models/157900941156422fbd9dcdfc38a3be19",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 67172,
+  "title": "Housefly, Musca domestica (scan)",
+  "far": 0.2,
+  "uid": "157900941156422fbd9dcdfc38a3be19"
  },
  {
   "id": "street_rat",
@@ -2056,6 +1987,64 @@
   "collider": "box"
  },
  {
+  "id": "cctv_box",
+  "file": "utility/cctv_box.glb",
+  "category": "utility",
+  "tags": [
+   "cctv",
+   "camera",
+   "security",
+   "surveillance",
+   "wall",
+   "shop"
+  ],
+  "size_m": [
+   0.139,
+   0.279,
+   0.42
+  ],
+  "tris": 2497,
+  "license": "CC-BY-4.0",
+  "author": "Smoggybeard (sketchfab.com/Smoggybeard)",
+  "source_url": "https://sketchfab.com/3d-models/e69d5eb37ffb4f188e4d3c84a5d79cdc",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 117420,
+  "title": "CCTV box camera with wall bracket",
+  "anchor": "back",
+  "far": 0.9,
+  "uid": "e69d5eb37ffb4f188e4d3c84a5d79cdc"
+ },
+ {
+  "id": "cctv_bullet",
+  "file": "utility/cctv_bullet.glb",
+  "category": "utility",
+  "tags": [
+   "cctv",
+   "camera",
+   "security",
+   "surveillance",
+   "wall",
+   "bullet"
+  ],
+  "size_m": [
+   0.3,
+   0.194,
+   0.113
+  ],
+  "tris": 3116,
+  "license": "CC-BY-4.0",
+  "author": "Just8 (sketchfab.com/Just8)",
+  "source_url": "https://sketchfab.com/3d-models/281b2b84260447e49ab4a6b34bf78697",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 132456,
+  "title": "CCTV bullet camera",
+  "anchor": "back",
+  "far": 0.9,
+  "uid": "281b2b84260447e49ab4a6b34bf78697"
+ },
+ {
   "id": "transformer",
   "file": "utility/transformer.glb",
   "category": "utility",
@@ -2126,17 +2115,17 @@
    "old"
   ],
   "size_m": [
-   0.724,
-   1.122,
-   1.761
+   0.679,
+   1.115,
+   1.799
   ],
-  "tris": 16633,
+  "tris": 6488,
   "license": "CC-BY-4.0",
   "author": "Bandit.545 (sketchfab.com/Bandit.545)",
   "source_url": "https://sketchfab.com/3d-models/33afed83974d4534bb2f4d43a593e530",
   "physics": "static",
   "mass_kg": 85.0,
-  "bytes": 442240,
+  "bytes": 346944,
   "title": "Honda Super Cub C70 moped (photogrammetry)",
   "far": 1.4,
   "uid": "33afed83974d4534bb2f4d43a593e530"
@@ -2170,5 +2159,36 @@
   "title": "Underbone moped, Honda Wave / SYM E-SR 110 type (photogrammetry)",
   "far": 1.4,
   "uid": "518a7d5a4a0b41218650ee0823320f5a"
+ },
+ {
+  "id": "tuktuk",
+  "file": "vehicles/tuktuk.glb",
+  "category": "vehicles",
+  "tags": [
+   "tuk-tuk",
+   "tuktuk",
+   "auto rickshaw",
+   "three-wheeler",
+   "taxi",
+   "vehicle",
+   "thai",
+   "bangkok",
+   "parked"
+  ],
+  "size_m": [
+   2.76,
+   1.849,
+   1.408
+  ],
+  "tris": 9000,
+  "license": "CC-BY-4.0",
+  "author": "iraida (sketchfab.com/iraida)",
+  "source_url": "https://sketchfab.com/3d-models/916b76665fb9458cac7473bd446cdd98",
+  "physics": "static",
+  "mass_kg": 450.0,
+  "bytes": 905396,
+  "title": "Thai tuk-tuk (ตุ๊กตุ๊ก)",
+  "far": 1.6,
+  "uid": "916b76665fb9458cac7473bd446cdd98"
  }
 ]

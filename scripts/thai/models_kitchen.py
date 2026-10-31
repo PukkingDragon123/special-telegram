@@ -186,11 +186,11 @@ def tamarind_board():
 
 
 # ============================================================ LPG cylinder 15 kg
-@model('lpg_15kg', cat='kitchen', title='LPG cylinder 15 kg (ถังแก๊ส)', tags=['lpg', 'gas', 'cylinder', 'tank', 'cooking', 'thai', 'red'],
+@model('lpg_15kg', cat='kitchen', title='LPG cylinder 15 kg, World Gas blue (ถังแก๊ส)', tags=['lpg', 'gas', 'cylinder', 'tank', 'cooking', 'thai', 'blue'],
        phys='dynamic', mass=29, friction=0.45, bake=1024, low=2200, tex=512, tris=2800, collider='cyl')
 def lpg_15kg():
-    paint = C.pbr('lpg_paint', files={'albedo': 'props/lpg_paint_red_tile.jpg', 'normal': 'props/lpg_paint_tile_n.jpg', 'rough': 'props/lpg_paint_tile_r.jpg'},
-                  tile=0.3, metal=0.0, w=dict(dirt=0.5, grime=0.35, streak=0.35, wear=0.35, wear_col=(0.32, 0.3, 0.28), dirt_col=(0.12, 0.08, 0.05), seed=6))
+    paint = C.pbr('lpg_paint', files={'albedo': 'props/lpg_paint_blue_tile.jpg', 'normal': 'props/lpg_paint_tile_n.jpg', 'rough': 'props/lpg_paint_tile_r.jpg'},
+                  tile=0.5, metal=0.0, w=dict(dirt=0.5, grime=0.35, streak=0.35, wear=0.35, wear_col=(0.32, 0.3, 0.28), dirt_col=(0.12, 0.08, 0.05), seed=6))
     label = C.label_mat('lpg_label', 'img/labels/lpg_cylinder_world_gas.png', rough=0.55, w=dict(dirt=0.3, grime=0.3, streak=0.3, wear=0.25, dirt_col=(0.12, 0.08, 0.05), seed=6))
     brass = C.pbr('brass', tex='brass_gold', tile=0.1, metal=1.0, w=dict(dirt=0.6, grime=0.3, seed=2))
     R = 0.15
