@@ -1450,6 +1450,34 @@
   "collider": "cyl"
  },
  {
+  "id": "bottle_fanta_red",
+  "file": "packaged/bottle_fanta_red.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "drink",
+   "thai",
+   "brand",
+   "soda_fanta_red_bottle"
+  ],
+  "size_m": [
+   0.095,
+   0.304,
+   0.095
+  ],
+  "tris": 848,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 1.73,
+  "bytes": 20408,
+  "title": "Red Fanta bottle (น้ำแดง) — spirit house offering",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
   "id": "bottle_fish_sauce_tiparos",
   "file": "packaged/bottle_fish_sauce_tiparos.glb",
   "category": "packaged",
