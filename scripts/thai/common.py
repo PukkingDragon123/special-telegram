@@ -519,7 +519,7 @@ def decimate_copy(o, target):
 
 
 def bake_export(name, objs, out_glb, size=1024, ao_samples=24, ao_mix=0.45, margin=None, keep_parts=False, uv_margin=0.004,
-                angle=60, lowpoly=None, ray=0.02, alpha=False):
+                angle=60, lowpoly=None, ray=0.02, alpha=False, origin='bottom'):
     """join + atlas-bake + export (see module doc). lowpoly = triangle target: a decimated copy receives the bake from the
     detailed mesh (normal map keeps the lost detail). Returns (path, size_m)."""
     os.makedirs(WORK, exist_ok=True)
@@ -656,7 +656,8 @@ def bake_export(name, objs, out_glb, size=1024, ao_samples=24, ao_mix=0.45, marg
     for o in parts:
         for v in o.data.vertices:
             for i in range(3): mn[i] = min(mn[i], v.co[i]); mx[i] = max(mx[i], v.co[i])
-    off = Vector((-(mn.x + mx.x) / 2, -(mn.y + mx.y) / 2, -mn.z))
+    # bottom centre; 'back' = wall side (Blender +Y = glTF -Z) at 0 so the model sticks out of the wall along +Z; 'top' = hanging point
+    off = Vector((-(mn.x + mx.x) / 2, -mx.y if origin == 'back' else -(mn.y + mx.y) / 2, -mx.z if origin == 'top' else -mn.z))
     for o in parts: o.data.transform(Matrix.Translation(off))
     if keep_parts:
         select_only([body])

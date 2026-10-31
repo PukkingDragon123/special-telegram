@@ -1,205 +1,251 @@
 [
  {
-  "id": "thai_stool",
-  "file": "furniture/thai_stool.glb",
-  "category": "furniture",
+  "id": "ac_old",
+  "file": "arch/ac_old.glb",
+  "category": "arch",
   "tags": [
-   "stool",
-   "plastic",
+   "ac",
+   "hvac",
+   "rooftop",
+   "duct",
+   "old"
+  ],
+  "size_m": [
+   0.97,
+   0.72,
+   1.09
+  ],
+  "tris": 1800,
+  "license": "CC-BY-4.0",
+  "author": "jennybria",
+  "source_url": "https://sketchfab.com/3d-models/502124e1278e4f9cba041b610e7f2e27",
+  "physics": "static",
+  "mass_kg": 60,
+  "note": "Sketchfab \"Old air conditioner\" via Objaverse mirror; rooftop unit on a stand with duct elbow",
+  "bytes": 266112
+ },
+ {
+  "id": "ac_rusted",
+  "file": "arch/ac_rusted.glb",
+  "category": "arch",
+  "tags": [
+   "ac",
+   "air conditioner",
+   "condenser",
+   "facade",
+   "rusty",
+   "wall"
+  ],
+  "size_m": [
+   0.82,
+   0.6,
+   0.32
+  ],
+  "tris": 1600,
+  "license": "CC-BY-4.0",
+  "author": "zeee7",
+  "source_url": "https://sketchfab.com/3d-models/b327c7ee12f348de9c0b6081e7355f2a",
+  "physics": "static",
+  "mass_kg": 35,
+  "note": "Sketchfab \"Rusted Air Conditioner\" via Objaverse mirror; backdrop wall removed, scaled to a Thai split-type condenser, decimated, origin back-bottom-centre, front +Z",
+  "bytes": 130456
+ },
+ {
+  "id": "ac_window",
+  "file": "arch/ac_window.glb",
+  "category": "arch",
+  "tags": [
+   "ac",
+   "window unit",
+   "old",
+   "facade"
+  ],
+  "size_m": [
+   0.44,
+   0.5,
+   0.58
+  ],
+  "tris": 1800,
+  "license": "CC-BY-4.0",
+  "author": "ixMkc1",
+  "source_url": "https://sketchfab.com/3d-models/dd16906812c243efb345fb9953cd084b",
+  "physics": "static",
+  "mass_kg": 30,
+  "note": "Sketchfab \"Old Air Conditioner\" via Objaverse mirror; window-type unit, origin at its back",
+  "bytes": 342464
+ },
+ {
+  "id": "arch/ac_old",
+  "file": "arch/ac_old.glb",
+  "category": "arch",
+  "tags": [
+   "ac",
+   "hvac",
+   "rooftop",
+   "duct",
+   "old"
+  ],
+  "size_m": [
+   0.97,
+   0.72,
+   1.09
+  ],
+  "tris": 1800,
+  "license": "CC-BY-4.0",
+  "author": "jennybria",
+  "source_url": "https://sketchfab.com/3d-models/502124e1278e4f9cba041b610e7f2e27",
+  "physics": "static",
+  "mass_kg": 60,
+  "note": "Sketchfab \"Old air conditioner\" via Objaverse mirror; rooftop unit on a stand with duct elbow",
+  "bytes": 266112
+ },
+ {
+  "id": "arch/ac_rusted",
+  "file": "arch/ac_rusted.glb",
+  "category": "arch",
+  "tags": [
+   "ac",
+   "air conditioner",
+   "condenser",
+   "facade",
+   "rusty",
+   "wall"
+  ],
+  "size_m": [
+   0.82,
+   0.6,
+   0.32
+  ],
+  "tris": 1600,
+  "license": "CC-BY-4.0",
+  "author": "zeee7",
+  "source_url": "https://sketchfab.com/3d-models/b327c7ee12f348de9c0b6081e7355f2a",
+  "physics": "static",
+  "mass_kg": 35,
+  "note": "Sketchfab \"Rusted Air Conditioner\" via Objaverse mirror; backdrop wall removed, scaled to a Thai split-type condenser, decimated, origin back-bottom-centre, front +Z",
+  "bytes": 130456
+ },
+ {
+  "id": "arch/ac_window",
+  "file": "arch/ac_window.glb",
+  "category": "arch",
+  "tags": [
+   "ac",
+   "window unit",
+   "old",
+   "facade"
+  ],
+  "size_m": [
+   0.44,
+   0.5,
+   0.58
+  ],
+  "tris": 1800,
+  "license": "CC-BY-4.0",
+  "author": "ixMkc1",
+  "source_url": "https://sketchfab.com/3d-models/dd16906812c243efb345fb9953cd084b",
+  "physics": "static",
+  "mass_kg": 30,
+  "note": "Sketchfab \"Old Air Conditioner\" via Objaverse mirror; window-type unit, origin at its back",
+  "bytes": 342464
+ },
+ {
+  "id": "arch/thai_pole",
+  "file": "arch/thai_pole.glb",
+  "category": "arch",
+  "tags": [
    "thai",
-   "seat",
-   "street-food",
-   "red"
+   "electric pole",
+   "concrete pole",
+   "utility",
+   "mea"
   ],
   "size_m": [
-   0.368,
-   0.45,
-   0.368
+   0.26,
+   9.0,
+   0.26
   ],
-  "tris": 2599,
-  "license": "CC0-1.0",
-  "author": "เฮียผัด! assets (custom, headless Blender)",
-  "source_url": "scripts/thai/models_furniture.py (custom bpy model; textures: see public/assets/textures manifests)",
-  "physics": "dynamic",
-  "mass_kg": 0.75,
-  "bytes": 76628,
-  "title": "Thai plastic stool (เก้าอี้พลาสติก)",
-  "tint": true,
-  "friction": 0.55,
-  "far": 0.9
+  "tris": 472,
+  "license": "custom (project)",
+  "author": "buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py)",
+  "source_url": "",
+  "physics": "static",
+  "mass_kg": 1200,
+  "note": "custom Thai prestressed concrete pole; real PBR photo textures baked (albedo×AO, normal, ORM); scale Y for other heights",
+  "bytes": 210532
  },
  {
-  "id": "thai_table_steel",
-  "file": "furniture/thai_table_steel.glb",
-  "category": "furniture",
+  "id": "arch/thai_pole_arms",
+  "file": "arch/thai_pole_arms.glb",
+  "category": "arch",
   "tags": [
-   "table",
-   "stainless",
-   "folding",
-   "street-food",
-   "thai"
-  ],
-  "size_m": [
-   0.75,
-   0.722,
-   0.6
-  ],
-  "tris": 2532,
-  "license": "CC0-1.0",
-  "author": "เฮียผัด! assets (custom, headless Blender)",
-  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
-  "physics": "dynamic",
-  "mass_kg": 7.5,
-  "bytes": 70732,
-  "title": "Stainless folding street table (โต๊ะพับสแตนเลส)",
-  "friction": 0.5,
-  "collider": "box"
- },
- {
-  "id": "lpg_15kg",
-  "file": "kitchen/lpg_15kg.glb",
-  "category": "kitchen",
-  "tags": [
-   "lpg",
-   "gas",
-   "cylinder",
-   "tank",
-   "cooking",
    "thai",
-   "red"
+   "crossarm",
+   "insulator",
+   "utility"
   ],
   "size_m": [
-   0.3,
-   0.655,
-   0.3
+   1.8,
+   1.25,
+   0.16
   ],
-  "tris": 2200,
-  "license": "CC0-1.0",
-  "author": "เฮียผัด! assets (custom, headless Blender)",
-  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
-  "physics": "dynamic",
-  "mass_kg": 29.0,
-  "bytes": 103464,
-  "title": "LPG cylinder 15 kg (ถังแก๊ส)",
-  "friction": 0.45,
-  "collider": "cyl"
+  "tris": 2468,
+  "license": "custom (project)",
+  "author": "buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py)",
+  "source_url": "",
+  "physics": "none",
+  "mass_kg": 40,
+  "note": "galvanised crossarm set (1.8 m + 1.4 m, braces, bolt plates, 5 porcelain pin insulators); origin = pole axis at the pole top",
+  "bytes": 75244
  },
  {
-  "id": "tamarind_board",
-  "file": "kitchen/tamarind_board.glb",
-  "category": "kitchen",
+  "id": "thai_pole",
+  "file": "arch/thai_pole.glb",
+  "category": "arch",
   "tags": [
-   "chopping board",
-   "block",
-   "wood",
-   "tamarind",
-   "butcher",
-   "kitchen",
-   "thai"
-  ],
-  "size_m": [
-   0.384,
-   0.075,
-   0.382
-  ],
-  "tris": 900,
-  "license": "CC0-1.0",
-  "author": "เฮียผัด! assets (custom, headless Blender)",
-  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
-  "physics": "dynamic",
-  "mass_kg": 6.0,
-  "bytes": 128016,
-  "title": "Tamarind wood chopping block (เขียงมะขาม)",
-  "friction": 0.75,
-  "far": 0.8,
-  "collider": "cyl"
- },
- {
-  "id": "bottle_beer_chang",
-  "file": "packaged/bottle_beer_chang.glb",
-  "category": "packaged",
-  "tags": [
-   "bottle",
-   "drink",
    "thai",
-   "brand",
-   "beer_chang_bottle"
+   "electric pole",
+   "concrete pole",
+   "utility",
+   "mea"
   ],
   "size_m": [
-   0.074,
-   0.279,
-   0.074
+   0.26,
+   9.0,
+   0.26
   ],
-  "tris": 666,
-  "license": "CC0-1.0",
-  "author": "เฮียผัด! assets (custom, headless Blender)",
-  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
-  "physics": "dynamic",
-  "mass_kg": 0.94,
-  "bytes": 19532,
-  "title": "Chang beer bottle (เบียร์ช้าง)",
-  "friction": 0.45,
-  "far": 0.4,
-  "collider": "cyl"
+  "tris": 472,
+  "license": "custom (project)",
+  "author": "buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py)",
+  "source_url": "",
+  "physics": "static",
+  "mass_kg": 1200,
+  "note": "custom Thai prestressed concrete pole; real PBR photo textures baked (albedo×AO, normal, ORM); scale Y for other heights",
+  "bytes": 210532
  },
  {
-  "id": "bottle_fish_sauce_tiparos",
-  "file": "packaged/bottle_fish_sauce_tiparos.glb",
-  "category": "packaged",
+  "id": "thai_pole_arms",
+  "file": "arch/thai_pole_arms.glb",
+  "category": "arch",
   "tags": [
-   "bottle",
-   "sauce",
    "thai",
-   "brand",
-   "fish_sauce_tiparos"
+   "crossarm",
+   "insulator",
+   "utility"
   ],
   "size_m": [
-   0.075,
-   0.277,
-   0.075
+   1.8,
+   1.25,
+   0.16
   ],
-  "tris": 848,
-  "license": "CC0-1.0",
-  "author": "เฮียผัด! assets (custom, headless Blender)",
-  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
-  "physics": "dynamic",
-  "mass_kg": 0.98,
-  "bytes": 24672,
-  "title": "Fish sauce bottle, Tiparos (น้ำปลาทิพรส)",
-  "friction": 0.45,
-  "far": 0.4,
-  "collider": "cyl"
- },
- {
-  "id": "condiment_caddy",
-  "file": "tableware/condiment_caddy.glb",
-  "category": "tableware",
-  "tags": [
-   "condiment",
-   "caddy",
-   "table",
-   "fish sauce",
-   "chili",
-   "sugar",
-   "vinegar",
-   "thai"
-  ],
-  "size_m": [
-   0.168,
-   0.208,
-   0.168
-  ],
-  "tris": 3717,
-  "license": "CC0-1.0",
-  "author": "เฮียผัด! assets (custom, headless Blender)",
-  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
-  "physics": "dynamic",
-  "mass_kg": 1.4,
-  "bytes": 177816,
-  "title": "Condiment caddy, 4 jars (พวงเครื่องปรุง)",
-  "friction": 0.5,
-  "far": 0.6,
-  "collider": "box"
+  "tris": 2468,
+  "license": "custom (project)",
+  "author": "buildings agent (bpy, src/modules/world/tools/blender/thai_pole.py)",
+  "source_url": "",
+  "physics": "none",
+  "mass_kg": 40,
+  "note": "galvanised crossarm set (1.8 m + 1.4 m, braces, bolt plates, 5 porcelain pin insulators); origin = pole axis at the pole top",
+  "bytes": 75244
  },
  {
   "id": "Barrel_01",
@@ -251,29 +297,6 @@
   "friction": 0.6
  },
  {
-  "id": "bananas",
-  "file": "../world/models/bananas/bananas.glb",
-  "category": "food",
-  "tags": [
-   "bananas",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.6,
-   0.179,
-   0.244
-  ],
-  "tris": 2496,
-  "license": "CC0-1.0",
-  "author": "Alexander Shulha (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/bananas",
-  "physics": "none",
-  "mass_kg": 0,
-  "bytes": 79352,
-  "title": "Bananas"
- },
- {
   "id": "barrel_03",
   "file": "../world/models/barrel_03/barrel_03.glb",
   "category": "containers",
@@ -298,31 +321,6 @@
   "friction": 0.5,
   "tint": true,
   "collider": "cyl"
- },
- {
-  "id": "boombox",
-  "file": "../world/models/boombox/boombox.glb",
-  "category": "electrical",
-  "tags": [
-   "boombox",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.724,
-   0.47,
-   0.186
-  ],
-  "tris": 2082,
-  "license": "CC0-1.0",
-  "author": "Thomas Paul Mouilleron (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/boombox",
-  "physics": "dynamic",
-  "mass_kg": 2.8,
-  "bytes": 192684,
-  "title": "Boombox",
-  "friction": 0.6,
-  "collider": "box"
  },
  {
   "id": "can_rusted",
@@ -402,31 +400,6 @@
   "collider": "box"
  },
  {
-  "id": "ceramic_pot",
-  "file": "../world/models/ceramic_pot/ceramic_pot.glb",
-  "category": "plants",
-  "tags": [
-   "ceramic",
-   "pot",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.656,
-   0.372,
-   0.502
-  ],
-  "tris": 1500,
-  "license": "CC0-1.0",
-  "author": "Aron Łyczek (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/ceramic_pot",
-  "physics": "dynamic",
-  "mass_kg": 14.0,
-  "bytes": 82164,
-  "title": "Ceramic Pot",
-  "friction": 0.7
- },
- {
   "id": "cleaner_tin_01",
   "file": "../world/models/cleaner_tin_01/cleaner_tin_01.glb",
   "category": "containers",
@@ -453,31 +426,6 @@
   "collider": "cyl"
  },
  {
-  "id": "concrete_road_barrier_02",
-  "file": "../world/models/concrete_road_barrier_02/concrete_road_barrier_02.glb",
-  "category": "street",
-  "tags": [
-   "concrete",
-   "road",
-   "barrier",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   1.567,
-   1.112,
-   0.442
-  ],
-  "tris": 1500,
-  "license": "CC0-1.0",
-  "author": "Amal Kumar (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/concrete_road_barrier_02",
-  "physics": "static",
-  "mass_kg": 0,
-  "bytes": 130648,
-  "title": "Concrete Road Barrier 02"
- },
- {
   "id": "dustpan",
   "file": "../world/models/dustpan/dustpan.glb",
   "category": "containers",
@@ -500,128 +448,6 @@
   "bytes": 99980,
   "title": "Dustpan",
   "friction": 0.6
- },
- {
-  "id": "fire_hydrant",
-  "file": "../world/models/fire_hydrant/fire_hydrant.glb",
-  "category": "street",
-  "tags": [
-   "fire",
-   "hydrant",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.875,
-   0.799,
-   0.318
-  ],
-  "tris": 2992,
-  "license": "CC0-1.0",
-  "author": "Gonçalo Felício (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/fire_hydrant",
-  "physics": "static",
-  "mass_kg": 0,
-  "bytes": 184980,
-  "title": "Fire Hydrant"
- },
- {
-  "id": "fish_knife",
-  "file": "../world/models/fish_knife/fish_knife.glb",
-  "category": "kitchenware",
-  "tags": [
-   "fish",
-   "knife",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.029,
-   0.216,
-   0.016
-  ],
-  "tris": 525,
-  "license": "CC0-1.0",
-  "author": "Mateusz Sadek (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/fish_knife",
-  "physics": "none",
-  "mass_kg": 0,
-  "bytes": 42972,
-  "title": "Fish Knife"
- },
- {
-  "id": "folding_wooden_stool",
-  "file": "../world/models/folding_wooden_stool/folding_wooden_stool.glb",
-  "category": "furniture",
-  "tags": [
-   "folding",
-   "wooden",
-   "stool",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.528,
-   0.442,
-   0.547
-  ],
-  "tris": 1500,
-  "license": "CC0-1.0",
-  "author": "Ulan Cabanilla (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/folding_wooden_stool",
-  "physics": "dynamic",
-  "mass_kg": 2.2,
-  "bytes": 109528,
-  "title": "Folding Wooden Stool",
-  "friction": 0.6
- },
- {
-  "id": "food_lychee_01",
-  "file": "../world/models/food_lychee_01/food_lychee_01.glb",
-  "category": "food",
-  "tags": [
-   "food",
-   "lychee",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.041,
-   0.051,
-   0.042
-  ],
-  "tris": 120,
-  "license": "CC0-1.0",
-  "author": "Oliver Harries (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/food_lychee_01",
-  "physics": "none",
-  "mass_kg": 0,
-  "bytes": 37256,
-  "title": "Food Lychee 01"
- },
- {
-  "id": "hand_truck",
-  "file": "../world/models/hand_truck/hand_truck.glb",
-  "category": "street",
-  "tags": [
-   "hand",
-   "truck",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.593,
-   1.403,
-   0.693
-  ],
-  "tris": 5264,
-  "license": "CC0-1.0",
-  "author": "Mutanzom3D (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/hand_truck",
-  "physics": "static",
-  "mass_kg": 0,
-  "bytes": 207708,
-  "title": "Hand Truck"
  },
  {
   "id": "industrial_pastic_container",
@@ -650,54 +476,6 @@
   "friction": 0.55,
   "tint": true,
   "collider": "box"
- },
- {
-  "id": "lightbulb_01",
-  "file": "../world/models/lightbulb_01/lightbulb_01.glb",
-  "category": "electrical",
-  "tags": [
-   "lightbulb",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.06,
-   0.1,
-   0.06
-  ],
-  "tris": 336,
-  "license": "CC0-1.0",
-  "author": "Josh Dean (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/lightbulb_01",
-  "physics": "none",
-  "mass_kg": 0,
-  "bytes": 24324,
-  "title": "Lightbulb 01"
- },
- {
-  "id": "metal_stool_02",
-  "file": "../world/models/metal_stool_02/metal_stool_02.glb",
-  "category": "furniture",
-  "tags": [
-   "metal",
-   "stool",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.448,
-   0.458,
-   0.473
-  ],
-  "tris": 1999,
-  "license": "CC0-1.0",
-  "author": "Ulan Cabanilla (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/metal_stool_02",
-  "physics": "dynamic",
-  "mass_kg": 3.5,
-  "bytes": 119908,
-  "title": "Metal Stool 02",
-  "friction": 0.5
  },
  {
   "id": "multi_cleaner_5_litre",
@@ -749,33 +527,6 @@
   "bytes": 113452,
   "title": "Old Tyre",
   "friction": 0.95,
-  "collider": "cyl"
- },
- {
-  "id": "planter_pot_clay",
-  "file": "../world/models/planter_pot_clay/planter_pot_clay.glb",
-  "category": "plants",
-  "tags": [
-   "planter",
-   "pot",
-   "clay",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.266,
-   0.222,
-   0.263
-  ],
-  "tris": 1000,
-  "license": "CC0-1.0",
-  "author": "Amal Kumar (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/planter_pot_clay",
-  "physics": "dynamic",
-  "mass_kg": 3.0,
-  "bytes": 65172,
-  "title": "Planter Pot Clay",
-  "friction": 0.7,
   "collider": "cyl"
  },
  {
@@ -883,109 +634,6 @@
   "tint": true
  },
  {
-  "id": "plastic_monobloc_chair_01",
-  "file": "../world/models/plastic_monobloc_chair_01/plastic_monobloc_chair_01.glb",
-  "category": "furniture",
-  "tags": [
-   "plastic",
-   "monobloc",
-   "chair",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.642,
-   0.88,
-   0.628
-  ],
-  "tris": 2498,
-  "license": "CC0-1.0",
-  "author": "Kuutti Siitonen (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/plastic_monobloc_chair_01",
-  "physics": "dynamic",
-  "mass_kg": 2.4,
-  "bytes": 124896,
-  "title": "Plastic Monobloc Chair 01",
-  "friction": 0.55,
-  "tint": true
- },
- {
-  "id": "potted_plant_02",
-  "file": "../world/models/potted_plant_02/potted_plant_02.glb",
-  "category": "plants",
-  "tags": [
-   "potted",
-   "plant",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.701,
-   0.841,
-   0.657
-  ],
-  "tris": 3537,
-  "license": "CC0-1.0",
-  "author": "Rico Cilliers (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/potted_plant_02",
-  "physics": "dynamic",
-  "mass_kg": 9.0,
-  "bytes": 168604,
-  "title": "Potted Plant 02",
-  "friction": 0.7,
-  "collider": "cyl"
- },
- {
-  "id": "potted_plant_04",
-  "file": "../world/models/potted_plant_04/potted_plant_04.glb",
-  "category": "plants",
-  "tags": [
-   "potted",
-   "plant",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.17,
-   0.268,
-   0.186
-  ],
-  "tris": 4022,
-  "license": "CC0-1.0",
-  "author": "James Ray Cock (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/potted_plant_04",
-  "physics": "dynamic",
-  "mass_kg": 1.5,
-  "bytes": 149572,
-  "title": "Potted Plant 04",
-  "friction": 0.7,
-  "collider": "cyl"
- },
- {
-  "id": "power_box_01",
-  "file": "../world/models/power_box_01/power_box_01.glb",
-  "category": "street",
-  "tags": [
-   "power",
-   "box",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.377,
-   0.503,
-   0.418
-  ],
-  "tris": 4027,
-  "license": "CC0-1.0",
-  "author": "Rico Cilliers, Yann Kervran (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/power_box_01",
-  "physics": "static",
-  "mass_kg": 0,
-  "bytes": 139372,
-  "title": "Power Box 01"
- },
- {
   "id": "propane_tank",
   "file": "../world/models/propane_tank/propane_tank.glb",
   "category": "containers",
@@ -1041,55 +689,6 @@
   "collider": "cyl"
  },
  {
-  "id": "steel_frame_shelves_02",
-  "file": "../world/models/steel_frame_shelves_02/steel_frame_shelves_02.glb",
-  "category": "furniture",
-  "tags": [
-   "steel",
-   "frame",
-   "shelves",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.593,
-   2.142,
-   0.502
-  ],
-  "tris": 3000,
-  "license": "CC0-1.0",
-  "author": "James Ray Cock (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/steel_frame_shelves_02",
-  "physics": "static",
-  "mass_kg": 0,
-  "bytes": 81016,
-  "title": "Steel Frame Shelves 02"
- },
- {
-  "id": "street_rat",
-  "file": "../world/models/street_rat/street_rat.glb",
-  "category": "critters",
-  "tags": [
-   "street",
-   "rat",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.032,
-   0.034,
-   0.148
-  ],
-  "tris": 801,
-  "license": "CC0-1.0",
-  "author": "Sean Buckley (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/street_rat",
-  "physics": "none",
-  "mass_kg": 0,
-  "bytes": 119764,
-  "title": "Street Rat"
- },
- {
   "id": "trashbag",
   "file": "../world/models/trashbag/trashbag.glb",
   "category": "containers",
@@ -1112,30 +711,6 @@
   "bytes": 110444,
   "title": "Trashbag",
   "friction": 0.9
- },
- {
-  "id": "utility_box_01",
-  "file": "../world/models/utility_box_01/utility_box_01.glb",
-  "category": "street",
-  "tags": [
-   "utility",
-   "box",
-   "polyhaven",
-   "photoscan"
-  ],
-  "size_m": [
-   0.52,
-   1.12,
-   0.432
-  ],
-  "tris": 2500,
-  "license": "CC0-1.0",
-  "author": "James Ray Cock (Poly Haven)",
-  "source_url": "https://polyhaven.com/a/utility_box_01",
-  "physics": "static",
-  "mass_kg": 0,
-  "bytes": 89620,
-  "title": "Utility Box 01"
  },
  {
   "id": "wicker_basket_01",
@@ -1240,6 +815,401 @@
   "collider": "box"
  },
  {
+  "id": "street_rat",
+  "file": "../world/models/street_rat/street_rat.glb",
+  "category": "critters",
+  "tags": [
+   "street",
+   "rat",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.032,
+   0.034,
+   0.148
+  ],
+  "tris": 801,
+  "license": "CC0-1.0",
+  "author": "Sean Buckley (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/street_rat",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 119764,
+  "title": "Street Rat"
+ },
+ {
+  "id": "boombox",
+  "file": "../world/models/boombox/boombox.glb",
+  "category": "electrical",
+  "tags": [
+   "boombox",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.724,
+   0.47,
+   0.186
+  ],
+  "tris": 2082,
+  "license": "CC0-1.0",
+  "author": "Thomas Paul Mouilleron (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/boombox",
+  "physics": "dynamic",
+  "mass_kg": 2.8,
+  "bytes": 192684,
+  "title": "Boombox",
+  "friction": 0.6,
+  "collider": "box"
+ },
+ {
+  "id": "lightbulb_01",
+  "file": "../world/models/lightbulb_01/lightbulb_01.glb",
+  "category": "electrical",
+  "tags": [
+   "lightbulb",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.06,
+   0.1,
+   0.06
+  ],
+  "tris": 336,
+  "license": "CC0-1.0",
+  "author": "Josh Dean (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/lightbulb_01",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 24324,
+  "title": "Lightbulb 01"
+ },
+ {
+  "id": "folding_gate",
+  "file": "facade/folding_gate.glb",
+  "category": "facade",
+  "tags": [
+   "gate",
+   "folding",
+   "steel",
+   "shutter",
+   "facade",
+   "shophouse",
+   "thai"
+  ],
+  "size_m": [
+   1.2,
+   2.6,
+   0.089
+  ],
+  "tris": 4500,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 317764,
+  "title": "Folding steel gate, closed, 1.2 m module (ประตูเหล็กยืด)",
+  "anchor": "back",
+  "far": 1.4
+ },
+ {
+  "id": "folding_gate_folded",
+  "file": "facade/folding_gate_folded.glb",
+  "category": "facade",
+  "tags": [
+   "gate",
+   "folding",
+   "steel",
+   "facade",
+   "shophouse",
+   "thai",
+   "open"
+  ],
+  "size_m": [
+   0.435,
+   2.6,
+   0.106
+  ],
+  "tris": 2500,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 205404,
+  "title": "Folding steel gate pushed open (folded bundle)",
+  "anchor": "back",
+  "far": 1.3
+ },
+ {
+  "id": "vent_block",
+  "file": "facade/vent_block.glb",
+  "category": "facade",
+  "tags": [
+   "vent",
+   "block",
+   "breeze block",
+   "concrete",
+   "facade",
+   "wall",
+   "thai"
+  ],
+  "size_m": [
+   0.19,
+   0.19,
+   0.09
+  ],
+  "tris": 544,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 73752,
+  "title": "Concrete ventilation block (ช่องลม), single 19 cm",
+  "anchor": "back",
+  "far": 1.0
+ },
+ {
+  "id": "vent_block_panel",
+  "file": "facade/vent_block_panel.glb",
+  "category": "facade",
+  "tags": [
+   "vent",
+   "block",
+   "breeze block",
+   "concrete",
+   "facade",
+   "wall",
+   "thai",
+   "panel"
+  ],
+  "size_m": [
+   0.989,
+   0.59,
+   0.09
+  ],
+  "tris": 4000,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 516740,
+  "title": "Ventilation block panel 5 × 3 (ช่องลม)",
+  "anchor": "back",
+  "far": 1.4
+ },
+ {
+  "id": "bananas",
+  "file": "../world/models/bananas/bananas.glb",
+  "category": "food",
+  "tags": [
+   "bananas",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.6,
+   0.179,
+   0.244
+  ],
+  "tris": 2496,
+  "license": "CC0-1.0",
+  "author": "Alexander Shulha (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/bananas",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 79352,
+  "title": "Bananas"
+ },
+ {
+  "id": "food_lychee_01",
+  "file": "../world/models/food_lychee_01/food_lychee_01.glb",
+  "category": "food",
+  "tags": [
+   "food",
+   "lychee",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.041,
+   0.051,
+   0.042
+  ],
+  "tris": 120,
+  "license": "CC0-1.0",
+  "author": "Oliver Harries (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/food_lychee_01",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 37256,
+  "title": "Food Lychee 01"
+ },
+ {
+  "id": "folding_wooden_stool",
+  "file": "../world/models/folding_wooden_stool/folding_wooden_stool.glb",
+  "category": "furniture",
+  "tags": [
+   "folding",
+   "wooden",
+   "stool",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.528,
+   0.442,
+   0.547
+  ],
+  "tris": 1500,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/folding_wooden_stool",
+  "physics": "dynamic",
+  "mass_kg": 2.2,
+  "bytes": 109528,
+  "title": "Folding Wooden Stool",
+  "friction": 0.6
+ },
+ {
+  "id": "metal_stool_02",
+  "file": "../world/models/metal_stool_02/metal_stool_02.glb",
+  "category": "furniture",
+  "tags": [
+   "metal",
+   "stool",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.448,
+   0.458,
+   0.473
+  ],
+  "tris": 1999,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/metal_stool_02",
+  "physics": "dynamic",
+  "mass_kg": 3.5,
+  "bytes": 119908,
+  "title": "Metal Stool 02",
+  "friction": 0.5
+ },
+ {
+  "id": "plastic_monobloc_chair_01",
+  "file": "../world/models/plastic_monobloc_chair_01/plastic_monobloc_chair_01.glb",
+  "category": "furniture",
+  "tags": [
+   "plastic",
+   "monobloc",
+   "chair",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.642,
+   0.88,
+   0.628
+  ],
+  "tris": 2498,
+  "license": "CC0-1.0",
+  "author": "Kuutti Siitonen (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+  "physics": "dynamic",
+  "mass_kg": 2.4,
+  "bytes": 124896,
+  "title": "Plastic Monobloc Chair 01",
+  "friction": 0.55,
+  "tint": true
+ },
+ {
+  "id": "steel_frame_shelves_02",
+  "file": "../world/models/steel_frame_shelves_02/steel_frame_shelves_02.glb",
+  "category": "furniture",
+  "tags": [
+   "steel",
+   "frame",
+   "shelves",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.593,
+   2.142,
+   0.502
+  ],
+  "tris": 3000,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/steel_frame_shelves_02",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 81016,
+  "title": "Steel Frame Shelves 02"
+ },
+ {
+  "id": "thai_stool",
+  "file": "furniture/thai_stool.glb",
+  "category": "furniture",
+  "tags": [
+   "stool",
+   "plastic",
+   "thai",
+   "seat",
+   "street-food",
+   "red"
+  ],
+  "size_m": [
+   0.368,
+   0.45,
+   0.368
+  ],
+  "tris": 2599,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_furniture.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.75,
+  "bytes": 76628,
+  "title": "Thai plastic stool (เก้าอี้พลาสติก)",
+  "tint": true,
+  "friction": 0.55,
+  "far": 0.9
+ },
+ {
+  "id": "thai_table_steel",
+  "file": "furniture/thai_table_steel.glb",
+  "category": "furniture",
+  "tags": [
+   "table",
+   "stainless",
+   "folding",
+   "street-food",
+   "thai"
+  ],
+  "size_m": [
+   0.75,
+   0.722,
+   0.6
+  ],
+  "tris": 2532,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 7.5,
+  "bytes": 84468,
+  "title": "Stainless folding street table (โต๊ะพับสแตนเลส)",
+  "friction": 0.5,
+  "collider": "box"
+ },
+ {
   "id": "wooden_display_shelves_01",
   "file": "../world/models/wooden_display_shelves_01/wooden_display_shelves_01.glb",
   "category": "furniture",
@@ -1288,5 +1258,917 @@
   "mass_kg": 0,
   "bytes": 104068,
   "title": "Worn Metal Rack"
+ },
+ {
+  "id": "khan_bowl",
+  "file": "household/khan_bowl.glb",
+  "category": "household",
+  "tags": [
+   "bowl",
+   "dipper",
+   "aluminium",
+   "water",
+   "thai",
+   "household"
+  ],
+  "size_m": [
+   0.2,
+   0.073,
+   0.2
+  ],
+  "tris": 576,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.15,
+  "bytes": 78628,
+  "title": "Aluminium water dipper bowl (ขันน้ำ)",
+  "friction": 0.4,
+  "far": 0.45
+ },
+ {
+  "id": "ong_jar",
+  "file": "household/ong_jar.glb",
+  "category": "household",
+  "tags": [
+   "jar",
+   "water",
+   "ong",
+   "ceramic",
+   "glazed",
+   "thai",
+   "household"
+  ],
+  "size_m": [
+   0.63,
+   0.765,
+   0.63
+  ],
+  "tris": 2304,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 144528,
+  "title": "Glazed water jar (โอ่ง) with aluminium bowl",
+  "far": 1.0
+ },
+ {
+  "id": "lpg_15kg",
+  "file": "kitchen/lpg_15kg.glb",
+  "category": "kitchen",
+  "tags": [
+   "lpg",
+   "gas",
+   "cylinder",
+   "tank",
+   "cooking",
+   "thai",
+   "red"
+  ],
+  "size_m": [
+   0.3,
+   0.655,
+   0.3
+  ],
+  "tris": 2200,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 29.0,
+  "bytes": 103464,
+  "title": "LPG cylinder 15 kg (ถังแก๊ส)",
+  "friction": 0.45,
+  "collider": "cyl"
+ },
+ {
+  "id": "tamarind_board",
+  "file": "kitchen/tamarind_board.glb",
+  "category": "kitchen",
+  "tags": [
+   "chopping board",
+   "block",
+   "wood",
+   "tamarind",
+   "butcher",
+   "kitchen",
+   "thai"
+  ],
+  "size_m": [
+   0.384,
+   0.075,
+   0.382
+  ],
+  "tris": 900,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 6.0,
+  "bytes": 110120,
+  "title": "Tamarind wood chopping block (เขียงมะขาม)",
+  "friction": 0.75,
+  "far": 0.8,
+  "collider": "cyl"
+ },
+ {
+  "id": "fish_knife",
+  "file": "../world/models/fish_knife/fish_knife.glb",
+  "category": "kitchenware",
+  "tags": [
+   "fish",
+   "knife",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.029,
+   0.216,
+   0.016
+  ],
+  "tris": 525,
+  "license": "CC0-1.0",
+  "author": "Mateusz Sadek (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/fish_knife",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 42972,
+  "title": "Fish Knife"
+ },
+ {
+  "id": "kradong",
+  "file": "market/kradong.glb",
+  "category": "market",
+  "tags": [
+   "tray",
+   "bamboo",
+   "woven",
+   "market",
+   "drying",
+   "thai",
+   "kradong"
+  ],
+  "size_m": [
+   0.712,
+   0.04,
+   0.712
+  ],
+  "tris": 1399,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.9,
+  "bytes": 327828,
+  "title": "Woven bamboo winnowing tray (กระด้ง)",
+  "friction": 0.8,
+  "far": 0.8,
+  "collider": "cyl"
+ },
+ {
+  "id": "plastic_basket",
+  "file": "market/plastic_basket.glb",
+  "category": "market",
+  "tags": [
+   "basket",
+   "plastic",
+   "market",
+   "produce",
+   "crate",
+   "thai",
+   "blue"
+  ],
+  "size_m": [
+   0.476,
+   0.191,
+   0.346
+  ],
+  "tris": 1520,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.6,
+  "bytes": 338044,
+  "title": "Perforated plastic market basket (ตะกร้า)",
+  "tint": true,
+  "friction": 0.55,
+  "far": 0.7,
+  "collider": "box",
+  "alpha": "mask"
+ },
+ {
+  "id": "rice_sack",
+  "file": "market/rice_sack.glb",
+  "category": "market",
+  "tags": [
+   "sack",
+   "rice",
+   "woven",
+   "bag",
+   "market",
+   "thai",
+   "heavy"
+  ],
+  "size_m": [
+   0.46,
+   0.162,
+   0.659
+  ],
+  "tris": 796,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 15.0,
+  "bytes": 240496,
+  "title": "Rice sack 15 kg, woven PP (กระสอบข้าว)",
+  "friction": 0.9,
+  "far": 0.8,
+  "collider": "box"
+ },
+ {
+  "id": "bottle_beer_chang",
+  "file": "packaged/bottle_beer_chang.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "drink",
+   "thai",
+   "brand",
+   "beer_chang_bottle"
+  ],
+  "size_m": [
+   0.074,
+   0.279,
+   0.074
+  ],
+  "tris": 666,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.94,
+  "bytes": 19532,
+  "title": "Chang beer bottle (เบียร์ช้าง)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "bottle_fish_sauce_tiparos",
+  "file": "packaged/bottle_fish_sauce_tiparos.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "sauce",
+   "thai",
+   "brand",
+   "fish_sauce_tiparos"
+  ],
+  "size_m": [
+   0.075,
+   0.277,
+   0.075
+  ],
+  "tris": 848,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.98,
+  "bytes": 24672,
+  "title": "Fish sauce bottle, Tiparos (น้ำปลาทิพรส)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "ceramic_pot",
+  "file": "../world/models/ceramic_pot/ceramic_pot.glb",
+  "category": "plants",
+  "tags": [
+   "ceramic",
+   "pot",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.656,
+   0.372,
+   0.502
+  ],
+  "tris": 1500,
+  "license": "CC0-1.0",
+  "author": "Aron Łyczek (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/ceramic_pot",
+  "physics": "dynamic",
+  "mass_kg": 14.0,
+  "bytes": 82164,
+  "title": "Ceramic Pot",
+  "friction": 0.7
+ },
+ {
+  "id": "planter_pot_clay",
+  "file": "../world/models/planter_pot_clay/planter_pot_clay.glb",
+  "category": "plants",
+  "tags": [
+   "planter",
+   "pot",
+   "clay",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.266,
+   0.222,
+   0.263
+  ],
+  "tris": 1000,
+  "license": "CC0-1.0",
+  "author": "Amal Kumar (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/planter_pot_clay",
+  "physics": "dynamic",
+  "mass_kg": 3.0,
+  "bytes": 65172,
+  "title": "Planter Pot Clay",
+  "friction": 0.7,
+  "collider": "cyl"
+ },
+ {
+  "id": "potted_plant_02",
+  "file": "../world/models/potted_plant_02/potted_plant_02.glb",
+  "category": "plants",
+  "tags": [
+   "potted",
+   "plant",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.701,
+   0.841,
+   0.657
+  ],
+  "tris": 3537,
+  "license": "CC0-1.0",
+  "author": "Rico Cilliers (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/potted_plant_02",
+  "physics": "dynamic",
+  "mass_kg": 9.0,
+  "bytes": 168604,
+  "title": "Potted Plant 02",
+  "friction": 0.7,
+  "collider": "cyl"
+ },
+ {
+  "id": "potted_plant_04",
+  "file": "../world/models/potted_plant_04/potted_plant_04.glb",
+  "category": "plants",
+  "tags": [
+   "potted",
+   "plant",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.17,
+   0.268,
+   0.186
+  ],
+  "tris": 4022,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/potted_plant_04",
+  "physics": "dynamic",
+  "mass_kg": 1.5,
+  "bytes": 149572,
+  "title": "Potted Plant 04",
+  "friction": 0.7,
+  "collider": "cyl"
+ },
+ {
+  "id": "signbox_barber",
+  "file": "signs/signbox_barber.glb",
+  "category": "signs",
+  "tags": [
+   "sign",
+   "lightbox",
+   "shop",
+   "thai",
+   "flat",
+   "wall"
+  ],
+  "size_m": [
+   1.655,
+   0.63,
+   0.182
+  ],
+  "tris": 666,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 162228,
+  "title": "Lightbox: barber (ร้านตัดผม)",
+  "anchor": "back",
+  "far": 1.6
+ },
+ {
+  "id": "signbox_chicken_rice",
+  "file": "signs/signbox_chicken_rice.glb",
+  "category": "signs",
+  "tags": [
+   "sign",
+   "lightbox",
+   "shop",
+   "thai",
+   "flat",
+   "wall"
+  ],
+  "size_m": [
+   1.355,
+   0.85,
+   0.202
+  ],
+  "tris": 666,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 242728,
+  "title": "Lightbox: chicken rice shop (ข้าวมันไก่)",
+  "anchor": "back",
+  "far": 1.6
+ },
+ {
+  "id": "signbox_coffee",
+  "file": "signs/signbox_coffee.glb",
+  "category": "signs",
+  "tags": [
+   "sign",
+   "lightbox",
+   "shop",
+   "thai",
+   "flat",
+   "wall"
+  ],
+  "size_m": [
+   1.055,
+   0.9,
+   0.182
+  ],
+  "tris": 666,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 211760,
+  "title": "Sign box: coffee boran (กาแฟโบราณ)",
+  "anchor": "back",
+  "far": 1.6
+ },
+ {
+  "id": "signbox_gold_vertical",
+  "file": "signs/signbox_gold_vertical.glb",
+  "category": "signs",
+  "tags": [
+   "sign",
+   "lightbox",
+   "shop",
+   "thai",
+   "blade",
+   "wall"
+  ],
+  "size_m": [
+   0.144,
+   2.08,
+   0.44
+  ],
+  "tris": 524,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 268244,
+  "title": "Vertical gold shop sign (ร้านทอง)",
+  "anchor": "back",
+  "far": 1.6
+ },
+ {
+  "id": "signbox_massage",
+  "file": "signs/signbox_massage.glb",
+  "category": "signs",
+  "tags": [
+   "sign",
+   "lightbox",
+   "shop",
+   "thai",
+   "blade",
+   "wall"
+  ],
+  "size_m": [
+   0.134,
+   0.97,
+   0.72
+  ],
+  "tris": 524,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 183056,
+  "title": "Lightbox: Thai massage (นวดแผนไทย)",
+  "anchor": "back",
+  "far": 1.6
+ },
+ {
+  "id": "signbox_noodle",
+  "file": "signs/signbox_noodle.glb",
+  "category": "signs",
+  "tags": [
+   "sign",
+   "lightbox",
+   "shop",
+   "thai",
+   "blade",
+   "wall"
+  ],
+  "size_m": [
+   0.134,
+   0.96,
+   0.74
+  ],
+  "tris": 524,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 193876,
+  "title": "Lightbox: noodle shop logo (ก๋วยเตี๋ยว)",
+  "anchor": "back",
+  "far": 1.6
+ },
+ {
+  "id": "signbox_pharmacy",
+  "file": "signs/signbox_pharmacy.glb",
+  "category": "signs",
+  "tags": [
+   "sign",
+   "lightbox",
+   "shop",
+   "thai",
+   "blade",
+   "wall"
+  ],
+  "size_m": [
+   0.134,
+   0.75,
+   0.92
+  ],
+  "tris": 524,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 205960,
+  "title": "Lightbox: pharmacy",
+  "anchor": "back",
+  "far": 1.6
+ },
+ {
+  "id": "signbox_room_for_rent",
+  "file": "signs/signbox_room_for_rent.glb",
+  "category": "signs",
+  "tags": [
+   "sign",
+   "lightbox",
+   "shop",
+   "thai",
+   "blade",
+   "wall"
+  ],
+  "size_m": [
+   0.124,
+   0.75,
+   1.02
+  ],
+  "tris": 524,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 223208,
+  "title": "Lightbox: room for rent (มีห้องว่างให้เช่า)",
+  "anchor": "back",
+  "far": 1.6
+ },
+ {
+  "id": "spirit_house",
+  "file": "spirit/spirit_house.glb",
+  "category": "spirit",
+  "tags": [
+   "spirit house",
+   "shrine",
+   "san phra phum",
+   "garland",
+   "marigold",
+   "offering",
+   "thai",
+   "hero"
+  ],
+  "size_m": [
+   0.81,
+   2.425,
+   0.81
+  ],
+  "tris": 18999,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_spirit.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 935840,
+  "title": "Spirit house on its pillar (ศาลพระภูมิ) with garlands & offerings",
+  "far": 1.6
+ },
+ {
+  "id": "concrete_road_barrier_02",
+  "file": "../world/models/concrete_road_barrier_02/concrete_road_barrier_02.glb",
+  "category": "street",
+  "tags": [
+   "concrete",
+   "road",
+   "barrier",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   1.567,
+   1.112,
+   0.442
+  ],
+  "tris": 1500,
+  "license": "CC0-1.0",
+  "author": "Amal Kumar (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/concrete_road_barrier_02",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 130648,
+  "title": "Concrete Road Barrier 02"
+ },
+ {
+  "id": "fire_hydrant",
+  "file": "../world/models/fire_hydrant/fire_hydrant.glb",
+  "category": "street",
+  "tags": [
+   "fire",
+   "hydrant",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.875,
+   0.799,
+   0.318
+  ],
+  "tris": 2992,
+  "license": "CC0-1.0",
+  "author": "Gonçalo Felício (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/fire_hydrant",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 184980,
+  "title": "Fire Hydrant"
+ },
+ {
+  "id": "hand_truck",
+  "file": "../world/models/hand_truck/hand_truck.glb",
+  "category": "street",
+  "tags": [
+   "hand",
+   "truck",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.593,
+   1.403,
+   0.693
+  ],
+  "tris": 5264,
+  "license": "CC0-1.0",
+  "author": "Mutanzom3D (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/hand_truck",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 207708,
+  "title": "Hand Truck"
+ },
+ {
+  "id": "power_box_01",
+  "file": "../world/models/power_box_01/power_box_01.glb",
+  "category": "street",
+  "tags": [
+   "power",
+   "box",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.377,
+   0.503,
+   0.418
+  ],
+  "tris": 4027,
+  "license": "CC0-1.0",
+  "author": "Rico Cilliers, Yann Kervran (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/power_box_01",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 139372,
+  "title": "Power Box 01"
+ },
+ {
+  "id": "utility_box_01",
+  "file": "../world/models/utility_box_01/utility_box_01.glb",
+  "category": "street",
+  "tags": [
+   "utility",
+   "box",
+   "polyhaven",
+   "photoscan"
+  ],
+  "size_m": [
+   0.52,
+   1.12,
+   0.432
+  ],
+  "tris": 2500,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/utility_box_01",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 89620,
+  "title": "Utility Box 01"
+ },
+ {
+  "id": "condiment_caddy",
+  "file": "tableware/condiment_caddy.glb",
+  "category": "tableware",
+  "tags": [
+   "condiment",
+   "caddy",
+   "table",
+   "fish sauce",
+   "chili",
+   "sugar",
+   "vinegar",
+   "thai"
+  ],
+  "size_m": [
+   0.168,
+   0.208,
+   0.168
+  ],
+  "tris": 3717,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 1.4,
+  "bytes": 190624,
+  "title": "Condiment caddy, 4 jars (พวงเครื่องปรุง)",
+  "friction": 0.5,
+  "far": 0.6,
+  "collider": "box"
+ },
+ {
+  "id": "transformer",
+  "file": "utility/transformer.glb",
+  "category": "utility",
+  "tags": [
+   "transformer",
+   "utility",
+   "pole",
+   "electric",
+   "pea",
+   "thai"
+  ],
+  "size_m": [
+   0.955,
+   1.463,
+   0.82
+  ],
+  "tris": 6500,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 415812,
+  "title": "Pole-mounted distribution transformer (หม้อแปลงไฟฟ้า)",
+  "far": 1.8
+ },
+ {
+  "id": "transformer_platform",
+  "file": "utility/transformer_platform.glb",
+  "category": "utility",
+  "tags": [
+   "transformer",
+   "platform",
+   "utility",
+   "pole",
+   "steel",
+   "thai"
+  ],
+  "size_m": [
+   2.5,
+   0.158,
+   0.55
+  ],
+  "tris": 1344,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 39256,
+  "title": "Transformer platform: steel channel beams + braces (between two poles 2 m apart)",
+  "far": 1.6
+ },
+ {
+  "id": "scooter_cub",
+  "file": "vehicles/scooter_cub.glb",
+  "category": "vehicles",
+  "tags": [
+   "scooter",
+   "motorbike",
+   "underbone",
+   "honda super cub",
+   "c70",
+   "moped",
+   "vehicle",
+   "thai",
+   "parked",
+   "old"
+  ],
+  "size_m": [
+   0.724,
+   1.122,
+   1.761
+  ],
+  "tris": 16633,
+  "license": "CC-BY-4.0",
+  "author": "Bandit.545 (sketchfab.com/Bandit.545)",
+  "source_url": "https://sketchfab.com/3d-models/33afed83974d4534bb2f4d43a593e530",
+  "physics": "static",
+  "mass_kg": 85.0,
+  "bytes": 442240,
+  "title": "Honda Super Cub C70 moped (photogrammetry)",
+  "far": 1.4,
+  "uid": "33afed83974d4534bb2f4d43a593e530"
+ },
+ {
+  "id": "scooter_wave",
+  "file": "vehicles/scooter_wave.glb",
+  "category": "vehicles",
+  "tags": [
+   "scooter",
+   "motorbike",
+   "underbone",
+   "honda wave",
+   "moped",
+   "vehicle",
+   "thai",
+   "parked"
+  ],
+  "size_m": [
+   0.73,
+   1.275,
+   1.84
+  ],
+  "tris": 7070,
+  "license": "CC-BY-4.0",
+  "author": "Bandit.545 (sketchfab.com/Bandit.545)",
+  "source_url": "https://sketchfab.com/3d-models/518a7d5a4a0b41218650ee0823320f5a",
+  "physics": "static",
+  "mass_kg": 98.0,
+  "bytes": 296888,
+  "title": "Underbone moped, Honda Wave / SYM E-SR 110 type (photogrammetry)",
+  "far": 1.4,
+  "uid": "518a7d5a4a0b41218650ee0823320f5a"
  }
 ]

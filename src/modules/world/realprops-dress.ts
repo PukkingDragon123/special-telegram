@@ -128,5 +128,7 @@ export function tableSetting(real: RealProps, x: number, y: number, z: number, y
   at('caddy', -0.18 + (steel ? 0.05 : 0), 0.02);
   at('spoon_cup', 0.02, 0.06);
   at('tissue', 0.2, -0.04, { color: rng.pick([0xf4b8c8, 0xe8e4dc, 0x9ad0f0]), a: rng.range(-0.2, 0.2) });
-  if (rng.chance(0.6)) { at('jug', 0.28, 0.16, { color: rng.pick([0x2a8a4a, 0xe86a8a, 0x2a62b8]) }); at('glass_cup', 0.12, 0.2); if (rng.chance(0.5)) at('glass_cup', -0.05, 0.22); }
+  at('jug', 0.28, 0.16, { color: rng.pick([0x2a8a4a, 0xe86a8a, 0x2a62b8]) });
+  at('glass_cup', 0.12, 0.2); at('glass_cup', -0.05, 0.22);
+  if (rng.chance(0.5)) at('lib:bottle_fish_sauce_tiparos', -0.3, -0.12);
 }

@@ -36,7 +36,7 @@ def build(name, publish=True, preview=False, size=None):
         return
     raw = os.path.join(C.WORK, name + '.raw.glb')
     out, dims = C.bake_export(name, objs, raw, size=size or meta.get('bake', 1024), lowpoly=meta.get('low'), ao_mix=meta.get('ao_mix', 0.45),
-                              keep_parts=meta.get('parts', False), ray=meta.get('ray', 0.02), alpha=meta.get('alpha', False))
+                              keep_parts=meta.get('parts', False), ray=meta.get('ray', 0.02), alpha=meta.get('alpha', False), origin=meta.get('anchor', 'bottom'))
     print(f'[{name}] built in {time.time() - t0:.0f}s')
     if publish:
         a = [sys.executable, os.path.join(ROOT, 'scripts/libpub.py'), 'add', raw, '--id', meta.get('id', name), '--cat', meta['cat'],

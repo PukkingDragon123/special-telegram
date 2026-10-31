@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { TessellateModifier } from 'three/examples/jsm/modifiers/TessellateModifier.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Assets } from '../../core/assets';
+import { ownTexture } from './realprops';
 
 /**
  * Properly modelled Thai street props that have no photoscan on Poly Haven, textured with the real
@@ -20,7 +21,7 @@ export function tex(path: string, srgb = true, neutral = false): Promise<THREE.T
   const key = path + srgb + neutral;
   let p = texCache.get(key);
   if (!p) {
-    p = Assets.loadTexture(path, { srgb, repeat: 1 }).then((t) => (neutral ? greyed(t) : t));
+    p = Assets.loadTexture(path, { srgb, repeat: 1 }).then((t) => ownTexture(neutral ? greyed(t) : t));
     texCache.set(key, p);
   }
   return p;

@@ -13,7 +13,8 @@ import { STALL_MODELS } from './realprops-stall';
 import { VEHICLE_MODELS } from './realprops-vehicle';
 import { libEntry } from './lib';
 
-const PROC_MODELS: Record<string, () => Promise<ProcModel>> = { ...BASE_PROC, ...TABLE_MODELS, ...STALL_MODELS, ...VEHICLE_MODELS };
+/** evaluated lazily (realprops-proc imports this module back: no top-level use across the cycle) */
+const procModel = (id: string): (() => Promise<ProcModel>) | undefined => BASE_PROC[id] ?? TABLE_MODELS[id] ?? STALL_MODELS[id] ?? VEHICLE_MODELS[id];
 
 /**
  * REAL PROPS — photoscanned Poly Haven models (CC0, public/assets/gen/world/models, fetched and
@@ -180,6 +181,11 @@ export interface Model { parts: ModelPart[]; box: THREE.Box3; hull: Float32Array
 
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
+/** texture sources created by this system (GLB images, grey-normalised canvases, proc textures): their CPU copies are
+ *  dropped after the GPU upload (the page sits at 2–3 GB under SwiftShader; every 100 MB counts) */
+export const ownedSources = new Set<THREE.Source>();
+export function ownTexture<T extends THREE.Texture>(t: T): T { ownedSources.add(t.source); return t; }
+const TEX_SLOTS = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap', 'clearcoatMap', 'clearcoatNormalMap'] as const;
 const modelCache = new Map<string, Promise<Model | null>>();
 const loaded = new Map<string, Model>();
 
@@ -229,6 +235,7 @@ function prepMaterial(src: THREE.Material, def: ModelDef): THREE.Material {
   const m = (src as THREE.MeshStandardMaterial).clone();
   if (m.transparent || (m as any).alphaMode === 'BLEND') { m.transparent = false; m.depthWrite = true; m.alphaTest = Math.max(m.alphaTest, 0.5); }
   if (m.map && def.recolor) m.map = neutralTexture(m.map);
+  for (const k of TEX_SLOTS) { const t = (m as any)[k] as THREE.Texture | null; if (t) ownTexture(t); }
   if (m.color) m.color.multiplyScalar(def.dirt ?? 0.92);
   m.envMapIntensity = def.env ?? 0.55;
   if (m.map) m.map.anisotropy = 4;
@@ -297,7 +304,7 @@ async function loadGlb(def: ModelDef): Promise<Model | null> {
 }
 
 async function loadProc(id: string, def: ModelDef): Promise<Model | null> {
-  const make = PROC_MODELS[id];
+  const make = procModel(id);
   if (!make) return null;
   const pm: ProcModel = await make();
   return finishModel(pm.parts.map((p) => ({ geom: p.geom, mat: p.mat, tint: p.tint ?? !!def.recolor })), { ...def, rot: undefined });
@@ -400,6 +407,7 @@ export class RealProps {
   private frameN = 0;
   private day = -1;
   private npcPrev = new Map<number, [number, number, number]>();
+  private released = false;
   /** my own scatter footprints (avoid overlapping clutter) */
   private occ = new Map<number, [number, number, number][]>();
   stats = { instances: 0, bodies: 0, dynamic: 0, awake: 0, visible: 0, drawn: 0, buildMs: 0 };
@@ -560,6 +568,7 @@ export class RealProps {
     const cam = game.camera;
     if (!cam || !this.batches.length) return;
     this.frameN++;
+    if (!this.released && this.frameN > 2) { this.released = true; this.releaseCpuTextures(game); }
     // new day: the shopkeepers tidy everything back home overnight
     const day = (game.g as any).day ?? 0;
     if (this.day !== day) { if (this.day >= 0) this.resetAll(); this.day = day; }
@@ -655,6 +664,33 @@ export class RealProps {
       }
     }
     if (this.npcPrev.size > seen.size + 32) for (const id of [...this.npcPrev.keys()]) if (!seen.has(id)) this.npcPrev.delete(id);
+  }
+
+  /** upload every texture my materials use, then drop the CPU copies of the sources I own */
+  private releaseCpuTextures(game: Game) {
+    const R = game.engine.renderer;
+    const mats = new Set<THREE.Material>();
+    for (const b of this.batches) for (const m of b.meshes) mats.add(m.material as THREE.Material);
+    for (const o of this.objects) o.traverse((x) => { const mm = (x as THREE.Mesh).material; if (mm) (Array.isArray(mm) ? mm : [mm]).forEach((q) => mats.add(q)); });
+    const texs = new Set<THREE.Texture>();
+    for (const m of mats) for (const k of TEX_SLOTS) { const t = (m as any)[k] as THREE.Texture | null; if (t) texs.add(t); }
+    let freed = 0;
+    try {
+      for (const t of texs) if (t.image && ownedSources.has(t.source)) R.initTexture(t);
+      const done = new Set<THREE.Source>();
+      for (const t of texs) {
+        const src = t.source;
+        if (!ownedSources.has(src) || done.has(src) || !src.data) continue;
+        // the source may also back textures of models nobody placed yet: keep those
+        done.add(src);
+        const img = src.data as any;
+        if (typeof ImageBitmap !== 'undefined' && img instanceof ImageBitmap) { freed += img.width * img.height * 4; img.close(); }
+        else if (img instanceof HTMLCanvasElement) { freed += img.width * img.height * 4; img.width = img.height = 1; }
+        else if (img && img.width) freed += img.width * img.height * 4;
+        src.data = null;
+      }
+    } catch (e) { console.warn('[realprops] release', e); }
+    console.info(`[realprops] released ~${Math.round(freed / 1048576)} MB of CPU texture copies`);
   }
 
   private resetInst(inst: Inst) {

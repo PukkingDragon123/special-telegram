@@ -28,8 +28,17 @@ LIC_NAME = {'by': 'CC-BY-4.0', 'by-sa': 'CC-BY-SA-4.0', 'cc0': 'CC0-1.0'}
 
 # ------------------------------------------------------------------ catalog
 def load_cat():
-    if os.path.exists(CAT): return json.load(open(CAT))
-    return []
+    """catalog.json + every <category>/catalog.part.json fragment (other agents publish fragments; theirs win for their ids)"""
+    cat = json.load(open(CAT)) if os.path.exists(CAT) else []
+    if os.path.isdir(LIB):
+        for d in sorted(os.listdir(LIB)):
+            part = os.path.join(LIB, d, 'catalog.part.json')
+            if not os.path.exists(part): continue
+            try: frag = json.load(open(part))
+            except Exception as e: print('bad fragment', part, e); continue
+            ids = {e['id'] for e in frag}
+            cat = [e for e in cat if e['id'] not in ids] + frag
+    return cat
 
 
 def save_cat(cat):
@@ -256,6 +265,16 @@ for m in bpy.data.materials:
                 if not any(k in nm for k in ('leaf', 'leaves', 'grass', 'foliage', 'alpha', 'cutout', 'decal', 'plant', 'net', 'mesh', 'fence', 'hair')):
                     m.node_tree.links.remove(n.inputs['Alpha'].links[0]); n.inputs['Alpha'].default_value = 1
 print('NORMALISED', json.dumps({'scale': s, 'size': [size.x * s, size.y * s, size.z * s], 'meshes': len(meshes)}))
+if opt.get('rebake'):
+    # decimate to the budget and bake the full-detail original onto one new atlas (albedo×AO, ORM, normal)
+    sys.path.insert(0, opt['thai'])
+    import common as Cm
+    sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.render.threads_mode = 'FIXED'; sc.render.threads = 3
+    if not sc.world: sc.world = bpy.data.worlds.new('w')
+    for o in meshes: o.data.uv_layers.active_index = 0
+    Cm.bake_export(opt['id'], meshes, dst, size=opt['rebake'], lowpoly=opt['tris'], ray=opt.get('ray', 0.02), ao_mix=opt.get('ao_mix', 0.3),
+                   alpha=bool(opt.get('alpha')), origin=opt.get('anchor', 'bottom'))
+    raise SystemExit(0)
 bpy.ops.object.select_all(action='DESELECT')
 for o in meshes: o.select_set(True)
 bpy.ops.export_scene.gltf(filepath=dst, export_format='GLB', use_selection=True, export_apply=True, export_yup=True,
@@ -287,7 +306,8 @@ def cmd_import(a):
     raw = ov.fetch(a.uid)
     norm = os.path.join(CACHE, a.id + '.norm.glb')
     opt = {'height': a.height, 'length': a.length, 'width': a.width, 'maxdim': a.maxdim, 'rot': [float(v) for v in a.rot.split(',')],
-           'drop': a.drop, 'keep_anim': a.keep_anim, 'keep_alpha': a.keep_alpha}
+           'drop': a.drop, 'keep_anim': a.keep_anim, 'keep_alpha': a.keep_alpha, 'rebake': a.rebake, 'tris': a.tris, 'id': a.id.replace('/', '_'),
+           'ray': a.ray, 'thai': os.path.join(ROOT, 'scripts/thai'), 'alpha': a.alpha_mask, 'anchor': a.anchor}
     out = run_blender(NORMALISE, raw, norm, json.dumps(opt))
     print('  ' + next((l for l in out.splitlines() if l.startswith('NORMALISED')), '?'))
     a.license = LIC_NAME[meta['lic']]
@@ -295,10 +315,12 @@ def cmd_import(a):
     a.source = f'https://sketchfab.com/3d-models/{a.uid}'
     a.title = a.title or meta['name']
     dst = os.path.join(LIB, a.cat, a.id + '.glb')
-    st0, st = optimize(norm, dst, a.tex, a.tris, a.error, a.keep_anim)
+    st0, st = optimize(norm, dst, a.tex, int(a.tris * 1.15) if a.rebake else a.tris, a.error, a.keep_anim)
+    if a.alpha_mask: patch_alpha(dst)
     print(f'  {st0["tris"]} → {st["tris"]} tris')
     e = entry_common(a, dst, st)
     e['uid'] = a.uid
+    if a.alpha_mask: e['alpha'] = 'mask'
     upsert(e)
 
 
@@ -427,6 +449,7 @@ def main():
     for k in ('height', 'length', 'width', 'maxdim'): s.add_argument('--' + k, type=float)
     s.add_argument('--rot', default='0,0,0'); s.add_argument('--drop'); s.add_argument('--keep-anim', action='store_true'); s.add_argument('--keep-alpha', action='store_true')
     s.add_argument('--author'); s.add_argument('--no-index', action='store_true')
+    s.add_argument('--rebake', type=int, help='decimate to --tris and bake the original onto one new atlas of this size'); s.add_argument('--ray', type=float, default=0.02)
     s.set_defaults(fn=cmd_import, license='', source='')
     s = sp.add_parser('preview'); s.add_argument('glb'); s.add_argument('out'); s.add_argument('--size', type=int, default=512)
     s.add_argument('--yaw', type=float, default=35); s.add_argument('--pitch', type=float, default=18); s.add_argument('--samples', type=int, default=24)
@@ -434,6 +457,7 @@ def main():
     s = sp.add_parser('list'); s.add_argument('pattern', nargs='?'); s.set_defaults(fn=cmd_list)
     s = sp.add_parser('remove'); s.add_argument('id'); s.set_defaults(fn=cmd_remove)
     s = sp.add_parser('credits'); s.set_defaults(fn=lambda a: write_credits(load_cat()))
+    s = sp.add_parser('merge', help='fold catalog.part.json fragments into catalog.json'); s.set_defaults(fn=lambda a: save_cat(load_cat()))
     a = ap.parse_args()
     a.fn(a)
 
