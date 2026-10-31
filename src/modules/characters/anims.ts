@@ -539,7 +539,8 @@ def('jenga_pull', { loop: true, dur: 4, posture: 'sit', fade: 0.4, pose: (c) => 
   const pb = c.pb, t = c.t + c.rnd * 4;
   const pull = sm(0.2, 0.9, (t % 4) / 4);
   const tremble = sin(t * 23) * 0.8;
-  pb.spine(20, -6, 0); pb.chest(14, -8, 0); pb.neck(8, 0, 0); pb.head(16, 10, 4);
+  // lean in toward the tower, but keep the head up (the rig's look-at aims the eyes)
+  pb.spine(10, -5, 0); pb.chest(6, -6, 0); pb.neck(2, 0, 0); pb.head(5, 8, 3);
   pb.arm(R, 72 - 4 * pull, -12, 40, 26 + 14 * pull, -10 + tremble, tremble);
   pb.arm(L, 40, 6, 0, 60, 10);
 } });

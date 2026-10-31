@@ -39,7 +39,20 @@ interface SlotView {
   ready: Sticker | null;
   pop: number;
   block?: THREE.Mesh;
+  /** frames left before the seat is fitted to the real pelvis (the sitting clip needs a few updates) */
+  fit?: number;
 }
+
+/** Seat surface under each seated guy, in the local space of his chair (or the world, for the sofa).
+ *  The pelvis joint sits ~0.1 m above the surface, a little in front of the backrest. */
+const SEAT_LOCAL: Record<number, THREE.Vector3> = {
+  0: new THREE.Vector3(0, 0.44, -0.03),   // Panton (album.ts buildPanton: seat z −0.12…0.2, y 0.435)
+  3: new THREE.Vector3(0, 0.45, -0.04),   // shell chair (seat z −0.06…0.22, y 0.45)
+};
+const SOFA_SEAT_Y = 0.395;                // cushion top (album.ts buildSofa)
+const PELVIS_ABOVE_SEAT = 0.1;
+/** where the seated guys look: the top of the Jenga tower on the coffee table */
+const TOWER_LOOK = new THREE.Vector3(0, 0.58, -2.5);
 
 interface Bit { m: THREE.Matrix4; p: THREE.Vector3; v: THREE.Vector3; r: THREE.Euler; av: THREE.Vector3; life: number; s: number }
 
@@ -73,6 +86,7 @@ export class MenuScene implements SceneDef {
   private raycaster = new THREE.Raycaster();
   /** the folded newspaper prop (story edition) leaning against the coffee table */
   private paper: THREE.Group | null = null;
+  private chairs: Record<number, THREE.Object3D> = {};
   private paperHover = false;
   private paperLift = 0;
   private paperTag: Sticker | null = null;
@@ -108,10 +122,12 @@ export class MenuScene implements SceneDef {
     this.scene.add(this.jenga.group);
     this.buildPaper();
     const panton = buildPanton();
+    this.chairs[0] = panton;
     panton.position.copy(SLOTS[0].pos).add(new THREE.Vector3(0.02, 0, 0.06));
     panton.rotation.y = SLOTS[0].yaw + Math.PI;
     this.scene.add(panton);
     const shell = buildShellChair();
+    this.chairs[3] = shell;
     shell.position.copy(SLOTS[3].pos).add(new THREE.Vector3(0.04, 0, 0.0));
     shell.rotation.y = SLOTS[3].yaw + Math.PI;
     this.scene.add(shell);
@@ -254,6 +270,7 @@ export class MenuScene implements SceneDef {
         s.rig.root.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq));
       } else s.rig.root.scale.setScalar(1);
       s.rig.update(rdt);
+      if (s.fit !== undefined && --s.fit <= 0) { s.fit = undefined; this.fitSeat(s); }
     }
     this.updateArrow(rdt);
     this.updatePaper(rdt);
@@ -302,7 +319,7 @@ export class MenuScene implements SceneDef {
           s.root.add(s.rig.root);
           const pose = SLOTS[s.i].pose;
           s.rig.play(pose as any, { loop: true, fade: 0 });
-          if (SLOTS[s.i].seat) (s.rig as any).seat = SLOTS[s.i].seat;
+          if (SLOTS[s.i].seat) { (s.rig as any).seat = SLOTS[s.i].seat; s.rig.lookAt(TOWER_LOOK); s.fit = 3; }
           s.rig.setMove(0);
           if (s.i === 0) {
             // G1 holds a blue block
@@ -459,6 +476,25 @@ export class MenuScene implements SceneDef {
     this.pick();
     if (this.paperHover) this.readPaper();
     else if (this.hovering) this.openCustomize();
+  }
+
+  /** Sit the guy ON his seat: lift/lower him so the pelvis rests on the seat surface and slide his
+   *  chair under the pelvis (the sitting clip decides where the pelvis is, not the slot position). */
+  private fitSeat(s: SlotView) {
+    const rig = s.rig;
+    const pel = rig?.root.getObjectByName('pelvis');
+    if (!rig || !pel) return;
+    rig.root.updateMatrixWorld(true);
+    const p = pel.getWorldPosition(new THREE.Vector3());
+    const chair = this.chairs[s.i];
+    const seatY = chair ? SEAT_LOCAL[s.i].y : SOFA_SEAT_Y;
+    rig.root.position.y += seatY + PELVIS_ABOVE_SEAT - p.y;
+    if (chair) {
+      chair.updateMatrixWorld(true);
+      const seat = chair.localToWorld(SEAT_LOCAL[s.i].clone());
+      chair.position.x += p.x - seat.x;
+      chair.position.z += p.z - seat.z;
+    }
   }
 
   // ------------------------------------------------------------------ the newspaper prop
