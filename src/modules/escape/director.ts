@@ -204,7 +204,7 @@ export class EscapeDirector {
     const a = this.ensureActor(me.look);
     if (!a) return;
     // wait for the photo face / fabrics to stream in before taking the photo
-    if (this.warmT < 9 && !this.cine) return;
+    if (this.warmT < 20 && !this.cine) return;
     this.mugKey = key;
     const shot = renderMugshot(this.game, a);
     this.art.paint(shot, me.name ?? '');
@@ -248,7 +248,8 @@ export class EscapeDirector {
     let truckStop: THREE.Vector3, truckYaw: number, truckFrom: THREE.Vector3, truckAway: THREE.Vector3;
     const cops: { a: THREE.Vector3; b: THREE.Vector3; home: THREE.Vector3 }[] = [];
     if (hit.stage === 'road') {
-      truckStop = new THREE.Vector3(hit.line, 0, hit.lane ?? onEdge.z).addScaledVector(n, -6);
+      const laneZ = hit.lane !== undefined ? (hit.lane > 0 ? THREE.MathUtils.clamp(H.z, 8.5, 19.5) : THREE.MathUtils.clamp(H.z, -161.5, -158.6)) : onEdge.z;
+      truckStop = new THREE.Vector3(hit.line, 0, laneZ).addScaledVector(n, -6);
       truckYaw = yawTo(n.x, n.z);
       truckFrom = truckStop.clone().addScaledVector(n, -30);
       truckAway = truckStop.clone().addScaledVector(n, -34);
@@ -302,6 +303,7 @@ export class EscapeDirector {
     Sound.music('', 0.4);
     if (!short) {
       Sound.play(sk('record_scratch'), { vol: 0.6 });
+      this.mugKey = '';
       this.refreshMugshot();
       this.police.ensureOfficers();
       this.police.show(true);
@@ -312,10 +314,11 @@ export class EscapeDirector {
       for (let i = 0; i < 2; i++) { const o = this.police.officers[i]; if (o) { o.root.visible = false; o.root.position.copy(cops[i].home); } }
       // the poster pole right next to the hero, facing him
       const pp = this.cinePole.group;
-      const pos = A.clone().addScaledVector(t, 1.6 * -side).addScaledVector(n, -0.55);
+      const dir = truckStop.clone().sub(A).setY(0).normalize();
+      const pos = A.clone().addScaledVector(dir, 1.5).addScaledVector(new THREE.Vector3(-dir.z, 0, dir.x), -1.0 * side);
       pos.y = game.world?.groundY(pos.x, pos.z) ?? A.y;
       pp.position.copy(pos);
-      pp.rotation.y = yawTo(n.x, n.z) + 0.25 * side;
+      pp.rotation.y = yawTo(-dir.x, -dir.z) + 0.35 * side;
       pp.visible = true;
       this.cinePole.flap = 0.55;
     } else {
@@ -428,7 +431,7 @@ export class EscapeDirector {
     // the hero notices
     if (t < T_RUN) {
       const yaw = actor.root.rotation.y;
-      const want = t < 0.25 ? yaw : c.outYaw;
+      const want = t < 0.25 ? yaw : yawTo(c.truckStop.x - c.A.x, c.truckStop.z - c.A.z);
       actor.root.rotation.y = yaw + angDiff(want, yaw) * Math.min(1, dt * 5);
       actor.lookAt(t > 0.2 ? P.truck.position.clone().add(new THREE.Vector3(0, 1.4, 0)) : null);
     }
@@ -475,7 +478,7 @@ export class EscapeDirector {
         c.heart = Sound.play(sk('heartbeat_slow'), { vol: 0.55 });
         c.sneaky = Sound.play('esc_sneaky', { bus: 'music', vol: 1 });
         P.flash = true;
-        for (let i = 0; i < 2; i++) c.copPaths[i] = { from: c.cops[i].home.clone(), to: c.cops[i].a.clone(), t0: T_H - 1.6 + i * 0.25, dur: Math.max(1.6, c.cops[i].home.distanceTo(c.cops[i].a) / 1.25) };
+        for (let i = 0; i < 2; i++) c.copPaths[i] = { from: c.cops[i].home.clone(), to: c.cops[i].a.clone(), t0: T_H - 1.6 + i * 0.25, dur: Math.min(3.2, Math.max(1.6, c.cops[i].home.distanceTo(c.cops[i].a) / 1.3)) };
       }
       // sweep target
       const H = c.H;
@@ -534,8 +537,10 @@ export class EscapeDirector {
     if (t < T_POSTER) {
       // over the shoulder: hero in the foreground, the patrol rolling up beyond
       const A = c.A;
-      c.camPos.copy(A).addScaledVector(n, 2.3).addScaledVector(tt, 1.0 * c.side).setY(A.y + 1.75 + t * 0.03);
-      c.camLook.copy(P.truck.position).lerp(this.v1.copy(A).addScaledVector(n, -5), 0.35).setY(A.y + 1.15);
+      const dir = this.v1.subVectors(c.truckStop, A).setY(0).normalize();
+      const perp = this.v3.set(-dir.z, 0, dir.x);
+      c.camPos.copy(A).addScaledVector(dir, -2.4).addScaledVector(perp, 0.75 * c.side).setY(A.y + 1.8 + t * 0.03);
+      c.camLook.copy(A).addScaledVector(dir, 7).setY(A.y + 1.05);
       c.camFov = 58; c.camRoll = 0;
       this.safeCam(c, this.v2.copy(A).setY(A.y + 1.6));
     } else if (t < T_FACE) {

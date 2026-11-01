@@ -201,6 +201,7 @@ export class Rig implements CharacterRig {
   private geoKey = '';
   private geoKeyLo = '';
   private mat = makeAtlasMaterial();
+  private face3d: THREE.SkinnedMesh | null = null;
   private atlasE: { mtex?: THREE.Texture } | null = null;
   private fpMats: THREE.Material[] | null = null;
   private atlasKey = '';
@@ -302,6 +303,21 @@ export class Rig implements CharacterRig {
     this.geoKey = g.key;
     this.mesh?.removeFromParent();
     this.mesh = this.makeMesh(g.geo);
+    // photoscanned 3D face (near LOD); the photo-projected head underneath stays as far LOD / fallback
+    this.face3d?.removeFromParent();
+    this.face3d = null;
+    if (t.faceMask && lod === 'high') {
+      const fm = new THREE.SkinnedMesh(t.faceMask, this.mat);
+      fm.name = 'face-scan';
+      fm.bind(this.skeleton, new THREE.Matrix4());
+      fm.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0.95, 0), 1.5);
+      fm.castShadow = false;
+      fm.receiveShadow = true;
+      fm.raycast = () => {};
+      fm.userData.noHull = true;          // the body's ink hull already outlines the head
+      this.inner.add(fm);
+      this.face3d = fm;
+    }
     if (this.meshLo) { this.meshLo.removeFromParent(); if (this.geoKeyLo) releaseLookGeometry(this.geoKeyLo); this.meshLo = null; this.geoKeyLo = ''; }
     this.lodLevel = 'high';
     this.mat.userData.uFat.value = (spec.build - 0.42) * 0.05;
@@ -350,6 +366,7 @@ export class Rig implements CharacterRig {
       mats = this.fpMats;
     } else mats = [this.mat, accessoryMaterial()];
     for (const m of [this.mesh, this.meshLo]) if (m) m.material = mats;
+    if (this.face3d) { this.face3d.material = mats[0]; this.face3d.visible = this.mode !== 'fp' && this.lodLevel === 'high'; }
   }
 
   // ---------------------------------------------------------------- contract API
@@ -460,6 +477,7 @@ export class Rig implements CharacterRig {
       this.applyMaterials();
     }
     if (this.mesh && this.meshLo) { this.mesh.visible = l === 'high'; this.meshLo.visible = l === 'low'; }
+    if (this.face3d) this.face3d.visible = l === 'high' && this.mode !== 'fp';
   }
 
   private action(name: string): THREE.AnimationAction | null {

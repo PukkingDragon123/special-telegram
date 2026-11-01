@@ -39,7 +39,7 @@ export function waterLab(game: Game, o: { splash: (x: number, y: number, z: numb
   setTimeout(() => {
     if (!tip) return;
     const b = game.items.bodyOf?.(tip.id);
-    if (b) { b.setAngvel({ x: 0.3, y: 0, z: -6.5 }, true); b.applyImpulse({ x: 1.2, y: 0.4, z: 0 }, true); }
+    if (b) { const t = b.translation(); b.setAngvel({ x: 0.4, y: 0, z: -11 }, true); b.applyImpulseAtPoint({ x: 2.6, y: 0.5, z: 0 }, { x: t.x, y: t.y + 0.12, z: t.z }, true); }
   }, mode === 'spill' ? 2500 : 4200);
   // junk into the canal by the bridge
   const junk = ['cup_plastic', 'takeaway_box', 'stool_red', 'egg', 'lime', 'plastic_bag', 'chopping_board', 'soda_cola_can', 'water_bucket', 'wok', 'garlic', 'cup_plastic', 'takeaway_box', 'stool_blue'];
@@ -51,7 +51,7 @@ export function waterLab(game: Game, o: { splash: (x: number, y: number, z: numb
   setTimeout(() => {
     const pl = game.player;
     if (!pl) return;
-    if (mode === 'canal') { pl.teleport([0.6, 0.62, -166.6], -Math.PI / 2 - 0.25); (pl as any).pitch = -0.62; }
+    if (mode === 'canal') { pl.teleport([0.6, 0.62, -166.6], -Math.PI / 2 + 0.3); (pl as any).pitch = -0.42; }
     else if (mode === 'hose') {
       pl.teleport([10.6, F, -17.4], -Math.PI / 2 - 0.25); (pl as any).pitch = -0.2;
       const h = game.state.find('item', (e) => e.k === 'water_hose');

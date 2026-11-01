@@ -87,8 +87,8 @@ export function splash(x: number, y: number, z: number, s: number, sink = false,
   if (Math.hypot(x - _cam.x, z - _cam.z) > 70) return;
   s = Math.max(0.03, Math.min(1.6, s));
   const R = Math.random;
-  if (s > 0.14) crowns.spawn(x, y, z, 0.04 + s * 0.2, 0.07 + s * 0.42, 0.42 + s * 0.28);
-  const n = Math.round((4 + s * 38) * (low() ? 0.5 : 1));
+  if (s > 0.12) crowns.spawn(x, y, z, 0.05 + s * 0.26, 0.1 + s * 0.6, 0.45 + s * 0.3);   // anime-juicy: tall crown
+  const n = Math.round((6 + s * 50) * (low() ? 0.6 : 1));
   for (let i = 0; i < n; i++) {
     const a = R() * 6.283, sp = (0.3 + R() * 1.5) * (0.35 + s), up = (0.9 + R() * 2.6) * (0.4 + s * 0.85);
     drops.spawn(x + Math.cos(a) * 0.03, y + 0.01, z + Math.sin(a) * 0.03, Math.cos(a) * sp, up, Math.sin(a) * sp, 0.0045 + R() * 0.009 * (0.6 + s), y - 0.005, 0, 2.2);

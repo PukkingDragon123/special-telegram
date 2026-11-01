@@ -23,6 +23,8 @@ export interface BodyInfo {
 
 export interface BodyTemplate {
   sex: 'm' | 'f';
+  /** photoscanned 3D face mask in this template's model space, bound to the Head bone (gen/characters/face_<sex>.glb) */
+  faceMask?: THREE.BufferGeometry;
   info: BodyInfo;
   height: number;
   names: string[];
@@ -229,6 +231,29 @@ function worldY(scene: THREE.Object3D, name: string) {
   return o.getWorldPosition(new THREE.Vector3()).y;
 }
 
+/** photoscanned face mask (scripts/life/bl_facemask.py): positions in template model space, UVs = the atlas face rect */
+async function loadFaceMask(t: BodyTemplate) {
+  try {
+    const g = await Assets.glb(BASE + `face_${t.sex}.glb`);
+    let src: THREE.Mesh | null = null;
+    g.scene.updateMatrixWorld(true);
+    g.scene.traverse((o: any) => { if (o.isMesh && !src) src = o; });
+    if (!src) return;
+    const m = src as THREE.Mesh;
+    const geo = m.geometry.clone();
+    geo.applyMatrix4(m.matrixWorld);
+    const n = geo.attributes.position.count;
+    const hi = t.index.Head ?? 0;
+    const si = new Uint16Array(n * 4), sw = new Float32Array(n * 4);
+    for (let i = 0; i < n; i++) { si[i * 4] = hi; sw[i * 4] = 1; }
+    geo.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(si, 4));
+    geo.setAttribute('skinWeight', new THREE.Float32BufferAttribute(sw, 4));
+    geo.setAttribute('afat', new THREE.Float32BufferAttribute(new Float32Array(n), 1));
+    geo.computeBoundingSphere();
+    t.faceMask = geo;
+  } catch (e) { console.warn('[characters] no face scan for', t.sex, e); }
+}
+
 let loading: Promise<void> | null = null;
 export function loadTemplates(): Promise<void> {
   if (loading) return loading;
@@ -237,6 +262,7 @@ export function loadTemplates(): Promise<void> {
       const anims = await Assets.glb(BASE + 'anims.glb');
       const [m, f] = await Promise.all([loadTemplate('m', anims), loadTemplate('f', anims)]);
       TEMPLATES.m = m; TEMPLATES.f = f;
+      await Promise.all([m, f].map((t) => (t ? loadFaceMask(t) : null)));
       console.info('[characters] sculpted bodies loaded', m ? Object.keys(m.geos).length : 0, 'pieces, clips', m?.clips.size);
     } catch (e) {
       console.warn('[characters] sculpted bodies unavailable, procedural fallback', e);
