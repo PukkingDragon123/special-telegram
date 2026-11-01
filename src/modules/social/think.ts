@@ -32,7 +32,6 @@ const SOUNDS: Record<string, any> = {
   social_heaven_arrive: { files: ['../gen/social/audio/heaven_arrive.mp3'], vol: 0.8, cat: 'sfx', desc: 'Skill Heaven: arrival choir shimmer (Mixkit "Choir magic shine").' },
   social_heaven_choir: { files: ['../gen/social/audio/heaven_choir.mp3'], vol: 0.6, cat: 'music', desc: 'Skill Heaven: soft angelic choir pad (Mixkit "Angelical choir").' },
   social_heaven_learn: { files: ['../gen/social/audio/heaven_learn.mp3'], vol: 0.9, cat: 'sfx', desc: 'Skill learned: choir + harp blessing chime (Mixkit "Choir harp bless").' },
-  social_heaven_bless: { files: ['../gen/social/audio/heaven_bless.mp3'], vol: 0.8, cat: 'sfx', desc: 'Skill Heaven: choir bell blessing (Mixkit "Choir bell bless").' },
 };
 
 type Phase = 'up' | 'heaven' | 'down';
@@ -53,7 +52,6 @@ interface Local {
   veilFrom: number;
   openK: number;
   landed: boolean;
-  fpFrames: number;
 }
 
 export function installThink(game: Game, sparks: Sparkles, canStart: () => boolean) {
@@ -115,13 +113,12 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     const post = game.engine.post;
     local = {
       phase: 'up', t: 0, p0: pl.pitch, pFrom: LOOK_UP, yaw: pl.yaw, fov0: game.camera.fov, bloom0: post.bloom.intensity, ao0: !!post.ao.enabled,
-      amb0: (Sound as any).volumes?.amb ?? 0.8, prevMusic: (Sound as any).musicKey ?? '', prevUnlock: Input.onUnlock, popped: false, veilFrom: 0, openK: 0, landed: false, fpFrames: 0,
+      amb0: (Sound as any).volumes?.amb ?? 0.8, prevMusic: (Sound as any).musicKey ?? '', prevUnlock: Input.onUnlock, popped: false, veilFrom: 0, openK: 0, landed: false,
     };
     // hand the camera over WITHOUT dropping pointer lock (mouse-look continues in heaven)
     const setLock = Input.setWantLock;
     (Input as any).setWantLock = () => {};
     try { pl.setMode('external'); } finally { (Input as any).setWantLock = setLock; }
-    rigOf(game, me.id)?.setFirstPerson?.(true);
     Input.onUnlock = () => stop();
     Overlay.crosshair(false);
     game.interact.clear();
@@ -195,7 +192,6 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     post.ao.enabled = local.ao0;
     local.phase = 'down';
     local.t = 0;
-    local.fpFrames = 0;
     local.pFrom = LOOK_UP;
     local.veilFrom = 1;
     local.openK = 1;
@@ -214,7 +210,9 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     Input.onUnlock = local.prevUnlock;
     veil.k = 0;
     opening?.dispose(); opening = null;
-    rigOf(game, game.localPlayerId)?.setFace?.(null as any);
+    const rig = rigOf(game, game.localPlayerId);
+    rig?.setFace?.(null as any);
+    if (rig?.root) rig.root.visible = true;
     if (pl && pl.mode === 'external') { pl.pitch = local.p0; pl.setMode('play'); }
     local = null;
   }
@@ -230,8 +228,10 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     }
     _feet.copy(pl.pos);
     // external mode shows the body; the camera sits inside the head, so keep our own body first-person
-    // (the player view flips the rig back once, on its next update; re-hide only for the first frames — calling it every frame rebuilds materials)
-    if (local.phase !== 'heaven' && local.fpFrames < 4 && !(window as any).__hvNoFp) { local.fpFrames++; rigOf(game, me.id)?.setFirstPerson?.(true); }
+    // external mode shows our own body but the camera sits in the head: hide it locally while we look up / land
+    // (re-toggling the rig's first-person materials mid-frame is not safe, so just hide the local root)
+    const myRig = rigOf(game, me.id);
+    if (myRig?.root) myRig.root.visible = local.phase === 'heaven';
     if (local.phase === 'up') {
       const k = Ease.inOutCubic(clamp(t / 1.5));
       placeWorldCam(THREE.MathUtils.lerp(local.p0, LOOK_UP, k), 0, 0, THREE.MathUtils.lerp(local.fov0, 80, k));
@@ -331,6 +331,8 @@ export function installThink(game: Game, sparks: Sparkles, canStart: () => boole
     },
     dispose() {
       if (local) {
+        const rig = rigOf(game, game.localPlayerId);
+        if (rig?.root) rig.root.visible = true;
         Input.onUnlock = local.prevUnlock;
         Sound.setBusVolume('amb', local.amb0);
         game.engine.post.ao.enabled = local.ao0;

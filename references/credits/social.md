@@ -18,7 +18,6 @@ numerals and paper/guilloche patches are used — no portraits, no royal emblems
 | `audio/heaven_arrive.mp3` | trimmed, faded, normalised | Mixkit "Choir magic shine" (#658), same page | Mixkit | Mixkit Sound Effects Free License |
 | `audio/heaven_choir.mp3` | trimmed, faded, normalised | Mixkit "Angelical choir" (#654), same page | Mixkit | Mixkit Sound Effects Free License |
 | `audio/heaven_learn.mp3` | trimmed, faded, normalised | Mixkit "Choir harp bless" (#657), same page | Mixkit | Mixkit Sound Effects Free License |
-| `audio/heaven_bless.mp3` | trimmed, faded, normalised | Mixkit "Choir bell bless" (#656), same page | Mixkit | Mixkit Sound Effects Free License |
 
 Reused project assets (credited by their owners): `textures/props/cardboard_mat_*.jpg`,
 `cardboard_corrugated_tile*.jpg` (real Mama / Chang carton prints, ambientCG Cardboard003),
