@@ -53,6 +53,15 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   const pid = (id: string) => (MODELS[id] ? id : MODELS['lib:' + id] ? 'lib:' + id : null);
   const sizeOf = (id: string): [number, number, number] => libEntry(id)?.size_m ?? OTHER_SIZE[id] ?? [0.4, 0.4, 0.4];
 
+  // ---------------------------------------------------------------- library upgrade of the scooter stand-in
+  // The procedural 'scooter' (realprops-vehicle.ts) reads as a toy next to the photoscanned library mopeds, and
+  // ART_STYLE §2 says vehicles come from Sketchfab: swap every parked one for scooter_wave / scooter_cub. Same pivot and
+  // forward (+Z, origin on the ground, ~1.8 m); the caller's colliders and phys 'none' stay. Opt out with ?noscooterswap.
+  if (MODELS['lib:scooter_wave'] && MODELS['lib:scooter_cub'] && !new URLSearchParams(location.search).has('noscooterswap')) {
+    let i = 0;
+    for (const p of real.placements) if (p.id === 'scooter') { p.id = ((i++ * 2654435761) >>> 0) % 5 < 3 ? 'lib:scooter_wave' : 'lib:scooter_cub'; p.color = null; stats.kinds['scooter → library'] = i; }
+  }
+
   // ---------------------------------------------------------------- occupancy: everything placed before me
   for (const p of real.placements) {
     const e = p.m.elements;
@@ -234,7 +243,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       const yaw = f.out + Math.PI / 2 + rng.range(-0.2, 0.2);
       if (!put('rice_sack', x, z, yaw, { tag: 'rice sacks' })) return;
       const y0 = groundHeight(x, z);
-      for (let i = 1; i < rng.int(1, 4); i++) add('rice_sack', x + rng.range(-0.03, 0.03), y0 + i * 0.16, z + rng.range(-0.03, 0.03), yaw + rng.range(-0.25, 0.25), { tag: 'rice sacks' });
+      for (let i = 1, n = rng.int(1, 4); i < n; i++) add('rice_sack', x + rng.range(-0.03, 0.03), y0 + i * 0.16, z + rng.range(-0.03, 0.03), yaw + rng.range(-0.25, 0.25), { tag: 'rice sacks' });
     };
     const baskets = (t: number) => {
       const [x, z] = f.at(A(t), wallD(0.24));
@@ -242,7 +251,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       const yaw = f.out + rng.range(-0.2, 0.2);
       if (!put('plastic_basket', x, z, yaw, { color: col, tag: 'basket stacks' })) return;
       const y0 = groundHeight(x, z);
-      for (let i = 1; i < rng.int(2, 6); i++) add('plastic_basket', x, y0 + i * 0.075, z, yaw + rng.range(-0.06, 0.06), { color: col, phys: 'none', tag: 'basket stacks' });
+      for (let i = 1, n = rng.int(2, 6); i < n; i++) add('plastic_basket', x, y0 + i * 0.075, z, yaw + rng.range(-0.06, 0.06), { color: col, phys: 'none', tag: 'basket stacks' });
     };
     const trash = (t: number, n: number) => {
       for (let k = 0; k < n; k++) {
@@ -363,7 +372,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       const yaw = rng.range(0, 6);
       if (t === 0) put('drum', x, zWall + 0.02, yaw, { color: rng.pick(DRUM_COLS), tag: 'alley drums' });
       else if (t === 1) put('ong_jar', x, zWall + 0.02, yaw, { tag: 'ong jar' });
-      else if (t === 2) { if (put('crate', x, zWall, 0.05, { color: rng.pick(CRATE_COLS), tag: 'alley crates' })) for (let i = 1; i < rng.int(2, 4); i++) add('crate', x, groundHeight(x, zWall) + i * 0.254, zWall, rng.range(-0.1, 0.1), { color: rng.pick(CRATE_COLS), tag: 'alley crates' }); }
+      else if (t === 2) { if (put('crate', x, zWall, 0.05, { color: rng.pick(CRATE_COLS), tag: 'alley crates' })) for (let i = 1, n = rng.int(2, 4); i < n; i++) add('crate', x, groundHeight(x, zWall) + i * 0.254, zWall, rng.range(-0.1, 0.1), { color: rng.pick(CRATE_COLS), tag: 'alley crates' }); }
       else if (t === 3) { put('trashbag', x, zWall, yaw, { tag: 'trash bags' }); put('trashbag', x + 0.35, zWall + 0.1, yaw + 1, { scale: 0.85, tag: 'trash bags' }); }
       else if (t === 4) put('hose_coil', x, zWall, yaw);
       else if (t === 5) put('cardboard', x, zWall, Math.PI / 2 + rng.range(-0.2, 0.2), { tag: 'cardboard' });
