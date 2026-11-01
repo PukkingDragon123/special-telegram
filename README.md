@@ -27,7 +27,7 @@ Use a desktop browser with a real GPU (Chrome/Edge/Firefox). Quality: `?quality=
 | Right click on a friend | slap / high-five / give money |
 | R | haggle with a shopkeeper |
 | F | read the recipe book / ask auntie for credit |
-| Tab | think (skill tree thought cloud) |
+| Tab | Skill Heaven (look up into the sky; click floating skill props to learn) |
 | 1 / 2 / 3 | answer in the 3-second mad / bargaining choice |
 | Esc | pause |
 

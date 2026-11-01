@@ -100,7 +100,7 @@ Player entity: `{ t:'player', peer, slot 0-3, name, look, p, yaw, pitch, inv:[5 
 xp:{cook,prep,serve,clean}, sp, skills:[], mode:'free'|<module modes>, crouch, anim, animT, animLoop }`.
 * `game.me` local player entity, `game.players()`, `game.player` = `LocalPlayer` (first-person controller):
   `player.setMode('play'|'external'|'frozen')` — `'external'` gives YOU the camera (`game.camera`) and shows
-  the body (skill tree, emotes, cutscenes). `player.teleport(p, yaw)`, `player.pos`, `player.yaw`.
+  the body (emotes, cutscenes). `player.teleport(p, yaw)`, `player.pos`, `player.yaw`.
 * Play an animation on any rig'd entity (players, npcs): host sets `e.anim='slap'; e.animT=game.g.time+Math.random(); e.animLoop=false`.
 * Wallets are separate per player: `game.money(playerId, ±amount, reason, popupAt?)` (host) → false if broke.
 * XP: `game.xp(playerId, 'cook'|'prep'|'serve'|'clean', amount)`; skills: `game.hasSkill(pl,'id')`, `game.skillMul(pl,'chop')`.
@@ -209,7 +209,7 @@ in `references/credits/*.md`.
 | shops & shopkeepers (`npc` role `shopkeeper:*`), shop stock & hours, buying, bargaining, mad system dialogs, furniture delivery | `shops` |
 | `menu` / `customize` scenes, magazine UI, newspaper scene, lobby UI, settings | `menu` |
 | `casino` scene, intro sequence in the world (`g.introStep`), old man, cart purchase, dog-eats-food, tutorial objectives | `intro` |
-| right-click social (slap/high-five/give money), snatch tug-of-war, skill tree thought cloud, XP levels, `g.unlocks`, day stats, sleeping on cardboard, day transition, save/load | `social` |
+| right-click social (slap/high-five/give money), snatch tug-of-war, Skill Heaven (Tab), XP levels, `g.unlocks`, day stats, sleeping on cardboard, day transition, save/load | `social` |
 | ambient crowds, traffic, stray dog & cat (`dog`/`cat` entities), homeless man, ghosts (`ghost` entities), night events, Thai meme easter eggs, ambience audio zones | `life` |
 
 Item kind prefixes: cooking → ingredients/tools/dishes (`pork_minced`, `wok`, `plate`, `dish`…); restaurant →

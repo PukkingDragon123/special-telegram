@@ -126,11 +126,12 @@ coins to; a stray dog you can feed (it follows you, can be adopted); a stray cat
 อาหารตามสั่ง menus (ไข่เจียว, ข้าวผัด, ผัดพริกแกง, ผัดซีอิ๊ว, ราดหน้า, ต้มยำ, …), ingredients,
 equipment, furniture, better restaurant setups. The restaurant visibly grows as you earn.
 
-**XP & skill tree** — skills: cooking, preparing, serving, cleaning (unlock faster actions and
-other upgrades). Opening it switches to **third-person**: your character thinks with a dumb
-expression under a big, beautiful **3D thought cloud** containing a dreamy skill tree with
-branches, floating กะเพรา, spatulas, woks… Every upgrade icon is a **spinning 3D item**, with
-cool text transitions. Friends can see you thinking and **slap you**. The skill tree is funny.
+**XP & Skill Heaven** — skills: cooking, preparing, serving, cleaning (unlock faster actions and
+other upgrades). Press Tab: your view tilts up to the real sky, the clouds part and you rise into a separate dreamy
+anime **heaven** scene. There is no tree: every skill is a **real 3D item floating on its own cloud puff**, grouped by
+branch (grey stone = locked, golden glow = affordable, full colour + gold ring = learned). Aim at one to see its name and
+description as floating 3D text, and click to learn it. Friends see you standing in a light column looking up, and can
+**slap you** back down.
 
 ## 4. Culture & content guardrails
 - Funny and affectionate, never mean to Thai people. Thai text should read naturally.
