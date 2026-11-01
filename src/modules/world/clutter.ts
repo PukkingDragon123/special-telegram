@@ -321,12 +321,12 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   }
   // ---------------------------------------------------------------- main road north sidewalk: perpendicular rows at the kerb
   for (let x = -124; x < 124;) {
-    const n = rng.int(3, 8);
+    const n = rng.int(2, 6);
     for (let k = 0; k < n; k++, x += 0.86 + rng.range(0, 0.12)) {
       if (Math.abs(x) < 8 || POLES_MAIN_N.some(([px]) => Math.abs(px - x) < 0.7)) continue;
       putLong(rng.pick(BIKES), x, 4.95, Math.PI + rng.range(-0.15, 0.15));
     }
-    x += rng.range(7, 18);
+    x += rng.range(9, 22);
   }
   // main road south sidewalk (4 m, nav at z 24): a few parallel at the kerb
   for (let x = -122; x < 124; x += rng.range(9, 22)) if (!POLES_MAIN_S.some(([px]) => Math.abs(px - x) < 1.5)) putLong(rng.pick(BIKES), x, 22.5, (rng.chance(0.5) ? 1 : -1) * Math.PI / 2 + rng.range(-0.08, 0.08));
@@ -337,9 +337,12 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   putLong('tuktuk', TEMPLE.gateX + 16, TEMPLE.forecourtZ + 5.6, -Math.PI / 2 + 0.06);
 
   // ---------------------------------------------------------------- the spirit house at the soi entrance (office plaza corner)
-  if (put('spirit_house', -24.0, -7.6, Math.PI / 2, { pad: 0.5 })) {
-    for (const [dx, dz] of [[0.75, -0.7], [0.75, 0.7]]) put('plant_taro', -24.0 + dx, -7.6 + dz, rng.range(0, 6), { tag: 'potted plants' });
-    for (let i = 0; i < 4; i++) add('bottle_fanta_red', -23.45, groundHeight(-23.45, -7.6), -7.6 - 0.18 + i * 0.12, 0, { phys: 'none', tag: 'red soda offerings' });
+  for (const [sx, sz] of [[-24.0, -7.6], [-25.5, -7.8], [-24.2, -6.2], [-28.0, -7.8], [-32.0, -7.8], [-23.6, -1.6]]) {
+    if (!put('spirit_house', sx, sz, Math.PI / 2, { pad: 0.3 })) continue;
+    for (const dz of [-0.75, 0.75]) put('plant_taro', sx + 0.6, sz + dz, rng.range(0, 6), { tag: 'potted plants' });
+    for (let i = 0; i < 4; i++) add('bottle_fanta_red', sx + 0.55, groundHeight(sx + 0.55, sz), sz - 0.18 + i * 0.12, 0, { phys: 'none', tag: 'red soda offerings' });
+    (stats as any).spirit = [sx, sz];
+    break;
   }
 
   // ---------------------------------------------------------------- side alleys (gaps between rows): drums, crates, laundry
