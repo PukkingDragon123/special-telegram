@@ -643,6 +643,7 @@ export class Creature implements QuadRigLike {
       s.castShadow = false;
       s.receiveShadow = true;
       s.renderOrder = 1;
+      s.userData.noHull = true;          // ink hull only on the base body (core/ink.ts)
       body.parent!.add(s);
       this.shells.push(s);
       this.shellMats.push(m);
@@ -658,6 +659,7 @@ export class Creature implements QuadRigLike {
       f.bind(body.skeleton, body.bindMatrix);
       f.position.copy(body.position); f.quaternion.copy(body.quaternion); f.scale.copy(body.scale);
       f.frustumCulled = false; f.castShadow = false; f.receiveShadow = false; f.renderOrder = 2;
+      f.userData.noHull = true;
       body.parent!.add(f);
       this.fins = f;
       this.shellMats.push(m);
