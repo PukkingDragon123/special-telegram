@@ -1152,9 +1152,9 @@
    "photoscan"
   ],
   "size_m": [
-   1.078,
+   0.372,
    1.556,
-   0.372
+   1.078
   ],
   "tris": 3000,
   "license": "CC0-1.0",
@@ -1191,6 +1191,36 @@
   "title": "Worn Metal Rack"
  },
  {
+  "id": "hose_coil",
+  "file": "household/hose_coil.glb",
+  "category": "household",
+  "tags": [
+   "hose",
+   "garden hose",
+   "rubber",
+   "coil",
+   "water",
+   "sidewalk",
+   "thai"
+  ],
+  "size_m": [
+   0.475,
+   0.058,
+   0.445
+  ],
+  "tris": 1799,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_street.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 2.2,
+  "bytes": 165864,
+  "title": "Coiled garden hose with brass nozzle (สายยาง)",
+  "friction": 0.9,
+  "far": 0.6,
+  "collider": "cyl"
+ },
+ {
   "id": "khan_bowl",
   "file": "household/khan_bowl.glb",
   "category": "household",
@@ -1219,6 +1249,36 @@
   "far": 0.45
  },
  {
+  "id": "laundry_rack",
+  "file": "household/laundry_rack.glb",
+  "category": "household",
+  "tags": [
+   "laundry",
+   "drying rack",
+   "clothes",
+   "towel",
+   "pha khao ma",
+   "balcony",
+   "sidewalk",
+   "thai",
+   "household"
+  ],
+  "size_m": [
+   1.34,
+   1.136,
+   0.59
+  ],
+  "tris": 2600,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_street.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 260508,
+  "title": "Aluminium drying rack with laundry (ราวตากผ้า)",
+  "far": 1.0
+ },
+ {
   "id": "ong_jar",
   "file": "household/ong_jar.glb",
   "category": "household",
@@ -1245,6 +1305,36 @@
   "bytes": 144528,
   "title": "Glazed water jar (โอ่ง) with aluminium bowl",
   "far": 1.0
+ },
+ {
+  "id": "sandals_pair",
+  "file": "household/sandals_pair.glb",
+  "category": "household",
+  "tags": [
+   "sandals",
+   "flip-flops",
+   "shoes",
+   "doorstep",
+   "rubber",
+   "thai",
+   "household"
+  ],
+  "size_m": [
+   0.229,
+   0.029,
+   0.28
+  ],
+  "tris": 900,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_street.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.3,
+  "bytes": 60004,
+  "title": "Rubber flip-flops left at the door (รองเท้าแตะ)",
+  "friction": 0.9,
+  "far": 0.45,
+  "collider": "box"
  },
  {
   "id": "lpg_15kg",
@@ -1445,6 +1535,34 @@
   "mass_kg": 0.94,
   "bytes": 19532,
   "title": "Chang beer bottle (เบียร์ช้าง)",
+  "friction": 0.45,
+  "far": 0.4,
+  "collider": "cyl"
+ },
+ {
+  "id": "bottle_beer_leo",
+  "file": "packaged/bottle_beer_leo.glb",
+  "category": "packaged",
+  "tags": [
+   "bottle",
+   "drink",
+   "thai",
+   "brand",
+   "beer_leo_bottle"
+  ],
+  "size_m": [
+   0.074,
+   0.279,
+   0.074
+  ],
+  "tris": 666,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.94,
+  "bytes": 18512,
+  "title": "Leo beer bottle (เบียร์ลีโอ)",
   "friction": 0.45,
   "far": 0.4,
   "collider": "cyl"
@@ -2114,9 +2232,9 @@
    "photoscan"
   ],
   "size_m": [
-   0.377,
+   0.5,
    0.503,
-   0.418
+   0.61
   ],
   "tris": 4027,
   "license": "CC0-1.0",
@@ -2181,6 +2299,36 @@
   "friction": 0.5,
   "far": 0.6,
   "collider": "box"
+ },
+ {
+  "id": "fly_fan",
+  "file": "tableware/fly_fan.glb",
+  "category": "tableware",
+  "tags": [
+   "fly fan",
+   "fan",
+   "flies",
+   "food",
+   "market",
+   "stall",
+   "thai",
+   "animated"
+  ],
+  "size_m": [
+   0.42,
+   0.132,
+   0.465
+  ],
+  "tris": 960,
+  "license": "CC0-1.0",
+  "author": "เฮียผัด! assets (custom, headless Blender)",
+  "source_url": "scripts/thai/models_cart.py (custom bpy model; textures: see public/assets/textures manifests)",
+  "physics": "dynamic",
+  "mass_kg": 0.35,
+  "bytes": 65464,
+  "title": "Fly-shooing fan (พัดไล่แมลงวัน), spinner node \"spin\"",
+  "friction": 0.6,
+  "far": 0.5
  },
  {
   "id": "cctv_box",
@@ -2372,9 +2520,9 @@
    "parked"
   ],
   "size_m": [
-   2.76,
+   1.408,
    1.849,
-   1.408
+   2.76
   ],
   "tris": 9000,
   "license": "CC-BY-4.0",
@@ -2382,7 +2530,7 @@
   "source_url": "https://sketchfab.com/3d-models/916b76665fb9458cac7473bd446cdd98",
   "physics": "static",
   "mass_kg": 450.0,
-  "bytes": 905396,
+  "bytes": 905492,
   "title": "Thai tuk-tuk (ตุ๊กตุ๊ก)",
   "far": 1.6,
   "uid": "916b76665fb9458cac7473bd446cdd98"

@@ -52,8 +52,11 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `thai_table_steel` | Stainless folding street table (โต๊ะพับสแตนเลส) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `wooden_display_shelves_01` | Wooden Display Shelves 01 | James Ray Cock (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/wooden_display_shelves_01 |
 | `worn_metal_rack` | Worn Metal Rack | Luca B (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/worn_metal_rack |
+| `hose_coil` | Coiled garden hose with brass nozzle (สายยาง) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_street.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `khan_bowl` | Aluminium water dipper bowl (ขันน้ำ) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `laundry_rack` | Aluminium drying rack with laundry (ราวตากผ้า) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_street.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `ong_jar` | Glazed water jar (โอ่ง) with aluminium bowl | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `sandals_pair` | Rubber flip-flops left at the door (รองเท้าแตะ) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_street.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `lpg_15kg` | LPG cylinder 15 kg (ถังแก๊ส) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `tamarind_board` | Tamarind wood chopping block (เขียงมะขาม) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `fish_knife` | Fish Knife | Mateusz Sadek (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/fish_knife |
@@ -61,6 +64,7 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `plastic_basket` | Perforated plastic market basket (ตะกร้า) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `rice_sack` | Rice sack 15 kg, woven PP (กระสอบข้าว) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_market.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `bottle_beer_chang` | Chang beer bottle (เบียร์ช้าง) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `bottle_beer_leo` | Leo beer bottle (เบียร์ลีโอ) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `bottle_beer_singha` | Singha beer bottle (เบียร์สิงห์) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `bottle_dark_soy` | Healthy Boy dark soy sauce (ซีอิ๊วดำ) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `bottle_fanta_red` | Red Fanta bottle (น้ำแดง) — spirit house offering | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
@@ -88,6 +92,7 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `power_box_01` | Power Box 01 | Rico Cilliers, Yann Kervran (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/power_box_01 |
 | `utility_box_01` | Utility Box 01 | James Ray Cock (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/utility_box_01 |
 | `condiment_caddy` | Condiment caddy, 4 jars (พวงเครื่องปรุง) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `fly_fan` | Fly-shooing fan (พัดไล่แมลงวัน), spinner node "spin" | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_cart.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `cctv_box` | CCTV box camera with wall bracket | Smoggybeard (sketchfab.com/Smoggybeard) | CC-BY-4.0 | https://sketchfab.com/3d-models/e69d5eb37ffb4f188e4d3c84a5d79cdc |
 | `cctv_bullet` | CCTV bullet camera | Just8 (sketchfab.com/Just8) | CC-BY-4.0 | https://sketchfab.com/3d-models/281b2b84260447e49ab4a6b34bf78697 |
 | `transformer` | Pole-mounted distribution transformer (หม้อแปลงไฟฟ้า) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests) |
@@ -96,4 +101,4 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `scooter_wave` | Underbone moped, Honda Wave / SYM E-SR 110 type (photogrammetry) | Bandit.545 (sketchfab.com/Bandit.545) | CC-BY-4.0 | https://sketchfab.com/3d-models/518a7d5a4a0b41218650ee0823320f5a |
 | `tuktuk` | Thai tuk-tuk (ตุ๊กตุ๊ก) | iraida (sketchfab.com/iraida) | CC-BY-4.0 | https://sketchfab.com/3d-models/916b76665fb9458cac7473bd446cdd98 |
 
-Total: 89 models, 13.0 MB.
+Total: 94 models, 13.6 MB.

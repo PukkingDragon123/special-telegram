@@ -16,6 +16,7 @@ import { buildStreets, buildBaseGround, Ctx } from './streets';
 import { makeProps } from './props';
 import { preloadRealProps, realPropsFrame } from './realprops';
 import { loadLib } from './lib';
+import { buildClutter } from './clutter';
 import { buildRows, ShopCtx } from './shophouse';
 import { ROWS, groundHeight } from './layout';
 import { loadSigns, SignSys } from './signs';
@@ -133,6 +134,7 @@ async function buildWorld(game: Game) {
   step('rural', () => buildRural({ ...shopCtx, rng, holes: extraHoles, fol: assets.fol }));
   step('life', () => buildStreetLife({ ...shopCtx, rng, fol: assets.fol }));
   step('ground', () => buildBaseGround(ctx, extraHoles));
+  step('clutter', () => buildClutter(game, props.real, anchors));   // assets: library clutter (after all dressing, before props.real.build)
 
   // ---------------------------------------------------------------- materials + meshes
   const worldMat = makeWorldMaterial(tex);

@@ -205,10 +205,10 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
       produce(c, kind, x, top, z, rng);
     }
     // crates under the table
-    for (let x = a + 0.4; x < cc - 0.3; x += 0.7) if (rng.chance(0.6)) w.put(P.crate(rng.pick(PLASTIC_COLORS)), x, y0, (b + d) / 2, rng.range(-0.2, 0.2));
+    for (let x = a + 0.4; x < cc - 0.3; x += 0.7) if (rng.chance(0.6)) c.props.real.add('lib:plastic_crate_02', x, y0, (b + d) / 2, rng.range(-0.2, 0.2), { color: rng.pick(PLASTIC_COLORS) });
     // hanging scale + vendor stool
-    if (rng.chance(0.5)) { w.mat('metal_paint', { tint: 0xc02020, uv: 'local' }); w.box(cc - 0.6, top + 0.9, b + 0.4, cc - 0.35, top + 1.15, b + 0.45, ALL); w.mat('rubber', { uv: 'local' }); w.tube([cc - 0.48, top + 1.15, b + 0.42, cc - 0.48, top + 1.9, b + 0.42], 0.004, 3); }
-    w.put(P.stool(rng.pick(PLASTIC_COLORS)), (a + cc) / 2 + rng.range(-1, 1), y0, deep ? (b < z0 + 0.1 ? d + 0.5 : b - 0.5) : d + 0.45, rng.range(0, 6));
+    if (rng.chance(0.5)) { w.mat('rubber', { uv: 'local' }); w.tube([cc - 0.48, top + 1.9, b + 0.42, cc - 0.48, top + 1.45, b + 0.42], 0.003, 3); c.props.real.add('hanging_scale', cc - 0.48, top + 1.45, b + 0.42, rng.range(-0.4, 0.4)); }
+    c.props.real.add('thai_stool', (a + cc) / 2 + rng.range(-1, 1), y0, deep ? (b < z0 + 0.1 ? d + 0.5 : b - 0.5) : d + 0.45, rng.range(0, 6), { color: rng.pick(PLASTIC_COLORS) });
     w.setGroup('base');
   }
   // tarp or umbrella above (colourful, sagging, moving in the wind)
@@ -222,7 +222,8 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
   } else if (rng.chance(0.5)) {
     const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
     w.mat('steel_rust', { uv: 'local' }); w.cyl(cx, y0, cz, 0.022, 0.022, 2.3, 6, 1);
-    w.mat('concrete_old', { uv: 'local' }); w.cyl(cx, y0, cz, 0.2, 0.18, 0.14, 10, 1);
+    c.props.real.add('tyre', cx, y0, cz, rng.range(0, 6), { phys: 'static' });   // old tyre filled with concrete = umbrella base
+    w.mat('concrete_old', { uv: 'local' }); w.cyl(cx, y0, cz, 0.2, 0.2, 0.13, 12, 1);
     cloth.umbrella(new THREE.Vector3(cx, y0, cz), 1.3, 2.42, rng.pick([0xc03020, 0x2a62b8, 0xe0b020]));
   }
   // a bare bulb on a cord, styrofoam boxes, sometimes a radio or a sleeping cat-sized sack of rice
@@ -240,13 +241,15 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
 export function produce(c: ShopCtx, kind: string, x: number, y: number, z: number, rng: RNG) {
   const w = c.w;
   const ph = c.signs?.any('produce:' + kind, rng) ?? c.signs?.any('produce', rng) ?? null;
+  // container: real library models — wicker basket, Thai plastic market basket, or a กระด้ง bamboo tray
   const container = rng.pick(['basket', 'tray', 'bowl']);
-  const r = rng.range(0.2, 0.3);
-  if (container === 'basket') { w.mat('bamboo_woven', { uv: 'local' }); w.cyl(x, y, z, r * 0.85, r, 0.14, 9, 0, 0, 0.04); }
-  else if (container === 'tray') { w.mat('plastic', { tint: rng.pick([0x2a5ab0, 0xd03030, 0x2a8a4a, 0x303030]), uv: 'local' }); w.box(x - r, y, z - r * 0.7, x + r, y + 0.07, z + r * 0.7, ALL & ~NY); }
-  else { w.mat('stainless', { uv: 'local' }); w.cyl(x, y, z, r * 0.6, r, 0.1, 10, 0); }
+  const r = container === 'basket' ? 0.17 : container === 'tray' ? 0.2 : rng.range(0.2, 0.28);
+  const yaw = rng.range(-0.3, 0.3);
+  if (container === 'basket') c.props.real.add('lib:wicker_basket_01', x, y, z, yaw, { phys: 'none' });
+  else if (container === 'tray') c.props.real.add('lib:plastic_basket', x, y, z, yaw, { color: rng.pick([0x2a5ab0, 0xd03030, 0x2a8a4a, 0xe86a8a]), phys: 'none' });
+  else c.props.real.add('lib:kradong', x, y, z, yaw, { scale: (2 * r) / 0.712, phys: 'none' });
   // heap: a low dome; the photo is mapped across its top faces
-  const hy = y + (container === 'basket' ? 0.12 : 0.06);
+  const hy = y + (container === 'basket' ? 0.09 : container === 'tray' ? 0.15 : 0.02);
   const hh = rng.range(0.06, 0.16);
   if (ph) {
     w.atlas('sign', { e0: 0, ao: 0.95 });

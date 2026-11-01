@@ -6,6 +6,7 @@ import { F } from '../../core/fonts';
 import type { ShopDef, StockDef } from './data';
 import { canvasMat, mat, photo, photoMat, signTex, CardStyle, CardAtlas } from './tex';
 import { buildShape } from './items';
+import { libModel } from '../world/lib';
 
 /**
  * FIXTURES — the physical shops: stall tables + canopies, shophouse display steps + counters +
@@ -214,7 +215,9 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
     heap.scale(0.5, 0.22, 0.34);
     const x = (i - (st.decor.length - 1) / 2) * 0.62 + 0.05;
     B.add(heap, photoMat(key), fr, x, 0.06, zc + D / 2 + 0.35);
-    B.add(new THREE.CylinderGeometry(0.29, 0.24, 0.12, 12, 1, true).translate(0, 0.06, 0), mat('stallbasket', () => { const t = photo('kradong'); const m = new THREE.MeshStandardMaterial({ map: t, color: t ? 0xffffff : 0xb8955a, roughness: 0.8, side: THREE.DoubleSide }); return m; }), fr, x, 0, zc + D / 2 + 0.35);
+    const bk = libModel('wicker_basket_01');   // real photoscanned wicker basket (shared library) under the heap
+    bk.scale.set(1.4, 1, 1.4); bk.position.copy(fr.at(x, 0, zc + D / 2 + 0.35)); bk.rotation.y = fr.yaw + i * 0.4;
+    root.add(bk);
   });
   // backdrop: a real photo of the neighbouring stall (depth + density behind the keeper)
   const bd = photoPanel(st.backdrop, 3.2, 2.0, 0.12);

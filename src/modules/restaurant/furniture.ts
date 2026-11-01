@@ -6,10 +6,14 @@ import { tl } from '../../core/util';
 import { lathe, rbox, leg, tube, merge, mesh, group, mat, plastic, pbr, photo, flat, frontArc, band, wobble } from './geo';
 import { messMaterial, waterMaterial } from './fx';
 import { posterMaterial, signMaterials } from './menuposter';
-import { realPropObject, propHeight } from '../world/realprops';
+import { realPropObject, propHeight, resolveProp } from '../world/realprops';
+import { libEntry } from '../world/lib';
 
-/** real modelled furniture (world/realprops*): Thai moulded stool, monobloc photoscan, modelled tables
- *  with their condiment caddy + spoon cup. Visual only — sizes match SEAT_H / TABLE_H / TABLE_SIZE. */
+/** real modelled furniture (world/realprops* + the shared library): Thai moulded stool (lib:thai_stool), monobloc
+ *  photoscan, the stainless folding table (lib:thai_table_steel) / moulded plastic table, each set with the
+ *  condiment caddy (lib:condiment_caddy, 4 jars), spoon cup, water jug and two glasses of ice. The tissue box is
+ *  a real gameplay item (customers react to it), so it is not faked here. Visual only — sizes match
+ *  SEAT_H / TABLE_H / TABLE_SIZE. */
 function realStool(color: 'red' | 'blue') { return realPropObject('thai_stool', { color: color === 'red' ? 0xc8261c : 0x1f5ec0 }); }
 function realChair() { return realPropObject('monobloc', { color: 0xeee9dc }); }
 function realTable(kind: 'table_plastic' | 'table_steel') {
@@ -18,10 +22,16 @@ function realTable(kind: 'table_plastic' | 'table_steel') {
   const id = kind === 'table_plastic' ? 'thai_table' : 'steel_table';
   const t = realPropObject(id, { color: 0x2a62b8 });
   t.scale.y = H / propHeight(id, H);   // keep the gameplay table height exact whatever model is used
+  const lib = libEntry(resolveProp(id).replace(/^lib:/, ''));
+  if (lib) { t.scale.x = W / lib.size_m[0]; t.scale.z = Dp / lib.size_m[2]; }   // match the gameplay footprint
   g.add(t);
-  const caddy = realPropObject('caddy', { shadow: false }); caddy.position.set(-W / 2 + 0.12, H, -Dp / 2 + 0.11); caddy.rotation.y = 0.3;
-  const cup = realPropObject('spoon_cup', { shadow: false }); cup.position.set(-W / 2 + 0.27, H, -Dp / 2 + 0.08);
-  g.add(caddy, cup);
+  const put = (o: THREE.Object3D, x: number, z: number, yaw: number) => { o.position.set(x, H, z); o.rotation.y = yaw; g.add(o); return o; };
+  const seed = (W * 97 + Dp * 13) | 0;
+  put(realPropObject('caddy', { shadow: false }), -W / 2 + 0.13, -Dp / 2 + 0.12, 0.3);
+  put(realPropObject('spoon_cup', { shadow: false }), -W / 2 + 0.29, -Dp / 2 + 0.08, 0);
+  put(realPropObject('jug', { shadow: false, color: [0x2a8a4a, 0xe86a8a, 0x2a62b8][seed % 3] }), W / 2 - 0.12, -Dp / 2 + 0.12, 2.2);
+  put(realPropObject('glass_cup', { shadow: false }), W / 2 - 0.27, -Dp / 2 + 0.09, 0);
+  put(realPropObject('glass_cup', { shadow: false }), W / 2 - 0.22, -Dp / 2 + 0.2, 1.1);
   return g;
 }
 
@@ -48,54 +58,6 @@ const galv = () => pbr('galvanized_steel', { repeat: 1 });
 const pinkPaper = () => pbr('paper_creased', { repeat: 1, color: 0xf6b9cb });
 
 // ------------------------------------------------------------------ builders
-
-function stool(color: 'red' | 'blue') {
-  const H = 0.44, R = 0.155;
-  const seat = lathe([[0, H], [R - 0.012, H], [R + 0.002, H - 0.008], [R + 0.006, H - 0.032], [R - 0.008, H - 0.036], [0.02, H - 0.036]], 22, { wob: 0.008, seed: color === 'red' ? 2 : 5 });
-  const parts: THREE.BufferGeometry[] = [seat];
-  for (let i = 0; i < 4; i++) {
-    const g = new THREE.CylinderGeometry(R - 0.004, R + 0.04, H - 0.034, 5, 1, true, i * Math.PI / 2 + 0.33, Math.PI / 2 - 0.66);
-    g.translate(0, (H - 0.034) / 2, 0);
-    parts.push(g);
-  }
-  const ring = new THREE.TorusGeometry(R + 0.026, 0.009, 4, 24); ring.rotateX(Math.PI / 2); ring.translate(0, 0.12, 0);
-  parts.push(ring);
-  const body = mesh(merge(parts), plasticD(color));
-  const hole = mesh(new THREE.CircleGeometry(0.03, 12), flat(0x120806, 1), false);
-  hole.scale.set(1.6, 0.55, 1); hole.rotation.x = -Math.PI / 2; hole.position.y = H + 0.001;
-  return group(body, hole);
-}
-
-function chair() {
-  const m = plastic(0xe6e1d4);
-  const seat = rbox(0.44, 0.035, 0.42, 0.014, 0, 0.42, 0);
-  const back = new THREE.CylinderGeometry(0.32, 0.31, 0.38, 12, 2, true, -0.8, 1.6);
-  back.translate(0, 0.19, -0.1); back.rotateX(-0.1); back.translate(0, 0.47, 0);
-  wobble(back, 0.01, 6, 3);
-  const legs = [[1, 1], [-1, 1], [1, -1], [-1, -1]].map(([sx, sz]) => leg(sx * 0.25, sz * 0.24, sx * 0.19, sz * 0.18, 0.43, 0.04, 0.055));
-  const arms = [-1, 1].flatMap((s) => [tube(new THREE.Vector3(s * 0.22, 0.62, 0.17), new THREE.Vector3(s * 0.22, 0.62, -0.12), 0.018), tube(new THREE.Vector3(s * 0.22, 0.62, -0.12), new THREE.Vector3(s * 0.21, 0.44, -0.16), 0.018)]);
-  const gm = merge([seat, ...legs, ...arms]);
-  return group(mesh(gm, m), mesh(back, mat('chairD', () => { const x = (m as THREE.MeshStandardMaterial).clone(); x.side = D2; return x; })));
-}
-
-function plasticTable() {
-  const [W, Dp] = TABLE_SIZE.table_plastic, H = TABLE_H.table_plastic;
-  const top = rbox(W, 0.035, Dp, 0.014, 0, H - 0.035, 0);
-  const apron = [rbox(W - 0.06, 0.06, 0.025, 0.006, 0, H - 0.09, Dp / 2 - 0.04), rbox(W - 0.06, 0.06, 0.025, 0.006, 0, H - 0.09, -Dp / 2 + 0.04), rbox(0.025, 0.06, Dp - 0.08, 0.006, W / 2 - 0.04, H - 0.09, 0), rbox(0.025, 0.06, Dp - 0.08, 0.006, -W / 2 + 0.04, H - 0.09, 0)];
-  const legs = [[1, 1], [-1, 1], [1, -1], [-1, -1]].map(([sx, sz]) => leg(sx * (W / 2 - 0.03), sz * (Dp / 2 - 0.03), sx * (W / 2 - 0.06), sz * (Dp / 2 - 0.06), H - 0.03, 0.05, 0.06));
-  return group(mesh(merge([top, ...apron, ...legs]), plastic('blue')));
-}
-
-function steelTable() {
-  const [W, Dp] = TABLE_SIZE.table_steel, H = TABLE_H.table_steel;
-  const top = rbox(W, 0.03, Dp, 0.008, 0, H - 0.03, 0);
-  const lip = rbox(W + 0.01, 0.04, Dp + 0.01, 0.004, 0, H - 0.06, 0);
-  const legs: THREE.BufferGeometry[] = [];
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) legs.push(tube(new THREE.Vector3(sx * (W / 2 - 0.05), 0, sz * (Dp / 2 - 0.05)), new THREE.Vector3(sx * (W / 2 - 0.05), H - 0.06, sz * (Dp / 2 - 0.05)), 0.016));
-  for (const sx of [-1, 1]) legs.push(tube(new THREE.Vector3(sx * (W / 2 - 0.05), 0.16, -Dp / 2 + 0.05), new THREE.Vector3(sx * (W / 2 - 0.05), 0.16, Dp / 2 - 0.05), 0.012));
-  legs.push(tube(new THREE.Vector3(-W / 2 + 0.05, 0.16, 0), new THREE.Vector3(W / 2 - 0.05, 0.16, 0), 0.012));
-  return group(mesh(merge([top, lip]), steel()), mesh(merge(legs), galv()));
-}
 
 function addMess(g: THREE.Object3D, e: Ent, W: number, Dp: number, H: number) {
   const m = messMaterial((e.id * 0.37) % 10);
@@ -258,17 +220,8 @@ function bottle(kind: string) {
   return group(shell, label, cap);
 }
 
-function tissueBox() {
-  const box = rbox(0.15, 0.11, 0.12, 0.018);
-  const slot = mesh(rbox(0.09, 0.004, 0.012, 0.002, 0, 0.11, 0), flat(0x200a10, 1), false);
-  const tongue = new THREE.PlaneGeometry(0.07, 0.07, 3, 3);
-  const p = tongue.getAttribute('position') as THREE.BufferAttribute;
-  for (let i = 0; i < p.count; i++) { const y = p.getY(i) + 0.035; p.setXYZ(i, p.getX(i), y, Math.sin(y * 30) * 0.008 + y * y * 2); }
-  tongue.computeVertexNormals();
-  const t = new THREE.Mesh(tongue, mat('pinkPaperD', () => { const m = (pinkPaper() as THREE.MeshStandardMaterial).clone(); m.side = D2; return m; }));
-  t.position.set(0, 0.112, 0);
-  return group(mesh(box, plastic(0xf3c4d4, 0.5)), slot, t);
-}
+/** pink PP tissue box with a paper tuft (world/realprops-table, real PP-plastic photo scan) */
+function tissueBox() { return realPropObject('tissue', { color: 0xf4b8c8 }); }
 
 function crumpled() {
   const g = new THREE.IcosahedronGeometry(0.024, 1);
@@ -333,7 +286,6 @@ function water20() {
   return group(new THREE.Mesh(bot, photo('gen/shops/water20.png', { alpha: true, rough: 0.15, side: D2 })));
 }
 
-void stool; void chair; void plasticTable; void steelTable;
 
 // ------------------------------------------------------------------ definitions
 

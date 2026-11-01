@@ -112,8 +112,8 @@ export function buildStreetLife(c: Ctx) {
     { // umbrella: concrete-bucket base, steel pole, sagging canopy that moves in the wind
       const ux = x + Math.cos(yaw) * 0.2, uz = z - Math.sin(yaw) * 0.2;
       w.mat('steel_rust', { uv: 'local' }); w.cyl(ux, SW_H, uz, 0.022, 0.022, 2.3, 6, 1);
-      w.mat('plastic', { tint: 0x2a62b8, uv: 'local' }); w.cyl(ux, SW_H, uz, 0.16, 0.18, 0.27, 12, 1);
-      w.mat('concrete_old', { uv: 'local' }); w.cyl(ux, SW_H + 0.24, uz, 0.15, 0.15, 0.02, 12, 1);
+      P.real.add('bucket', ux, SW_H, uz, rng.range(0, 6), { color: 0x2a62b8, phys: 'static' });   // PP bucket filled with concrete
+      w.mat('concrete_old', { uv: 'local' }); w.cyl(ux, SW_H + 0.235, uz, 0.138, 0.138, 0.02, 12, 1);
       cloth.umbrella(new THREE.Vector3(ux, SW_H, uz), 1.25, 2.42, rng.pick([0xc03020, 0x2a62b8, 0xe0b020, 0x2a8a3e, 0xe06a20]));
     }
     // a proper table with its condiment caddy, tissues, spoons, jug & glasses, stools around it
@@ -125,7 +125,7 @@ export function buildStreetLife(c: Ctx) {
     for (const [lx, lz] of [[0.68, 0], [-0.68, 0], [0, 0.55], [0, -0.55]] as [number, number][]) {
       if (!rng.chance(0.75)) continue;
       const c0 = Math.cos(ty), s0 = Math.sin(ty);
-      w.put(P.stool(rng.chance(0.8) ? sc : rng.pick(PLASTIC_COLORS)), tx + lx * c0 + lz * s0 + rng.range(-0.05, 0.05), SW_H, tz - lx * s0 + lz * c0 + rng.range(-0.05, 0.05), rng.range(0, 6));
+      P.real.add('thai_stool', tx + lx * c0 + lz * s0 + rng.range(-0.05, 0.05), SW_H, tz - lx * s0 + lz * c0 + rng.range(-0.05, 0.05), rng.range(0, 6), { color: rng.chance(0.8) ? sc : rng.pick(PLASTIC_COLORS) });
     }
     c.phys.box([x, 0.75, z], [1.6, 1.5, 1.0], yaw);
     c.lights.add({ p: new THREE.Vector3(x, SW_H + 2.0, z), color: new THREE.Color(0xfff0d0), intensity: 5, range: 6, glow: 0.35, kind: 'custom' });

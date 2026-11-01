@@ -163,6 +163,14 @@ export function libLoad(id: string): Promise<LibAsset | null> {
       parts.sort((a, b) => Number(a.mat.transparent) - Number(b.mat.transparent));
       const box = new THREE.Box3();
       for (const pt of parts) box.union(pt.geom.boundingBox!);
+      // same pivot as the RealProps instancer: origin at the bottom centre (or back / top per the catalog anchor), so a
+      // few imports with a centred or offset origin (old_tyre, brooms, power box…) sit on the ground everywhere
+      const c = box.getCenter(new THREE.Vector3());
+      const off = new THREE.Vector3(-c.x, e.anchor === 'top' ? -box.max.y : -box.min.y, e.anchor === 'back' ? -box.min.z : -c.z);
+      if (off.lengthSq() > 1e-6) {
+        for (const pt of parts) { pt.geom.translate(off.x, off.y, off.z); pt.geom.computeBoundingBox(); pt.geom.computeBoundingSphere(); }
+        box.translate(off);
+      }
       const asset: LibAsset = { entry: e, parts, box, hull: hullOf(parts), scene: gltf.scene };
       ready.set(id, asset);
       return asset;

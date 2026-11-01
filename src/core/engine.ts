@@ -68,8 +68,11 @@ export class Engine {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.05, 900);
     this.post = new PostFX(this.renderer, this.scene, this.camera);
-    const q = (params.get('quality') as Quality) || (localStorage.getItem('hp.quality') as Quality) || 'high';
-    this.setQuality(q);
+    // ?quality=low|medium|high|ultra wins for this session only (not saved); otherwise the saved menu choice
+    const urlQ = asQuality(params.get('quality'));
+    let savedQ: Quality | null = null;
+    try { savedQ = asQuality(localStorage.getItem('hp.quality')); } catch {}
+    this.setQuality(urlQ ?? savedQ ?? 'high', !urlQ);
     Input.attach(this.canvas);
     window.addEventListener('resize', () => this.resize());
     document.addEventListener('visibilitychange', () => this.onVisibility());
@@ -84,7 +87,8 @@ export class Engine {
    *          native when the frame time is really bad (> 30 ms for a while) and climbs back fast
    *  ultra   native DPR × 1.5–2 supersampling (≤ ~14.7 MP internal) with a tent downsample
    */
-  setQuality(q: Quality) {
+  setQuality(q: Quality, persist = true) {
+    q = asQuality(q) ?? 'high';
     this.post.setQuality(q);
     const dpr = window.devicePixelRatio || 1;
     this.maxPixelRatio = q === 'low' ? Math.min(dpr, 0.85) : q === 'medium' ? Math.min(dpr, 1) : Math.min(dpr, 2);
@@ -95,7 +99,7 @@ export class Engine {
     this.renderScale = ss;
     this.minScale = q === 'ultra' ? 0.75 : q === 'high' ? 0.7 : 1;
     this.renderer.shadowMap.type = q === 'low' ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
-    try { localStorage.setItem('hp.quality', q); } catch {}
+    if (persist) { try { localStorage.setItem('hp.quality', q); } catch {} }
     this.adaptCooldown = 3;
     this.resize();
   }
@@ -251,6 +255,10 @@ export class Engine {
       this.adaptCooldown = 0.75;
     }
   }
+}
+
+function asQuality(v: string | null | undefined): Quality | null {
+  return v === 'low' || v === 'medium' || v === 'high' || v === 'ultra' ? v : null;
 }
 
 function rendererName(r: THREE.WebGLRenderer): string {

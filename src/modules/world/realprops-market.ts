@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { Assets } from '../../core/assets';
 import { F } from '../../core/fonts';
 import { RNG } from '../../core/rng';
@@ -274,14 +275,23 @@ function heap(mg: Merge, path: string, p: THREE.Vector3, r: number, h: number, s
   g.computeVertexNormals();
   mg.add('heap:' + path, photoMat(path, { rough: 0.7 }), g, M4(p, seed));
 }
-function kradong(mg: Merge, p: THREE.Vector3, r: number, yaw: number) {
-  const g = new THREE.CircleGeometry(r, 20);
-  g.rotateX(-Math.PI / 2);
-  // slight dish shape
-  const pa = g.getAttribute('position') as THREE.BufferAttribute;
-  for (let i = 0; i < pa.count; i++) { const d = Math.hypot(pa.getX(i), pa.getZ(i)) / r; pa.setY(i, d * d * 0.035); }
-  g.computeVertexNormals();
-  mg.add('kradong', photoMat('gen/shops/kradong.png', { alpha: true, side: THREE.DoubleSide }), g, M4(p.clone().add(new THREE.Vector3(0, 0.005, 0)), yaw));
+/** กระด้ง woven bamboo tray (library model, scaled to radius r); returns the tray's top height */
+function kradong(real: RealProps, p: THREE.Vector3, r: number, yaw: number) {
+  const s = (2 * r) / 0.712;
+  real.add('lib:kradong', p.x, p.y, p.z, yaw, { scale: s, phys: 'none' });
+  return p.y + 0.04 * s;
+}
+/** a market basket (library model) heaped with loose produce models; returns the basket rim height */
+function produceBasket(real: RealProps, rng: RNG, id: 'lib:plastic_basket' | 'lib:wicker_basket_01', p: THREE.Vector3, yaw: number, fill: string, n: number, o: { color?: number; scale?: number } = {}) {
+  real.add(id, p.x, p.y, p.z, yaw, { color: o.color, phys: 'none' });
+  const [bw, bh, bd] = id === 'lib:plastic_basket' ? [0.476, 0.191, 0.346] : [0.383, 0.117, 0.295];
+  const c = Math.cos(yaw), s = Math.sin(yaw);
+  for (let k = 0; k < n; k++) {
+    const lx = (rng.next() - 0.5) * bw * 0.72, lz = (rng.next() - 0.5) * bd * 0.68;
+    const dome = 1 - Math.hypot(lx / (bw * 0.5), lz / (bd * 0.5));
+    real.add(fill, p.x + lx * c + lz * s, p.y + bh * 0.62 + dome * 0.06 + (k > n * 0.7 ? 0.035 : 0), p.z - lx * s + lz * c, rng.range(0, 6), { rx: rng.range(0, 3), scale: (o.scale ?? 1) * rng.range(0.9, 1.1), phys: 'none' });
+  }
+  return p.y + bh;
 }
 
 // ------------------------------------------------------------------ the four functional stalls
@@ -353,6 +363,9 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
     // ice boxes + bucket under / beside the left counter
     const ib = B.at(-2.1, 0, 1.8); real.add('styro_box', ib.x, y0, ib.z, side + 0.1); real.add('styro_box', ib.x, y0 + 0.31, ib.z, side - 0.05);
     const bk = B.at(-1.6, 0, 1.55); real.add('bucket', bk.x, y0, bk.z, 0, { color: 0xc03028 });
+    // pink market basket of chicken pieces under the right counter
+    { const p = B.at(2.0, 0, 1.15).setY(y0); real.add('lib:plastic_basket', p.x, y0, p.z, side + 0.1, { color: 0xe86a8a, phys: 'none' });
+      for (let k = 0; k < 3; k++) { const q = B.at(1.9 + k * 0.1, 0, 1.12 + (k % 2) * 0.06); real.add('meat_chicken', q.x, y0 + 0.11 + k * 0.012, q.z, rng.range(0, 6), { phys: 'none', scale: 0.8 }); } }
     // hanging dial scale, plastic bags on nails, fly-repelling fan, bare bulb, calendar, shrine shelf
     const sp = B.at(0.85, 0, 0.45);
     w.mat('rubber', { uv: 'local', group: 'detail' });
@@ -379,17 +392,25 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
     const goods: [string, string, string][] = [['gen/shops/heap_chili.jpg', 'พริก', 'ขีดละ 15.-'], ['gen/shops/heap_garlic.jpg', 'กระเทียม', 'โลละ 80'], ['gen/shops/heap_shallot.jpg', 'หอมแดง', 'โล 60.-']];
     goods.forEach(([ph, name, price], i) => {
       const p = V.at(-2.05 + (i - 1) * 0.36, 0, 0.8 + (i % 2) * 0.32); p.y = t1;
-      kradong(mg, p, 0.21, rng.range(0, 6));
-      heap(mg, ph, p.clone().setY(t1 + 0.02), 0.16, 0.07 + rng.next() * 0.03, i * 3 + 1);
+      const ky = kradong(real, p, 0.21, rng.range(0, 6));
+      heap(mg, ph, p.clone().setY(ky - 0.004), 0.16, 0.07 + rng.next() * 0.03, i * 3 + 1);
       cards.add(name, p.clone().add(V.f.clone().multiplyScalar(-0.12)).setY(t1 + 0.05), V.yaw + (rng.next() - 0.5) * 0.3, { sub: price });
     });
     // right: wicker baskets on crates — limes, holy basil, long beans
     const t2 = crateStand(real, V, 2.05, 0.95, 2, 1, 0xd03030, rng);
     const bx = (i: number) => V.at(1.85 + i * 0.42, 0, 0.95);
-    for (let i = 0; i < 2; i++) { const p = bx(i); real.add('basket', p.x, t2, p.z, V.yaw + (rng.next() - 0.5) * 0.3, { phys: 'none' }); }
-    { const p = bx(0); for (let k = 0; k < 22; k++) { const a = rng.range(0, 6.28), r = Math.sqrt(rng.next()) * 0.13; real.add('lime', p.x + Math.cos(a) * r * 1.2, t2 + 0.03 + (0.13 - r) * 0.5 + (k > 14 ? 0.04 : 0), p.z + Math.sin(a) * r * 0.85, rng.range(0, 6), { rx: rng.range(0, 3), scale: rng.range(0.9, 1.1) }); }
+    { const p = bx(0).setY(t2); produceBasket(real, rng, 'lib:wicker_basket_01', p, V.yaw + (rng.next() - 0.5) * 0.3, 'lime', 26);
       cards.add('มะนาว', p.clone().add(V.f.clone().multiplyScalar(-0.15)).setY(t2 + 0.06), V.yaw, { sub: '4 ลูก 20.-' }); }
-    { const p = bx(1); heap(mg, 'gen/shops/heap_basil.jpg', p.clone().setY(t2 + 0.04), 0.16, 0.1, 9); cards.add('กะเพรา', p.clone().add(V.f.clone().multiplyScalar(-0.15)).setY(t2 + 0.06), V.yaw, { sub: 'กำละ 10.-' }); }
+    { const p = bx(1).setY(t2); real.add('lib:wicker_basket_01', p.x, t2, p.z, V.yaw + 0.2, { phys: 'none' }); heap(mg, 'gen/shops/heap_basil.jpg', p.clone().setY(t2 + 0.06), 0.15, 0.1, 9); cards.add('กะเพรา', p.clone().add(V.f.clone().multiplyScalar(-0.15)).setY(t2 + 0.06), V.yaw, { sub: 'กำละ 10.-' }); }
+    // floor: plastic market baskets crammed with onions and lychees, more price cards
+    { const p = V.at(1.6, 0, 1.75).setY(y0); produceBasket(real, rng, 'lib:plastic_basket', p, V.yaw + 0.15, 'onion', 18, { color: 0xc8302a }); cards.add('หอมใหญ่', p.clone().add(V.f.clone().multiplyScalar(-0.2)).setY(y0 + 0.2), V.yaw, { sub: 'โลละ 35.-' }); }
+    { const p = V.at(-1.15, 0, 2.3).setY(y0); produceBasket(real, rng, 'lib:plastic_basket', p, V.yaw - 0.1, 'lychee', 30, { color: 0x2a62b8 }); cards.add('ลิ้นจี่', p.clone().add(V.f.clone().multiplyScalar(-0.2)).setY(y0 + 0.2), V.yaw, { sub: 'โล 120' }); }
+    // banana hands hanging from the front beam on strings
+    for (const sx of [-1.15, -0.85, 0.9, 1.2]) {
+      const p = V.at(sx, 0, 0.4), hy = y0 + 1.86 + rng.range(-0.06, 0.06);
+      w.mat('rubber', { uv: 'local', group: 'detail' }); w.tube([p.x, y0 + poleY - 0.1, p.z, p.x, hy + 0.16, p.z], 0.002, 3);
+      real.add('bananas', p.x, hy, p.z, V.yaw + rng.range(-0.5, 0.5), { rx: Math.PI / 2 - 0.2, phys: 'none' });
+    }
     const bb = V.at(2.05, 0, 1.45); real.add('basket_lid', bb.x, y0, bb.z, V.yaw + 0.4, { phys: 'none' });
     heap(mg, 'gen/shops/heap_beans.jpg', bb.clone().setY(y0 + 0.16), 0.12, 0.08, 12);
     // mist sprayer, bananas, styrofoam boxes, a cash tin, radio
@@ -418,6 +439,11 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
     for (let k = 0; k < 7; k++) { const p = E.at(rng.range(-1.6, 1.6), 0, rng.range(0.1, 0.35)); real.add('egg_shell', p.x, y0 + 0.002, p.z, rng.range(0, 6), { rx: rng.chance(0.5) ? Math.PI : 0.3 }); }
     if (D) { const pf = E.at(0.6, 0, 0.2); groundDecal(w, D.cell('decal_puddles', 0, 1, 2, 2), pf.x, y0 + 0.006, pf.z, 0.4, 0.3, 0.5, { tint: 0xd8a830, alpha: 0.6, wet: 1 }); }
     const sb = E.at(-2.1, 0, 1.7); real.add('styro_box', sb.x, y0, sb.z, E.yaw);
+    // floor stacks of spare trays, the cash tin, bag bundles on the front poles, empty crates
+    for (const [x, z, n] of [[-1.05, 1.9, 9], [-0.7, 1.95, 6]] as [number, number, number][]) { const p = E.at(x, 0, z); for (let k = 0; k < n; k++) real.add('egg_tray', p.x, y0 + k * 0.068, p.z, E.yaw + (k % 2) * 0.05 + rng.range(-0.05, 0.05), { phys: 'none' }); }
+    const et = E.at(1.55, 0, 0.95); real.add('cash_tin', et.x, y0 + 0.254, et.z, 0.6);
+    for (const [sx, col] of [[1, 0xfff6f4], [-1, 0xe8f0ff]] as [number, number][]) { const p = E.at(sx * px, 0, zFront - 0.04); real.add('bag_bundle', p.x, y0 + 1.72, p.z, E.yaw, { color: col }); }
+    for (let k = 0; k < 3; k++) { const p = E.at(1.0, 0, 2.4); real.add('lib:plastic_crate_02', p.x, y0 + k * 0.254, p.z, E.yaw + Math.PI / 2 + rng.range(-0.08, 0.08), { color: 0xe0b020 }); }
     const rd = E.at(2.0, 0, 1.75); real.add('radio', rd.x, y0, rd.z, E.yaw - 0.3);
     calendar(E, px - 0.02, y0 + 1.5, zBack - 0.04);
     bulbOnCord(c, real, E.at(0.4, 0, 0.6).setY(y0 + poleY - 0.05), 0.4);
@@ -430,7 +456,12 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
     // steel shelf crammed with real Thai packaging
     const sp = Au.at(-2.0, 0, 1.55);
     real.add('shelf_steel', sp.x, y0, sp.z, Au.yaw);
-    shelfGoods(mg, Au, -2.0, 1.55, y0, rng);
+    shelfGoods(mg, real, Au, -2.0, 1.55, y0, rng);
+    // gas and rice: LPG tanks for sale, rice sacks slumped against the shelf, drinking-water gallons
+    for (let k = 0; k < 3; k++) { const p = Au.at(-0.62 + k * 0.32, 0, 2.6 + (k % 2) * 0.05); real.add('lib:lpg_15kg', p.x, y0, p.z, rng.range(0, 6), { phys: 'static' }); }
+    for (let k = 0; k < 3; k++) { const p = Au.at(-2.0, 0, 0.95); real.add('lib:rice_sack', p.x, y0 + k * 0.15, p.z, Au.yaw + Math.PI / 2 + rng.range(-0.15, 0.15), { phys: 'none' }); }
+    cards.add('ข้าวหอมมะลิ', Au.at(-2.0, 0, 0.7).setY(y0 + 0.45), Au.yaw, { sub: 'ถุงละ 185.-', stick: 0.02 });
+    for (let k = 0; k < 4; k++) { const p = Au.at(0.95 + (k % 2) * 0.18, 0, 2.35 + Math.floor(k / 2) * 0.15); real.add('lib:plastic_bottle_gallon', p.x, y0, p.z, Au.yaw + rng.range(-0.3, 0.3), { phys: 'none' }); }
     // old drinks fridge + radio on top
     const fp = Au.at(2.0, 0, 1.6);
     real.add('fridge', fp.x, y0, fp.z, Au.yaw);
@@ -444,6 +475,8 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
     bulbOnCord(c, real, Au.at(0.3, 0, 0.6).setY(y0 + poleY - 0.05), 0.35);
     const ct = Au.at(1.62, 0, 0.75); const top = crateStand(real, new Frame({ p: [ct.x, y0, ct.z], yaw: Au.yaw }), 0, 0, 1, 2, 0xd03030, rng);
     real.add('cash_tin', ct.x, top, ct.z, 0.4);
+    // cold drinks lined up on the crate counter (real Thai brand bottles)
+    ['lib:bottle_fanta_red', 'lib:bottle_beer_singha', 'lib:bottle_beer_chang', 'lib:bottle_fanta_red'].forEach((id, k) => { const p = Au.at(1.47 + k * 0.085, 0, 0.55 + (k % 2) * 0.05); real.add(id, p.x, top, p.z, Au.yaw + rng.range(-0.4, 0.4), { phys: 'none' }); });
     w.put(wallShrine(w), ...Au.at(0.2, 0, 2.76).setY(y0 + 1.9).toArray() as [number, number, number], Au.yaw);
   }
 
@@ -464,26 +497,58 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
   void SIDES; void PLASTIC_COLORS;
 }
 
-/** packaging boxes / bottles from real label photos on the 4 shelf levels (one merged mesh per label) */
-function shelfGoods(mg: Merge, Fr: Frame, x: number, z: number, y0: number, rng: RNG) {
+/** label id → shared-library bottle model (custom Thai brand bottles) */
+const LIB_BOTTLE: Record<string, string> = {
+  fish_sauce_tiparos: 'lib:bottle_fish_sauce_tiparos', oyster_sauce_maekrua: 'lib:bottle_oyster_sauce', light_soy_healthy_boy: 'lib:bottle_light_soy',
+  dark_soy_healthy_boy: 'lib:bottle_dark_soy', seasoning_sauce_golden_mountain: 'lib:bottle_golden_mountain', beer_chang_can: 'lib:bottle_beer_chang',
+  fish_sauce_squid: 'lib:bottle_fish_sauce_squid', beer_singha: 'lib:bottle_beer_singha', fanta_red: 'lib:bottle_fanta_red',
+};
+/** bottle / can / jar silhouette with a real label wrapped twice around (u ×2) */
+const bottleGeom = (() => {
+  const cache = new Map<string, THREE.BufferGeometry>();
+  return (kind: 'bottle' | 'can' | 'jar', r: number, h: number) => {
+    const key = kind + r.toFixed(3) + h.toFixed(3);
+    let g = cache.get(key);
+    if (!g) {
+      const P: [number, number][] = kind === 'can'
+        ? [[0, 0], [r * 0.82, 0], [r, h * 0.05], [r, h * 0.9], [r * 0.84, h * 0.98], [r * 0.86, h], [0, h]]
+        : kind === 'jar' ? [[0, 0], [r * 0.9, 0], [r, h * 0.06], [r, h * 0.78], [r * 0.86, h * 0.84], [r * 0.86, h], [0, h]]
+        : [[0, 0], [r * 0.88, 0], [r, h * 0.04], [r, h * 0.6], [r * 0.72, h * 0.74], [r * 0.36, h * 0.86], [r * 0.34, h], [0, h]];
+      g = new THREE.LatheGeometry(P.map(([x, y]) => new THREE.Vector2(x, y)), 12);
+      const uv = g.getAttribute('uv') as THREE.BufferAttribute, pos = g.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 2, Math.min(1, pos.getY(i) / (h * (kind === 'bottle' ? 0.62 : 0.9))));
+      g.computeVertexNormals();
+      cache.set(key, g);
+    }
+    return g.clone();
+  };
+})();
+/** shelf crammed with real Thai packaging: library brand bottles, plus bevelled packs and lathe bottles/cans/jars
+ *  carrying real label photos (one merged mesh per label), two rows deep on all 4 levels */
+function shelfGoods(mg: Merge, real: RealProps, Fr: Frame, x: number, z: number, y0: number, rng: RNG) {
   const labels = ['rice_5kg_hong_thong', 'rice_5kg_tra_chat', 'sugar_mitr_phol_1kg', 'msg_ajinomoto_500g', 'fish_sauce_tiparos', 'oyster_sauce_maekrua', 'light_soy_healthy_boy', 'dark_soy_healthy_boy',
     'palm_oil_morakot_1l', 'soybean_oil_angoon_1l', 'instant_noodle_mama_cup', 'carton_mama_face', 'chili_paste_mae_pranom', 'red_curry_paste_mae_ploy', 'tapioca_starch_fish_brand', 'white_pepper_hand_brand_jar',
-    'energy_m150', 'energy_krating_daeng', 'seasoning_sauce_golden_mountain', 'vinegar_osor', 'water_crystal_600ml', 'whisky_sangsom', 'beer_leo_can', 'beer_chang_can'];
-  const bottle = new Set(['fish_sauce_tiparos', 'oyster_sauce_maekrua', 'light_soy_healthy_boy', 'dark_soy_healthy_boy', 'palm_oil_morakot_1l', 'soybean_oil_angoon_1l', 'seasoning_sauce_golden_mountain', 'vinegar_osor', 'water_crystal_600ml', 'whisky_sangsom', 'energy_m150', 'energy_krating_daeng', 'beer_leo_can', 'beer_chang_can', 'white_pepper_hand_brand_jar']);
+    'energy_m150', 'energy_krating_daeng', 'seasoning_sauce_golden_mountain', 'vinegar_osor', 'water_crystal_600ml', 'whisky_sangsom', 'beer_leo_can', 'beer_chang_can', 'fish_sauce_squid', 'beer_singha', 'fanta_red'];
+  const round = new Set(['palm_oil_morakot_1l', 'soybean_oil_angoon_1l', 'vinegar_osor', 'water_crystal_600ml', 'whisky_sangsom', 'energy_m150', 'energy_krating_daeng', 'beer_leo_can', 'white_pepper_hand_brand_jar', 'chili_paste_mae_pranom', 'instant_noodle_mama_cup']);
+  const cans = new Set(['beer_leo_can', 'instant_noodle_mama_cup']), jars = new Set(['white_pepper_hand_brand_jar', 'chili_paste_mae_pranom']);
   const levels = [0.07, 0.52, 0.97, 1.42];
   const W = 0.54, Dd = 0.42;
   for (const ly of levels) {
     let lx = -W / 2 + 0.02;
     while (lx < W / 2 - 0.06) {
       const id = labels[rng.int(0, labels.length - 1)];
-      const isB = bottle.has(id);
-      const bw = isB ? 0.065 : rng.range(0.1, 0.16), bh = isB ? rng.range(0.16, 0.24) : rng.range(0.12, 0.3), bd = isB ? 0.065 : rng.range(0.06, 0.1);
+      const lib = LIB_BOTTLE[id], isR = !!lib || round.has(id);
+      const bw = isR ? (jars.has(id) || cans.has(id) ? 0.075 : 0.068) : rng.range(0.1, 0.16), bd = isR ? bw : rng.range(0.06, 0.1);
+      const bh = lib ? 0.27 : isR ? (cans.has(id) ? 0.12 : jars.has(id) ? 0.1 : rng.range(0.16, 0.24)) : rng.range(0.12, 0.3);
       if (lx + bw > W / 2) break;
       for (let row = 0; row < 2; row++) {
         const lz = Dd / 2 - bd / 2 - 0.02 - row * (bd + 0.02);
         const p = Fr.at(x + lx + bw / 2, 0, z - lz).setY(y0 + ly + 0.025);
-        const g = isB ? new THREE.CylinderGeometry(bw / 2 * 0.8, bw / 2, bh, 10).translate(0, bh / 2, 0) : new THREE.BoxGeometry(bw, bh, bd).translate(0, bh / 2, 0);
-        mg.add('pack:' + id, photoMat(`img/labels/${id}.png`, { rough: 0.55 }), g, M4(p, Fr.yaw + (rng.next() - 0.5) * 0.15));
+        const yaw = Fr.yaw + (rng.next() - 0.5) * 0.15;
+        if (lib) { real.add(lib, p.x, p.y, p.z, yaw + rng.range(-0.3, 0.3), { phys: 'none' }); continue; }
+        const g = isR ? bottleGeom(cans.has(id) ? 'can' : jars.has(id) ? 'jar' : 'bottle', bw / 2, bh)
+          : new RoundedBoxGeometry(bw, bh, bd, 2, Math.min(0.012, bd * 0.15)).translate(0, bh / 2, 0);
+        mg.add('pack:' + id, photoMat(`img/labels/${id}.png`, { rough: isR ? 0.3 : 0.55 }), g, M4(p, yaw));
       }
       lx += bw + 0.012;
     }
