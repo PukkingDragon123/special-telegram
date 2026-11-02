@@ -111,10 +111,14 @@ for v in bm2.verts:
     y = v.co.y + off
     if hy is None: v.co.y = y; continue
     r = rr(x, z)
-    w = min(1.0, max(0.0, (r - 0.62) / 0.38)); w = w * w * (3 - 2 * w)
-    yi = min(y, hy - 0.0007)
-    v.co.y = yi * (1 - w) + (hy + 0.0018) * w
+    w = min(1.0, max(0.0, (r - 0.66) / 0.34)); w = w * w * (3 - 2 * w)
+    yi = min(y, hy - 0.0022)                      # ≥ 2 mm proud of the low-poly head (no z-fighting)
+    v.co.y = yi * (1 - w) + (hy + 0.0035) * w     # rim sinks 3.5 mm into the head
 bm2.to_mesh(me); bm2.free(); me.update()
+# light smoothing of scan noise (keeps the forms, removes lumpy shading after decimation)
+sm = ob.modifiers.new('sm', 'SMOOTH'); sm.factor = 0.5; sm.iterations = 2
+bpy.context.view_layer.objects.active = ob
+bpy.ops.object.modifier_apply(modifier='sm')
 # ---- decimate
 tris = sum(len(p.vertices) - 2 for p in me.polygons)
 if tris > target:

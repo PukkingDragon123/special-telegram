@@ -8,6 +8,7 @@ import { ANIMS, AnimCtx, AnimDef, FIDGETS, Posture } from './anims';
 import { lookKey } from './atlas';
 import { faceEntry } from './defs';
 import { BodyTemplate, TEMPLATES, acquireLookGeometry, releaseLookGeometry } from './glb';
+import { setInk } from '../../core/ink';
 import { RigWorld, acquireAtlas, releaseAtlas, accessoryMaterial, silMat, proxyGeo, proxyMat, ATTACH, FOLLOW, estimateAge, QY_PI, ProcRig, RigOpts } from './rig';
 
 /* ============================================================================================
@@ -110,7 +111,7 @@ const CHAR_MAP_F = /* glsl */`
     wetG = 1.0 - smoothstep(0.03, 0.045, min(length(e1), length(e2)));
     float dc = min(length(f - vec2(0.352, 0.432)), length(f - vec2(0.632, 0.432)));
     catchG = 1.0 - smoothstep(0.0035, 0.007, dc);
-    bumpK = 0.22;
+    bumpK = 0.12;
     skinG = max(skinG, 0.85) * (1.0 - wetG);
   }
   if (inRect(ap, vec4(704.0, 400.0, 320.0, 272.0))) {
@@ -202,6 +203,7 @@ export class Rig implements CharacterRig {
   private geoKeyLo = '';
   private mat = makeAtlasMaterial();
   private face3d: THREE.SkinnedMesh | null = null;
+  private faceMat: THREE.MeshStandardMaterial | null = null;
   private atlasE: { mtex?: THREE.Texture } | null = null;
   private fpMats: THREE.Material[] | null = null;
   private atlasKey = '';
@@ -307,7 +309,16 @@ export class Rig implements CharacterRig {
     this.face3d?.removeFromParent();
     this.face3d = null;
     if (t.faceMask && lod === 'high') {
-      const fm = new THREE.SkinnedMesh(t.faceMask, this.mat);
+      if (!this.faceMat) {
+        // own material: same atlas/skin shader, but no screen-space ink creases across the scanned relief
+        const f = this.mat.clone();
+        f.onBeforeCompile = this.mat.onBeforeCompile;
+        f.customProgramCacheKey = this.mat.customProgramCacheKey;
+        f.userData = { ...this.mat.userData };
+        setInk(f, 0, 0.3);                 // softer cel banding: no blotchy islands on the scanned relief
+        this.faceMat = f;
+      }
+      const fm = new THREE.SkinnedMesh(t.faceMask, this.faceMat);
       fm.name = 'face-scan';
       fm.bind(this.skeleton, new THREE.Matrix4());
       fm.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0.95, 0), 1.5);
@@ -347,6 +358,7 @@ export class Rig implements CharacterRig {
     this.atlasKey = key;
     this.mat.map = e.tex;
     this.mat.bumpMap = e.tex;
+    if (this.faceMat) { this.faceMat.map = e.tex; this.faceMat.bumpMap = e.tex; this.faceMat.needsUpdate = true; }
     this.atlasE = e;
     this.mat.userData.uSkin.value = e.mtex ?? WHITE1;
     this.mat.needsUpdate = true;
@@ -366,7 +378,7 @@ export class Rig implements CharacterRig {
       mats = this.fpMats;
     } else mats = [this.mat, accessoryMaterial()];
     for (const m of [this.mesh, this.meshLo]) if (m) m.material = mats;
-    if (this.face3d) { this.face3d.material = mats[0]; this.face3d.visible = this.mode !== 'fp' && this.lodLevel === 'high'; }
+    if (this.face3d) { this.face3d.material = this.mode === 'normal' && this.faceMat ? this.faceMat : mats[0]; this.face3d.visible = this.mode !== 'fp' && this.lodLevel === 'high'; }
   }
 
   // ---------------------------------------------------------------- contract API
@@ -858,6 +870,7 @@ export class Rig implements CharacterRig {
     if (this.geoKeyLo) releaseLookGeometry(this.geoKeyLo);
     if (this.atlasKey) releaseAtlas(this.atlasKey);
     this.mat.dispose();
+    this.faceMat?.dispose();
     if (this.fpMats) for (const m of this.fpMats) m.dispose();
     this.skeleton?.dispose();
   }
