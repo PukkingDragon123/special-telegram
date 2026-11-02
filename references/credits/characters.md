@@ -49,3 +49,16 @@ Clothing photo textures used through `PHOTO_USE` in atlas.ts (stripes, Hawaiian 
 suiting, satin/velvet, school twill, police khaki, vest/rider polys, ditsy blouses, apron, terry, sneaker leather) and
 hair photos come from public/assets/textures/clothing|hair — sources/licences are listed in those manifests and in
 references/credits/R3-people.md (research agent).
+
+## Photoscanned 3D face masks (near LOD over the photo-projected head)
+
+| file | source | author | licence |
+|---|---|---|---|
+| face_m.glb | [Bellus3D 3/4 Head Scan Example](https://sketchfab.com/3d-models/6d78a7ffafed472683388fc4cb43d848) (photogrammetry scan of a young East/Southeast-Asian man), via the Objaverse mirror | bellus3d | CC BY |
+| face_f.glb | [Female Head Textured](https://sketchfab.com/3d-models/e774147bf2224e6f83ec89f67ec2ecb6), via the Objaverse mirror | Dessen | CC BY |
+
+Processing (`scripts/life/bl_facemask.py`, headless Blender): landmark-aligned (eye centres + mouth line read from a front
+orthographic render) to each body template's eyes, cut to a forehead→chin / ear→ear mask, depth-fitted against the
+template head (≥ 2 mm proud in the middle, rim sunk 3.5 mm into the head), lightly smoothed, decimated to 7k / 6k tris,
+UVs = the template's planar face-photo projection into the atlas face rect (so every character keeps its own curated
+Thai face photo and expression swaps, now on real 3D relief). Only geometry is shipped (no scan textures).
