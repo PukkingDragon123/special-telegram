@@ -1776,3 +1776,7 @@ Also uses the shared libraries credited by the research agents (textures/pbr, te
 
 - `public/assets/fonts/Krub-Bold.woff2` + `gen/text3d/talk.ttf` — **Krub** Bold, Copyright 2018 The Krub Project Authors (Cadson Demak, https://github.com/cadsondemak/Krub), SIL Open Font License 1.1, from https://github.com/google/fonts/tree/main/ofl/krub. Looped Thai (ไทยมีหัว). Default face of the floating 3D dialogue lettering.
 - `gen/text3d/{heavy,ui,bubbly,display,hand,news}.ttf` — TTF subsets (Thai + Latin + punctuation) of the already-shipped OFL fonts K2D ExtraBold, IBM Plex Sans Thai Looped SemiBold, Kodchasan Bold, Chonburi, Itim and Taviraj Bold (SIL OFL 1.1, Google Fonts), converted with fontTools so HarfBuzz (`harfbuzzjs`, MIT) can shape them and extract outlines for extruded 3D letters.
+
+## Escape cinematic & critters
+- Music: "Sneaky Snitch" by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/).
+- Full per-file sources: `public/assets/gen/escape/CREDITS.md`, `public/assets/gen/critters/CREDITS.md`.

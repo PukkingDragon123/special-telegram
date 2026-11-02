@@ -35,6 +35,7 @@ export class Roaches {
   private hx = new Float32Array(MAX); private hz = new Float32Array(MAX);   // home
   private ldx = new Float32Array(MAX); private ldz = new Float32Array(MAX); // line dir (0 = point spot)
   private cx = new Float32Array(MAX); private cz = new Float32Array(MAX);   // crack dir
+  private brave = new Float32Array(MAX);                                    // ignore stares for a while (dev spawns)
   private spawnT = 0;
   private skitterT = 0;
   private flyT = 120 + Math.random() * 120;
@@ -167,7 +168,8 @@ if (vPart > 0.5) diffuseColor.rgb = uLeg;`);
       }
       if (st === ST_WANDER || st === ST_EMERGE) {
         // threats: moving feet, being stared at in the dark, light pools
-        const stare = nt > 0.45 && dc2 < 2.6 * 2.6 && this.lookedAt(x, this.y[i], z, cam) && r() < dt * 2.5;
+        this.brave[i] -= dt;
+        const stare = this.brave[i] <= 0 && nt > 0.45 && dc2 < 2.6 * 2.6 && this.lookedAt(x, this.y[i], z, cam) && r() < dt * 2.5;
         if ((dp2 < 1.7 * 1.7 && (pSpeed > 0.25 || dp2 < 0.5 * 0.5)) || stare) {
           this.st[i] = ST_FLEE;
           this.tmr[i] = 0.9 + r() * 0.8;
@@ -273,6 +275,7 @@ if (vPart > 0.5) diffuseColor.rgb = uLeg;`);
       const y = this.game.world?.groundY(x, z) ?? 0;
       this.spawn(i, { x, y, z, dx: 0, dz: 0, cx: 0, cz: 0, kind: 'market', w: 1 });
       this.life[i] = 25;
+      this.brave[i] = 10;
     }
   }
 

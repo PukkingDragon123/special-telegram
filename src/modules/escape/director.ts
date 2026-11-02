@@ -575,8 +575,8 @@ export class EscapeDirector {
       // low, behind the hiding place: the beam sweeping over it, the cops beyond
       const H = c.H;
       const o0 = P.officers[0]?.root.position ?? c.cops[0].a;
-      c.camPos.copy(H).addScaledVector(n, 1.75).addScaledVector(tt, 1.15 * c.side).setY(H.y + 0.62);
-      c.camLook.copy(H).lerp(o0, 0.55).setY(H.y + 1.0);
+      c.camPos.copy(H).addScaledVector(n, 2.6).addScaledVector(tt, 1.5 * c.side).setY(H.y + 0.95);
+      c.camLook.copy(H).lerp(o0, 0.62).setY(H.y + 0.95);
       c.camFov = 52; c.camRoll = -0.02 * c.side;
       this.safeCam(c, this.v2.copy(H).addScaledVector(n, 0.8).setY(H.y + 0.8));
     } else if (t < T_WALK) {
