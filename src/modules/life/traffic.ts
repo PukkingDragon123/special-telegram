@@ -509,21 +509,21 @@ export class Traffic {
       const pax = bakeSkinned(sm, root);
       pax.computeBoundingBox();
       if (pax.boundingBox!.max.x - pax.boundingBox!.min.x > 1.1) { pax.dispose(); if (p.n > 900) { p.rig.dispose(); done(); } continue; }   // clips not in yet
-      // the hip sits ~0.88 m above the road; hands reach the grips (rig faces +Z here)
+      // the hip sits ~0.88 m above the road; hands reach the grips (character rigs face −Z, like the vehicles)
       const lift = 0.88 - pv.y;
       for (const side of ['l', 'r']) {
         const ua = bone('upperarm_' + side), la = bone('lowerarm_' + side), hd = bone('hand_' + side);
         if (!ua || !la || !hd) continue;
         const sx = ua.getWorldPosition(new THREE.Vector3()).x;
-        const grip = new THREE.Vector3(Math.sign(sx || (side === 'l' ? 1 : -1)) * 0.27, 1.0 - lift, pv.z + 0.6);
+        const grip = new THREE.Vector3(Math.sign(sx || (side === 'l' ? 1 : -1)) * 0.27, 1.0 - lift, pv.z - 0.6);
         const sh = ua.getWorldPosition(new THREE.Vector3());
-        const elbow = sh.clone().lerp(grip, 0.5).add(new THREE.Vector3(Math.sign(sx) * 0.07, -0.1, -0.04));
+        const elbow = sh.clone().lerp(grip, 0.5).add(new THREE.Vector3(Math.sign(sx) * 0.07, -0.1, 0.04));
         aimBone(ua, la, elbow);
         aimBone(la, hd, grip);
       }
       const ride = bakeSkinned(sm, root);
-      const place = new THREE.Matrix4().makeTranslation(0, lift, 0.18).multiply(new THREE.Matrix4().makeRotationY(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(-pv.x, 0, -pv.z));
-      const paxPlace = new THREE.Matrix4().makeTranslation(0, lift + 0.04, 0).multiply(new THREE.Matrix4().makeRotationY(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(-pv.x, 0, -pv.z));
+      const place = new THREE.Matrix4().makeTranslation(-pv.x, lift, 0.18 - pv.z);
+      const paxPlace = new THREE.Matrix4().makeTranslation(-pv.x, lift + 0.04, -pv.z);
       ride.applyMatrix4(place); pax.applyMatrix4(paxPlace);
       const mats = Array.isArray(sm.material) ? sm.material : [sm.material];
       const body = new THREE.MeshStandardMaterial({ map: (mats[0] as any).map, roughness: 0.82 });

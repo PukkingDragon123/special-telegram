@@ -46,12 +46,12 @@ export function registerPeople() {
       ] },
       info('thanks', T('ขอบใจหลาน… บุญรักษานะ ขอให้ขายดี ลูกค้าเต็มร้าน ผีไม่หลอก', 'Thank you, child… may merit protect you. Full tables, no ghosts'), 'hi', { anim: 'pray' }),
       info('story', T('ลุงเคยเปิดร้านเกมปากซอย… มีคอมสามสิบเครื่อง เด็กๆ เต็มร้าน แล้วมือถือก็มา… ตอนนี้ลุงเหลือแต่ลังกระดาษกับความทรงจำ', 'I once ran the game shop at the soi mouth… thirty PCs, full of kids. Then smartphones came… now I have cardboard and memories'), 'hi', { face: 'think', anim: 'sad' }),
-      { id: 'strange', say: T('แปลก? ศาลพระภูมิท้ายซอยไง… ตอนใกล้เที่ยงคืนมีคนเห็นแสงไฟ ได้ยินเสียงหัวเราะ… ลุงรู้วิธีเรียก "เขา" ออกมานะ แต่ความลับไม่ได้ฟรีหรอก', 'Strange? The spirit house at the end of the soi… near midnight, lights, laughter… I know how to call "them" out. But secrets aren\'t free'), face: 'think', options: [
+      { id: 'strange', say: T('เที่ยงคืน… ท้ายซอย… น้ำแดง… ศาลพระภูมิท้ายซอยไง ตอนห้าทุ่มกว่าๆ มีคนเห็นแสงไฟ ได้ยินเสียงไลฟ์สด… ลุงรู้วิธีเรียก "เขา" ออกมานะ แต่ความลับไม่ได้ฟรีหรอก', 'Midnight… end of the soi… red soda… The spirit house at the end of the soi: after eleven, lights, a live-stream voice… I know how to call "them". But secrets aren\'t free'), face: 'think', options: [
         { text: T('ต้องแลกกับอะไรครับ?', 'What does it cost?'), next: 'cost' },
         ...back('hi'),
       ] },
       info('cost', (c: DlgCtx) => ((c.game.g as any).ritualHint
-        ? T('ลุงบอกไปแล้วไง น้ำแดง พวงมาลัย ไข่ต้ม ธูป ไหว้สามที ก่อนเที่ยงคืน… ที่เหลือแล้วแต่ดวง', 'Already told you: red soda, a garland, boiled eggs, incense, bow three times, before midnight… the rest is luck')
+        ? T('ลุงบอกไปแล้วไง ของไหว้ห้าอย่าง น้ำแดงใส่หลอด ไข่ต้ม มาลัย ม้าลาย ธูปสามดอก วางที่โต๊ะหน้าศาล ห้าทุ่มถึงเที่ยงคืน แล้วสวดให้ถูก… คาถาน่ะ ไปขอซื้อตำราจากตาขายพระหน้าวัด', 'Told you: five offerings: red soda with a straw, boiled eggs, a garland, a zebra, three incense sticks, on the table by the shrine, 11pm to midnight, then chant right… buy the spell book from the amulet grandpa at the temple')
         : T('ข้าวสักจาน… ลุงหิว ท้องว่างพูดเรื่องผีไม่ได้ เดี๋ยวผีมันกินเรา', "A plate of food… can't talk ghosts on an empty stomach, they'd eat US")), 'hi'),
     ],
   });

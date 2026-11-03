@@ -72,6 +72,7 @@ function barks(game: Game, dt: number) {
   barkT.set(t.key, now + 28 + Math.random() * 20);
   if (!line) return;
   barkGlobal = now + 6 + Math.random() * 5;
+  fx?.liftFor(t.role, 3.2);
   const text = typeof line === 'string' ? { th: line } : line;
   game.ui.say(() => { const h = headOfTarget(t); return h ? h.add(new THREE.Vector3(0, 0.32, 0)) : null; }, text, { duration: 2.6, voice: voiceOf(t, resolveDialogue(game, t)) * 0.95, scale: 0.85 });
 }
@@ -121,7 +122,8 @@ export default defineModule({
       const quest = Quests.defs.some((q) => (q.giver === t.role && questAvailable(game, q)) || (questState(game, q.id)?.status === 'active' && q.steps[questState(game, q.id)!.step]?.at === t.role));
       return {
         key: 'E', label: quest ? tl('คุย (!)', 'talk (!)') : tl('คุย', 'talk'),
-        priority: t.role === 'homeless' ? 8 : special ? 9 : quest ? 4 : 1,
+        // talker (egg sellers) register their own E at 4 → ours (same conversation, with the quest marker) wins at 5
+        priority: t.role === 'homeless' ? 8 : special ? 9 : ctx.hit.kind === 'talker' ? 5 : quest ? 4 : 1,
         run: () => { talkTo(game, t); },
       };
     }, 20);

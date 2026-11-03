@@ -206,8 +206,20 @@ export class DialogueSession {
     this.go(o.next);
   }
 
+  /** world speech bubbles (shop chatter, barks, the player's own echoed answer) would float through the two-shot:
+   *  hide them locally while we talk; whatever is still waiting when we leave just closes */
+  private hush(on: boolean) {
+    const ui: any = this.game.ui;
+    for (const L of (ui?.live ?? []) as any[]) {
+      if (!L || (L.kind !== 'say' && L.kind !== 'think' && L.kind !== 'shout')) continue;
+      if (on) { if (!L.hidden) { L.hidden = true; L._hushed = true; } }
+      else if (L._hushed) { L.hidden = false; L._hushed = false; try { ui.kill?.(L, false); } catch { /* internals changed */ } }
+    }
+  }
+
   close() {
     if (!this.target || this.leaving) return;
+    this.hush(false);
     this.leaving = 0.0001;
     this.camK = 0;
     this.camFrom.p.copy(this.camCur.p); this.camFrom.q.copy(this.camCur.q); this.camFrom.fov = this.camCur.fov;
@@ -255,6 +267,7 @@ export class DialogueSession {
     if (!pl) return;
     this.t += dt;
     Overlay.crosshair(false);
+    if (!this.leaving) this.hush(true);
     // keep the player's body visible in the over-the-shoulder shot
     const rg = pl.rig();
     if (rg) { rg.setFirstPerson(false); rg.root.visible = true; }

@@ -46,7 +46,8 @@ export function entityTarget(game: Game, e: Ent, name?: any): TalkTarget {
 /** the TalkTarget behind an interaction hit (null when it is not a person / not talkable kind) */
 export function targetFromHit(game: Game, hit: Hit | null): TalkTarget | null {
   if (!hit) return null;
-  if (hit.kind === 'local_talk') {
+  if (hit.kind === 'local_talk' || hit.kind === 'talker') {
+    // crowd set pieces ('local_talk') and the easter-egg sellers in life/eggs.ts ('talker')
     const key = hit.data?.key;
     return key ? LocalTalkers.map.get(key)?.target ?? null : null;
   }

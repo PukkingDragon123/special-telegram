@@ -1822,3 +1822,17 @@ Full per-model tables: `public/assets/gen/lib/CREDITS.md` and `public/assets/gen
   (Itim, Charmonman, K2D, IBM Plex Sans Thai Looped). The lottery ticket design is fictional ("สลากกินแบ่งซอยเฮียผัด"), with no official emblems.
 - Sounds: existing entries of `public/assets/audio/manifest.json` (thunder, wind_howl, eerie_drone_loop, bells_eerie, dog_howl_night,
   ghost_scare_sting, female_scream_comedic, camera_shutter, sparkle_chime, crowd_cheer, laugh_track, …).
+
+## The rentable shophouse restaurant (`src/modules/restaurant/{premises,shop3d}.ts`)
+- The two CLOSED_HOUSE units' ground floors are modelled in code:
+  - rounded-box pilasters, beam, shutter housing and rails;
+  - the roller shutter, kitchen counter with sink, built-in wok burner, hood and duct, the shrine shelf, wall clock, split air-con, TV and LED sign;
+  - textures are the shipped PBR library: `tiles_floor_ceramic`, `tiles_wall_white_dirty`, `plaster_painted_clean`, `plaster_peeling`, `concrete_streaked`, `stainless_brushed`, `stainless_dented_greasy`, `shutter_roller_painted`, `shutter_roller_rusty`, `metal_painted_chipped`, `galvanized_steel`, `aluminium_scratched`, `chrome`, `cast_iron_wok`, `brass_gold`, `wood_teak`, `plywood`, `wood_painted_weathered`, `plastic_glossy` (sources in the PBR manifest).
+- Props reuse library models that are credited above:
+  - `lpg_15kg`, the `bottle_*` sauces and `condiment_caddy`;
+  - `khan_bowl`, `steel_frame_shelves_02`, `rice_sack` and `plastic_bottle_gallon`;
+  - `plastic_crate_02`, `plastic_broom`, `potted_plant_02` and `signbox_room_for_rent`.
+- Lightbox sign, wall menu and posters:
+  - drawn at runtime with the shipped OFL looped Thai fonts;
+  - the dish photos are the existing real food photos in `public/assets/textures/food`.
+- เจ๊ลำไย (the landlady) and "ห้างทองเจ๊ลำไย" on the calendar are original characters and businesses; the phone number is fictional.

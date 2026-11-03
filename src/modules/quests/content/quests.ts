@@ -228,7 +228,7 @@ export function registerQuests() {
     ops: { give: (g, pl) => takeFrom(g, pl, (e) => e.k === 'dish' && (e.data?.taste ?? 0) >= 0.45) > 0 },
     dialog: handIn('homeless_meal', 'homeless', 0, {
       text: T('ข้าวมาแล้วครับลุง', 'Your food, uncle'), can: (c) => !!carriedDish(c, (d) => (d.taste ?? 0) >= 0.45),
-      ok: T('(กินหมดในสามคำ) …ความลับนะ… คืนไหนก็ได้ ก่อนเที่ยงคืน ไปที่ศาลพระภูมิท้ายซอย ถือน้ำแดง พวงมาลัย ไข่ต้ม จุดธูป แล้วไหว้สามที… แล้วแกจะได้เจอ… "เขา" (ลุงไม่รับผิดชอบนะ)', '(gone in three bites) …the secret… any night before midnight, go to the spirit house at the end of the soi with red soda, a garland, boiled eggs, light incense and bow three times… and you will meet… "them" (not my responsibility)'),
+      ok: T('(กินหมดในสามคำ) …ความลับนะ… ศาลพระภูมิท้ายซอย ของไหว้ห้าอย่าง: น้ำแดงใส่หลอด ไข่ต้ม มาลัย ม้าลาย ธูปสามดอก ห้าทุ่มถึงเที่ยงคืน คุกเข่าแล้วสวดให้ถูก… คาถาอยู่ในตำราของตาขายพระหน้าวัด แล้วแกจะได้เจอ… "เขา" (ลุงไม่รับผิดชอบนะ)', '(gone in three bites) …the secret… the spirit house at the end of the soi. Five offerings: red soda with a straw, boiled eggs, a garland, a zebra, three incense sticks. 11pm to midnight, kneel and chant it right… the words are in the amulet grandpa\'s book at the temple. Then you meet… "them" (not my responsibility)'),
       no: { text: T('ลุงกินนี่ไหมครับ', 'Want this, uncle?'), say: T('ลุงจนแต่ลุงก็มีมาตรฐานนะ… ขอที่มันอร่อยหน่อย', "I'm poor, not without standards… something tasty please") },
     }),
     reward: { rep: 0.2, xp: { skill: 'serve', amount: 40 }, note: T('ลุงบอกความลับพิธีเที่ยงคืน', 'he told you the midnight ritual'), apply: (g) => { (g.g as any).ritualHint = true; } },

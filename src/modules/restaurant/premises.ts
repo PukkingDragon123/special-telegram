@@ -52,7 +52,8 @@ export type UpgradeId = keyof typeof RENT.upgrades;
 
 /** world-space description of a restaurant unit (front faces west at x = CLOSED_HOUSE.x0) */
 export interface UnitGeo { i: number; a0: number; a1: number; W: number; frontX: number; depth: number }
-export const DEPTH = 9.0;
+/** usable interior depth: the background block row (buildings.ts backBlocks, x ≥ 20) sits behind the units */
+export const DEPTH = 6.4;
 export const UNITS: UnitGeo[] = RESTAURANT_UNITS.map((a0, i) => ({ i, a0, a1: a0 + 4.83, W: 4.83, frontX: CLOSED_HOUSE.x0, depth: DEPTH }));
 
 /** unit space (x along the facade, y up, z outward: interior is z < 0) → world */
@@ -184,7 +185,7 @@ export function serviceFrame(game: Game = G): SvcFrame {
       w: (lx, lz) => [p[0] + lz, p[1], p[2] - lx],
       queueSpot: (i) => [u.frontX - 0.75, SW_H, p[2] - 0.15 - 0.72 * i],
       queueFace: yawTo(1, 0),
-      waitSpot: (k) => unitToWorld(u, u.W - 0.55 - 0.55 * Math.floor(k / 5), SW_H, -0.85 - 0.62 * (k % 5)) as number[],
+      waitSpot: (k) => unitToWorld(u, u.W - 0.5 - 0.5 * Math.floor(k / 4), SW_H, -0.75 - 0.5 * (k % 4)) as number[],
       waitFace: yawTo(-0.4, -1),
       orderRadius: 9,
       priceFactor: (zone?.priceFactor ?? 1) * m.pf,
@@ -222,7 +223,7 @@ export function isInside(p: ArrayLike<number>, game: Game = G) {
 // ------------------------------------------------------------------ landlord (host)
 
 export const LANDLORD_NAME: TL = { th: 'เจ๊ลำไย', en: 'Jeh Lamyai (landlord)' };
-const landlordSpot = () => { const u = UNITS[0]; return [u.frontX - 1.0, SW_H, u.a0 - 1.3]; };
+const landlordSpot = () => { const u = UNITS[0]; return [u.frontX - 0.9, SW_H, u.a0 - 2.9]; };   // in front of her own unit (the north one: storage + office)
 export const landlord = (game: Game = G) => game.state.find('npc', (e) => e.role === 'landlord');
 
 function anim(game: Game, e: Ent, a: string, loop = false) { e.anim = a; e.animLoop = loop; e.animT = (game.g.time ?? 0) + Math.random() * 1e-3; }
@@ -622,7 +623,7 @@ export function premisesWorldReady(game: Game) {
   setTimeout(() => {
     const u = UNITS[0];
     const sp = (k: string, x: number, z: number, yaw = 0) => { const w = unitToWorld(u, x, SW_H + 0.01, z); return game.items.spawn(k, w, { yaw }); };
-    const tables: [number, number, string][] = [[1.25, -3.2, 'table_steel'], [3.35, -3.2, 'table_plastic'], [1.25, -5.6, 'table_plastic'], [3.35, -5.6, 'table_steel']];
+    const tables: [number, number, string][] = [[1.25, -2.6, 'table_steel'], [3.3, -2.6, 'table_plastic'], [1.25, -4.4, 'table_plastic'], [3.3, -4.4, 'table_steel']];
     for (const [x, z, k] of tables) {
       sp(k, x, z, Math.PI / 2);
       sp('stool_red', x - 0.0, z + 0.62, 0); sp('stool_blue', x, z - 0.62, 1.2);

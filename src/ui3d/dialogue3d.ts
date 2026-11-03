@@ -81,6 +81,8 @@ export class DialogueView {
   private lastBlip = 0;
   private t = 0;
   private lineT = 0;
+  private fit = 1;
+  private cardsTopNdc = -1;
   private cards: Card[] = [];
   private hover = -1;
   private ray = new THREE.Raycaster();
@@ -206,7 +208,13 @@ export class DialogueView {
         const pL = _r.set(left, top, z).unproject(cam);
         const pR = _u.set(right, top, z).unproject(cam);
         const span = pL.distanceTo(pR);
-        const k = span / LINE_W;                                   // world metres per local unit
+        // long lines shrink (eased) so they never run into the answer column underneath
+        const blockH = this.line.height + (this.lineEn ? this.lineEn.height + 0.014 : 0);
+        const ndcPerUnit = ((right - left) * cam.aspect) / LINE_W;   // local unit → NDC height
+        const avail = top - (this.cardsTopNdc + 0.05);
+        const fitT = this.cards.length && blockH > 0 ? THREE.MathUtils.clamp(avail / (blockH * ndcPerUnit), 0.55, 1) : 1;
+        this.fit += (fitT - this.fit) * Math.min(1, dt * 7);
+        const k = (span / LINE_W) * this.fit;                      // world metres per local unit
         const w = Math.max(this.line.width, this.lineEn?.width ?? 0, 0.1);
         cam.getWorldQuaternion(_q);
         const camRight = _cr.set(1, 0, 0).applyQuaternion(_q);
@@ -242,6 +250,7 @@ export class DialogueView {
     // the answers form a column under the speaker's line, on the left of the frame
     const leftX = -(halfH * cam.aspect / ks) * 0.9;
     let y = -0.5 + total + 0.01;     // bottom of the stack just above the bottom edge (design units)
+    this.cardsTopNdc = n ? (ks * y) / halfH : -1;   // card plane sits at z = zBase in camera space
     // input: hover
     if (inputOn && n) {
       const ndc = Input.ndc;

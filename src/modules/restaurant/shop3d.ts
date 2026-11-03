@@ -399,7 +399,7 @@ export class ShopHouse3D {
         else B.add(rb(at, dadoH - 0.02, s0, at + o * 0.03, dadoH + 0.02, s1, 0.008), M.paint(0x3a6a5a));
       }
     };
-    const opening: [number, number, number] = [-6.4, -3.6, y0 + 2.3];
+    const opening: [number, number, number] = [-4.6, -2.1, y0 + 2.3];
     wallFace('x+', PW, -D, 0, u.i === 1 ? opening : undefined);
     wallFace('x-', W - PW, -D, 0, u.i === 0 ? opening : undefined);
     const doorX0 = main ? 3.8 : 3.6, doorX1 = doorX0 + 0.78;
@@ -422,7 +422,7 @@ export class ShopHouse3D {
 
     // ---------------- ceiling fan + fluorescent battens
     const fan = new THREE.Group();
-    fan.position.set(W / 2, yb, -4.3);
+    fan.position.set(W / 2, yb, -D * 0.5);
     const fanB = new Batch();
     fanB.add(lathe([[0, 0], [0.07, 0], [0.07, -0.03], [0.012, -0.05], [0, -0.05]], 18), M.paint(0xf0eee6));
     fanB.add(cyl(0.012, 0.012, 0.32, 8).translate(0, -0.2, 0), M.paint(0xf0eee6));
@@ -441,14 +441,14 @@ export class ShopHouse3D {
     fan.add(blades);
     root.add(fan);
     const tubes: THREE.Mesh[] = [];
-    for (const z of [-2.2, -6.6]) {
+    for (const z of [-1.5, -D + 1.5]) {
       B.add(rb(W / 2 - 0.05, yb - 0.055, z - 0.62, W / 2 + 0.05, yb - 0.005, z + 0.62, 0.012), M.paint(0xeeeeea));
       const tm = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xf2f8ff, emissiveIntensity: 0, roughness: 0.3 });
       const tube = new THREE.Mesh(cyl(0.013, 0.013, 1.18, 10).rotateX(Math.PI / 2).translate(W / 2, yb - 0.075, z), tm);
       tube.castShadow = false;
       root.add(tube); tubes.push(tube);
     }
-    const light = (game.world as any)?.addLightPoint?.(new THREE.Vector3(...unitToWorld(u, W / 2, yb - 0.3, -4.2)), 0xeef6ff, 0, 9, 0.4);
+    const light = (game.world as any)?.addLightPoint?.(new THREE.Vector3(...unitToWorld(u, W / 2, yb - 0.3, -D * 0.5)), 0xeef6ff, 0, 8, 0.4);
 
     // ---------------- kitchen (main unit): stainless counter, sink + tap, built-in wok burner, hood, LPG, shelves
     const rt: Partial<UnitRT> = { ups: {}, loops: {} };
@@ -514,20 +514,20 @@ export class ShopHouse3D {
       B.add(lathe([[0, 0], [0.03, 0], [0.04, 0.05], [0.025, 0.1], [0.03, 0.12], [0, 0.12]], 14).translate(sx + 0.16, sy, -D + 0.1), M.plastic(0x2a6aa8));
       (game.world as any)?.addLightPoint?.(new THREE.Vector3(...unitToWorld(u, sx, sy + 0.2, -D + 0.3)), 0xff4020, 1.2, 2.5, 0.3);
       // steel shelving with stock (left wall, near the kitchen)
-      const shelf = libModel('steel_frame_shelves_02'); shelf.position.set(PW + 0.27, y0, -7.1); shelf.rotation.y = Math.PI / 2; root.add(shelf);
-      const rice = libModel('rice_sack'); rice.position.set(PW + 0.4, y0, -6.1); rice.rotation.y = 0.3; root.add(rice);
-      const rice2 = libModel('rice_sack'); rice2.position.set(PW + 0.42, y0 + 0.16, -6.15); rice2.rotation.y = -0.2; root.add(rice2);
-      const gal = libModel('plastic_bottle_gallon'); gal.position.set(PW + 0.3, y0, -5.55); root.add(gal);
+      const shelf = libModel('steel_frame_shelves_02'); shelf.position.set(PW + 0.27, y0, -D + 1.3); shelf.rotation.y = Math.PI / 2; root.add(shelf);
+      const rice = libModel('rice_sack'); rice.position.set(PW + 0.42, y0, -D + 2.05); rice.rotation.y = 0.3; root.add(rice);
+      const rice2 = libModel('rice_sack'); rice2.position.set(PW + 0.44, y0 + 0.16, -D + 2.0); rice2.rotation.y = -0.2; root.add(rice2);
+      const gal = libModel('plastic_bottle_gallon'); gal.position.set(W - PW - 0.3, y0, -D + 0.95); root.add(gal);
       const crate = libModel('plastic_crate_02'); crate.position.set(3.15, y0, -D + 1.1); crate.rotation.y = 0.2; root.add(crate);
-      const broom = libModel('plastic_broom'); broom.position.set(W - PW - 0.25, y0, -D + 0.3); broom.rotation.set(0.1, -0.6, 0.12); root.add(broom);
+      const broom = libModel('plastic_broom'); broom.position.set(PW + 0.22, y0, -0.55); broom.rotation.set(0.1, -0.6, 0.12); root.add(broom);
       // wall menu (right wall), clock + calendar (left wall)
       const menu = new WallMenu();
       menu.update(game);
-      B.add(rb(W - PW - 0.035, y0 + 1.5, -5.1, W - PW, y0 + 2.48, -2.5, 0.01), M.alu());
-      const mp = new THREE.Mesh(art('x-', -5.04, -2.56, y0 + 1.54, y0 + 2.44, W - PW - 0.037), new THREE.MeshStandardMaterial({ map: menu.tex, roughness: 0.55, emissive: 0xffffff, emissiveMap: menu.tex, emissiveIntensity: 0.06 }));
+      B.add(rb(PW, y0 + 1.5, -4.2, PW + 0.035, y0 + 2.48, -1.6, 0.01), M.alu());
+      const mp = new THREE.Mesh(art('x+', -4.14, -1.66, y0 + 1.54, y0 + 2.44, PW + 0.037), new THREE.MeshStandardMaterial({ map: menu.tex, roughness: 0.55, emissive: 0xffffff, emissiveMap: menu.tex, emissiveIntensity: 0.06 }));
       root.add(mp);
       rt.menu = menu;
-      const clk = this.clock(root, PW + 0.012, y0 + 2.62, -2.2);
+      const clk = this.clock(root, PW + 0.012, y0 + 2.62, -1.05);
       rt.clock = clk;
       const cal = canvasTex(256, 360, (c) => {
         c.fillStyle = '#fbf8ee'; c.fillRect(0, 0, 256, 360);
@@ -540,9 +540,9 @@ export class ShopHouse3D {
         for (let d = 1; d <= 30; d++) c.fillText(String(d), 30 + ((d - 1) % 7) * 33, 196 + Math.floor((d - 1) / 7) * 34);
         c.strokeStyle = '#c01212'; c.lineWidth = 3; c.beginPath(); c.arc(30 + 2 * 33, 196, 15, 0, Math.PI * 2); c.stroke();
       });
-      root.add(new THREE.Mesh(art('x+', -3.5, -3.2, y0 + 1.6, y0 + 2.02, PW + 0.012), new THREE.MeshStandardMaterial({ map: cal.t, roughness: 0.9 })));
+      root.add(new THREE.Mesh(art('x+', -1.48, -1.18, y0 + 1.6, y0 + 2.02, PW + 0.012), new THREE.MeshStandardMaterial({ map: cal.t, roughness: 0.9 })));
       // upgrades (built now, shown when bought)
-      rt.ups.aircon = this.aircon(root, PW + 0.02, yb - 0.62, -4.8);
+      rt.ups.aircon = this.aircon(root, PW + 0.02, yb - 0.5, -2.9);
       const tv = new TvScreen();
       rt.tv = tv;
       rt.ups.tv = this.tvSet(root, W - PW - 0.02, y0 + 2.45, -1.15, tv);
@@ -592,7 +592,7 @@ export class ShopHouse3D {
 
     // ---------------- the roller shutter (rolls into the housing) + bottom bar, handles, padlock
     const hs = yb - 0.32 - y0;
-    const sMat = (Assets.pbr(main ? 'shutter_roller_painted' : 'shutter_roller_rusty', { color: main ? 0x8a9a92 : 0xffffff }).clone()) as THREE.MeshStandardMaterial;
+    const sMat = (Assets.pbr(main ? 'shutter_roller_painted' : 'shutter_roller_rusty', { color: main ? 0xd2dcd4 : 0xffffff }).clone()) as THREE.MeshStandardMaterial;
     for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap'] as const) { const t = sMat[k] as THREE.Texture | null; if (t) { const c = t.clone(); c.wrapS = c.wrapT = THREE.RepeatWrapping; c.needsUpdate = true; (sMat as any)[k] = c; } }
     const sg = new THREE.BoxGeometry(W - 2 * PW - 0.04, hs, 0.018, 1, 1, 1);
     sg.translate(W / 2, -hs / 2, -0.035);
@@ -721,7 +721,7 @@ export class ShopHouse3D {
         const show = !s.upgrades.includes('expand');
         r.board.visible = show;
         if (!show && r.boardCol) { this.uncol(r.boardCol); r.boardCol = null; }
-        if (show && !r.boardCol) r.boardCol = this.col(r.u, r.u.W - PW, SW_H, -6.4, r.u.W + 0.01 + PW, SW_H + 2.3, -3.6);
+        if (show && !r.boardCol) r.boardCol = this.col(r.u, r.u.W - PW, SW_H, -4.6, r.u.W + 0.01 + PW, SW_H + 2.3, -2.1);
       }
       for (const [id, o] of Object.entries(r.ups)) o.visible = s.upgrades.includes(id);
     }
@@ -763,12 +763,12 @@ export class ShopHouse3D {
       for (const t of r.tubes) (t.material as THREE.MeshStandardMaterial).emissiveIntensity = lit * (1.6 + Math.sin(this.t * 120) * 0.04);
       if (r.light) r.light.intensity = lit * 9;
       if (r.fan && on) r.fan.rotation.y += dt * 7.5;
-      const d = cam.distanceTo(_w.set(...unitToWorld(r.u, r.u.W / 2, 2, -4)));
+      const d = cam.distanceTo(_w.set(...unitToWorld(r.u, r.u.W / 2, 2, -DEPTH * 0.5)));
       const near = on && d < 22;
-      this.loop(r, 'fan', near ? 'fan_loop' : '', unitToWorld(r.u, r.u.W / 2, r.yb - 0.4, -4.3), 0.25);
-      this.loop(r, 'tube', near ? 'fluorescent_buzz_loop' : '', unitToWorld(r.u, r.u.W / 2, r.yb - 0.1, -2.2), 0.08);
+      this.loop(r, 'fan', near ? 'fan_loop' : '', unitToWorld(r.u, r.u.W / 2, r.yb - 0.4, -DEPTH * 0.5), 0.25);
+      this.loop(r, 'tube', near ? 'fluorescent_buzz_loop' : '', unitToWorld(r.u, r.u.W / 2, r.yb - 0.1, -1.5), 0.08);
       this.loop(r, 'tv', near && i === 0 && s.upgrades.includes('tv') ? 'tv_muffled_loop' : '', unitToWorld(r.u, r.u.W - 0.3, 2.4, -1.2), 0.3);
-      this.loop(r, 'ac', near && i === 0 && s.upgrades.includes('aircon') ? 'ac_hum_loop' : '', unitToWorld(r.u, 0.3, r.yb - 0.5, -4.8), 0.18);
+      this.loop(r, 'ac', near && i === 0 && s.upgrades.includes('aircon') ? 'ac_hum_loop' : '', unitToWorld(r.u, 0.3, r.yb - 0.4, -2.9), 0.18);
       // signs glow after dusk (and a little by day)
       if (r.signMat) r.signMat.emissiveIntensity = s.rented ? 0.12 + night * 1.25 : 0;
       if (r.led) { r.led.emissiveMap!.offset.x = (this.t * 0.6) % 1; r.led.emissiveIntensity = 0.6 + night * 2.2; }

@@ -404,7 +404,7 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
     portion = om.n * 55;
     vis.burn = clamp01(om.b); vis.raw = clamp01(1 - om.c); vis.size = om.n / 2;
     eggType = 'none';
-    if (o.allowed && !o.allowed.includes('khai_jiao')) { issues.push('unknown_recipe'); taste -= 0.45; }
+    if (o.allowed && !o.allowed.includes('khai_jiao')) { issues.push('unknown_recipe'); taste -= 0.6; }
   } else if (eggOnly) {
     // ------------------------------------------------ ไข่ดาว
     recipeId = 'khai_dao';
@@ -502,7 +502,7 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
       + ww.aroma * aromaS + ww.texture * clamp01(texture) + ww.oil * oilS + ww.portion * portionS + (ww.sour ?? 0) * sc(sourDev);
     let den = ww.salt + ww.sweet + ww.spice + ww.cooked + ww.aroma + ww.texture + ww.oil + ww.portion + (ww.sour ?? 0);
     taste = num / den;
-    const pen: Record<string, number> = { unknown_recipe: 0.45, raw_pork: 0.35, raw_meat: 0.3, raw_shrimp: 0.25, burnt: 0.25, burnt_garlic: 0.1, wrong_dish: 0.3, no_basil: 0.12, smoky: 0.08, watery: 0.05, no_soup: 0.2, too_salty: 0.08, bland: 0.08, small_portion: 0.08, too_oily: 0.05, too_sweet: 0.05, too_spicy: 0.04, dry: 0.04 };
+    const pen: Record<string, number> = { unknown_recipe: 0.6, raw_pork: 0.35, raw_meat: 0.3, raw_shrimp: 0.25, burnt: 0.25, burnt_garlic: 0.1, wrong_dish: 0.3, no_basil: 0.12, smoky: 0.08, watery: 0.05, no_soup: 0.2, too_salty: 0.08, bland: 0.08, small_portion: 0.08, too_oily: 0.05, too_sweet: 0.05, too_spicy: 0.04, dry: 0.04 };
     for (const i of issues) taste -= pen[i] ?? (i.startsWith('no_') ? 0.15 : i.startsWith('weird_') ? 0.05 : 0);
     taste += clamp01(w.wh ?? 0) * 0.06;
     // visuals

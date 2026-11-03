@@ -21,7 +21,7 @@ import { textOf } from './session';
 
 const BANG: Text3DOpts = { font: 'display', size: 0.34, depth: 0.5, bevel: 0.12, color: 0xffc83a, metalness: 0.75, roughness: 0.22, emissive: 0.55, bevelFace: true, align: 'center', valign: 'bottom', castShadow: false, rim: 0xfff0b0, rimStrength: 1.1 };
 const ASK: Partial<Text3DOpts> = { color: 0x9fd8ff, emissive: 0.65, rim: 0xe8f6ff };
-const PAPER_INK: Text3DOpts = { font: 'hand', size: 0.0145, depth: 0.08, bevel: 0.02, color: 0x24408f, roughness: 0.6, emissive: 0.1, xray: true, castShadow: false, align: 'left', valign: 'top', maxWidth: 0.25 };
+const PAPER_INK: Text3DOpts = { font: 'hand', size: 0.0145, depth: 0.08, bevel: 0.02, color: 0x24408f, roughness: 0.6, emissive: 0.1, xray: true, castShadow: false, align: 'left', valign: 'top', maxWidth: 0.235, lineHeight: 1.25 };
 const PAPER_TITLE: Text3DOpts = { font: 'heavy', size: 0.0135, depth: 0.12, bevel: 0.03, color: 0x8a1c14, roughness: 0.5, emissive: 0.12, xray: true, castShadow: false, align: 'left', valign: 'top', maxWidth: 0.25 };
 const CARD_BIG: Text3DOpts = { font: 'display', size: 0.05, depth: 0.45, bevel: 0.1, color: 0xffd25a, metalness: 0.8, roughness: 0.22, emissive: 0.45, bevelFace: true, xray: true, castShadow: false, align: 'center', valign: 'middle', rim: 0xfff2c0, rimStrength: 1.0, anim: { pop: 0.4, rise: 0.6, spin: 1.6, vanish: 0.3, drift: 0.6 } };
 const CARD_MID: Text3DOpts = { font: 'heavy', size: 0.028, depth: 0.32, bevel: 0.07, color: 0xfff1d8, side: 0x4a2a16, roughness: 0.4, emissive: 0.4, shadow: 0.6, xray: true, castShadow: false, align: 'center', valign: 'middle', maxWidth: 0.9, anim: { pop: 0.3, rise: 0.4, spin: 0.8, vanish: 0.25, drift: 0.4 } };
@@ -50,12 +50,27 @@ function paperTexture(): THREE.CanvasTexture {
   return t;
 }
 
-interface Marker { obj: THREE.Group; text: Text3D; kind: '!' | '?'; role: string; t: number }
+/** soft dark rounded backdrop behind a card's lettering (readable over any street) */
+function backdrop(w: number, h: number, opacity = 0.5) {
+  const sh = new THREE.Shape();
+  const r = Math.min(w, h) * 0.22, x = -w / 2, y = -h / 2;
+  sh.moveTo(x + r, y); sh.lineTo(x + w - r, y); sh.quadraticCurveTo(x + w, y, x + w, y + r); sh.lineTo(x + w, y + h - r);
+  sh.quadraticCurveTo(x + w, y + h, x + w - r, y + h); sh.lineTo(x + r, y + h); sh.quadraticCurveTo(x, y + h, x, y + h - r);
+  sh.lineTo(x, y + r); sh.quadraticCurveTo(x, y, x + r, y);
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(sh, 8), new THREE.MeshBasicMaterial({ color: 0x120c08, transparent: true, opacity, depthWrite: false, toneMapped: false }));
+  m.renderOrder = 2190;
+  m.position.z = -0.01;
+  return m;
+}
+
+interface Marker { obj: THREE.Group; text: Text3D; kind: '!' | '?'; role: string; t: number; up: number }
 interface Card { group: THREE.Group; parts: Text3D[]; extra: THREE.Object3D[]; t: number; life: number; kind: 'start' | 'done' | 'recipe'; light?: THREE.PointLight }
 
 export class QuestFX {
   private markers = new Map<string, Marker>();
-  private note: { group: THREE.Group; paper: THREE.Mesh; lines: Text3D[]; sig: string } | null = null;
+  /** role → engine time until which its marker floats higher (they are saying something; keep clear of the words) */
+  private lift = new Map<string, number>();
+  private note: { group: THREE.Group; paper: THREE.Mesh; lines: Text3D[]; sig: string; k: number } | null = null;
   private pointer: { group: THREE.Group; cone: THREE.Mesh; dist: Text3D; target: THREE.Vector3 | null } | null = null;
   private cards: Card[] = [];
   private queue: (() => void)[] = [];
@@ -80,7 +95,7 @@ export class QuestFX {
     group.add(paper, tape);
     group.visible = false;
     cam.add(group);
-    this.note = { group, paper, lines: [], sig: '' };
+    this.note = { group, paper, lines: [], sig: '', k: 0 };
     // ---- objective pointer
     const pg = new THREE.Group();
     const cone = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.36, 4, 1).rotateX(Math.PI), new THREE.MeshStandardMaterial({ color: 0xffc83a, metalness: 0.7, roughness: 0.25, emissive: 0xffa020, emissiveIntensity: 0.6 }));
@@ -94,6 +109,8 @@ export class QuestFX {
   }
 
   // ------------------------------------------------------------------ markers
+  /** someone with a marker is talking for `seconds`: float the marker above their words */
+  liftFor(role: string, seconds: number) { this.lift.set(role, this.game.engine.time + seconds); }
 
   private markerFor(role: string, kind: '!' | '?') {
     let m = this.markers.get(role);
@@ -104,7 +121,7 @@ export class QuestFX {
       text.popIn(0);
       obj.add(text);
       this.game.scene?.add(obj);
-      m = { obj, text, kind, role, t: 0 };
+      m = { obj, text, kind, role, t: 0, up: 0 };
       this.markers.set(role, m);
       Sound.play('sparkle_chime', { vol: 0.15, pitch: 1.4 });
     }
@@ -156,33 +173,37 @@ export class QuestFX {
       n.sig = sig;
       for (const l of n.lines) l.dispose();
       n.lines = [];
-      let y = 0.082;
       for (const a of act) {
         const title = new Text3D('• ' + a.def.title.th, PAPER_TITLE);
-        title.position.set(-0.118, y, 0.002);
-        n.group.add(title); n.lines.push(title);
-        y -= 0.024;
-        const step = new Text3D('   ' + this.stepText(a.def, a.st).th, PAPER_INK);
-        step.position.set(-0.118, y, 0.002);
-        n.group.add(step); n.lines.push(step);
-        y -= 0.034;
+        const step = new Text3D(this.stepText(a.def, a.st).th, PAPER_INK);
+        n.group.add(title, step); n.lines.push(title, step);
       }
       if (act.length) Sound.play('paper_rustle', { vol: 0.25 });
     }
     const show = play && act.length > 0 && !this.hidden;
-    n.group.visible = show || n.group.scale.x > 0.02;
-    const want = show ? 1 : 0.001;
-    n.group.scale.setScalar(n.group.scale.x + (want - n.group.scale.x) * 0.18);
+    n.k += ((show ? 1 : 0.001) - n.k) * 0.18;
+    n.group.visible = show || n.k > 0.02;
     if (!n.group.visible) return;
     // lower-left corner of the view, a little tilted like a sticky note on the screen edge
     const cam = this.game.camera;
     const z = -0.62;
     const hh = Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) * -z, hw = hh * cam.aspect;
-    const rows = act.length;
-    const ph = 0.06 + rows * 0.058;
+    // same share of the screen whatever the FOV (designed at 60°), a touch bigger than that
+    const ks = (hh / 0.358) * 1.15;
+    n.group.scale.setScalar(Math.max(0.001, n.k) * ks);
+    // stack the lines from their real (wrapped) heights; the paper grows to fit
+    let y = 0.082;
+    for (let i = 0; i < n.lines.length; i += 2) {
+      const title = n.lines[i], step = n.lines[i + 1];
+      title.position.set(-0.122, y, 0.002);
+      y -= Math.max(0.016, title.height) + 0.005;
+      step.position.set(-0.11, y, 0.002);
+      y -= Math.max(0.018, step.height * 1.15) + 0.012;
+    }
+    const ph = Math.max(0.07, 0.1 - y + 0.012);
     n.paper.scale.set(1, ph / 0.2, 1);
     n.paper.position.y = 0.1 - ph / 2;
-    n.group.position.set(-hw + 0.17, -hh + ph + 0.03, z);
+    n.group.position.set(-hw + 0.17 * ks, -hh + (ph - 0.062) * ks, z);   // paper bottom ~0.038 above the edge
     n.group.rotation.set(0, 0.08, 0.035 + Math.sin(this.t * 0.6) * 0.004);
   }
 
@@ -235,7 +256,8 @@ export class QuestFX {
       const a = new Text3D('ภารกิจใหม่!', { ...CARD_MID, color: 0xffd25a, size: 0.026 });
       const b = new Text3D(def.title.th, { ...CARD_MID, size: 0.032 });
       const c = new Text3D(def.title.en ?? '', CARD_SMALL);
-      a.position.set(0, 0.05, 0); b.position.set(0, 0.012, 0); c.position.set(0, -0.022, 0);
+      a.position.set(0, 0.052, 0); b.position.set(0, 0.008, 0); c.position.set(0, -0.032, 0);
+      g.add(backdrop(0.62, 0.15, 0.45));
       for (const t of [a, b, c]) { t.popIn(0.02); g.add(t); }
       return { parts: [a, b, c] };
     }, 2.6);
@@ -256,7 +278,8 @@ export class QuestFX {
       if (d.note) rew.push(typeof d.note === 'string' ? d.note : d.note.th);
       const c = new Text3D(rew.join('  ·  ') || 'ขอบคุณ!', { ...CARD_MID, color: 0x9fe6a0, size: 0.024 });
       const e = new Text3D(def.title.en ?? '', CARD_SMALL);
-      a.position.set(0, 0.075, 0); b.position.set(0, 0.022, 0); c.position.set(0, -0.016, 0); e.position.set(0, -0.046, 0);
+      a.position.set(0, 0.098, 0); b.position.set(0, 0.03, 0); c.position.set(0, -0.016, 0); e.position.set(0, -0.052, 0);
+      g.add(backdrop(0.78, 0.25, 0.5));
       for (const t of [a, b, c, e]) { t.popIn(0.02); g.add(t); }
       return { parts: [a, b, c, e] };
     }, 3.4);
@@ -298,8 +321,8 @@ export class QuestFX {
       const b = new Text3D(R.name.th, { ...CARD_MID, size: 0.036, color: 0xfff6e2 });
       const c = new Text3D(R.name.en ?? '', CARD_SMALL);
       const st = sourceText(source);
-      const s = new Text3D(st.th, { ...CARD_SMALL, color: 0xffd38a, size: 0.013 });
-      a.position.set(0, 0.135, 0.02); b.position.set(0, 0.088, 0.02); c.position.set(0, 0.062, 0.02); s.position.set(0, -0.135, 0.02);
+      const s = new Text3D(st.th, { ...CARD_SMALL, color: 0x5a2c14, side: 0x2a160a, emissive: 0.02, shadow: 0, size: 0.0135, maxWidth: 0.3 });
+      a.position.set(0, 0.178, 0.02); b.position.set(0, 0.113, 0.02); c.position.set(0, 0.07, 0.02); s.position.set(0, -0.112, 0.01);
       for (const t of [a, b, c, s]) { t.popIn(0.025); g.add(t); }
       g.userData.dish = dish;
       g.userData.card = card;
@@ -331,9 +354,12 @@ export class QuestFX {
       m.t += dt;
       const camPos = game.camera.getWorldPosition(_v);
       const d = camPos.distanceTo(h);
-      m.obj.position.set(h.x, h.y + 0.42 + Math.sin(m.t * 2.6) * 0.05, h.z);
-      m.obj.rotation.set(0, m.t * 1.6, 0);
-      m.obj.scale.setScalar(THREE.MathUtils.clamp(0.55 + d * 0.035, 0.6, 1.8) * (1 + Math.max(0, Math.sin(m.t * 5)) * 0.06));
+      m.up += (((this.lift.get(m.role) ?? 0) > game.engine.time ? 0.62 : 0) - m.up) * Math.min(1, dt * 6);
+      m.obj.position.set(h.x, h.y + 0.42 + m.up + Math.sin(m.t * 2.6) * 0.05, h.z);
+      // face the camera with a lively sway (a full spin goes edge-on and vanishes)
+      m.obj.quaternion.copy(game.camera.quaternion);
+      m.obj.rotateY(Math.sin(m.t * 2.2) * 0.55);
+      m.obj.scale.setScalar(THREE.MathUtils.clamp(0.75 + d * 0.045, 0.85, 2.4) * (1 + Math.max(0, Math.sin(m.t * 5)) * 0.08));
       if (d > 45) m.obj.visible = false;
     }
     this.updateNote(play);
@@ -346,7 +372,7 @@ export class QuestFX {
       const g = c.group;
       const inK = Ease.outBack(Math.min(1, c.t / 0.45));
       const outK = c.t > c.life - 0.45 ? 1 - Math.min(1, (c.t - (c.life - 0.45)) / 0.45) : 1;
-      g.scale.setScalar(Math.max(0.001, inK * outK));
+      g.scale.setScalar(Math.max(0.001, inK * outK) * (c.kind === 'recipe' ? 1.35 : 1));
       const y = c.kind === 'start' ? 0.24 : 0.02;
       g.position.set(0, y + (1 - outK) * 0.12, -0.72);
       if (c.kind === 'recipe') {
