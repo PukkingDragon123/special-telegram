@@ -17,7 +17,7 @@ import { headlineTemplates, HeadlineTpl, SIDE_STORIES } from './lines';
  * ========================================================================================== */
 
 export interface DayStatsIn { [k: string]: any }
-interface Stats { day: number; money: number; customers: number; dish: string; rating: number; events: string[]; mood: 'day1' | 'good' | 'bad' | 'neutral' | 'story' }
+interface Stats { day: number; money: number; customers: number; dish: string; rating: number; events: string[]; mood: 'day1' | 'good' | 'bad' | 'neutral' | 'story'; selfie?: HTMLCanvasElement | null }
 
 const K = 'img/newspaper/';
 const DISH_TH: Record<string, string> = {
@@ -38,7 +38,9 @@ function normStats(game: Game, s?: DayStatsIn | null): Stats {
   dish = DISH_TH[dish] ?? dish;
   const events: string[] = Array.isArray(g.events) ? g.events.map((e: any) => (typeof e === 'string' ? e : e?.th ?? e?.text ?? '')).filter(Boolean) : [];
   const mood: Stats['mood'] = g.mood === 'story' ? 'story' : day <= 1 && money < 200 ? 'day1' : rating >= 3.6 || money >= 1500 ? 'good' : (rating > 0 && rating < 2.6) || (customers > 0 && customers < 5) ? 'bad' : 'neutral';
-  return { day, money, customers, dish, rating: Math.round(rating * 10) / 10, events, mood };
+  // the ghost-ritual easter egg leaves a group selfie with the ghost (ritual module): it becomes the front-page photo
+  const selfie = (game as any).ritual?.selfie;
+  return { day, money, customers, dish, rating: Math.round(rating * 10) / 10, events, mood, selfie: selfie instanceof HTMLCanvasElement ? selfie : null };
 }
 
 function fill(t: string, s: Stats) {
@@ -151,11 +153,28 @@ export async function renderFrontPage(s: Stats): Promise<HTMLCanvasElement> {
     ctx.restore();
     fit(kt, { ...R.kicker, x: R.kicker.x + 18, w: kw - 36 }, 34, 900, PAPER, { mode: 'source-over', maxSX: 0.8 });
   }
+  // ghost night: the ghost's story is the headline, her selfie is the photo
+  const ghostEv = s.selfie ? s.events.find((e) => /ผี|นางรีวิว|รีวิว/.test(e)) : undefined;
+  if (ghostEv) {
+    const words = ghostEv.split(' ');
+    let best = -1;
+    for (let i = 0; i < ghostEv.length; i++) if (ghostEv[i] === ' ' && (best < 0 || Math.abs(i - ghostEv.length / 2) < Math.abs(best - ghostEv.length / 2))) best = i;
+    if (best > 0 && words.length > 1) { h1 = ghostEv.slice(0, best).trim(); h2 = ghostEv.slice(best).trim(); } else { h1 = ghostEv; h2 = 'สยองหรือฮา? ชาวซอยแตกตื่น!'; }
+  }
   fit(h1, R.headline_1, 170, 900, INK, { maxSX: 0.78 });
   fit(h2, R.headline_2, 170, 900, RED, { maxSX: 0.78 });
   const ph = s.mood === 'story' ? ['casino_tables'] : layout?.photo_suggestions?.[s.mood === 'neutral' ? 'event' : s.mood] ?? ['kaprao_egg'];
-  await photo(ph[Math.floor(Math.random() * ph.length)], R.photo_main);
-  const cap = s.mood === 'story' ? 'บ่อนเถื่อนย่านชานเมือง ที่สี่หนุ่มเสียเงินเก็บทั้งชีวิตไปในคืนเดียว (ภาพประกอบ)'
+  if (ghostEv && s.selfie && R.photo_main) {
+    const r = R.photo_main, im = s.selfie;
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    const k = Math.max(r.w / im.width, r.h / im.height);
+    const sw = r.w / k, sh = r.h / k;
+    ctx.drawImage(im, (im.width - sw) / 2, (im.height - sh) / 2, sw, sh, r.x + 2, r.y + 2, r.w - 4, r.h - 4);
+    ctx.restore();
+  } else await photo(ph[Math.floor(Math.random() * ph.length)], R.photo_main);
+  const cap = ghostEv ? 'ภาพจากกล้องลูกค้า: "ผีนางรีวิว" ถ่ายเซลฟี่กับทีมเฮียผัด ยืนยันภาพไม่ได้ตัดต่อ (ผู้สื่อข่าวขอลาป่วยสามวัน)'
+    : s.mood === 'story' ? 'บ่อนเถื่อนย่านชานเมือง ที่สี่หนุ่มเสียเงินเก็บทั้งชีวิตไปในคืนเดียว (ภาพประกอบ)'
     : s.mood === 'day1' ? 'บรรยากาศหน้าร้านเฮียผัดวันแรก ลูกค้ายังงง ๆ ว่าใครเป็นพ่อครัว (ภาพประกอบ)'
     : s.mood === 'good' ? `ลูกค้า ${s.customers} คนต่อคิวยาวเหยียด เพื่อ${s.dish}จานเด็ด (ภาพประกอบ)`
       : s.mood === 'bad' ? 'เตาร้อนแต่ร้านเงียบ เฮียผัดยืนพัดเตารอลูกค้าทั้งบ่าย (ภาพประกอบ)' : `${s.dish} จานนี้ ราคานี้ ซอยนี้เท่านั้น (ภาพประกอบ)`;
