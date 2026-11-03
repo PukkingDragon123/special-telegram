@@ -448,9 +448,9 @@ function spiritLot(c: SpecialCtx) {
   w.mat('plastic_gloss', { tint: 0xc81818, uv: 'local' });
   for (let i = 0; i < 6; i++) w.cyl(sp[0] + 0.45 - (i % 3) * 0.15, SW_H + 0.42, sp[2] - 0.6 + Math.floor(i / 3) * 0.12, 0.03, 0.025, 0.2, 6, 1);
   w.mat('fabric', { tint: 0xf0a020, uv: 'local' });
-  for (let i = 0; i < 5; i++) w.tube(WB.sagLine(sp[0] + 0.5, SW_H + 2.05, sp[2] - 0.6 + i * 0.25, sp[0] + 0.5, SW_H + 2.0, sp[2] - 0.45 + i * 0.25, 0.25, 6), 0.035, 5);
-  w.mat('plaster', { tint: 0xf4f0e8, uv: 'local' });
-  for (let i = 0; i < 4; i++) { w.pushT(sp[0] + 1.2, SW_H, sp[2] + 0.6 + i * 0.4, -Math.PI / 2); w.box(-0.08, 0.25, -0.18, 0.08, 0.45, 0.18, ALL); for (const z of [-0.14, 0.14]) for (const x of [-0.05, 0.05]) w.box(x - 0.02, 0, z - 0.02, x + 0.02, 0.25, z + 0.02, SIDES); w.box(-0.05, 0.4, 0.15, 0.05, 0.62, 0.25, ALL); w.pop(); }
+  for (let i = 0; i < 5; i++) w.tube(WB.sagLine(sp[0] + 0.42, SW_H + 2.05, sp[2] - 0.6 + i * 0.25, sp[0] + 0.42, SW_H + 2.0, sp[2] - 0.45 + i * 0.25, 0.25, 6), 0.035, 5);
+  // ม้าลาย: painted plaster zebra offerings, rounded and striped (alternating white / black lathe segments)
+  for (let i = 0; i < 4; i++) { w.pushT(sp[0] + 1.2, SW_H, sp[2] + 0.6 + i * 0.4, -Math.PI / 2); zebraFigurine(w); w.pop(); }
   w.setGroup('base');
   c.lights.add({ p: new THREE.Vector3(sp[0], SW_H + 2.0, sp[2] - 0.2), color: new THREE.Color(0xff9040), intensity: 6, range: 6, glow: 0.5, kind: 'custom', day: 0.15 });
   // low decorative fence
@@ -534,3 +534,38 @@ function backBlocks(c: SpecialCtx) {
 }
 
 void NX; void PX; void PY; void NZ; void PZ; void SIDES; void PLASTIC_COLORS; void pottedPlant; void bougainvillea; void MARKET;
+
+/** a ~0.6 m painted plaster zebra (spirit-house offering) facing +z: segmented, striped, glossy and a bit chipped */
+function zebraFigurine(w: WB) {
+  const white = () => w.mat('plastic_gloss', { tint: 0xf2eee4, uv: 'local', dirt: 1.4 });
+  const black = () => w.mat('plastic_gloss', { tint: 0x1c1a18, uv: 'local' });
+  // body: horizontal, built from 7 slices along z with a rounded profile
+  const prof = [0.03, 0.072, 0.09, 0.095, 0.093, 0.08, 0.036];
+  const L = 0.36, seg = L / prof.length;
+  for (let k = 0; k < prof.length; k++) {
+    if (k % 2) black(); else white();
+    const z = -L / 2 + k * seg;
+    w.pushTR(0, 0.36, z, Math.PI / 2, 0, 0);
+    w.cyl(0, 0, 0, prof[k], prof[Math.min(prof.length - 1, k + 1)], seg, 12, k === 0 || k === prof.length - 1 ? 1 : 0);
+    w.pop();
+  }
+  // legs with black hooves and a stripe
+  for (const lz of [-0.13, 0.13]) for (const lx of [-0.045, 0.045]) {
+    black(); w.cyl(lx, 0, lz, 0.018, 0.019, 0.035, 8, 0);
+    white(); w.cyl(lx, 0.035, lz, 0.016, 0.02, 0.1, 8, 0);
+    black(); w.cyl(lx, 0.135, lz, 0.02, 0.022, 0.04, 8, 0);
+    white(); w.cyl(lx, 0.175, lz, 0.022, 0.03, 0.12, 8, 0);
+  }
+  // neck (striped, leaning forward) + head with dark muzzle + ears + mane + tail
+  for (let k = 0; k < 3; k++) {
+    if (k % 2) black(); else white();
+    w.pushTR(0, 0.4 + k * 0.055, 0.15 + k * 0.022, -0.42, 0, 0);
+    w.cyl(0, 0, 0, 0.045 - k * 0.004, 0.041 - k * 0.004, 0.06, 10, 0);
+    w.pop();
+  }
+  white(); w.pushTR(0, 0.57, 0.22, Math.PI / 2 + 0.35, 0, 0); w.cyl(0, 0, 0, 0.04, 0.032, 0.09, 10, 1); w.pop();
+  black(); w.pushTR(0, 0.537, 0.305, Math.PI / 2 + 0.35, 0, 0); w.cyl(0, 0, 0, 0.032, 0.026, 0.035, 10, 1); w.pop();
+  for (const ex of [-0.022, 0.022]) { white(); w.cyl(ex, 0.6, 0.2, 0.012, 0.002, 0.05, 6, 0); }
+  black(); w.box(-0.008, 0.42, 0.13, 0.008, 0.62, 0.17, ALL);
+  black(); w.pushTR(0, 0.38, -0.19, -2.6, 0, 0); w.cyl(0, 0, 0, 0.008, 0.004, 0.14, 6, 1); w.pop();
+}

@@ -79,14 +79,26 @@ class Batch {
   write(g: Garment) {
     (this.pos.array as Float32Array).set(g.cloth.x, g.vOff * 3);
     (this.nrm.array as Float32Array).set(g.cloth.nrm, g.vOff * 3);
-    this.pos.addUpdateRange(g.vOff * 3, g.cloth.n * 3);
-    this.nrm.addUpdateRange(g.vOff * 3, g.cloth.n * 3);
+    // ranges are only cleared when the mesh is drawn: while another scene renders (cutscene, Skill Heaven)
+    // collapse them into one full upload instead of letting them pile up
+    if (this.pos.updateRanges.length > 48) {
+      this.pos.clearUpdateRanges(); this.nrm.clearUpdateRanges();
+      this.pos.addUpdateRange(0, this.pos.array.length); this.nrm.addUpdateRange(0, this.nrm.array.length);
+      this.full = true;
+    }
+    if (!this.full) {
+      this.pos.addUpdateRange(g.vOff * 3, g.cloth.n * 3);
+      this.nrm.addUpdateRange(g.vOff * 3, g.cloth.n * 3);
+    }
     this.dirty = true;
   }
+  private full = false;
   flush() {
     if (!this.dirty) return;
     this.pos.needsUpdate = true; this.nrm.needsUpdate = true;
     this.dirty = false;
+    // three clears the ranges after uploading them; start collecting per-garment ranges again
+    if (this.full && this.pos.updateRanges.length === 0) this.full = false;
   }
   dispose() { this.mesh?.removeFromParent(); this.mesh?.geometry.dispose(); }
 }

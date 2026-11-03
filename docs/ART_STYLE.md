@@ -1,5 +1,11 @@
 # เฮียผัด! — ONE art style for every agent
 
+> **Nov 3 update (client): "make the graphics look realistic, use realistic 3D assets from the web, fully polished".**
+> The default render is now **realistic PBR**: no screen-space ink lines, no cel bands, ACES filmic tone mapping, photographic
+> grades (`LOOKS_REAL` in `src/core/postfx.ts`). The inked anime look below is still available with `?look=anime`
+> (or `localStorage['hp.look'] = 'anime'`). Everything else on this sheet still holds: real scanned / web models, PBR textures,
+> grime, micro-detail density, budgets. Cloth hangs and moves for real (`src/modules/cloth`): never model fabric as a flat quad.
+
 The client, Oct 25: "I hate the lazy blocky assets, I need detailed assets. Make custom assets in a realistic style or download
 from Sketchfab, super detailed, with small props too. The map looks bad right now. Make every agent use the same art style,
 working on the same thing."

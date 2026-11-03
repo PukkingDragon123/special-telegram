@@ -218,7 +218,9 @@ export class Traffic {
         return fromGhost();
       }
     };
-    Promise.all([pick('scooter_wave'), pick('scooter_cub')]).then(([wave, cub]) => {
+    // (the library Super Cub photoscan's texture rebake is shattered up close: every traffic moto uses the Wave)
+    Promise.all([pick('scooter_wave')]).then(([wave]) => {
+      const cub = wave;
       if (!this.group) return;
       for (const id of Object.keys(VDEFS)) {
         if (!isMotoKind(VDEFS[id].kind)) continue;

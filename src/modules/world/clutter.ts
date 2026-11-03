@@ -25,7 +25,8 @@ import { ROWS, MARKET, ZEBRAS, OFFICE, CROAD, TEMPLE, POLES_MAIN_N, POLES_MAIN_S
  */
 
 const SEED = 'clutter-2026-11';
-const BIKES = ['scooter_wave', 'scooter_cub', 'scooter_wave'];
+// (scooter_cub's photoscan texture rebake is shattered up close; parked rows of Honda Waves are the real soi look anyway)
+const BIKES = ['scooter_wave', 'scooter_wave', 'scooter_wave'];
 const BEERS = ['bottle_beer_chang', 'bottle_beer_singha', 'bottle_beer_leo'];
 const SMALL_POTS = ['plant_aloe', 'pot_clay', 'plant_aloe'];
 const CRATE_COLS = [0xc0302a, 0x2a62b8, 0x2a8a4a, 0xe0b020, 0x1f4f9a];
@@ -57,9 +58,9 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   // The procedural 'scooter' (realprops-vehicle.ts) reads as a toy next to the photoscanned library mopeds, and
   // ART_STYLE §2 says vehicles come from Sketchfab: swap every parked one for scooter_wave / scooter_cub. Same pivot and
   // forward (+Z, origin on the ground, ~1.8 m); the caller's colliders and phys 'none' stay. Opt out with ?noscooterswap.
-  if (MODELS['lib:scooter_wave'] && MODELS['lib:scooter_cub'] && !new URLSearchParams(location.search).has('noscooterswap')) {
+  if (MODELS['lib:scooter_wave'] && !new URLSearchParams(location.search).has('noscooterswap')) {
     let i = 0;
-    for (const p of real.placements) if (p.id === 'scooter') { p.id = ((i++ * 2654435761) >>> 0) % 5 < 3 ? 'lib:scooter_wave' : 'lib:scooter_cub'; p.color = null; stats.kinds['scooter → library'] = i; }
+    for (const p of real.placements) if (p.id === 'scooter') { p.id = 'lib:scooter_wave'; i++; p.color = null; stats.kinds['scooter → library'] = i; }
   }
 
   // ---------------------------------------------------------------- occupancy: everything placed before me

@@ -13,6 +13,7 @@ npm run build        # production build in dist/
 ```
 
 Use a desktop browser with a real GPU (Chrome/Edge/Firefox). Quality: `?quality=low|medium|high|ultra` (default high, auto-scales resolution).
+Look: realistic PBR with ACES filmic grading by default; the inked anime style (outlines + cel bands + impact frames) is `?look=anime`.
 
 ## Controls
 
@@ -20,7 +21,8 @@ Use a desktop browser with a real GPU (Chrome/Edge/Firefox). Quality: `?quality=
 |---|---|
 | WASD / Shift / Ctrl / Space | move / run / crouch / jump |
 | Mouse | look (first person, no hands) |
-| E | pick up / interact / pay shopkeeper |
+| E | pick up / interact / pay shopkeeper / use an ATM |
+| ATM | click the real keys or the screen · 0–9 · Enter · Backspace · Esc (cancel / take your card) |
 | Q | drop selected item |
 | 1–5 / wheel | select inventory slot |
 | Left click (hold) | use held item: pour, add ingredient, stir, chop, wash, place |
@@ -47,7 +49,7 @@ tabs of one browser (dev). Multiplayer is implemented but not yet play-tested (s
 
 `?autostart&skipintro` straight into the world · `?debug` · `?only=world,characters` · `?skip=life` ·
 `?timescale=20` · `?time=22` · `?fly` · `?kitchenlab` · `?restaurantlab` · `?shoplab` · `?lifelab` · `?charlab` ·
-`?customize` · `?newspaper` · `?intro=<step>` · `?scene=casino`.
+`?customize` · `?newspaper` · `?intro=<step>` · `?scene=casino` · `?atm` (spawn at the store ATM) · `?clothlab` (test laundry in front of you) · `?look=anime`.
 itch.io build: `npm run build && node scripts/itch-pack.mjs` → `hia-phat-itch.zip` (under 1000 files; assets packed into .pak files).
 Headless checks: `node scripts/shot.mjs "<query>" out.png <wait>` and `node scripts/playtest.mjs`.
 
@@ -55,5 +57,15 @@ Headless checks: `node scripts/shot.mjs "<query>" out.png <wait>` and `node scri
 
 `src/core` engine, post-FX, input, assets, audio · `src/net` transports · `src/sim` replicated state + physics ·
 `src/game` hub, items, interaction, player, scenes · `src/ui3d` 3D bubbles/text · `src/modules/*` features
-(characters, world, cooking, restaurant, shops, menu, intro, social, life). See `docs/ARCHITECTURE.md`,
+(characters, world, cooking, restaurant, shops, menu, intro, social, life, cloth, atm, water, critters, escape). See `docs/ARCHITECTURE.md`,
 `docs/GAME_BRIEF.md`, `docs/MAP_PLAN.md`. Asset sources: `CREDITS.md`.
+
+## Cloth & ATM
+
+`src/modules/cloth`: real cloth physics (position-based dynamics + per-triangle aerodynamics, gusty wind, pegs / hangers / ties,
+collisions with people and walls). World builders publish laundry lines, hanger rails, tarps and curtains through
+`ClothSpots` (`src/modules/cloth/api.ts`). Moving props attach cloth with `registerClothAnchor` (the food cart's ผ้าขาวม้า).
+Garments are cut from real pattern outlines and use the real fabric photos in `public/assets/textures/clothing`.
+
+`src/modules/atm`: two street ATMs (fictional banks) with a realistic screen UI. Per-player bank accounts live in `g.atm`
+(host-authoritative `atm.op` intent).
