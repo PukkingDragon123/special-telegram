@@ -7,6 +7,7 @@ import { Sound } from '../../core/audio';
 import { Ease, tl } from '../../core/util';
 import { canvasTexture } from '../../ui3d/text';
 import { allRecipeIds, recipeInfo, unlockedRecipes, DEFAULT_EXTRAS } from './data';
+import { serviceFrame } from './premises';
 
 /* =============================================================================================
  * MENU POSTER (real laminated อาหารตามสั่ง photo menu from img/posters, prices written into its
@@ -254,8 +255,9 @@ export class MenuCloseup {
     const h = this.hover();
     const menu = game.g.menu ?? {};
     const unl = unlockedRecipes(game);
-    const zone = game.world?.zoneAt(cartPos(game));
-    const pf = zone?.priceFactor ?? 1;
+    // price opinion against the service point (the open shophouse restaurant pays more than the street cart)
+    const sf = serviceFrame(game);
+    const pf = sf.priceFactor, zone = sf.zone;
     this.hi.visible = false;
     if (h.kind === 'dish' || h.kind === 'price') {
       const s = slots[h.i], rid = SLOT_RECIPES[h.i];
@@ -269,7 +271,7 @@ export class MenuCloseup {
       else {
         const on = menu[rid] !== undefined;
         const price = menu[rid] ?? game.g.menuPrices?.[rid] ?? info.price;
-        this.writeNote(`${info.name.th} ${price}.- ${on ? '' : '(หมด)'}`, `แถว${zone?.name.th ?? 'นี้'} ราคากลาง ~${fair}.-  · คลิก=${h.kind === 'price' ? '+5' : on ? 'ปิดเมนู' : 'เปิดเมนู'} คลิกขวา=-5`);
+        this.writeNote(`${info.name.th} ${price}.- ${on ? '' : '(หมด)'}`, `${sf.mode === 'shop' ? 'ในร้าน ' : ''}แถว${zone?.name?.th ?? 'นี้'} ราคากลาง ~${fair}.-  · คลิก=${h.kind === 'price' ? '+5' : on ? 'ปิดเมนู' : 'เปิดเมนู'} คลิกขวา=-5`);
         if (Input.mousePressed(0)) { Input.consumeMouse(0); if (h.kind === 'price') game.intent('rest.menu', { op: 'price', r: rid, d: 5 }); else game.intent('rest.menu', { op: 'toggle', r: rid }); Sound.play(h.kind === 'price' ? 'pickup' : 'paper_rustle', { vol: 0.4, pitch: 1.4 }); }
         if (Input.mousePressed(2)) { Input.consumeMouse(2); game.intent('rest.menu', { op: 'price', r: rid, d: -5 }); Sound.play('pickup', { vol: 0.4, pitch: 1.1 }); }
         if (wheel) { game.intent('rest.menu', { op: 'price', r: rid, d: -wheel * 5 }); Sound.play('pickup', { vol: 0.3, pitch: 1.3 }); }

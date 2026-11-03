@@ -9,6 +9,7 @@ import { L, X, MAD, pickL, fillL, stars as starStr, Line } from './lines';
 import { makeOrder, orderSpeech, orderShort, judge, menuRecipes, menuPrice, Order, reviewBubble, JudgeCtx, SPICY_RECIPES } from './judge';
 import { SEAT_KINDS, TABLE_KINDS, SEAT_H, TABLE_H, TABLE_SIZE, SODA_KINDS } from './furniture';
 import { addReview, stats } from './stats';
+import { serviceFrame, restMods, isInside, rs, setRS } from './premises';
 
 /* =============================================================================================
  * CUSTOMERS (host AI). npc entities { role:'customer', look, arch, cs, mood, ord, seat, posture … }.
@@ -43,8 +44,9 @@ export function cartFrame() {
   const cs = Math.cos(yaw), sn = Math.sin(yaw);
   return { p, yaw, w: (lx: number, lz: number) => [p[0] + lx * cs + lz * sn, p[1], p[2] - lx * sn + lz * cs] as number[] };
 }
-const queueSpot = (i: number) => cartFrame().w(0.05 + 0.78 * i, -1.0 - (i > 0 ? 0.1 : 0));
-const waitSpot = (k: number) => cartFrame().w(-1.75 - 0.5 * Math.floor(k / 3), -0.55 - 0.62 * (k % 3));
+// queue / wait spots follow the service point: the cart, or the open shophouse restaurant (premises.ts)
+const queueSpot = (i: number) => serviceFrame().queueSpot(i);
+const waitSpot = (k: number) => serviceFrame().waitSpot(k);
 
 function yawOfQ(q?: number[]) { return q ? 2 * Math.atan2(q[1], q[3]) : 0; }
 const upright = (e: Ent) => !e.q || (Math.abs(e.q[0]) < 0.12 && Math.abs(e.q[2]) < 0.12);
@@ -131,7 +133,7 @@ function tissueNear(p: ArrayLike<number>) { return G.state.all('item').some((e) 
 
 function restaurantHasWater() { return G.state.all('item').some((e) => e.k === 'water_dispenser' && (e.data?.water ?? 0) > 0.3) && G.state.all('item').some((e) => e.k === 'cup_plastic'); }
 function restaurantHasSoda() {
-  const cp = cartFrame().p;
+  const cp = serviceFrame().p;
   return G.state.all('item').some((e) => SODA_KINDS.includes(e.k) && e.k !== 'water_bottle' && !e.data?.empty && (G.items.worldPos(e)?.distanceTo(V(cp)) ?? 99) < 8);
 }
 
@@ -144,26 +146,26 @@ export function spawnRate(): number {
   if (t < 6.2 || t > 23.6) return 0;
   const menu = menuRecipes(G);
   if (!menu.length) return 0;
-  const cp = cartFrame().p;
-  const zone = G.world?.zoneAt(cp);
+  const sf = serviceFrame();
+  const zone = sf.zone;
   const traffic = zone?.traffic ?? 1;
   const rep = g.reputation ?? 3;
   const repMul = 0.45 + (rep / 5) * 1.1;
   let attract = 0;
-  for (const r of menu) attract += clamp(Math.pow(recipeInfo(G, r).price * (zone?.priceFactor ?? 1) / Math.max(5, menuPrice(G, r)), 1.6), 0.25, 2);
+  for (const r of menu) attract += clamp(Math.pow(recipeInfo(G, r).price * sf.priceFactor / Math.max(5, menuPrice(G, r)), 1.6), 0.25, 2);
   attract /= menu.length;
   const day = g.day ?? 1;
   const dayF = clamp(0.5 + 0.12 * day, 0.6, 2.2);
   const players = Math.max(1, G.players().length);
   const yest = g.restYesterday ?? 1;
-  return (1 / 70) * dayF * traffic * (G.clock.rush / 0.8) * repMul * attract * (0.7 + 0.1 * players) * yest;
+  return (1 / 70) * dayF * traffic * (G.clock.rush / 0.8) * repMul * attract * (0.7 + 0.1 * players) * yest * restMods().spawn;
 }
 
-export function maxCustomers() { return Math.min(12, 4 + findSeats(false).length); }
+export function maxCustomers() { return Math.min(12 + restMods().capacity, 4 + findSeats(false).length); }
 
 export function spawnCustomer(o: { arch?: string; at?: number[]; state?: CS; order?: Order } = {}): Ent | null {
-  const cf = cartFrame();
-  const zone = G.world?.zoneAt(cf.p);
+  const cf = serviceFrame();
+  const zone = cf.zone;
   const arch = o.arch ?? weighted(archetypePool(zone?.kind, G.clock.time));
   let at = o.at;
   if (!at) {
@@ -180,9 +182,9 @@ export function spawnCustomer(o: { arch?: string; at?: number[]; state?: CS; ord
     role: 'customer', look, arch, p: [round(at[0], 3), round(at[1], 3), round(at[2], 3)], yaw: 0, anim: 'idle', animT: 0, animLoop: true,
     face: null, lookAt: null, hold: null, posture: 'stand', cs: 'arrive', mood: 1, ord: null, seat: null, spot: null, tbl: null,
   });
-  c._t = 0; c._qt = ++qCounter; c._pf = zone?.priceFactor ?? 1;
+  c._t = 0; c._qt = ++qCounter; c._pf = cf.priceFactor;
   const a = archDef(arch);
-  c._pat = (95 + Math.random() * 55) * a.patience * (G.clock.rush > 1.2 ? 0.85 : 1) * (0.85 + (G.g.reputation ?? 3) * 0.05);
+  c._pat = (95 + Math.random() * 55) * a.patience * (G.clock.rush > 1.2 ? 0.85 : 1) * (0.85 + (G.g.reputation ?? 3) * 0.05) * restMods().patience;
   c._waited = 0;
   c._moneyDelta = 0;
   if (o.order) c.ord = o.order;
@@ -209,9 +211,9 @@ export function customersHost(dt: number) {
     if (c._qi !== i) {
       c._qi = i;
       if (c.cs === 'arrive' || c.cs === 'queue') {
-        const cf = cartFrame();
+        const cf = serviceFrame();
         const sp = queueSpot(i);
-        go(c, sp, c.cs === 'arrive' ? 1.25 : 0.9, () => { if (c.cs === 'arrive' || c.cs === 'queue') setCS(c, 'queue'); c.yaw = round(cf.yaw + Math.PI, 3); }, cf.yaw + Math.PI);
+        go(c, sp, c.cs === 'arrive' ? 1.25 : 0.9, () => { if (c.cs === 'arrive' || c.cs === 'queue') setCS(c, 'queue'); c.yaw = round(cf.queueFace, 3); }, cf.queueFace);
       }
     }
   });
@@ -235,7 +237,7 @@ function patienceTick(c: Ent, dt: number, k = 1) {
 function tick(c: Ent, dt: number, q: Ent[]) {
   c._t = (c._t ?? 0) + dt;
   const t = c._t;
-  const cf = cartFrame();
+  const cf = serviceFrame();
   switch (c.cs as CS) {
     case 'arrive': {
       if (!G.g.shopOpen && t > 1) { leave(c, pickL(X.closing)); return; }
@@ -271,7 +273,7 @@ function tick(c: Ent, dt: number, q: Ent[]) {
       }
       if (t > 3.6) {
         // somebody has to be at the cart to take the order
-        if (!G.nearestPlayer(cf.p, 7)) {
+        if (!G.nearestPlayer(cf.p, cf.orderRadius)) {
           patienceTick(c, dt, 0.6);
           if (now() - (c._lastSay ?? 0) > 6.5) { say(c, pickL(X.call), { duration: 3 }); anim(c, 'wave'); }
           if (c._waited > c._pat * 0.8) leave(c, pickL(L.bad.wait), true);
@@ -279,7 +281,7 @@ function tick(c: Ent, dt: number, q: Ent[]) {
         }
         const o: Order = c._order;
         setCS(c, 'order');
-        c.lookAt = G.nearestPlayer(cf.p, 7)?.id ?? null;
+        c.lookAt = G.nearestPlayer(cf.p, cf.orderRadius)?.id ?? null;
         c.ord = o;
         anim(c, 'point');
         say(c, orderSpeech(G, c, o), { duration: 5.5 });
@@ -322,7 +324,7 @@ function tick(c: Ent, dt: number, q: Ent[]) {
 
 function toSeatOrWait(c: Ent, forceStand = false) {
   const o: Order = c.ord;
-  const cf = cartFrame();
+  const cf = serviceFrame();
   if (!o.req.includes('takeaway') && !forceStand) {
     const seats = findSeats(true);
     if (seats.length) {
@@ -332,9 +334,9 @@ function toSeatOrWait(c: Ent, forceStand = false) {
       const s = seats[0];
       c.seat = s.stool.id; // reserve
       setCS(c, 'toseat');
-      // walk around the cart (vendor side) instead of through it
+      // walk around the cart (vendor side) instead of through it; in the shophouse just walk in
       const side = (s.stool.p![0] - cf.p[0]) * Math.cos(cf.yaw) - (s.stool.p![2] - cf.p[2]) * Math.sin(cf.yaw) > 0 ? 1 : -1;
-      const via = cf.w(side * 1.75, 0.0);
+      const via = cf.mode === 'cart' ? cf.w(side * 1.75, 0.0) : c.p!;
       go(c, via, 1.2, () => go(c, s.stool.p!, 1.1, () => {
         const fresh = findSeats(false).find((x) => x.stool.id === s.stool.id);
         if (!fresh) { c.seat = null; toSeatOrWait(c, true); return; }
@@ -350,7 +352,7 @@ function toSeatOrWait(c: Ent, forceStand = false) {
   c.seat = null;
   setCS(c, 'wait');
   const k = waiters().indexOf(c);
-  go(c, waitSpot(Math.max(0, k)), 1.0, () => { c.yaw = round(cf.yaw + Math.PI * 0.75, 3); anim(c, 'idle', true); });
+  go(c, waitSpot(Math.max(0, k)), 1.0, () => { c.yaw = round(cf.waitFace, 3); anim(c, 'idle', true); });
 }
 
 function waitBehaviour(c: Ent, f: number, t: number) {
@@ -495,7 +497,7 @@ function payAndGo(c: Ent, takeaway: boolean) {
   const v = judge(G, c, d, c.ord ?? { r: d.recipe, req: [] }, ctxOf(c));
   if (c._half) v.pay = Math.round(v.pay * 0.5 / 5) * 5;
   // homeless-man karma (life module) multiplies tips
-  const tipMul = (G as any).life?.tipMul?.() ?? 1;
+  const tipMul = ((G as any).life?.tipMul?.() ?? 1) * restMods().tip;
   if (v.tip) v.tip = Math.max(0, Math.round(v.tip * tipMul));
   const server = G.state.get(c._by) ?? G.nearestPlayer(c.p!, 50);
   anim(c, 'give');
@@ -509,6 +511,8 @@ function payAndGo(c: Ent, takeaway: boolean) {
     if (d.cook != null && v.stars >= 4) G.xp(d.cook, 'cook', v.stars);
   }
   addReview(c, v, d.recipe, v.pay + v.tip, false);
+  // a real restaurant: count the (paying) customers who ate inside (grand-opening quest, stats)
+  if (v.pay > 0 && c.seat != null && isInside(c.p!)) setRS(G, { servedInside: rs(G).servedInside + 1 });
   // honest review bubble + floating star slip (all peers)
   G.emit('rest:review', { cid: c.id, stars: v.stars, th: v.review.th, en: v.review.en, pay: v.pay, tip: v.tip });
   const line = reviewBubble(v);
@@ -574,7 +578,7 @@ function leave(c: Ent, line: TL | Line | null, angry = false, why?: string) {
   setCS(c, 'leave');
   c.ord = c.ord ?? null;
   c.mood = angry ? 0 : c.mood;
-  const cf = cartFrame();
+  const cf = serviceFrame();
   let to: number[] | null = null;
   for (let i = 0; i < 10 && !to; i++) { const q = G.world?.nav.randomPoint(); if (q && dist2D([q.x, 0, q.z], cf.p) > 22 && dist2D([q.x, 0, q.z], cf.p) < 50) to = [q.x, q.y, q.z]; }
   to ??= [cf.p[0] - 1, cf.p[1], cf.p[2] + (Math.random() < 0.5 ? 30 : -30)];
@@ -706,7 +710,7 @@ function flee(c: Ent) {
   const it = G.state.get(c._dish);
   if (it && it.holder === c.id) { G.items.detach(it); G.items.toWorld(it, [c.p![0], c.p![1] + 0.9, c.p![2]], [0, 1, 0]); }
   setCS(c, 'flee');
-  const cf = cartFrame();
+  const cf = serviceFrame();
   const away = new THREE.Vector3(c.p![0] - cf.p[0], 0, c.p![2] - cf.p[2]).normalize().multiplyScalar(35);
   go(c, [c.p![0] + away.x, c.p![1], c.p![2] + away.z], 4.5, () => G.state.despawn(c));
 }

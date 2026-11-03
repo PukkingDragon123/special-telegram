@@ -172,6 +172,47 @@ export function buildFoodLayers(seed = 1): FoodLayers {
 
 // ------------------------------------------------------------------ utensils
 
+/**
+ * Give a shaped sheet real thickness: the surface, a copy pushed `t` back along the normals (reversed), and side
+ * walls stitched along the open boundary, plus an optional rolled lip (thicker rim) so thin steel / plastic
+ * reads as metal and moulded plastic instead of a zero-thickness card.
+ */
+function solidify(src: THREE.BufferGeometry, t: number, lip = 0) {
+  const g0 = src.index ? src : src.toNonIndexed();
+  const g = g0.index ? g0 : (() => { const x = g0.clone(); x.setIndex([...Array(g0.getAttribute('position').count).keys()]); return x; })();
+  g.computeVertexNormals();
+  const P = g.getAttribute('position') as THREE.BufferAttribute, N = g.getAttribute('normal') as THREE.BufferAttribute;
+  const UV = g.getAttribute('uv') as THREE.BufferAttribute | undefined;
+  const I = g.index!.array as ArrayLike<number>;
+  const n = P.count;
+  // boundary edges (used once)
+  const ec = new Map<string, [number, number]>();
+  for (let i = 0; i < I.length; i += 3) for (let e = 0; e < 3; e++) {
+    const a = I[i + e], b = I[i + ((e + 1) % 3)], k = a < b ? a + ',' + b : b + ',' + a;
+    if (ec.has(k)) ec.delete(k); else ec.set(k, [a, b]);
+  }
+  const rim = new Set<number>(); for (const [a, b] of ec.values()) { rim.add(a); rim.add(b); }
+  const pos: number[] = [], uv: number[] = [], idx: number[] = [];
+  for (let i = 0; i < n; i++) {
+    const k = rim.has(i) ? lip : 0;
+    pos.push(P.getX(i) + N.getX(i) * k * 0.5, P.getY(i) + N.getY(i) * k * 0.5, P.getZ(i) + N.getZ(i) * k * 0.5);
+    uv.push(UV ? UV.getX(i) : 0, UV ? UV.getY(i) : 0);
+  }
+  for (let i = 0; i < n; i++) {
+    const k = t + (rim.has(i) ? lip * 0.5 : 0);
+    pos.push(P.getX(i) - N.getX(i) * k, P.getY(i) - N.getY(i) * k, P.getZ(i) - N.getZ(i) * k);
+    uv.push(UV ? UV.getX(i) : 0, UV ? UV.getY(i) : 0);
+  }
+  for (let i = 0; i < I.length; i += 3) { idx.push(I[i], I[i + 1], I[i + 2]); idx.push(I[i] + n, I[i + 2] + n, I[i + 1] + n); }
+  for (const [a, b] of ec.values()) idx.push(a, a + n, b, b, a + n, b + n);
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  out.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  out.setIndex(idx);
+  out.computeVertexNormals();
+  return out;
+}
+
 export function buildSpatula() {
   const g = G();
   const blade = gc('spatBlade', () => {
@@ -186,9 +227,12 @@ export function buildSpatula() {
     p.computeVertexNormals();
     p.rotateX(-Math.PI / 2);
     p.translate(0, 0.004, -0.05);
-    return p;
+    // 1.2 mm stainless sheet with a rolled 2 mm lip around the curled sides
+    return solidify(p, 0.0012, 0.0016);
   });
-  g.add(mesh(blade, cachedMat('spatBladeM', () => { const m = (M.steel() as THREE.MeshStandardMaterial).clone(); m.side = THREE.DoubleSide; return m; })));
+  g.add(mesh(blade, cachedMat('spatBladeM', () => (M.steel() as THREE.MeshStandardMaterial).clone())));
+  // the rivet plate where the shaft is welded to the blade
+  g.add(mesh(gc('spatRivet', () => rbox(0.03, 0.004, 0.022, 0.0015, 0.1, 1).translate(0, 0.006, -0.006)), M.steelDark()));
   g.add(mesh(gc('spatShaft', () => bar([0, 0.01, 0], [0, 0.07, 0.26], 0.005, 6)), M.steelDark()));
   g.add(mesh(gc('spatGrip', () => dent(bar([0, 0.068, 0.25], [0, 0.11, 0.4], 0.013, 7), 0.0012, 40, 2)), M.wood()));
   return g;
@@ -228,9 +272,13 @@ export function buildRicePaddle() {
     for (let i = 0; i < pos.count; i++) pos.setZ(i, ((pos.getX(i) / 0.04) ** 2) * 0.004);
     d.rotateX(-Math.PI / 2);
     d.translate(0, 0.006, -0.05);
-    return merge([d, bar([0, 0.006, 0], [0, 0.02, 0.15], 0.008, 6)]);
+    // moulded ทัพพี: 3.5 mm thick head with a rounded rim, a flattened oval handle with a hanging hole ring
+    const head = solidify(d, 0.0035, 0.0015);
+    const handle = bar([0, 0.006, -0.005], [0, 0.02, 0.15], 0.008, 8).scale(1.35, 0.55, 1);
+    const ring = new THREE.TorusGeometry(0.006, 0.0022, 5, 12).rotateX(-Math.PI / 2 + 0.09).translate(0, 0.02, 0.152);
+    return merge([head, handle, ring]);
   });
-  g.add(mesh(p, cachedMat('paddleM', () => { const m = (M.plastic(0xf4f2ea) as THREE.MeshStandardMaterial).clone(); m.side = THREE.DoubleSide; return m; })));
+  g.add(mesh(p, cachedMat('paddleM', () => (M.plastic(0xf4f2ea) as THREE.MeshStandardMaterial).clone())));
   return g;
 }
 

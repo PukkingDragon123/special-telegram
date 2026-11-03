@@ -7,7 +7,7 @@ import { flat, groundDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
 import { EMIS } from './mats';
 import { MARKET } from './layout';
-import { WindCloth, dressMarketStalls } from './realprops-market';
+import { WindCloth, dressMarketStalls, PileBatch, KIND_PILE } from './realprops-market';
 
 /**
  * FRESH MARKET (ตลาดสด) — steel-post shed with corrugated gable roofs + fibreglass skylights,
@@ -172,6 +172,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
   w.setGroup('base');
   // micro detail around the functional stalls + wind-blown cloth (one mesh)
   dressMarketStalls({ ...c, rng }, cloth);
+  flushMarketPiles(c);
   const cm = cloth.build();
   if (cm) { c.props.real.addObject(cm); c.props.real.animate(new THREE.Vector3((M.x0 + M.x1) / 2, 3, (M.z0 + M.z1) / 2), 90, (_dt, t) => { cloth.uTime.value = t; }); }
 }
@@ -238,6 +239,13 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
 }
 
 /** a tray / basket / heap of goods with a real produce photo on top when available */
+/** real produce piles of the decor stalls (flushed once by the market builder) */
+let marketPiles: PileBatch | null = null;
+export function flushMarketPiles(c: ShopCtx) {
+  if (!marketPiles) return;
+  const g = new THREE.Group(); g.name = 'decor-piles';
+  marketPiles.flush(g); c.props.real.addObject(g); marketPiles = null;
+}
 export function produce(c: ShopCtx, kind: string, x: number, y: number, z: number, rng: RNG) {
   const w = c.w;
   const ph = c.signs?.any('produce:' + kind, rng) ?? c.signs?.any('produce', rng) ?? null;
@@ -248,22 +256,30 @@ export function produce(c: ShopCtx, kind: string, x: number, y: number, z: numbe
   if (container === 'basket') c.props.real.add('lib:wicker_basket_01', x, y, z, yaw, { phys: 'none' });
   else if (container === 'tray') c.props.real.add('lib:plastic_basket', x, y, z, yaw, { color: rng.pick([0x2a5ab0, 0xd03030, 0x2a8a4a, 0xe86a8a]), phys: 'none' });
   else c.props.real.add('lib:kradong', x, y, z, yaw, { scale: (2 * r) / 0.712, phys: 'none' });
-  // heap: a low dome; the photo is mapped across its top faces
+  // heap: real produce models where they exist (instanced, batched for the whole market) …
   const hy = y + (container === 'basket' ? 0.09 : container === 'tray' ? 0.15 : 0.02);
   const hh = rng.range(0.06, 0.16);
+  const pk = KIND_PILE[kind];
+  if (pk && PileBatch.has(pk)) {
+    marketPiles ??= new PileBatch();
+    marketPiles.add(pk, new THREE.Vector3(x, hy - 0.01, z), yaw, r * 0.85, r * (container === 'tray' ? 0.6 : 0.85), Math.floor(x * 31 + z * 17));
+    return;
+  }
+  // … else a soft photo dome (fish on ice, dried goods, flowers, rice): 12 sectors × 3 rings, not a 6-sided cone
   if (ph) {
     w.atlas('sign', { e0: 0, ao: 0.95 });
-    const N = 6;
+    const N = 12, RINGS = 3;
     const cu = (ph.u0 + ph.u1) / 2, cv = (ph.v0 + ph.v1) / 2, ru = (ph.u1 - ph.u0) / 2, rv = (ph.v1 - ph.v0) / 2;
-    for (let i = 0; i < N; i++) {
-      const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2;
-      const rr = r * 0.92;
-      const p0 = [x + Math.cos(a0) * rr, hy, z + Math.sin(a0) * rr], p1 = [x + Math.cos(a1) * rr, hy, z + Math.sin(a1) * rr];
-      const uv0 = [cu + Math.cos(a0) * ru, cv + Math.sin(a0) * rv], uv1 = [cu + Math.cos(a1) * ru, cv + Math.sin(a1) * rv];
-      // tri with explicit per-vertex uvs: emulate via quad with d=c
-      w.quad(x, hy + hh, z, p1[0], p1[1], p1[2], p0[0], p0[1], p0[2], p0[0], p0[1], p0[2], null);
-      // patch uvs of the last 4 vertices (centre, p1, p0, p0)
-      patchLastUV(w, x, z, [cu, cv, uv1[0], uv1[1], uv0[0], uv0[1], uv0[0], uv0[1]]);
+    const pt = (i: number, k: number) => {
+      const a = (i / N) * Math.PI * 2, t = k / RINGS;              // t: 0 rim … 1 top
+      const lump = 1 + 0.07 * Math.sin(a * 3 + x * 5) * (1 - t);
+      const rr = r * 0.92 * Math.cos(t * Math.PI * 0.5) * lump;
+      return { p: [x + Math.cos(a) * rr, hy + hh * Math.sin(t * Math.PI * 0.5), z + Math.sin(a) * rr], uv: [cu + Math.cos(a) * ru * (rr / r), cv + Math.sin(a) * rv * (rr / r)] };
+    };
+    for (let k = 0; k < RINGS; k++) for (let i = 0; i < N; i++) {
+      const a = pt(i, k), b = pt(i + 1, k), c2 = pt(i + 1, k + 1), d = pt(i, k + 1);
+      w.quad(a.p[0], a.p[1], a.p[2], d.p[0], d.p[1], d.p[2], c2.p[0], c2.p[1], c2.p[2], b.p[0], b.p[1], b.p[2], null);
+      patchLastUV(w, x, z, [a.uv[0], a.uv[1], d.uv[0], d.uv[1], c2.uv[0], c2.uv[1], b.uv[0], b.uv[1]]);
     }
   } else {
     w.mat(kind === 'fish' || kind === 'shrimp' ? 'plastic_gloss' : 'leaves', { tint: kindTint(kind), uv: 'local' });

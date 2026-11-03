@@ -132,21 +132,45 @@ function signStand(game: Game) {
   return frame;
 }
 
+/** 20 L bottled-water cooler: moulded glossy body, dark recessed tap bay with shaped hot (red) / cold (blue) taps and
+ *  levers, slotted drip tray, cup dispenser tube with a stack of cups on the side, rear vent grille, bottle collar,
+ *  and the real 20 L bottle photo wrapped on a lathe (upside down). */
 function dispenser() {
-  const body = rbox(0.31, 0.95, 0.31, 0.02);
-  const collar = lathe([[0.13, 0.95], [0.12, 0.99], [0.06, 1.0]], 16);
-  const m = plastic(0xe9e7e0, 0.6);
-  const recess = mesh(rbox(0.2, 0.22, 0.03, 0.01, 0, 0.47, 0.145), flat(0x2a2b2e, 0.6));
-  const tray = mesh(rbox(0.2, 0.025, 0.08, 0.006, 0, 0.47, 0.16), flat(0x3a3b3e, 0.5, 0.2));
-  const tapR = mesh(rbox(0.04, 0.05, 0.05, 0.01, -0.05, 0.66, 0.175), flat(0xc0261d, 0.4));
-  const tapB = mesh(rbox(0.04, 0.05, 0.05, 0.01, 0.05, 0.66, 0.175), flat(0x1f4fb8, 0.4));
+  const W = 0.31, H = 0.95;
+  const shell = pbr('plastic_glossy', { repeat: 1, color: 0xeceae4, rough: 0.35 });
+  const dark = pbr('plastic_glossy', { repeat: 1, color: 0x26282c, rough: 0.3 });
+  const body = merge([rbox(W, H, W, 0.035, 0, 0, 0, 3), rbox(W + 0.01, 0.025, W + 0.01, 0.01, 0, 0, 0)]);
+  const collar = lathe([[0.135, H], [0.14, H + 0.012], [0.12, H + 0.03], [0.07, H + 0.04], [0.05, H + 0.045]], 24);
+  // tap bay: recessed dark panel with a rounded arch + drip tray with slots
+  const bay = rbox(0.21, 0.24, 0.02, 0.02, 0, 0.44, W / 2 - 0.006, 3);
+  const tray = rbox(0.22, 0.03, 0.09, 0.012, 0, 0.44, W / 2 + 0.03);
+  const slots: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < 7; i++) slots.push(rbox(0.008, 0.004, 0.07, 0.002, -0.075 + i * 0.025, 0.471, W / 2 + 0.03));
+  // taps: shaped spouts (lathe) + paddle levers, red = hot, blue = cold
+  const tap = (x: number, color: number) => {
+    const sp = lathe([[0.018, 0], [0.02, 0.02], [0.012, 0.05], [0.008, 0.055]], 14); sp.rotateX(Math.PI); sp.translate(x, 0.66, W / 2 + 0.035);
+    const lever = rbox(0.03, 0.045, 0.012, 0.005, x, 0.665, W / 2 + 0.05);
+    const neck = new THREE.CylinderGeometry(0.012, 0.014, 0.04, 12).rotateX(Math.PI / 2).translate(x, 0.67, W / 2 + 0.015);
+    return mesh(merge([sp, lever, neck]), plastic(color, 0.35));
+  };
+  // side cup tube with a stack of cone cups
+  const tubeG = new THREE.CylinderGeometry(0.035, 0.035, 0.32, 18, 1, true).translate(W / 2 + 0.04, 0.62, 0);
+  const cups = lathe([[0.0, 0.0], [0.03, 0.0], [0.033, 0.27], [0.0, 0.27]], 14); cups.translate(W / 2 + 0.04, 0.47, 0);
+  const vents: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < 10; i++) vents.push(rbox(0.2, 0.008, 0.01, 0.003, 0, 0.12 + i * 0.03, -W / 2 - 0.002));
+  const badge = rbox(0.12, 0.035, 0.006, 0.006, 0, 0.82, W / 2 + 0.002);
   // real 20 L bottle cut-out (shops module photo) wrapped on a lathe, upside down
   const bot = lathe([[0.01, 0], [0.05, 0.0], [0.05, 0.05], [0.135, 0.12], [0.14, 0.3], [0.135, 0.33], [0.14, 0.42], [0.13, 0.47], [0.02, 0.48]], 20);
   frontArc(bot, 200);
   const bm = new THREE.Mesh(bot, photo('gen/shops/water20.png', { alpha: true, rough: 0.15, side: D2 }));
   bm.name = 'bottle';
-  bm.position.y = 0.97; bm.rotation.x = Math.PI; bm.position.y = 1.47;
-  return group(mesh(merge([body, collar]), m), recess, tray, tapR, tapB, bm);
+  bm.rotation.x = Math.PI; bm.position.y = H + 0.52;
+  return group(
+    mesh(merge([body, collar]), shell), mesh(merge([bay, tray, badge]), dark), mesh(merge(slots), steel()),
+    tap(-0.05, 0xc0261d), tap(0.05, 0x1f4fb8),
+    mesh(tubeG, mat('cupTube', () => new THREE.MeshStandardMaterial({ color: 0xdfe8ec, roughness: 0.1, transparent: true, opacity: 0.35, depthWrite: false, side: D2 }))),
+    mesh(cups, flat(0xf4f2ec, 0.6)), mesh(merge(vents), dark), bm,
+  );
 }
 
 function cup() {
@@ -238,14 +262,8 @@ function trashBin() {
   return group(mesh(b, plasticD(0x2f6e3c)), mesh(bagRim, pbr('rubber_black', { repeat: 1, rough: 0.35 })), contents);
 }
 
-function trashBag() {
-  const g = new THREE.IcosahedronGeometry(0.2, 2);
-  g.scale(1, 1.15, 0.9);
-  wobble(g, 0.18, 6, 7);
-  g.translate(0, 0.21, 0);
-  const knot = new THREE.ConeGeometry(0.05, 0.12, 6); wobble(knot, 0.3, 20, 3); knot.translate(0, 0.48, 0);
-  return group(mesh(merge([g, knot]), pbr('rubber_black', { repeat: 1, rough: 0.3 })));
-}
+/** knotted black bin bag: the Poly Haven photoscan (lib trashbag) */
+function trashBag() { return realPropObject('trashbag'); }
 
 function sponge() {
   const base = rbox(0.1, 0.03, 0.068, 0.008);
@@ -333,7 +351,7 @@ export function defineFurniture(game: Game) {
   });
   def({
     kind: 'water_dispenser', name: tl('ตู้กดน้ำ', 'water dispenser'), weight: 12, slots: 3, price: 1890, carry: 'twohand', fixed: true, tags: ['furniture', 'appliance'],
-    shape: { type: 'box', size: [0.32, 1.45, 0.32] }, data: () => ({ water: 18.9 }), build: () => dispenser(),
+    shape: { type: 'box', size: [0.34, 1.47, 0.34] }, data: () => ({ water: 18.9 }), build: () => dispenser(),
     refresh: (o, e) => { const b = o.getObjectByName('bottle'); if (b) b.visible = (e.data?.water ?? 0) > 0.05; },
     label: (e) => tl((e.data?.water ?? 0) > 0.05 ? `ตู้กดน้ำ (${(e.data.water).toFixed(1)} ล.)` : 'ตู้กดน้ำ (น้ำหมด!)', 'water dispenser'), hold: { pos: [0, -0.6, -0.2], rot: [0.2, 0, 0], scale: 0.3 },
   });

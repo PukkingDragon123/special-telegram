@@ -105,6 +105,9 @@ export const SPIRIT_LOT = { x0: -20, x1: -6, z0: -158, z1: -146 };
 /** East side of the soi: facade faces WEST along x = +6. */
 export const SEVEN = { x0: 6, x1: 20, z0: -15, z1: 0 };              // 8-Twelve corner store
 export const CLOSED_HOUSE = { x0: 13.4, x1: 27, z0: -30.5, z1: -15, apronX: 6 };
+/** CLOSED_HOUSE units whose GROUND FLOOR the restaurant module builds itself (a0 of the main unit, the expansion
+ *  next door): rentable shophouse, roller shutters, interior, colliders (src/modules/restaurant/shop3d.ts) */
+export const RESTAURANT_UNITS = [-25.67, -20.83];
 export const ROW_SOI_E1: UnitSpec[] = R('W', 6, -30.5, [
   [4.0, { shop: 'kitchen', ground: 'open', storeys: 3, name: 'kitchen_shop', sign: 'kitchen', corner: 'right' }],
   [4.0, { shop: 'kitchen', ground: 'open', storeys: 3, noSign: true }],
@@ -112,8 +115,9 @@ export const ROW_SOI_E1: UnitSpec[] = R('W', 6, -30.5, [
 ], -1, { depth: 14 });
 export const MARKET = { x0: 6, x1: 50, z0: -80, z1: -40, floor: 0.15, roofY: 6.2 };
 export const ROW_SOI_E2: UnitSpec[] = R('W', 6, -82, [
-  [4.0, { shop: 'hardware', ground: 'open', storeys: 3, sign: 'hardware' }],
-  [4.0, { shop: 'hardware', ground: 'open', storeys: 3, noSign: true }],
+  // เจริญพาณิชย์เฟอร์นิเจอร์ — the furniture store (build module showroom; shops module keeper & stock)
+  [4.0, { shop: 'furniture', ground: 'open', storeys: 3, name: 'furniture_store', noSign: true }],
+  [4.0, { shop: 'furniture', ground: 'open', storeys: 3, name: 'furniture_store_2', noSign: true }],
   [4.0, { shop: 'residence', ground: 'gate', storeys: 3 }],
   [4.0, { shop: 'closed', ground: 'shutter', storeys: 3 }],
   [4.0, { shop: 'grocery', ground: 'open', storeys: 4, sign: 'grocery' }],
@@ -198,6 +202,7 @@ G(BRIDGE.x1, CANAL.zS, MAIN.x1, CROAD.z0, SW_H);
 // lots & plazas
 G(SEVEN.x0, SEVEN.z0, SEVEN.x1, SEVEN.z1, SW_H);
 G(CLOSED_HOUSE.apronX, CLOSED_HOUSE.z0, CLOSED_HOUSE.x0, CLOSED_HOUSE.z1, SW_H);
+G(CLOSED_HOUSE.x0, RESTAURANT_UNITS[0], CLOSED_HOUSE.x0 + 9.2, RESTAURANT_UNITS[1] + 4.83, SW_H);   // restaurant floor (both units)
 G(MARKET.x0, MARKET.z0, MARKET.x1, MARKET.z1, MARKET.floor);
 G(LOT.x0, LOT.z0, LOT.x1, LOT.z1, SW_H);
 G(SPIRIT_LOT.x0, SPIRIT_LOT.z0, SPIRIT_LOT.x1, SPIRIT_LOT.z1, SW_H);

@@ -6,7 +6,10 @@ import { F } from '../../core/fonts';
 import type { ShopDef, StockDef } from './data';
 import { canvasMat, mat, photo, photoMat, signTex, CardStyle, CardAtlas } from './tex';
 import { buildShape } from './items';
-import { libModel } from '../world/lib';
+import { libModel, libInstanced } from '../world/lib';
+import { rbox, tube, lathe, packRow, tagRail } from './kit';
+import { realPropObject } from '../world/realprops';
+import { PileBatch } from '../world/realprops-market';
 
 /**
  * FIXTURES — the physical shops: stall tables + canopies, shophouse display steps + counters +
@@ -183,10 +186,15 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
   const W = 2.6, D = 1.05, H = 0.8, zc = 0.95;
   // table: steel legs, plank top, plastic sheet with overhang skirt
   const legs = flat(0x55585c, 0.6, 0.5);
-  for (const [x, z] of [[-W / 2 + 0.06, zc - D / 2 + 0.06], [W / 2 - 0.06, zc - D / 2 + 0.06], [-W / 2 + 0.06, zc + D / 2 - 0.06], [W / 2 - 0.06, zc + D / 2 - 0.06]]) B.add(box(0.05, H - 0.04, 0.05), legs, fr, x, 0, z);
-  B.add(mbox(W, 0.04, D, 1.2), pbr('wood_planks_old'), fr, 0, H - 0.04, zc);
+  for (const [x, z] of [[-W / 2 + 0.06, zc - D / 2 + 0.06], [W / 2 - 0.06, zc - D / 2 + 0.06], [-W / 2 + 0.06, zc + D / 2 - 0.06], [W / 2 - 0.06, zc + D / 2 - 0.06]]) {
+    B.add(tube([0, 0.02, 0], [0, H - 0.04, 0], 0.022, 10), legs, fr, x, 0, z);
+    B.add(lathe([[0.03, 0], [0.03, 0.02], [0.0001, 0.02]], 10), pbr('rubber_black', undefined, 0x202020), fr, x, 0, z);
+  }
+  // long-side rails under the top (welded angle) + plank top with bevelled edges
+  for (const z of [zc - D / 2 + 0.06, zc + D / 2 - 0.06]) B.add(tube([-W / 2 + 0.06, H - 0.07, 0], [W / 2 - 0.06, H - 0.07, 0], 0.016, 8), legs, fr, 0, 0, z);
+  B.add(rbox(W, 0.04, D, 0.008, 1.2), pbr('wood_planks_old'), fr, 0, H - 0.04, zc);
   const sheet = pbr('canvas_tarp', st.sheet, st.sheet);
-  B.add(mbox(W + 0.08, 0.012, D + 0.06, 0.6), sheet, fr, 0, H, zc);
+  B.add(rbox(W + 0.08, 0.012, D + 0.06, 0.004, 0.6), sheet, fr, 0, H, zc);
   // front skirt (cloth hanging), slightly wavy
   const skirt = new THREE.PlaneGeometry(W + 0.08, 0.42, 16, 1);
   { const p = skirt.getAttribute('position') as THREE.BufferAttribute; for (let i = 0; i < p.count; i++) p.setZ(i, Math.sin(p.getX(i) * 9) * 0.015); skirt.computeVertexNormals(); }
@@ -194,7 +202,7 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
   B.add(skirt, mat('skirt:' + st.sheet, () => { const m = (sheet as THREE.MeshStandardMaterial).clone(); m.side = THREE.DoubleSide; return m; }), fr, 0, 0, zc - D / 2 - 0.035, 0);
   // raised back tier (crate) for a second row of goods
   const tier = pbr('plastic_rough', 0x2f62b8, 0x2f62b8);
-  B.add(mbox(W - 0.1, 0.16, 0.42, 0.5), tier, fr, 0, H + 0.012, zc + 0.27);
+  B.add(rbox(W - 0.1, 0.16, 0.42, 0.02, 0.5), tier, fr, 0, H + 0.012, zc + 0.27);
   // canopy: 4 bamboo poles + slanted tarp
   const pole = pbr('bamboo_poles', undefined, 0xb89a62);
   const ph = 2.35;
@@ -204,30 +212,36 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
   tarp.rotateX(-Math.PI / 2 + 0.16);
   B.add(tarp, mat('tarp:' + st.tarp, () => { const m = Assets.pbr('canvas_tarp', { repeat: 2, color: st.tarp, fallback: st.tarp }).clone(); m.side = THREE.DoubleSide; return m; }), fr, 0, ph + 0.1, zc + 0.25);
   // hanging fluorescent tube
-  B.add(new THREE.CylinderGeometry(0.016, 0.016, 1.1, 6).rotateZ(Math.PI / 2), glow(0xfff3dc, 1.6), fr, 0, ph - 0.25, zc + 0.2);
+  B.add(rbox(1.18, 0.04, 0.07, 0.012, 1), pbr('metal_painted_chipped', 0xf0efe8, 0xf0efe8), fr, 0, ph - 0.23, zc + 0.2);
+  B.add(new THREE.CylinderGeometry(0.014, 0.014, 1.1, 10).rotateZ(Math.PI / 2), glow(0xfff3dc, 1.6), fr, 0, ph - 0.25, zc + 0.2);
+  B.add(tube([0, ph - 0.19, 0], [0, ph + 0.05, 0], 0.003, 4), legs, fr, -0.45, 0, zc + 0.2);
+  B.add(tube([0, ph - 0.19, 0], [0, ph + 0.05, 0], 0.003, 4), legs, fr, 0.45, 0, zc + 0.2);
   // keeper stool (red plastic)
   const stool = buildShape('sfb_stool');
   if (stool) { stool.position.copy(fr.at(0.55, 0, zc + D / 2 + 0.75)); root.add(stool); }
   // decorative heaps on the back tier (real produce photos) + baskets on the floor
+  const piles = new PileBatch();
   st.decor.forEach((key, i) => {
-    const heap = new THREE.SphereGeometry(0.5, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2);
-    { const p = heap.getAttribute('position') as THREE.BufferAttribute; for (let k = 0; k < p.count; k++) { const x = p.getX(k), z = p.getZ(k); p.setY(k, p.getY(k) * (0.9 + Math.sin(x * 13 + i) * Math.cos(z * 11) * 0.12)); } heap.computeVertexNormals(); }
-    heap.scale(0.5, 0.22, 0.34);
     const x = (i - (st.decor.length - 1) / 2) * 0.62 + 0.05;
-    B.add(heap, photoMat(key), fr, x, 0.06, zc + D / 2 + 0.35);
-    const bk = libModel('wicker_basket_01');   // real photoscanned wicker basket (shared library) under the heap
-    bk.scale.set(1.4, 1, 1.4); bk.position.copy(fr.at(x, 0, zc + D / 2 + 0.35)); bk.rotation.y = fr.yaw + i * 0.4;
+    const bz = zc + D / 2 + 0.35;
+    const bk = libModel('wicker_basket_01');   // real photoscanned wicker basket (shared library)
+    bk.scale.set(1.4, 1, 1.4); bk.position.copy(fr.at(x, 0, bz)); bk.rotation.y = fr.yaw + i * 0.4;
     root.add(bk);
+    piles.add(key, fr.at(x, 0.06, bz), fr.yaw, 0.25, 0.19, s.id.length * 7 + i);   // real produce heaped in it
   });
+  piles.flush(root);
   // backdrop: a real photo of the neighbouring stall (depth + density behind the keeper)
   const bd = photoPanel(st.backdrop, 3.2, 2.0, 0.12);
   B.add(bd.g, bd.m, fr, 0, 0.15, zc + D / 2 + 1.35, 0);
   B.flush(root);
-  // scale + calculator on the table (real cut-out photos)
-  const scale = new THREE.Mesh(plane(0.26, 0.34), photoMat('scale', { alpha: true, side: THREE.DoubleSide }));
-  scale.position.copy(fr.at(W / 2 - 0.25, H + 0.012, zc + 0.3)); scale.rotation.y = fr.yaw - 0.3;
+  // spring scale hanging from the canopy (real model) + a rubber-keyed calculator on the table
+  const scale = realPropObject('hanging_scale');
+  scale.position.copy(fr.at(W / 2 - 0.25, ph - 0.95, zc - 0.05)); scale.rotation.y = fr.yaw - 0.3;
   root.add(scale);
-  const calc = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.018, 0.15).translate(0, 0.009, 0), [flat(0x333336), flat(0x333336), photoMat('calculator'), flat(0x333336), flat(0x333336), flat(0x333336)]);
+  const calc = new THREE.Group();
+  calc.add(new THREE.Mesh(rbox(0.12, 0.018, 0.15, 0.006, 1), pbr('plastic_rough', 0x333336, 0x333336)));
+  { const face = new THREE.Mesh(plane(0.104, 0.134).rotateX(-Math.PI / 2).translate(0, 0.0185, 0), photoMat('calculator')); calc.add(face); }
+  calc.traverse((o: any) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   calc.position.copy(fr.at(-W / 2 + 0.22, H + 0.012, zc + 0.36)); calc.rotation.y = fr.back + 0.25;
   root.add(calc);
   // shop name sign hanging from the canopy (hand-painted on cardboard)
@@ -270,6 +284,53 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
 }
 
 // ------------------------------------------------------------------ SHOPHOUSE (open front + shutter)
+interface Good { id: string; w: number; h?: number; stack?: number; colors?: number[]; drop?: number; /** pitch (flat things hung on a hook stand upright) */ rx?: number }
+const PLASTICS = [0x2f6fd8, 0xc42a22, 0x2a9a4a, 0xe8b820, 0xe8508a, 0xf2f0ea, 0x7a4fb0];
+/** what fills each functional shop's racks, floor and facade hooks (shared library models) */
+const SHOP_DRESS: Record<string, { rack: Good[]; floor: Good[]; hang: Good[] }> = {
+  plastic_shop: {
+    rack: [{ id: 'plastic_basket', w: 0.29, h: 0.09, stack: 3, colors: PLASTICS }, { id: 'plastic_crate_02', w: 0.43, h: 0.25, colors: PLASTICS }, { id: 'plastic_bottle_gallon', w: 0.14, colors: [0xffffff] }, { id: 'plastic_jerrycan', w: 0.29, colors: [0x2f6fd8, 0xe8b820, 0xc42a22] }],
+    floor: [{ id: 'industrial_pastic_container', w: 0.5, h: 0.4, stack: 2, colors: [0x2f6fd8, 0xf2f0ea] }, { id: 'plastic_crate_02', w: 0.5, h: 0.25, stack: 4, colors: PLASTICS }, { id: 'plastic_broom', w: 0.4 }, { id: 'thai_stool', w: 0.37, h: 0.12, stack: 6, colors: [0xc42a22, 0x2f6fd8] }],
+    hang: [{ id: 'plastic_basket', w: 0.4, drop: 0.12, h: 0.19, colors: PLASTICS }, { id: 'plastic_broom', w: 0.4, drop: 0.08, h: 1.2 }, { id: 'plastic_basket', w: 0.4, drop: 0.18, h: 0.19, colors: PLASTICS }, { id: 'dustpan', w: 0.33, drop: 0.1, h: 0.1 }, { id: 'plastic_basket', w: 0.4, drop: 0.12, h: 0.19, colors: PLASTICS }],
+  },
+  kitchen_shop: {
+    rack: [{ id: 'khan_bowl', w: 0.21, h: 0.04, stack: 4 }, { id: 'kradong', w: 0.42, h: 0.02, stack: 5 }, { id: 'ceramic_pot', w: 0.45 }, { id: 'tamarind_board', w: 0.4, h: 0.075, stack: 3 }, { id: 'cleaner_tin_01', w: 0.1, stack: 2, h: 0.13 }],
+    floor: [{ id: 'ong_jar', w: 0.65 }, { id: 'ceramic_pot', w: 0.6 }, { id: 'small_lpg_tank', w: 0.42 }, { id: 'wooden_crate_01', w: 0.8, h: 0.35, stack: 2 }],
+    hang: [{ id: 'kradong', w: 0.72, drop: 0.05, h: 0.36, rx: Math.PI / 2 }, { id: 'fish_knife', w: 0.1, drop: 0.08, h: 0.22 }, { id: 'kradong', w: 0.72, drop: 0.09, h: 0.36, rx: Math.PI / 2 }, { id: 'wooden_broom', w: 0.5, drop: 0.08, h: 1.4 }],
+  },
+  gas_shop: {
+    rack: [{ id: 'small_lpg_tank', w: 0.42 }, { id: 'propane_tank', w: 0.34 }, { id: 'plastic_bottle_gallon', w: 0.17, colors: [0xffffff] }, { id: 'cleaner_tin_01', w: 0.1, h: 0.13, stack: 2 }],
+    floor: [{ id: 'lpg_15kg', w: 0.3 }, { id: 'lpg_15kg', w: 0.3 }, { id: 'propane_tank', w: 0.34 }, { id: 'lpg_15kg', w: 0.3 }, { id: 'hand_truck', w: 0.6 }],
+    hang: [{ id: 'hose_coil', w: 0.48, drop: 0.05, h: 0.24, rx: Math.PI / 2 }],
+  },
+};
+
+/**
+ * Slotted-angle steel shelving unit (the grey Thai shop rack): 4 bevelled angle uprights with base feet,
+ * `levels` galvanised decks with folded lips, X-brace on the back. Faces -side*x (toward the aisle).
+ * Returns the deck top heights.
+ */
+function steelRack(B: Batch, fr: Frame, x: number, z: number, d: number, w: number, h: number, levels: number, side: number) {
+  const ang = pbr('metal_painted_chipped', 0x7a8288, 0x7a8288);
+  const deck = pbr('galvanized_steel', 0xcfd2d2, 0xb8bcbc);
+  for (const dx of [-d / 2 + 0.02, d / 2 - 0.02]) for (const dz of [-w / 2 + 0.02, w / 2 - 0.02]) {
+    B.add(rbox(0.035, h, 0.035, 0.004, 0.5), ang, fr, x + dx, 0, z + dz);
+    B.add(rbox(0.06, 0.008, 0.06, 0.002, 0.5), ang, fr, x + dx, 0, z + dz);
+  }
+  const ys: number[] = [];
+  for (let i = 0; i < levels; i++) {
+    const y = 0.12 + (i * (h - 0.25)) / (levels - 1);
+    B.add(rbox(d, 0.012, w, 0.003, 1), deck, fr, x, y, z);
+    B.add(rbox(0.012, 0.035, w, 0.003, 1), deck, fr, x - side * (d / 2 - 0.006), y - 0.025, z);
+    ys.push(y + 0.012);
+  }
+  // back X brace
+  const bx = x + side * (d / 2 - 0.02);
+  B.add(tube([0, 0.15, -w / 2 + 0.03], [0, h - 0.1, w / 2 - 0.03], 0.006, 5), ang, fr, bx, 0, z);
+  B.add(tube([0, 0.15, w / 2 - 0.03], [0, h - 0.1, -w / 2 + 0.03], 0.006, 5), ang, fr, bx, 0, z);
+  return ys;
+}
+
 const HOUSE_STYLE: Record<string, { wall: string; side: string; hang?: string[]; table: number; counterTop: number }> = {
   plastic_shop: { wall: 'plastic_wall2', side: 'plastic_wall', hang: ['tub_blue', 'basin_navy', 'basket_red', 'tub_blue'], table: 0x6b4a2a, counterTop: 0x9a7a52 },
   kitchen_shop: { wall: 'kitchen_wall', side: 'kitchen_plates', hang: ['kradong'], table: 0x5a4030, counterTop: 0x8a6a4a },
@@ -287,12 +348,37 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
   // back wall photo panel + two side racks with photos (real shop interiors)
   const back = photoPanel(hs.wall, Math.min(sw.w - 0.6, 6.5), 2.6, 0.18);
   B.add(back.g, back.m, fr, sw.off, 0.1, zFront + 4.7, 0);
+  const dress = SHOP_DRESS[s.id] ?? SHOP_DRESS.plastic_shop;
+  const goods = new Map<string, { m: THREE.Matrix4[]; c: number[] }>();
+  const put = (id: string, x: number, y: number, z: number, yaw: number, color?: number, rx = 0) => {
+    let e = goods.get(id); if (!e) goods.set(id, (e = { m: [], c: [] }));
+    const m = new THREE.Matrix4().makeRotationY(fr.yaw + yaw);
+    if (rx) m.multiply(new THREE.Matrix4().makeRotationX(rx));
+    e.m.push(m.setPosition(fr.at(x, y, z))); e.c.push(color ?? 0xffffff);
+  };
   for (const side of [-1, 1]) {
-    const x = sw.off + side * (sw.w / 2 - 0.35);
+    const x = sw.off + side * (sw.w / 2 - 0.42);
+    // the real interior photo stays as the far wall behind the racks (depth), racks + goods are 3D
     const p = photoPanel(hs.side, 2.6, 2.3, 0.05);
-    B.add(p.g, p.m, fr, x, 0.2, zFront + 3.0, -side * Math.PI / 2);
-    B.add(mbox(0.45, 2.4, 3.0, 1), pbr('metal_painted_chipped', 0x6a7a80, 0x6a7a80), fr, x + side * 0.25, 0, zFront + 3.0);
+    B.add(p.g, p.m, fr, x + side * 0.4, 0.2, zFront + 3.0, -side * Math.PI / 2);
+    for (let k = 0; k < 3; k++) {
+      const z = zFront + 1.85 + k * 0.98;
+      const lv = steelRack(B, fr, x, z, 0.5, 0.94, 2.0, 4, side);
+      lv.forEach((y, li) => {
+        const row = dress.rack[(li + k + (side > 0 ? 1 : 0)) % dress.rack.length];
+        const n = Math.max(1, Math.floor(0.86 / row.w));
+        for (let i = 0; i < n; i++) {
+          const zz = z - 0.43 + row.w * (i + 0.5);
+          for (let st = 0; st < (row.stack ?? 1); st++) put(row.id, x + side * 0.02, y + st * (row.h ?? 0.1), zz, side * Math.PI / 2 + Math.sin(i * 2.3 + li) * 0.15, row.colors ? row.colors[(i + li + st) % row.colors.length] : undefined);
+        }
+      });
+    }
   }
+  // goods on the floor along the counter side + by the entrance
+  dress.floor.forEach((f, i) => {
+    const xx = sw.off + (i % 2 ? 1 : -1) * (0.5 + (i >> 1) * 0.55), zz = zFront + 4.1 - (i % 3) * 0.12;
+    for (let st = 0; st < (f.stack ?? 1); st++) put(f.id, xx, st * (f.h ?? 0.1), zz, i * 0.7, f.colors ? f.colors[(i + st) % f.colors.length] : undefined);
+  });
   // stepped display tables left & right of the entrance aisle
   const slots: Slot[] = [];
   const cards = new Map<string, number>();
@@ -303,25 +389,38 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     { x: sw.off + 1.55, z: zFront + 1.25, w: 2.0, d: 0.9, h: 0.62 },
   ];
   for (const t of steps) {
-    B.add(mbox(t.w, t.h, t.d, 1.2), tableMat, fr, t.x, 0, t.z);
-    B.add(mbox(t.w, 0.3, t.d * 0.45, 1.2), tableMat, fr, t.x, t.h, t.z + t.d * 0.27);
+    // stepped display stand: plank tops with bevelled edges on a framed base with a recessed kick
+    B.add(rbox(t.w - 0.06, t.h - 0.08, t.d - 0.06, 0.02, 1.2), tableMat, fr, t.x, 0.06, t.z);
+    B.add(rbox(t.w - 0.12, 0.06, t.d - 0.12, 0.01, 1.2), pbr('metal_painted_chipped', 0x2a2a2a, 0x2a2a2a), fr, t.x, 0, t.z);
+    B.add(rbox(t.w, 0.035, t.d, 0.012, 1.2), tableMat, fr, t.x, t.h - 0.035, t.z);
+    B.add(rbox(t.w - 0.04, 0.27, t.d * 0.45, 0.015, 1.2), tableMat, fr, t.x, t.h, t.z + t.d * 0.27);
+    B.add(rbox(t.w, 0.03, t.d * 0.47, 0.01, 1.2), tableMat, fr, t.x, t.h + 0.27, t.z + t.d * 0.27);
   }
   // keeper counter (glass-top wooden desk with cash box) at the back right
   const cx = sw.off + 1.7, cz = zFront + 3.05;
-  B.add(mbox(1.3, 0.85, 0.62, 1), pbr('plywood', undefined, hs.counterTop), fr, cx, 0, cz);
-  B.add(box(1.32, 0.01, 0.64), glass(), fr, cx, 0.86, cz);
-  B.add(box(0.32, 0.12, 0.24), flat(0x2a5a9a, 0.4, 0.3), fr, cx + 0.3, 0.86, cz);
+  B.add(rbox(1.3, 0.84, 0.62, 0.02, 1), pbr('plywood', undefined, hs.counterTop), fr, cx, 0, cz);
+  B.add(rbox(1.24, 0.05, 0.56, 0.01, 1), pbr('metal_painted_chipped', 0x2a2a2a, 0x2a2a2a), fr, cx, 0, cz);
+  for (const [gx, gz] of [[-0.6, -0.28], [0.6, -0.28], [-0.6, 0.28], [0.6, 0.28]]) B.add(lathe([[0.012, 0], [0.012, 0.012], [0.0001, 0.012]], 8), pbr('aluminium_scratched'), fr, cx + gx, 0.84, cz + gz);
+  B.add(rbox(1.32, 0.008, 0.64, 0.003, 1), glass(), fr, cx, 0.852, cz);
+  // tin cash box: body, hinged lid with a handle, keyhole
+  B.add(rbox(0.32, 0.09, 0.24, 0.012, 1), pbr('metal_painted_chipped', 0x2a5a9a, 0x2a5a9a), fr, cx + 0.3, 0.86, cz);
+  B.add(rbox(0.33, 0.03, 0.25, 0.01, 1), pbr('metal_painted_chipped', 0x2a5a9a, 0x2a5a9a), fr, cx + 0.3, 0.95, cz);
+  B.add(tube([-0.06, 0.985, 0], [0.06, 0.985, 0], 0.006, 6), pbr('aluminium_scratched'), fr, cx + 0.3, 0, cz);
+  B.add(rbox(0.13, 0.02, 0.16, 0.006, 1), flat(0x2c2c2e, 0.45), fr, cx - 0.25, 0.86, cz - 0.05, 0.3);
+  B.add(plane(0.11, 0.14).rotateX(-Math.PI / 2).translate(0, 0.0205, 0), photoMat('calculator'), fr, cx - 0.25, 0.86, cz - 0.05, 0.3);
   // hanging goods at the facade (real product cut-outs)
-  (hs.hang ?? []).forEach((k, i) => {
-    const n = (hs.hang ?? []).length;
-    const x = sw.off + (i - (n - 1) / 2) * (sw.w / (n + 1));
-    const g = plane(0.55, 0.5);
-    B.add(g, photoMat(k, { alpha: true, side: THREE.DoubleSide }), fr, x, 2.15, zFront + 0.15, 0);
+  B.add(tube([-sw.w / 2 + 0.3, 2.6, 0], [sw.w / 2 - 0.3, 2.6, 0], 0.006, 6), pbr('aluminium_scratched'), fr, sw.off, 0, zFront + 0.18);
+  dress.hang.forEach((hg, i) => {
+    const n = dress.hang.length;
+    const x = sw.off + (i - (n - 1) / 2) * Math.min(0.75, (sw.w - 0.8) / n);
+    B.add(tube([0, 2.6, 0], [0, 2.6 - (hg.drop ?? 0.1), 0], 0.004, 5), pbr('aluminium_scratched'), fr, x, 0, zFront + 0.18);
+    put(hg.id, x, 2.6 - (hg.drop ?? 0.1) - (hg.h ?? 0.2), zFront + 0.18, hg.rx ? 0 : i * 0.9, hg.colors ? hg.colors[i % hg.colors.length] : undefined, hg.rx ?? 0);
   });
   // a long fluorescent tube inside
   B.add(new THREE.CylinderGeometry(0.018, 0.018, 1.2, 6).rotateZ(Math.PI / 2), glow(0xf3fbff, 1.8), fr, sw.off, 2.75, zFront + 2.2);
   B.flush(root);
-  // keeper stool
+  for (const [id, e] of goods) root.add(libInstanced(id, e.m, { colors: e.c }));
+  // keeper stool (real moulded Thai stool)
   const stool = buildShape('sfb_stool');
   if (stool) { stool.position.copy(fr.at(cx, 0, cz + 0.62)); root.add(stool); }
   // stock slots: spill-out (big items / stacks) on the sidewalk, rest on the steps
@@ -380,12 +479,20 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
 /** Animated roller shutter across an opening (local frame), with a hand-written closed sign. */
 function makeShutter(game: Game, root: THREE.Object3D, fr: Frame, off: number, w: number, h: number, zFront: number, note: string) {
   const shMat = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.45, side: THREE.DoubleSide, color: 0xb9b7b0 });
-  const shMesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h, 1, 1).translate(0, -h / 2, 0), shMat); // origin at the top
+  const shGeo = (() => {   // corrugated steel slat curtain (horizontal ribs), origin at the top
+    const g = new THREE.PlaneGeometry(w, h, 1, Math.max(8, Math.round(h / 0.0375)));
+    const p = g.getAttribute('position') as THREE.BufferAttribute;
+    for (let i = 0; i < p.count; i++) p.setZ(i, 0.007 * Math.sin((p.getY(i) / 0.075) * Math.PI * 2));
+    g.computeVertexNormals();
+    return g.translate(0, -h / 2, 0);
+  })();
+  const shMesh = new THREE.Mesh(shGeo, shMat); // origin at the top
   shMesh.castShadow = true; shMesh.receiveShadow = true;
   const shObj = new THREE.Group();
   shObj.position.copy(fr.at(off, h, zFront - 0.02)); shObj.rotation.y = fr.yaw;
   shObj.add(shMesh);
-  const rollBox = new THREE.Mesh(new THREE.BoxGeometry(w + 0.1, 0.26, 0.3).translate(0, 0.13, 0), flat(0x8a8a86, 0.5, 0.4));
+  const rollBox = new THREE.Mesh(rbox(w + 0.1, 0.26, 0.3, 0.03, 1), pbr('metal_painted_chipped', 0x9a9a94, 0x8a8a86));
+  rollBox.castShadow = rollBox.receiveShadow = true;
   rollBox.position.set(0, -0.02, -0.12); shObj.add(rollBox);
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.8), canvasMat(signTex('closed:' + note, [{ text: note, size: 76, color: '#b11414' }], 'card_board', 640, 400)));
   sign.position.set(0, -h * 0.55, 0.03); shMesh.add(sign);
@@ -399,49 +506,181 @@ function makeShutter(game: Game, root: THREE.Object3D, fr: Frame, off: number, w
 }
 
 // ------------------------------------------------------------------ 8-TWELVE
+/** a canvas POS screen (till UI), drawn once */
+function posScreenMat() {
+  return mat('pos-screen', () => {
+    const cv = document.createElement('canvas'); cv.width = 256; cv.height = 192;
+    const x = cv.getContext('2d')!;
+    const gr = x.createLinearGradient(0, 0, 0, 192); gr.addColorStop(0, '#0e3a6e'); gr.addColorStop(1, '#0a2546');
+    x.fillStyle = gr; x.fillRect(0, 0, 256, 192);
+    x.fillStyle = '#f0a21e'; x.fillRect(0, 0, 256, 22);
+    x.fillStyle = '#10223a'; x.font = `bold 14px ${F.ui}`; x.fillText('8-TWELVE  POS 03', 8, 16);
+    x.font = `13px ${F.ui}`;
+    const rows = [['มาม่าคัพ', '15.00'], ['น้ำดื่ม 600ml', '7.00'], ['ซาลาเปาหมูสับ', '22.00'], ['ถุง', '0.00']];
+    rows.forEach(([a, b], i) => { x.fillStyle = i % 2 ? '#123f78' : '#164a8a'; x.fillRect(6, 30 + i * 24, 244, 22); x.fillStyle = '#e8f1ff'; x.fillText(a, 12, 46 + i * 24); x.fillText(b, 200, 46 + i * 24); });
+    x.fillStyle = '#ffe36a'; x.font = `bold 20px ${F.ui}`; x.fillText('รวม 44.00', 120, 178);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+    return new THREE.MeshStandardMaterial({ map: t, emissive: new THREE.Color(0xffffff), emissiveMap: t, emissiveIntensity: 0.9, roughness: 0.25 });
+  });
+}
+
+/**
+ * A real supermarket gondola run (door frame, long axis = z): steel base plinth with kick plate, perforated
+ * centre panel, 4 shelf levels each side with PVC price-tag rails, end caps, and real 3D stock on every
+ * shelf (pillow snack bags / cup noodles whose fronts are slices of real 8-Twelve shelf photos).
+ */
+function gondola(B: Batch, fr: Frame, x: number, z0: number, len: number, photos: [string, string], shapes: [('bag' | 'cup' | 'box')[], ('bag' | 'cup' | 'box')[]], seed: number) {
+  const steel = pbr('metal_painted_chipped', 0xeeeeea, 0xeeeeea);
+  const dark = pbr('metal_painted_chipped', 0x2a2c30, 0x2a2c30);
+  const zc = z0 + len / 2;
+  B.add(rbox(0.86, 0.11, len, 0.012, 1), dark, fr, x, 0, zc);                     // plinth
+  B.add(rbox(0.88, 0.035, len + 0.02, 0.008, 1), pbr('rubber_black', undefined, 0x202020), fr, x, 0, zc);   // kick strip
+  B.add(rbox(0.05, 1.62, len, 0.008, 0.5), steel, fr, x, 0.11, zc);                // centre panel
+  for (const ez of [z0 + 0.012, z0 + len - 0.012]) B.add(rbox(0.9, 1.7, 0.024, 0.008, 0.5), steel, fr, x, 0, ez);   // end uprights
+  B.add(rbox(0.09, 0.05, len + 0.03, 0.01, 1), steel, fr, x, 1.73, zc);             // top cap
+  for (const side of [-1, 1]) {
+    const sh: ('bag' | 'cup' | 'box')[] = shapes[side < 0 ? 0 : 1];
+    const ph = photos[side < 0 ? 0 : 1];
+    const levels = [0.11, 0.42, 0.82, 1.22];
+    levels.forEach((y, li) => {
+      const deck = li === 0 ? rbox(0.4, 0.012, len - 0.06, 0.004, 1) : rbox(0.4, 0.02, len - 0.06, 0.005, 1);
+      B.add(deck, steel, fr, x + side * 0.235, y, zc);
+      B.add(tagRail(len - 0.06), pbr('plastic_glossy', 0xf2c21e, 0xf2c21e), fr, x + side * 0.44, y - 0.012, zc, side * Math.PI / 2);
+      // stock: packs on this shelf, 2 deep against the centre panel (the front half stays free for the
+      // real buyable items + their price cards)
+      const shape = sh[li % sh.length];
+      const pw = shape === 'cup' ? 0.095 : shape === 'box' ? 0.12 : 0.13;
+      const phh = shape === 'cup' ? 0.1 : shape === 'box' ? 0.18 : 0.21;
+      const n = Math.floor((len - 0.12) / (pw + 0.008));
+      const band = 3 - li;                                            // photo rows top → bottom
+      const g = packRow({ u0: 0.02, u1: 0.98, v0: band / 4 + 0.015, v1: (band + 1) / 4 - 0.015, n, w: pw, h: phh, d: shape === 'cup' ? pw : 0.06, shape, x0: -(len - 0.12) / 2, y: 0, z: 0, seed: seed + li * 13 + side, deep: 1 });
+      g.rotateY(side * Math.PI / 2);
+      B.add(g, photoMat(ph, { rough: 0.55 }), fr, x + side * 0.05, y + (li === 0 ? 0.012 : 0.02), zc, 0);
+    });
+  }
+}
+
+/** printed backlit header of the drinks cooler */
+function coolerSignMat() {
+  return mat('cooler-sign', () => {
+    const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 72;
+    const x = cv.getContext('2d')!;
+    const gr = x.createLinearGradient(0, 0, 0, 72); gr.addColorStop(0, '#27a35a'); gr.addColorStop(1, '#156a38');
+    x.fillStyle = gr; x.fillRect(0, 0, 1024, 72);
+    x.fillStyle = '#f7c21a'; x.fillRect(0, 62, 1024, 10);
+    x.fillStyle = '#ffffff'; x.font = `bold 44px ${F.heavy}`; x.textBaseline = 'middle';
+    x.fillText('เครื่องดื่มเย็นๆ', 40, 33); x.font = `bold 30px ${F.ui}`; x.fillStyle = '#dff7e6'; x.fillText('COLD DRINKS · ICE COLD · 24 ชม.', 520, 34);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+    return new THREE.MeshStandardMaterial({ map: t, emissive: new THREE.Color(0xffffff), emissiveMap: t, emissiveIntensity: 0.45, roughness: 0.4 });
+  });
+}
+
+/** Upright glass-door drinks cooler: real 3D bottles on lit shelves behind 4 glass doors. */
+function drinksCooler(B: Batch, root: THREE.Object3D, fr: Frame, x: number, zc: number, len: number) {
+  const body = pbr('metal_painted_chipped', 0xe4e4e2, 0xe4e4e2);
+  const alu = pbr('aluminium_scratched', 0xd8d8d8, 0xc0c0c0);
+  // cabinet: a hollow shell open toward -x (into the store): back, end panels, top, plinth
+  const D = 0.75;
+  B.add(rbox(0.04, 2.1, len, 0.01, 1), body, fr, x + D - 0.02, 0, zc);
+  for (const ez of [zc - len / 2 + 0.02, zc + len / 2 - 0.02]) B.add(rbox(D, 2.1, 0.04, 0.012, 1), body, fr, x + D / 2, 0, ez);
+  B.add(rbox(D, 0.3, len, 0.015, 1), body, fr, x + D / 2, 1.8, zc);
+  B.add(rbox(D, 0.16, len, 0.015, 1), body, fr, x + D / 2, 0, zc);
+  // header sign (printed, softly backlit)
+  { const sign = new THREE.Mesh(plane(len - 0.1, 0.24), coolerSignMat());
+    sign.position.copy(fr.at(x - 0.002, 1.83, zc)); sign.rotation.y = fr.yaw - Math.PI / 2; root.add(sign);
+    B.add(rbox(0.012, 0.26, len - 0.06, 0.004, 1), pbr('plastic_glossy', 0x1e8a4a, 0x1e8a4a), fr, x + 0.004, 1.82, zc); }
+  B.add(rbox(0.012, 0.02, len - 0.12, 0.004, 1), glow(0xf3fff6, 1.6), fr, x + 0.09, 1.76, zc);     // interior LED strip
+  // lit interior back + shelves with bottles
+  const fp = photoPanel('seven_fridge', len - 0.1, 1.62, 0.0);
+  B.add(fp.g, mat('fridgephoto', () => photoMat('seven_fridge', { emissive: 0.32 }).clone()), fr, x + 0.7, 0.16, zc, -Math.PI / 2);
+  const ids = ['bottle_beer_chang', 'bottle_beer_leo', 'bottle_beer_singha', 'bottle_fanta_red'];
+  const mats: Record<string, THREE.Matrix4[]> = {};
+  const shelfY = [0.17, 0.58, 0.99, 1.4];
+  for (const [si, y] of shelfY.entries()) {
+    B.add(rbox(0.6, 0.012, len - 0.12, 0.003, 1), pbr('metal_painted_chipped', 0xf0f0ee, 0xf0f0ee), fr, x + 0.38, y - 0.012, zc);
+    B.add(tagRail(len - 0.12, 0.03), pbr('plastic_glossy', 0xf4f4f0, 0xf4f4f0), fr, x + 0.075, y - 0.03, zc, -Math.PI / 2);
+    const id = ids[si % ids.length];
+    const step = 0.085;
+    const n = Math.floor((len - 0.2) / step);
+    for (let i = 0; i < n; i++) for (const dx of [0.13, 0.22, 0.31, 0.4]) {
+      if ((i * 7 + si * 3 + Math.round(dx * 100)) % 11 === 0) continue;   // a few gaps: people bought some
+      const p = fr.at(x + dx, y, zc - (len - 0.2) / 2 + i * step);
+      (mats[ids[(si + Math.floor(i / 9)) % ids.length]] ??= []).push(new THREE.Matrix4().makeRotationY(fr.yaw - Math.PI / 2 + Math.sin(i * 3.1) * 0.3).setPosition(p));
+    }
+  }
+  for (const [id, m] of Object.entries(mats)) root.add(libInstanced(id, m, { shadow: false }));
+  // 4 glass doors with aluminium frames and long pull handles
+  const dl = len / 4;
+  for (let k = 0; k < 4; k++) {
+    const dz = zc - len / 2 + dl * (k + 0.5);
+    // door: aluminium frame (4 rails) around the glass, long pull handle
+    for (const [fy, fh] of [[0.16, 0.04], [1.76, 0.04]] as [number, number][]) B.add(rbox(0.035, fh, dl - 0.02, 0.006, 1), alu, fr, x + 0.02, fy, dz);
+    for (const ez of [dz - dl / 2 + 0.03, dz + dl / 2 - 0.03]) B.add(rbox(0.035, 1.64, 0.04, 0.006, 1), alu, fr, x + 0.02, 0.16, ez);
+    B.add(plane(dl - 0.08, 1.56).translate(0, 0.19, 0), glass(), fr, x + 0.01, 0, dz, -Math.PI / 2);
+    B.add(tube([0, 0.62, 0], [0, 1.42, 0], 0.012, 8), alu, fr, x - 0.03, 0, dz + (k % 2 ? -1 : 1) * (dl / 2 - 0.09));
+  }
+  // kick grille + compressor vent
+  B.add(rbox(0.03, 0.12, len - 0.04, 0.006, 0.3), pbr('metal_painted_chipped', 0x2a2a2a, 0x2a2a2a), fr, x + 0.02, 0.02, zc);
+}
+
 function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<string, string>): ShopFix {
   const root = new THREE.Group(); root.name = 'shop:' + s.id;
   const B = new Batch();
-  // counter (white laminate + 7-11-ish colour stripes, glass top display)
+  const C = new Batch();
+  // ---- counter: bevelled white laminate body with the 3 brand stripes, stone-look top, POS, scanner, steamer
   const cw = 3.2;
-  B.add(mbox(0.72, 1.0, cw, 1), flat(0xf2f0ea, 0.5), ctr, 0, 0, 0.75, Math.PI / 2);
-  for (const [y, c] of [[0.62, 0xe8681e], [0.7, 0x1e8a4a], [0.78, 0xd8231a]] as [number, number][]) B.add(box(cw + 0.004, 0.06, 0.004), flat(c, 0.5), ctr, 0, y, 0.385 - 0.002);
-  B.add(box(cw, 0.02, 0.74), flat(0xd9d6cf, 0.3), ctr, 0, 1.0, 0.75);
-  // POS screen + scanner
-  B.add(box(0.36, 0.26, 0.04), flat(0x111214, 0.3), ctr, -0.6, 1.02, 0.95);
-  B.add(box(0.33, 0.22, 0.005), glow(0x9fd0ff, 0.8), ctr, -0.6, 1.04, 0.928);
-  B.add(box(0.12, 0.05, 0.16), flat(0x202020, 0.4), ctr, -0.2, 1.02, 0.7);
-  // salapao steamer on the counter (real photo of buns behind glass)
-  B.add(box(0.5, 0.42, 0.42), flat(0xb8bcc0, 0.3, 0.7), ctr, 1.0, 1.02, 0.85);
-  B.add(plane(0.44, 0.34).translate(0, 0.04, 0), photoMat('salapao', { emissive: 0.15 }), ctr, 1.0, 1.02, 0.635, 0);
-  // back counter shelf behind the clerk: real 7-11 shelf photo
-  const bk = photoPanel('seven_bottles', 3.0, 1.9, 0.04);
-  B.add(bk.g, bk.m, ctr, 0, 0.2, 2.35, 0);
-  // gondolas: 2 double-sided runs between the door and the counter (door frame: x = right, z = forward)
+  C.add(rbox(0.72, 0.97, cw, 0.025, 1), pbr('plastic_rough', 0xf2f0ea, 0xf2f0ea), ctr, 0, 0, 0.75, Math.PI / 2);
+  for (const [y, c] of [[0.62, 0xe8681e], [0.7, 0x1e8a4a], [0.78, 0xd8231a]] as [number, number][]) B.add(rbox(cw + 0.004, 0.055, 0.008, 0.003, 1), pbr('plastic_glossy', c, c), ctr, 0, y, 0.385);
+  B.add(rbox(cw + 0.06, 0.035, 0.78, 0.012, 1), pbr('marble_beige_polished', 0xd9d6cf, 0xd9d6cf), ctr, 0, 0.97, 0.75);
+  B.add(rbox(cw - 0.1, 0.06, 0.03, 0.01, 1), pbr('rubber_black', undefined, 0x202020), ctr, 0, 0.0, 0.4);    // kick strip
+  // POS: base, column, angled screen with the till UI, customer display, cash drawer
+  B.add(rbox(0.34, 0.07, 0.3, 0.015, 1), flat(0x1c1d20, 0.35, 0.2), ctr, -0.6, 1.005, 0.95);
+  B.add(rbox(0.05, 0.16, 0.05, 0.01, 1), flat(0x1c1d20, 0.35, 0.2), ctr, -0.6, 1.07, 0.98);
+  { const scr = rbox(0.36, 0.25, 0.035, 0.012, 1).rotateX(-0.28); B.add(scr, flat(0x18191c, 0.3, 0.2), ctr, -0.6, 1.2, 0.97); }
+  { const g = plane(0.32, 0.21).rotateX(-0.28).translate(0, 0.02, -0.02); B.add(g, posScreenMat(), ctr, -0.6, 1.2, 0.947, Math.PI); }
+  B.add(rbox(0.42, 0.11, 0.42, 0.01, 1), flat(0x2a2a2c, 0.4, 0.3), ctr, -0.6, 0.83, 0.9);        // cash drawer under the top lip
+  // barcode scanner on its stand (glowing red window)
+  B.add(rbox(0.09, 0.03, 0.12, 0.01, 1), flat(0x202020, 0.4), ctr, -0.2, 1.005, 0.7);
+  { const h = rbox(0.06, 0.14, 0.05, 0.015, 1).rotateX(0.35); B.add(h, flat(0x232326, 0.35), ctr, -0.2, 1.03, 0.72); }
+  B.add(rbox(0.045, 0.02, 0.004, 0.002, 1), glow(0xff2a1a, 2.4), ctr, -0.2, 1.135, 0.69);
+  // salapao steamer: stainless cabinet, glass front with the real buns photo behind it, domed vent lid
+  B.add(rbox(0.5, 0.42, 0.42, 0.02, 1), pbr('aluminium_scratched', 0xe0e0e0, 0xbcbcbc), ctr, 1.0, 1.005, 0.85);
+  B.add(plane(0.42, 0.32).translate(0, 0.05, 0), photoMat('salapao', { emissive: 0.25 }), ctr, 1.0, 1.005, 0.64 + 0.008, Math.PI);
+  B.add(plane(0.44, 0.34).translate(0, 0.04, 0), glass(), ctr, 1.0, 1.005, 0.635, Math.PI);
+  B.add(lathe([[0.2, 0], [0.19, 0.03], [0.12, 0.07], [0.03, 0.08], [0, 0.08]], 16).scale(1.15, 1, 0.95), pbr('aluminium_scratched', 0xe0e0e0, 0xbcbcbc), ctr, 1.0, 1.425, 0.85);
+  // impulse rack by the till: gum / sweets on a small wire stand
+  B.add(rbox(0.32, 0.36, 0.2, 0.01, 1), pbr('metal_painted_chipped', 0x303032, 0x303032), ctr, 0.35, 1.005, 0.62);
+  for (const [li, y] of [0.1, 0.22].entries()) {
+    const g = packRow({ u0: 0.05, u1: 0.95, v0: 0.05 + li * 0.25, v1: 0.27 + li * 0.25, n: 5, w: 0.05, h: 0.08, d: 0.025, shape: 'box', x0: -0.14, y: 0, z: 0, seed: 77 + li });
+    g.rotateY(Math.PI);
+    B.add(g, photoMat('seven_snacks2', { rough: 0.5 }), ctr, 0.35, 1.005 + y, 0.53, 0);
+  }
+  // back shelf behind the clerk: a real bottle wall (cups/bottles cut from the real photo) on a laminate unit
+  const back = pbr('plastic_rough', 0xece9e2, 0xece9e2);
+  C.add(rbox(3.0, 2.0, 0.42, 0.02, 1), back, ctr, 0, 0, 2.55, Math.PI / 2 * 0);
+  for (const [li, y] of [0.5, 0.95, 1.4].entries()) {
+    B.add(rbox(2.9, 0.025, 0.36, 0.006, 1), back, ctr, 0, y, 2.38);
+    const g = packRow({ u0: 0.02, u1: 0.98, v0: li === 0 ? 0.05 : li === 1 ? 0.33 : 0.66, v1: li === 0 ? 0.32 : li === 1 ? 0.62 : 0.95, n: 24, w: 0.09, h: 0.2, d: 0.09, shape: 'cup', x0: -1.4, y: 0, z: 0, seed: 31 + li });
+    g.rotateY(Math.PI);
+    B.add(g, photoMat('seven_bottles', { rough: 0.3 }), ctr, 0, y + 0.025, 2.3, 0);
+  }
+  // ---- gondolas: 2 double-sided runs between the door and the counter (door frame: x = right, z = forward)
   const slots: Slot[] = [];
   const cards = new Map<string, number>();
   const atlas = new CardAtlas(s.stock.length);
-  const gond = (x: number, z0: number, len: number, photoA: string, photoB: string) => {
-    B.add(mbox(0.9, 0.12, len, 1), flat(0x2a2c30, 0.6, 0.3), door, x, 0, z0 + len / 2);
-    B.add(mbox(0.08, 1.55, len, 1), flat(0xe8e8e4, 0.5, 0.4), door, x, 0, z0 + len / 2);
-    for (const side of [-1, 1]) {
-      const p = photoPanel(side < 0 ? photoA : photoB, len, 1.4, 0.0);
-      B.add(p.g, p.m, door, x + side * 0.05, 0.12, z0 + len / 2, side < 0 ? -Math.PI / 2 : Math.PI / 2);
-      for (const y of [0.42, 0.82, 1.22]) B.add(mbox(0.4, 0.02, len, 1), flat(0xf4f4f0, 0.4, 0.4), door, x + side * 0.24, y, z0 + len / 2);
-    }
-  };
-  gond(-3.0, 1.0, 3.4, 'seven_snacks', 'seven_noodles');
-  gond(-5.6, 1.0, 3.4, 'seven_snacks2', 'seven_snacks');
-  // drinks fridge along the south wall (door frame right = +z world… we use x = +5.6)
+  gondola(B, door, -3.0, 1.0, 3.4, ['seven_snacks2', 'seven_noodles'], [['bag', 'bag', 'bag', 'box'], ['cup', 'cup', 'cup', 'cup']], 11);
+  gondola(B, door, -5.6, 1.0, 3.4, ['seven_snacks', 'seven_snacks2'], [['bag', 'bag', 'box', 'box'], ['bag', 'bag', 'bag', 'box']], 29);
+  // ---- drinks cooler along the south wall
   const fx = 6.2;
-  B.add(mbox(0.75, 2.1, 3.6, 1), flat(0xdedfe0, 0.4, 0.5), door, fx + 0.3, 0, 2.8);
-  const fp = photoPanel('seven_fridge', 3.4, 1.85, 0.0);
-  B.add(fp.g, mat('fridgephoto', () => { const m = photoMat('seven_fridge', { emissive: 0.35 }).clone(); return m; }), door, fx - 0.08, 0.12, 2.8, -Math.PI / 2);
-  B.add(plane(3.4, 1.85).translate(0, 0.12, 0), glass(), door, fx - 0.12, 0, 2.8, -Math.PI / 2);
-  // ceiling tubes
-  for (const z of [1.5, 3.2]) B.add(new THREE.CylinderGeometry(0.02, 0.02, 2.4, 6).rotateX(Math.PI / 2), glow(0xf4fbff, 2.2), door, -2, 2.9, z);
+  drinksCooler(B, root, door, fx, 2.8, 3.6);
+  // ---- ceiling: recessed fluorescent troffers
+  for (const z of [1.5, 3.2, 4.9]) for (const xx of [-4.3, -1.2, 2.0]) {
+    B.add(rbox(0.6, 0.05, 1.2, 0.01, 1), pbr('metal_painted_chipped', 0xf2f2f0, 0xf2f2f0), door, xx, 2.92, z);
+    B.add(rbox(0.5, 0.012, 1.1, 0.004, 1), glow(0xf4fbff, 2.0), door, xx, 2.905, z);
+  }
+  C.flush(root);
   B.flush(root);
-  // stock slots: snacks/sauces on gondola shelf fronts, drinks at the fridge front ledge
+  // stock slots: snacks/sauces on gondola shelf fronts, drinks at the cooler's front ledge
   const drinks = s.stock.filter((x) => /water|cola|fanta|m150|beer/.test(x.id));
   const dry = s.stock.filter((x) => !drinks.includes(x));
   const style: CardStyle = 'yellow';
@@ -457,7 +696,7 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
     for (let k = 0; k < n; k++) slots.push({ stock: stk.id, p: door.arr(sp.x, sp.y, Math.min(sp.z0 + sp.len - 0.1, zc + k * 0.14)), yaw: door.yaw + sp.face * Math.PI / 2 });
     const kind = kinds.get(stk.id) ?? stk.fb;
     const c = card(atlas, style, stk, nameOf(game, stk, kind), 0.16, i);
-    c.position.copy(door.at(sp.x + sp.face * 0.21, sp.y - 0.03, zc)); c.rotation.y = door.yaw + sp.face * Math.PI / 2;
+    c.position.copy(door.at(sp.x + sp.face * 0.12, sp.y - 0.03, zc)); c.rotation.y = door.yaw + sp.face * Math.PI / 2;
     root.add(c);
   });
   drinks.forEach((stk, i) => {
@@ -466,17 +705,18 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
     for (let k = 0; k < n; k++) slots.push({ stock: stk.id, p: door.arr(fx - 0.22, 0.62 + (k % 2) * 0.004, zc + (k - (n - 1) / 2) * 0.1), yaw: door.yaw - Math.PI / 2 });
     const kind = kinds.get(stk.id) ?? stk.fb;
     const c = card(atlas, style, stk, nameOf(game, stk, kind), 0.16, i + 9);
-    c.position.copy(door.at(fx - 0.3, 0.52, zc)); c.rotation.y = door.yaw - Math.PI / 2;
+    c.position.copy(door.at(fx - 0.375, 0.52, zc)); c.rotation.y = door.yaw - Math.PI / 2;
     root.add(c);
   });
-  // a ledge in front of the fridge for drinks
-  const ledge = new THREE.Mesh(mbox(0.3, 0.6, 3.4, 1), flat(0xdcdcd8, 0.4, 0.5));
-  ledge.position.copy(door.at(fx - 0.22, 0, 2.8)); ledge.rotation.y = door.yaw;
+  // promo ledge in front of the cooler (where the buyable drinks stand): bevelled, with a price rail
+  const ledge = new THREE.Mesh(rbox(0.3, 0.6, 3.4, 0.015, 1), pbr('plastic_rough', 0xdcdcd8, 0xdcdcd8));
+  ledge.position.copy(door.at(fx - 0.22, 0, 2.8)); ledge.rotation.y = door.yaw; ledge.castShadow = ledge.receiveShadow = true;
   root.add(ledge);
   bakeCards(root, atlas, cards);
   const counterMesh = root.children[0];
   const colliders = [
     game.physics.addBox(ctr.arr(0, 0.5, 0.75), [cw, 1.0, 0.72], ctr.yaw),
+    game.physics.addBox(ctr.arr(0, 1.0, 2.55), [3.0, 2.0, 0.42], ctr.yaw),
     game.physics.addBox(door.arr(-3.0, 0.78, 2.7), [0.9, 1.56, 3.4], door.yaw),
     game.physics.addBox(door.arr(-5.6, 0.78, 2.7), [0.9, 1.56, 3.4], door.yaw),
     game.physics.addBox(door.arr(fx + 0.1, 1.05, 2.8), [1.0, 2.1, 3.6], door.yaw),
@@ -496,26 +736,51 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
 function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<string, string>): ShopFix {
   const root = new THREE.Group(); root.name = 'shop:' + s.id;
   const B = new Batch();
-  // checkout lanes (conveyor counters)
+  // checkout lanes: bevelled counters with a rubber belt, end rollers, scanner, card terminal, lane-number pole
   for (let lane = 0; lane < 3; lane++) {
     const x = lane * 3.2;
-    B.add(mbox(2.6, 0.9, 0.8, 1), flat(0x3a3d42, 0.5, 0.4), ctr, x, 0, 0.75, Math.PI / 2 * 0);
-    B.add(box(2.5, 0.02, 0.5), flat(0x111111, 0.7), ctr, x, 0.9, 0.75);
-    B.add(box(0.05, 1.6, 0.05), flat(0x9a9a9a, 0.4, 0.6), ctr, x + 1.25, 0.9, 1.1);
-    B.add(box(0.5, 0.3, 0.04), glow(lane === 0 ? 0x34c759 : 0xd8231a, 1.2), ctr, x + 1.25, 2.3, 1.1);
+    B.add(rbox(2.6, 0.86, 0.8, 0.02, 1), pbr('metal_painted_chipped', 0x3a3d42, 0x3a3d42), ctr, x, 0, 0.75);
+    B.add(rbox(2.5, 0.025, 0.5, 0.01, 1), pbr('rubber_black', undefined, 0x181818), ctr, x, 0.86, 0.75);
+    for (const ex of [-1.25, 1.25]) B.add(tube([ex, 0.875, 0.5], [ex, 0.875, 1.0], 0.02, 10), pbr('aluminium_scratched'), ctr, x, 0, 0);
+    B.add(rbox(2.6, 0.06, 0.06, 0.01, 1), pbr('aluminium_scratched'), ctr, x, 0.86, 0.47);
+    B.add(rbox(0.3, 0.05, 0.3, 0.01, 1), flat(0x202022, 0.35), ctr, x + 0.95, 0.88, 0.75);
+    B.add(rbox(0.26, 0.004, 0.26, 0.002, 1), glow(0xff3020, 0.9), ctr, x + 0.95, 0.932, 0.75);
+    B.add(tube([x + 1.25, 0.9, 1.1], [x + 1.25, 2.25, 1.1], 0.025, 10), pbr('aluminium_scratched'), ctr, 0, 0, 0);
+    B.add(rbox(0.5, 0.3, 0.06, 0.02, 1), pbr('plastic_glossy', 0x222222, 0x222222), ctr, x + 1.25, 2.22, 1.1);
+    B.add(rbox(0.44, 0.24, 0.004, 0.004, 1), glow(lane === 0 ? 0x34c759 : 0xd8231a, 1.2), ctr, x + 1.25, 2.25, 1.068);
   }
-  // pallet racks (orange beams, blue uprights) — 3 rows deeper inside
+  // pallet racks: perforated blue uprights (2 frames per bay with bracing), orange step beams, wooden
+  // pallets (slats + blocks) loaded with real cardboard cartons (library model, instanced)
   const rackRows = [7, 10.5, 14];
   const rackLen = 10;
+  const blue = pbr('metal_painted_chipped', 0x1f4fa8, 0x1f4fa8), orange = pbr('metal_painted_chipped', 0xe8681e, 0xe8681e), wood = pbr('wood_planks_old');
+  const cartons: THREE.Matrix4[] = [];
   for (const rz of rackRows) {
-    for (let i = 0; i <= 4; i++) B.add(box(0.09, 3.6, 1.1), flat(0x1f4fa8, 0.5, 0.4), door, -1 + i * (rackLen / 4), 0, rz);
-    for (const y of [1.2, 2.4]) for (const dz of [-0.5, 0.5]) B.add(box(rackLen, 0.1, 0.08), flat(0xe8681e, 0.5, 0.3), door, -1 + rackLen / 2, y, rz + dz);
-    // pallets + bulk cartons on upper levels (cardboard PBR)
+    for (let i = 0; i <= 4; i++) {
+      const ux = -1 + i * (rackLen / 4);
+      for (const dz of [-0.5, 0.5]) B.add(rbox(0.09, 3.6, 0.07, 0.008, 0.5), blue, door, ux, 0, rz + dz);
+      for (let k = 0; k < 6; k++) B.add(tube([ux, 0.2 + k * 0.55, rz - 0.47], [ux, 0.45 + k * 0.55, rz + 0.47], 0.012, 6), blue, door, 0, 0, 0);
+      B.add(rbox(0.16, 0.012, 1.12, 0.004, 1), blue, door, ux, 0, rz);
+    }
+    for (const y of [1.2, 2.4]) for (const dz of [-0.5, 0.5]) B.add(rbox(rackLen, 0.12, 0.05, 0.008, 1), orange, door, -1 + rackLen / 2, y, rz + dz);
     for (let i = 0; i < 4; i++) {
-      B.add(mbox(1.2, 0.14, 1.0, 1), pbr('wood_planks_old'), door, -1 + rackLen / 8 + i * (rackLen / 4), 0, rz);
-      for (const y of [1.3, 2.5]) B.add(mbox(1.6, 0.8, 0.9, 0.6), pbr('cardboard_worn'), door, -1 + rackLen / 8 + i * (rackLen / 4), y, rz);
+      const px = -1 + rackLen / 8 + i * (rackLen / 4);
+      for (const y of [0, 1.32, 2.52]) {
+        // pallet: 3 bottom boards, 9 blocks, 5 top slats
+        for (const dz of [-0.42, 0, 0.42]) B.add(rbox(1.2, 0.022, 0.1, 0.004, 1), wood, door, px, y, rz + dz);
+        for (const dx of [-0.55, 0, 0.55]) for (const dz of [-0.42, 0, 0.42]) B.add(rbox(0.1, 0.078, 0.1, 0.006, 1), wood, door, px + dx, y + 0.022, rz + dz);
+        for (let k = 0; k < 5; k++) B.add(rbox(0.1, 0.022, 1.0, 0.004, 1), wood, door, px - 0.5 + k * 0.25, y + 0.1, rz);
+        if (y === 0) continue;   // ground level: the buyable bulk stock stands here
+        // 2×2×2 cartons per pallet
+        for (let cx2 = 0; cx2 < 2; cx2++) for (let cz2 = 0; cz2 < 2; cz2++) for (let cy2 = 0; cy2 < 2; cy2++) {
+          if ((i + cx2 + cz2 * 2 + cy2 + rz) % 7 === 0) continue;
+          const pp = door.at(px - 0.27 + cx2 * 0.54, y + 0.122 + cy2 * 0.345, rz - 0.22 + cz2 * 0.44);
+          cartons.push(new THREE.Matrix4().makeRotationY(door.yaw + Math.PI / 2 + ((cx2 + cz2 + cy2) % 2) * 0.04).setPosition(pp));
+        }
+      }
     }
   }
+  root.add(libInstanced('cardboard_box_01', cartons, { shadow: true }));
   // far wall photo: a real Makro aisle (depth illusion)
   const aisle = photoPanel('makro_aisle', 14, 6, 0.3);
   B.add(aisle.g, aisle.m, door, 4, 0, 19);

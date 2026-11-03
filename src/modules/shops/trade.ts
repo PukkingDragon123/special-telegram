@@ -941,6 +941,10 @@ export function installClient(game: Game) {
   }, 10);
 }
 
+/** the quests module routes the keepers' "คุย" into a real conversation (returns true when it took over) */
+let keeperTalkHook: ((sid: string) => boolean) | null = null;
+export function setKeeperTalk(fn: ((sid: string) => boolean) | null) { keeperTalkHook = fn; }
+
 function keeperActions(rt: ShopRT, ctx: Ctx): Action[] {
   const me = ctx.me;
   const out: Action[] = [];
@@ -961,7 +965,7 @@ function keeperActions(rt: ShopRT, ctx: Ctx): Action[] {
     const d = G.g.debt[rt.def.debtKey];
     out.push(wallet > 0 ? { key: 'E', label: tl(`คืนเงินป้า ${Math.min(d, wallet)} ฿ (ติดอยู่ ${d})`, `repay ${Math.min(d, wallet)} ฿`), priority: 6, run: () => G.intent('shop.repay', { sid: rt.def.id }) }
       : { key: 'E', label: tl(`ติดป้าอยู่ ${d} ฿`, `you owe ${d} ฿`), disabled: tl('ไม่มีตังค์', 'broke'), priority: 6 });
-  } else if (k?.face !== 'sleep') out.push({ key: 'E', label: tl('คุย', 'talk'), priority: 5, run: () => G.intent('shop.talk', { sid: rt.def.id }) });
+  } else if (k?.face !== 'sleep') out.push({ key: 'E', label: tl('คุย', 'talk'), priority: 5, run: () => { if (keeperTalkHook?.(rt.def.id)) return; G.intent('shop.talk', { sid: rt.def.id }); } });
   return out;
 }
 

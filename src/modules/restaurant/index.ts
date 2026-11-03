@@ -14,6 +14,8 @@ import { bindService, installServiceIntents, serviceHost, serviceProvider, refre
 import { bindStats, stats, rollDay, freshStats } from './stats';
 import { unlockedRecipes, recipeInfo, DEFAULT_EXTRAS } from './data';
 import { stars as starStr } from './lines';
+import { premisesInit, premisesHost, premisesNewDay, premisesWorldReady, rs, setRS, serviceFrame, deliverySpot, qualifies, partyMoney, restMods, chargeParty, landlord, RENT, UNITS, unitToWorld, isInside } from './premises';
+import { ShopHouse3D, shutterProvider } from './shop3d';
 
 /* =============================================================================================
  * MODULE: restaurant — customers (npc role 'customer', host AI), furniture & service items,
@@ -23,6 +25,7 @@ import { stars as starStr } from './lines';
  * ============================================================================================= */
 
 const fx = new RestFX();
+let shop3d: ShopHouse3D | null = null;
 let closeup: MenuCloseup | null = null;
 let flyT = 0;
 let flyLoop: SoundHandle | null = null;
@@ -254,6 +257,16 @@ export default defineModule({
     installServiceIntents(game);
     game.registerView('npc', customerView(game));
     game.interact.provide(serviceProvider(game, (id) => openMenu(game, id)), 5);
+    // the real shophouse restaurant: landlord, rent, quests, shutters (premises.ts + shop3d.ts)
+    premisesInit(game);
+    game.interact.provide(shutterProvider(game), 5);
+    game.on('rest:grand', () => {
+      const p = unitToWorld(UNITS[0], 2.4, 2.6, 0.6);
+      Sound.play('tada', { vol: 0.8 }); Sound.play('applause', { vol: 0.6, delay: 0.3 } as any); Sound.play('crowd_cheer', { vol: 0.45, delay: 0.5 } as any);
+      game.ui.popup(new THREE.Vector3(p[0], p[1], p[2]), 'เปิดร้านแล้ว!', { style: 'shout', scale: 1.6, dur: 3.5 } as any);
+    });
+    game.on('rest:rented', () => Sound.play('level_up_fanfare', { vol: 0.5 }));
+    game.on('rest:upgrade', (d: { id: string }) => { const p = unitToWorld(UNITS[0], 2.4, 2.4, 0.4); game.ui.popup(new THREE.Vector3(p[0], p[1], p[2]), d.id === 'aircon' ? 'แอร์เย็นฉ่ำ!' : d.id === 'tv' ? 'ทีวีมาแล้ว!' : d.id === 'led' ? 'ป้ายไฟวิ่ง!' : 'ขยายร้าน!', { style: 'shout', scale: 1.3, dur: 3 } as any); });
     game.events.on('host:init', () => initHost(game));
     game.events.on('item:picked', (d: any) => { if (game.isHost) onItemPicked(d); });
     game.events.on('item:placed', (d: any) => { if (game.isHost) onItemPlaced(d); });
@@ -267,9 +280,11 @@ export default defineModule({
     });
     game.events.on('world:ready', () => {
       if (game.scene) fx.attach(game.scene);
+      shop3d?.dispose(); shop3d = new ShopHouse3D(game); shop3d.build();
+      premisesWorldReady(game);
       if (game.isHost) { initHost(game); setTimeout(() => { starterKit(game); if (params.has('restaurantlab')) lab(game); }, 250); }
     });
-    game.events.on('world:exit', () => { fx.detach(); closeup?.dispose(); closeup = null; flyLoop?.stop(0.1); flyLoop = null; for (const s of slips) s.m.removeFromParent(); slips.length = 0; });
+    game.events.on('world:exit', () => { shop3d?.dispose(); shop3d = null; fx.detach(); closeup?.dispose(); closeup = null; flyLoop?.stop(0.1); flyLoop = null; for (const s of slips) s.m.removeFromParent(); slips.length = 0; });
     Sound.preload(['plate_down', 'khob_khun', 'aroi', 'ka_ching', 'banknote', 'scrub_loop', 'squeaky_toy', 'cup_fill', 'ice_cubes', 'eat_chomp', 'dun_dun_dunn']);
     // public API (other modules, tests)
     const api = {
@@ -290,12 +305,15 @@ export default defineModule({
       /** HOST tests: advance the restaurant simulation synchronously */
       _tick: (dt = 0.1, n = 1) => { for (let i = 0; i < n; i++) { customersHost(dt); serviceHost(dt); } },
       seats: SEAT_KINDS, tables: TABLE_KINDS,
+      /** the shophouse restaurant (tests): state, service point, landlord, tunables */
+      premises: { rs: () => rs(game), set: (p: any) => setRS(game, p), serviceFrame: () => serviceFrame(game), deliverySpot: () => deliverySpot(game), qualifies: () => qualifies(game), partyMoney: () => partyMoney(game), mods: () => restMods(game), charge: (n: number) => chargeParty(game, n, 'test'), landlord: () => landlord(game), RENT, UNITS, unitToWorld, isInside },
     };
     (game as any).restaurant = api;
     (window as any).__rest = api;
   },
   hostUpdate(game: Game, dt: number) {
     if (game.g.scene !== 'world' || !game.scene) return;
+    premisesHost(game, dt);
     customersHost(dt);
     serviceHost(dt);
   },
@@ -307,12 +325,14 @@ export default defineModule({
       if (closeup && closeup.update(dt) === false) closeup = null;
     }
     fx.update(dt);
+    shop3d?.frame(dt);
     updateSlips(game, dt);
     updateFlies(game, dt);
     updateTubs(game, dt);
   },
   onNewDay(game: Game, day: number) {
     rollDay(day);
+    premisesNewDay(game, day);
     refreshTubs();
     for (const c of customers()) game.state.despawn(c);
     if (game.g.shopOpen) game.g.shopOpen = false;

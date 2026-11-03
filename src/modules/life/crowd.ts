@@ -5,6 +5,15 @@ import { h01, hashN, hweighted, bump, qmul, quality } from './util';
 import { line } from './lines';
 import { play } from './sounds';
 import type { Life } from './index';
+import { LocalTalkers, TalkTarget } from '../quests/api';
+import { ARCHETYPES } from '../characters/defs';
+
+/** set pieces being talked to (key 'f'+setPieceKey → anim): they stop walking, face the player and talk */
+export const CrowdHold = new Map<string, string>();
+const TALK_ROLE = (key: string, arch: string) => (key.startsWith('win') ? 'moto_taxi' : key.startsWith('gos') ? 'gossip' : key === 'lotto' ? 'lottery_walker' : arch);
+const TALK_NAME = (key: string, arch: string) => (key.startsWith('win') ? { th: 'พี่วิน', en: 'moto-taxi guy' } : key.startsWith('gos') ? { th: 'ป้าเม้าท์', en: 'gossip auntie' } : key === 'lotto' ? { th: 'ป้าลอตเตอรี่', en: 'lottery lady' } : ARCHETYPES[arch]?.name ?? { th: 'คนแถวนี้', en: 'local' });
+const talkProxyGeo = new THREE.CapsuleGeometry(0.32, 1.0, 2, 6).translate(0, 0.85, 0);
+const talkProxyMat = new THREE.MeshBasicMaterial({ visible: false });
 
 /* ============================================================================================
  * AMBIENT CROWDS — client-local & deterministic (g.seed + g.lifeT), never entities.
@@ -105,6 +114,7 @@ export class Crowd {
   }
 
   dispose() {
+    this.clearTalkers();
     for (const r of this.rigs.values()) { r.rig.root.removeFromParent(); r.rig.dispose(); }
     this.rigs.clear();
     this.walkers.clear();
@@ -359,8 +369,16 @@ export class Crowd {
     type Cand = { key: string; arch: string; seed: number; pos: THREE.Vector3; yaw: number; anim: string; moving: boolean; laugh: number; flee: boolean; lines?: string };
     const cands: Cand[] = [];
     for (const w of this.walkers.values()) if (!w.gone) cands.push({ key: 'w' + w.key, arch: w.arch, seed: w.seed, pos: w.pos, yaw: w.yaw, anim: w.flee > 0 ? 'scream_run' : w.laugh > 0 ? 'celebrate' : 'walk', moving: true, laugh: w.laugh, flee: w.flee > 0 });
+    const me = game.player;
     for (const f of this.fixed) {
       if (hour < f.from || hour > f.to) continue;
+      const held = CrowdHold.get('f' + f.key);
+      if (held) {
+        // talking: stand still, turn to the player
+        if (me) f.yaw = Math.atan2(me.pos.x - f.pos.x, me.pos.z - f.pos.z);
+        cands.push({ key: 'f' + f.key, arch: f.arch, seed: f.seed, pos: f.pos, yaw: f.yaw, anim: held, moving: false, laugh: 0, flee: false, lines: f.lines });
+        continue;
+      }
       if (f.walk) {
         const W = f.walk;
         const s = ((T * W.speed) % W.len);
@@ -419,6 +437,7 @@ export class Crowd {
       if (r.fresh || d < 20 * 20 || (RigFrame & 1) === 0) { rig.update(d < 20 * 20 || r.fresh ? dt : dt * 2); r.fresh = false; }
     }
     RigFrame++;
+    this.syncTalkers();
 
     // ---- impostors for the rest (real baked characters; capsules only as a fallback)
     if (!this.bakeTried && this.game.chars && T > 0.5) this.bakeImpostors();
@@ -466,6 +485,41 @@ export class Crowd {
       n++;
     }
     for (const m of [imp.body, imp.legs, imp.head]) { m.count = n; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; }
+  }
+
+  // ------------------------------------------------------------------ talkable set pieces (quests module)
+  private talkers = new Map<string, THREE.Mesh>();
+  private syncTalkers() {
+    if (!this.group) return;
+    for (const [k, r] of this.rigs) {
+      if (!k.startsWith('f') || this.talkers.has(k)) continue;
+      const f = this.fixed.find((x) => 'f' + x.key === k);
+      if (!f) continue;
+      const proxy = new THREE.Mesh(talkProxyGeo, talkProxyMat);
+      proxy.name = 'crowd-talk-proxy';
+      this.group.add(proxy);
+      const name = TALK_NAME(f.key, f.arch);
+      const target: TalkTarget = {
+        kind: 'local', key: 'crowd:' + f.key, role: TALK_ROLE(f.key, f.arch), name,
+        head: () => { const rr = this.rigs.get(k); const hw = (rr?.rig as any)?.headWorld; if (hw) { try { return hw.call(rr!.rig, new THREE.Vector3()); } catch {} } return f.pos.clone().setY(f.pos.y + 1.55); },
+        act: (anim) => { if (!anim || anim === 'idle') CrowdHold.delete(k); else CrowdHold.set(k, anim); },
+      };
+      this.game.interact.register(proxy, { kind: 'local_talk', data: { key: target.key, name }, reach: 3 });
+      LocalTalkers.add(target, proxy);
+      this.talkers.set(k, proxy);
+      void r;
+    }
+    for (const [k, proxy] of this.talkers) {
+      const r = this.rigs.get(k);
+      if (!r) { this.game.interact.unregister(proxy); proxy.removeFromParent(); LocalTalkers.remove('crowd:' + k.slice(1)); CrowdHold.delete(k); this.talkers.delete(k); continue; }
+      proxy.position.copy(r.rig.root.position);
+      proxy.visible = r.rig.root.visible;
+    }
+  }
+  private clearTalkers() {
+    for (const [k, proxy] of this.talkers) { this.game.interact.unregister(proxy); proxy.removeFromParent(); LocalTalkers.remove('crowd:' + k.slice(1)); }
+    this.talkers.clear();
+    CrowdHold.clear();
   }
 
   private sayT = 0;

@@ -8,6 +8,10 @@ import { lifeTex, loadImage } from './tex';
 import { line } from './lines';
 import { loop, play } from './sounds';
 import type { Life } from './index';
+import { libModel } from '../world/lib';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { tl } from '../../core/util';
+import { LocalTalkers, type TalkTarget } from '../quests/api';
 
 /* ============================================================================================
  * THAI MEME EASTER EGGS & small life (every peer, local):
@@ -18,6 +22,9 @@ import type { Life } from './index';
  *  - a lottery stand (real lottery-board photo) with its seller, an amulet stall at the temple,
  *  - an uncle singing karaoke loudly at night, tokay geckos on the walls at night (real model,
  *    "ตุ๊กแก!"), crows on the vacant lot that take off when you come close.
+ * The lottery lady (role 'lottery_lady') and the amulet grandpa (role 'amulet_grandpa') are talkable while on
+ * duty: registered as quests/api LocalTalkers + interact targets {kind:'talker', data:{key, role, name}}
+ * (their dialogues live in src/modules/ritual/talk.ts).
  * ========================================================================================== */
 
 const DAYS = [
@@ -25,7 +32,7 @@ const DAYS = [
   { th: 'วันพฤหัสบดี', c: '#f08a22' }, { th: 'วันศุกร์', c: '#3a7ae0' }, { th: 'วันเสาร์', c: '#8a4ac8' },
 ];
 
-interface Npc { rig: CharacterRig; from: number; to: number; anim: string; lines?: string; talkT: number; pos: THREE.Vector3 }
+interface Npc { rig: CharacterRig; from: number; to: number; anim: string; lines?: string; talkT: number; pos: THREE.Vector3; talk?: { target: TalkTarget; on: boolean } }
 
 export class Eggs {
   private group: THREE.Group | null = null;
@@ -60,8 +67,14 @@ export class Eggs {
     this.addCrow(new THREE.Vector3(38, 0.15, -79));
   }
 
+  /** a talkable seller by role ('lottery_lady' | 'amulet_grandpa'), for the ritual module */
+  talker(role: string): { target: TalkTarget; rig: CharacterRig; pos: THREE.Vector3; on: boolean } | null {
+    const n = this.npcs.find((x) => x.talk?.target.role === role);
+    return n ? { target: n.talk!.target, rig: n.rig, pos: n.pos, on: n.talk!.on } : null;
+  }
+
   dispose() {
-    for (const n of this.npcs) n.rig.dispose();
+    for (const n of this.npcs) { if (n.talk?.on) { LocalTalkers.remove(n.talk.target.key); this.game.interact.unregister(n.rig.root); } n.rig.dispose(); }
     this.npcs = [];
     this.karaoke?.stop(0.5); this.karaoke = null;
     this.group?.removeFromParent(); this.group = null;
@@ -135,19 +148,28 @@ export class Eggs {
   }
   private weekday() { return ((this.game.g.day ?? 1) % 7); } // day 1 = Monday
 
-  private table(p: THREE.Vector3, w: number, d: number, topTex: string, tilt = 0) {
+  /** the library Thai stainless table (real model) with a display board on top (real photo: lottery sheets /
+   *  amulets under glass). `tilt` leans the board toward the customer like real lottery stands. */
+  private table(p: THREE.Vector3, topTex: string, tilt = 0, glass = false) {
     const g = new THREE.Group();
-    const legM = new THREE.MeshStandardMaterial({ color: '#3a3530', roughness: 0.7, metalness: 0.4 });
-    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-      const l = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.72, 6), legM);
-      l.position.set(sx * (w / 2 - 0.05), 0.36, sz * (d / 2 - 0.05));
-      g.add(l);
+    g.add(libModel('thai_table_steel'));
+    const photo = new THREE.MeshStandardMaterial({ map: lifeTex(topTex, { fallback: '#c8c0b0', clamp: true }), roughness: glass ? 0.25 : 0.7 });
+    const edge = new THREE.MeshStandardMaterial({ color: glass ? '#8a6a3a' : '#2a3a5a', roughness: 0.5, metalness: glass ? 0.3 : 0.1 });
+    const board = new THREE.Mesh(new RoundedBoxGeometry(0.7, 0.02, 0.54, 2, 0.006), [edge, edge, photo, edge, edge, edge]);
+    board.position.set(0, 0.735 + (tilt ? 0.07 : 0), 0);
+    board.rotation.x = tilt;
+    board.castShadow = true; board.receiveShadow = true;
+    g.add(board);
+    if (tilt) {
+      // the prop block that tilts the board (a folded towel on a crate edge)
+      const prop = new THREE.Mesh(new RoundedBoxGeometry(0.6, 0.1, 0.06, 2, 0.02), new THREE.MeshStandardMaterial({ color: '#c84a3a', roughness: 0.95 }));
+      prop.position.set(0, 0.77, -0.22); g.add(prop);
     }
-    const top = new THREE.Mesh(new THREE.BoxGeometry(w, 0.03, d), [legM, legM, new THREE.MeshStandardMaterial({ map: lifeTex(topTex, { fallback: '#c8c0b0', clamp: true }), roughness: 0.7 }), legM, legM, legM]);
-    top.position.y = 0.74;
-    top.rotation.x = tilt;
-    top.castShadow = true;
-    g.add(top);
+    if (glass) {
+      // glass display case over the amulets
+      const gl = new THREE.Mesh(new RoundedBoxGeometry(0.7, 0.1, 0.54, 2, 0.008), new THREE.MeshPhysicalMaterial({ color: '#ffffff', roughness: 0.05, transmission: 0.0, transparent: true, opacity: 0.18, metalness: 0 }));
+      gl.position.set(0, 0.8, 0); g.add(gl);
+    }
     g.position.copy(p);
     this.group!.add(g);
     return g;
@@ -165,24 +187,41 @@ export class Eggs {
   }
 
   private lotteryStand(p: THREE.Vector3) {
-    const t = this.table(p, 0.9, 0.6, 'lottery_board.jpg', -0.25);
+    const t = this.table(p, 'lottery_board.jpg', -0.25);
     t.rotation.y = Math.PI / 2;
     this.seller('old_lady', new THREE.Vector3(p.x - 0.75, p.y, p.z), -Math.PI / 2, 'sit', 7.5, 18.5, 'lottery');
+    this.makeTalkable('egg:lottery', 'lottery_lady', tl('ป้าสมพร คนขายหวย', 'Auntie Somporn, lottery seller'));
   }
   private amuletStall(p: THREE.Vector3) {
-    this.table(p, 1.4, 0.7, 'amulet_table.jpg');
+    this.table(p, 'amulet_table.jpg', 0, true);
     this.seller('grandpa', new THREE.Vector3(p.x, p.y, p.z - 0.75), 0, 'sit', 7, 17);
+    this.makeTalkable('egg:amulet', 'amulet_grandpa', tl('ตาเปลี่ยน แผงพระ', 'Grandpa Plian, amulet stall'));
+  }
+
+  /** the last seller becomes a talk target (registered only while on duty, see frame()) */
+  private makeTalkable(key: string, role: string, name: { th: string; en?: string }) {
+    const n = this.npcs[this.npcs.length - 1];
+    if (!n) return;
+    const rig = n.rig;
+    const head = () => { const h = (rig as any).headWorld?.(new THREE.Vector3()); return h ?? n.pos.clone().setY(n.pos.y + (n.anim === 'sit' ? 1.25 : 1.65)); };
+    const target: TalkTarget = {
+      kind: 'local', key, role, name, head,
+      act: (anim, face) => { try { if (anim) rig.play(anim as any, { loop: false, onEnd: () => { try { rig.play(n.anim as any, { loop: true }); } catch {} } } as any); if (face) rig.setFace?.(face as any); } catch {} },
+    };
+    n.talk = { target, on: false };
   }
 
   private karaokeUncle(p: THREE.Vector3) {
     const rig = this.seller('karaoke_uncle', p, -Math.PI / 2, 'dance', 19, 23.7, 'karaoke');
     if (rig) {
-      const mic = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.012, 0.18, 8), new THREE.MeshStandardMaterial({ color: '#202020', roughness: 0.3, metalness: 0.6 }));
+      const mic = handMic();
       mic.rotation.x = Math.PI / 2;
       try { rig.attach('hand_r').add(mic); } catch {}
     }
-    const spk = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.62, 0.36), new THREE.MeshStandardMaterial({ color: '#141414', roughness: 0.55, metalness: 0.2 }));
-    spk.position.set(p.x - 0.4, 0.46, p.z + 0.8);
+    // his portable karaoke speaker (real boombox model) on a red plastic stool, with a coiled mic cable
+    const spk = libModel('boombox');
+    spk.position.set(p.x - 0.45, 0.15, p.z + 0.85);
+    spk.rotation.y = -Math.PI / 2 + 0.3;
     this.group!.add(spk);
   }
 
@@ -231,6 +270,11 @@ export class Eggs {
     for (const n of this.npcs) {
       const on = h >= n.from && h <= n.to;
       n.rig.root.visible = on;
+      if (n.talk && n.talk.on !== on) {
+        n.talk.on = on;
+        if (on) { LocalTalkers.add(n.talk.target, n.rig.root); game.interact.register(n.rig.root, { kind: 'talker', data: { key: n.talk.target.key, role: n.talk.target.role, name: n.talk.target.name } }); }
+        else { LocalTalkers.remove(n.talk.target.key); game.interact.unregister(n.rig.root); }
+      }
       if (!on) continue;
       const d = n.pos.distanceTo(cam);
       if (d < 45) n.rig.update(dt);
@@ -270,4 +314,22 @@ export class Eggs {
 }
 
 import { clone as skClone } from 'three/examples/jsm/utils/SkeletonUtils.js';
+
+/** a handheld dynamic microphone: lathe body (matte black, tapered), steel mesh-grille ball head, silver ring */
+function handMic(): THREE.Group {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.LatheGeometry([[0.0001, 0], [0.011, 0], [0.013, 0.01], [0.016, 0.09], [0.019, 0.13], [0.0001, 0.13]].map(([x, y]) => new THREE.Vector2(x, y)), 18), new THREE.MeshStandardMaterial({ color: '#1a1a1c', roughness: 0.45, metalness: 0.3 }));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.0035, 6, 20), new THREE.MeshStandardMaterial({ color: '#c8c8cc', roughness: 0.25, metalness: 0.9 }));
+  ring.rotation.x = Math.PI / 2; ring.position.y = 0.13;
+  const cv = document.createElement('canvas'); cv.width = 64; cv.height = 64;
+  const c = cv.getContext('2d')!; c.fillStyle = '#9a9aa0'; c.fillRect(0, 0, 64, 64); c.fillStyle = '#2a2a2e';
+  for (let y = 0; y < 64; y += 4) for (let x = (y / 4) % 2 ? 2 : 0; x < 64; x += 4) c.fillRect(x, y, 2, 2);
+  const tex = new THREE.CanvasTexture(cv); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(6, 3);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.026, 16, 12), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4, metalness: 0.8 }));
+  head.position.y = 0.152;
+  g.add(body, ring, head);
+  g.traverse((o: any) => { if (o.isMesh) o.castShadow = true; });
+  g.position.set(0, -0.04, 0);
+  return g;
+}
 function cloneSkinned(o: THREE.Object3D) { return skClone(o); }

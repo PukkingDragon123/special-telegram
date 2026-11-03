@@ -11,6 +11,7 @@ type Pool = TL[];
 const L = (th: string, en?: string): TL => ({ th, en });
 
 export const GREET: Record<string, Pool> = {
+  deadpan_clerk: [L('ยินดีต้อนรับครับ เดินดูตามสบาย… อย่าเดินลึกเกินไปนะครับ', 'Welcome. Browse freely… not too deep, please.'), L('สวัสดีครับ ทุกชิ้นมีอยู่จริงครับ', 'Hello. Every piece here is real.'), L('เชิญครับ ร้านเราเปิดตลอด… ในทางหนึ่ง', 'Come in. We are always open… in a way.')],
   soft_auntie: [L('มาจ้ะ{c} ซื้ออะไรดี', 'Come, dear, what are you buying?'), L('ผักสดๆ หมูสดๆ จ้า', 'Fresh veg, fresh pork!'), L('เลือกเลยจ้ะ ของป้าสดทุกอย่าง', 'Pick anything, all fresh')],
   chatty_auntie: [L('มาๆ น้อง ดูก่อนได้ ไม่ซื้อไม่ว่า', "Come look, no need to buy"), L('วันนี้ผักสวยมาก ปลูกเองกับมือ!', 'Veg is gorgeous today, grew it myself!'), L('เอาอะไรจ๊ะ บอกเจ๊มา', 'Tell me what you need')],
   stingy_uncle: [L('จะเอาอะไร ว่ามา', "What d'you want? Say it."), L('หมูสดเพิ่งเชือดเมื่อเช้า', 'Fresh pork, this morning'), L('ดูได้ จับได้ แต่ซื้อด้วยนะ', 'Look, touch… but buy')],
@@ -25,6 +26,7 @@ export const GREET: Record<string, Pool> = {
 export const REGULAR_GREET: Pool = [L('อ้าว {n} มาอีกแล้ว ขาประจำป้า!', '{n} again! My regular!'), L('{n} มาแล้ว วันนี้ลดให้นิดนึง', "{n}'s here, small discount today")];
 
 export const TALK: Record<string, Pool> = {
+  deadpan_clerk: [L('หลังร้านมีของอีกเยอะครับ… เยอะมาก', 'There is a lot more stock in the back… a lot.'), L('เดินเข้าไปแล้วอย่าลืมทางกลับนะครับ', "If you go in, don't forget the way back."), L('ผมเคยเดินไปสุดทางครั้งนึง… ไม่มีสุดทางครับ', 'I walked to the end once… there is no end.'), L('ไฟกะพริบนิดหน่อยครับ ปกติครับ', 'The lights flicker a little. That is normal.')],
   soft_auntie: [L('กะเพราต้องใบกะเพราแท้นะ ไม่ใช่โหระพา!', 'Real holy basil, not sweet basil!'), L('หมูสับต้องติดมันนิดๆ ถึงจะอร่อย', 'Minced pork needs a bit of fat'), L('ได้ข่าวว่าพวกหนูซื้อรถเข็นลุงเขามา 100 บาทเหรอ', 'Heard you bought the old cart for 100?')],
   chatty_auntie: [L('รู้ไหม ร้านก๋วยเตี๋ยวฝั่งโน้นเพิ่งขึ้นราคา', 'The noodle shop across just raised prices'), L('เมื่อคืนผีมอไซค์ขี่ผ่านหน้าบ้านเจ๊อีกแล้ว!', 'The headless biker passed my house again!'), L('ผักบุ้งวันนี้กรอบมาก ผัดไฟแดงอร่อยแน่', 'Morning glory is crisp today')],
   stingy_uncle: [L('สมัยก่อนหมูกิโลละ 80 เอง', 'Pork used to be 80 a kilo…'), L('อย่ามาต่อเยอะ ลุงก็ต้องกินต้องใช้', "Don't haggle too much, I gotta eat too")],
@@ -37,6 +39,7 @@ export const TALK: Record<string, Pool> = {
 };
 
 export const QUOTE: Record<string, Pool> = {
+  deadpan_clerk: [L('ทั้งหมด {p} บาทครับ ไม่มีค่าธรรมเนียมแฝงครับ', '{p} baht. No hidden fees.'), L('{p} บาทครับ เป็นตัวเลขที่ดีครับ', '{p} baht. A good number.')],
   soft_auntie: [L('ทั้งหมด {p} บาทจ้ะ', '{p} baht in total'), L('{p} บาทจ้ะ{c}', '{p} baht, dear')],
   chatty_auntie: [L('{p} บาทจ้ะน้อง ถูกสุดในตลาดแล้ว', '{p} — cheapest in the market'), L('ให้ {p} ละกัน', 'Let’s say {p}')],
   stingy_uncle: [L('{p} บาท', '{p} baht.'), L('{p} ไม่ขาดไม่เกิน', '{p}, exactly')],
@@ -59,6 +62,11 @@ export const CAT_COLORS: Record<ReplyCat, number> = { polite: 0xfffbf2, sweet: 0
 
 /** Reactions: [good, bad] per personality (good = mood went up). */
 export const REACT: Record<string, { good: Pool; bad: Pool; sweetFail?: Pool }> = {
+  deadpan_clerk: {
+    good: [L('สุภาพดีครับ ผมให้ {p} ครับ', 'Very polite. {p}, then.'), L('ได้ครับ {p} ผมไม่บอกหลังร้านครับ', "Alright, {p}. I won't tell the back room.")],
+    bad: [L('ไม่เป็นไรครับ ราคายังเป็น {p} ครับ', 'That is fine. The price is still {p}.'), L('ผมเคยเจออะไรที่แย่กว่านี้ครับ {p}', 'I have met worse things than you. {p}.')],
+    sweetFail: [L('ขอบคุณครับ แต่ราคายังเป็น {p} ครับ', 'Thank you. The price is still {p}.')],
+  },
   soft_auntie: {
     good: [L('อุ๊ย ปากหวานจริง เอา {p} ก็ได้', 'Oh you sweet talker, {p} then'), L('ฮ่าๆ ตลกดี ป้าให้ {p}', 'Haha, funny — {p}'), L('เออๆ ลดให้ก็ได้ {p} บาท', 'Fine, fine, {p}')],
     bad: [L('พูดแบบนี้ป้าไม่ลดนะ!', "Talk like that and no discount!"), L('อะไรของเธอเนี่ย! {p} ไม่ต้องต่อ', 'What is wrong with you! {p}, no haggling'), L('งั้นขึ้นราคาเลยดีไหม {p}!', 'Shall I RAISE it then? {p}!')],
@@ -104,6 +112,7 @@ export const NOTHING: Pool = [L('ยังไม่ได้หยิบอะ�
 
 // ------------------------------------------------------------------ paying
 export const THANKS: Record<string, Pool> = {
+  deadpan_clerk: [L('ขอบคุณครับ ขอให้วันนี้เป็นวันที่ปกติครับ', 'Thank you. Have a normal day.'), L('ขอบคุณครับ ทางออกอยู่ข้างหน้าครับ… ทางเดียว', 'Thank you. The exit is ahead… the only one.')],
   soft_auntie: [L('ขอบใจจ้ะ ไว้มาอีกนะ', 'Thanks dear, come again'), L('ขอให้ขายดีๆ นะลูก', 'May you sell lots!')],
   chatty_auntie: [L('ขอบใจจ้า! ไว้มาเม้าท์กันอีกนะ', 'Thanks! Come gossip again')],
   stingy_uncle: [L('เออ ขอบใจ', 'Yeah. Thanks.')],

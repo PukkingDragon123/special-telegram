@@ -217,6 +217,20 @@ export const RECIPES: Record<string, Recipe> = {
 };
 
 export const RECIPE_IDS = Object.keys(RECIPES);
+
+/** how each recipe is unlocked (shown on locked recipe-book pages). Sources: quests module, levels, the old man. */
+export const RECIPE_UNLOCK_HINT: Record<string, TL> = {
+  kaphrao_moo: { th: 'สูตรติดรถเข็นมาตั้งแต่แรก', en: 'came with the cart' },
+  khai_dao: { th: 'สูตรติดรถเข็นมาตั้งแต่แรก', en: 'came with the cart' },
+  khai_jiao: { th: 'ลุงเจ้าของรถเข็นจะเอาหน้ากระดาษมาให้เช้าวันที่ 2', en: 'the old man brings the page on day 2' },
+  khao_phat: { th: 'ไปให้ป้าแดง (แผงหมู) ชิมกะเพราฝีมือเรา', en: "let Auntie Daeng taste your kaphrao" },
+  moo_kratiam: { th: 'ลุงหมึกเขียงหมูทำของสำคัญหาย…', en: 'Uncle Muek the butcher lost something…' },
+  phat_phrik_kaeng: { th: 'ลุงหนวดร้านแก๊สบอกว่าไม่มีใครทำเผ็ดถึงใจ', en: 'Uncle Nuad (gas) says nobody cooks spicy enough' },
+  phat_phak_bung: { th: 'ป้าศรีแผงผักอยากให้ช่วยส่งของ (วันที่ 3)', en: 'Auntie Sri (veg) needs a delivery (day 3)' },
+  phat_si_io: { th: 'ซื้อสูตรลับจากเฮียเส็ง 300 ฿ หรือฝีมือทำอาหารเลเวล 4', en: "buy Hia Seng's card (300 ฿) or cooking level 4" },
+  rat_na: { th: 'เปิดร้านอาหารจริงในห้องแถว หรือฝีมือทำอาหารเลเวล 5', en: 'open a real restaurant, or cooking level 5' },
+  tom_yam: { th: 'ร้านดังถึง ★4 หรือฝีมือทำอาหารเลเวล 6', en: 'reach ★4 reputation, or cooking level 6' },
+};
 export const DEFAULT_UNLOCKED = ['kaphrao_moo', 'khai_dao'];
 
 // ------------------------------------------------------------------------------------------ profile
@@ -390,6 +404,7 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
     portion = om.n * 55;
     vis.burn = clamp01(om.b); vis.raw = clamp01(1 - om.c); vis.size = om.n / 2;
     eggType = 'none';
+    if (o.allowed && !o.allowed.includes('khai_jiao')) { issues.push('unknown_recipe'); taste -= 0.45; }
   } else if (eggOnly) {
     // ------------------------------------------------ ไข่ดาว
     recipeId = 'khai_dao';
@@ -405,7 +420,13 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
     vis.burn = clamp01(e.b); vis.yolk = e.yk < 0.6 ? 'runny' : 'set';
   } else {
     // ------------------------------------------------ stir-fries & soups
-    const m = o.recipe ? { id: o.recipe, score: 1 } : matchRecipe(w, o.allowed);
+    let m = o.recipe ? { id: o.recipe, score: 1 } : matchRecipe(w, o.allowed);
+    // a recipe you haven't unlocked yet: it still comes out as that dish, but you don't really know how to make
+    // it → "ไม่รู้จักเมนูนี้!" (big taste penalty, customers never order it, the book says how to unlock it)
+    if (!o.recipe && o.allowed) {
+      const free = matchRecipe(w);
+      if (free.score >= 0.45 && !o.allowed.includes(free.id) && free.score > m.score + 0.05) { m = free; issues.push('unknown_recipe'); }
+    }
     recipeId = m.id;
     const r = RECIPES[recipeId];
     if (m.score < 0.45) issues.push('wrong_dish');
@@ -481,7 +502,7 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
       + ww.aroma * aromaS + ww.texture * clamp01(texture) + ww.oil * oilS + ww.portion * portionS + (ww.sour ?? 0) * sc(sourDev);
     let den = ww.salt + ww.sweet + ww.spice + ww.cooked + ww.aroma + ww.texture + ww.oil + ww.portion + (ww.sour ?? 0);
     taste = num / den;
-    const pen: Record<string, number> = { raw_pork: 0.35, raw_meat: 0.3, raw_shrimp: 0.25, burnt: 0.25, burnt_garlic: 0.1, wrong_dish: 0.3, no_basil: 0.12, smoky: 0.08, watery: 0.05, no_soup: 0.2, too_salty: 0.08, bland: 0.08, small_portion: 0.08, too_oily: 0.05, too_sweet: 0.05, too_spicy: 0.04, dry: 0.04 };
+    const pen: Record<string, number> = { unknown_recipe: 0.45, raw_pork: 0.35, raw_meat: 0.3, raw_shrimp: 0.25, burnt: 0.25, burnt_garlic: 0.1, wrong_dish: 0.3, no_basil: 0.12, smoky: 0.08, watery: 0.05, no_soup: 0.2, too_salty: 0.08, bland: 0.08, small_portion: 0.08, too_oily: 0.05, too_sweet: 0.05, too_spicy: 0.04, dry: 0.04 };
     for (const i of issues) taste -= pen[i] ?? (i.startsWith('no_') ? 0.15 : i.startsWith('weird_') ? 0.05 : 0);
     taste += clamp01(w.wh ?? 0) * 0.06;
     // visuals
@@ -532,6 +553,7 @@ const r2 = (v: number) => Math.round(v * 100) / 100;
 
 /** Human (Thai) words for a dish's main problem, used on labels. */
 export const ISSUE_TH: Record<string, string> = {
+  unknown_recipe: 'ไม่รู้จักเมนูนี้! มั่วสูตร',
   raw_pork: 'หมูยังดิบ!', raw_meat: 'เนื้อยังดิบ!', raw_shrimp: 'กุ้งยังดิบ', burnt: 'ไหม้!', burnt_garlic: 'กระเทียมไหม้ ขม', soggy_basil: 'กะเพราเละ',
   no_basil: 'ไม่มีกะเพรา?!', too_oily: 'มันเยิ้ม', dry: 'แห้งไป', too_salty: 'เค็มปี๋', bland: 'จืด', too_sweet: 'หวานเจี๊ยบ', too_spicy: 'เผ็ดตายห่า',
   not_spicy: 'ไม่เผ็ดเลย', cold: 'เย็นชืด', no_rice: 'ไม่มีข้าว', small_portion: 'น้อยจัง', wrong_dish: 'อะไรเนี่ย?', watery: 'แฉะ', raw_egg: 'ไข่ดิบ',

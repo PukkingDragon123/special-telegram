@@ -11,6 +11,7 @@ import { line } from './lines';
 import { sfx, play, loop } from './sounds';
 import { Mist, glowSprite, glowNoiseMaterial, ghostify } from './fx';
 import { riderGeometries } from './vehicles';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import type { Life } from './index';
 
 /* ============================================================================================
@@ -22,12 +23,15 @@ import type { Life } from './index';
  *   tani  — นางตานี: woman in green by the banana trees, sobbing, beckoning.
  *   pret  — เปรต: super tall, begging for merit at the temple wall; FEED it = merit (luck).
  *   white — ผู้หญิงชุดขาว: long hair over the face, "พี่มาก…", appears behind you, vanishes when seen.
+ *   review — ผีนางรีวิว (ritual only, src/modules/ritual): a ghostly food-review influencer in white with her
+ *           glowing phone; summoned with summon(); fully scripted by the ritual module (st/vis/anim/hold).
  * Chase off: ไหว้ (E, respectful wai) · shine a flashlight · your adopted dog barking · amulet.
+ * Summoned ghosts (`rit: true`) ignore the night schedule, brains, scaring and dawn despawn.
  * Entity: { t:'ghost', kind, p, yaw, st, vis 0..1, tgt, carry }
  * Host events: 'life:ghost_scare' {id, kind, p, r} (customers/NPCs should flee), 'life:ghost' {id, kind, on}
  * ========================================================================================== */
 
-export type GhostKind = 'moto' | 'krasue' | 'tani' | 'pret' | 'white';
+export type GhostKind = 'moto' | 'krasue' | 'tani' | 'pret' | 'white' | 'review';
 const KINDS: GhostKind[] = ['white', 'krasue', 'pret', 'tani'];
 
 interface GBrain { next: number; t0: number; until: number; seen: number; scared: number; target: THREE.Vector3 | null; callT: number; scareT: number; stealT: number; path?: { a: THREE.Vector3; b: THREE.Vector3; s: number; len: number } }
@@ -98,7 +102,14 @@ export class Ghosts {
     this.spawn(kind, at, yaw + Math.PI, { st: 'idle' });
   }
 
-  private rideMoto(nearPlayer = false) {
+  /** HOST: a scripted ghost (ritual). It stays until despawned by its owner: no AI, no scaring, no dawn. */
+  summon(kind: GhostKind, p: ArrayLike<number>, yaw = 0, extra: Record<string, any> = {}): Ent {
+    return this.spawn(kind, new THREE.Vector3(p[0], p[1], p[2]), yaw, { st: 'idle', rit: true, ...extra });
+  }
+  /** HOST: remove a ghost (scripted or not) */
+  dismiss(g: Ent | number) { const e = typeof g === 'number' ? this.game.state.get(g) : g; if (e && e.t === 'ghost') this.despawn(e); }
+
+  rideMoto(nearPlayer = false) {
     const a = anchorP(this.game, 'ghost_moto_a', [0, 0, -158]), b = anchorP(this.game, 'ghost_moto_b', [0, 0, 4]);
     const rev = Math.random() < 0.5;
     const from = rev ? b : a, to = rev ? a : b;
@@ -118,12 +129,12 @@ export class Ghosts {
     const t = game.clock.time;
     const now = this.now;
     const night = t >= 20 || this.forced;
-    if (!night) { for (const g of this.all()) this.despawn(g); this.forced = false; return; }
+    if (!night) { for (const g of this.all()) if (!g.rit) this.despawn(g); this.forced = false; return; }
     // ---- schedule
     if (!this.forced && now > this.spawnT) {
       this.spawnT = now + 25 + Math.random() * 30;
       const max = t >= 22.5 ? 3 : t >= 21.2 ? 2 : 1;
-      const active = this.all().filter((g) => g.kind !== 'moto');
+      const active = this.all().filter((g) => g.kind !== 'moto' && !g.rit);
       if (active.length < max) {
         const day = game.g.day ?? 1;
         const kind = KINDS[(Math.floor(h01(game.g.seed ?? 1, day, Math.floor(now / 60)) * 997) + active.length) % KINDS.length];
@@ -136,6 +147,7 @@ export class Ghosts {
     }
     // ---- brains
     for (const g of this.all()) {
+      if (g.rit) continue;          // scripted (ritual): its owner drives st / vis / p
       const b = brainOf(g);
       if (g.st === 'pose') continue; // frozen (dev / screenshots)
       // fade in/out
@@ -162,7 +174,7 @@ export class Ghosts {
     }
   }
 
-  onNewDay(_d: number) { for (const g of this.all()) this.despawn(g); this.forced = false; }
+  onNewDay(_d: number) { for (const g of this.all()) if (!g.rit) this.despawn(g); this.forced = false; }
 
   private spawnKind(kind: GhostKind) {
     const game = this.game;
@@ -313,7 +325,7 @@ export class Ghosts {
 
   /** a ghost is chased away (by: 'pray' | 'light' | 'dog' | 'amulet') */
   scare(g: Ent, by: string) {
-    if (!g || g.st === 'flee' || g.st === 'vanish' || g.kind === 'moto') return;
+    if (!g || g.st === 'flee' || g.st === 'vanish' || g.kind === 'moto' || g.rit) return;
     const b = brainOf(g);
     if (g.kind === 'white') { g.st = 'vanish'; b.until = by === 'pray' ? 0 : this.now + 30; }
     else g.st = 'flee';
@@ -325,6 +337,12 @@ export class Ghosts {
   private hostPray(pl: Ent, id: number) {
     const g = this.game.state.get(id);
     if (!g || g.t !== 'ghost' || !pl.p || dist2(pl.p, g.p) > 9) return;
+    if (g.rit) {
+      // scripted ghosts don't get chased off: their owner reacts (the review ghost: "don't wai me, cook!")
+      pl.anim = 'pray'; pl.animT = this.now + Math.random() * 0.01; pl.animLoop = false;
+      this.game.events.emit('life:ghost_prayed', { id: g.id, kind: g.kind, player: pl.id });
+      return;
+    }
     pl.anim = 'pray'; pl.animT = this.now + Math.random() * 0.01; pl.animLoop = false;
     this.game.say(pl.id, line('pray'), { duration: 2.6 });
     sfx(this.game, 'pray', pl.p, { vol: 0.6 });
@@ -472,7 +490,7 @@ export class Ghosts {
     const proxy = new THREE.Mesh(new THREE.BoxGeometry(kind === 'moto' ? 0.8 : 0.6, H, kind === 'moto' ? 1.9 : 0.5), new THREE.MeshBasicMaterial({ visible: false }));
     proxy.position.y = kind === 'krasue' ? 0 : H / 2;
     root.add(proxy);
-    const names: Record<GhostKind, string> = { moto: 'ผีหัวขาดขี่มอไซค์', krasue: 'กระสือ', tani: 'นางตานี', pret: 'เปรต', white: 'ผู้หญิงชุดขาว' };
+    const names: Record<GhostKind, string> = { moto: 'ผีหัวขาดขี่มอไซค์', krasue: 'กระสือ', tani: 'นางตานี', pret: 'เปรต', white: 'ผู้หญิงชุดขาว', review: 'ผีนางรีวิว' };
     game.interact.register(root, { kind: 'ghost', eid: e.id, data: { name: tl(names[kind], kind) } });
     root.userData.headHeight = kind === 'pret' ? 3.7 : kind === 'krasue' ? 0.45 : 1.9;
 
@@ -519,6 +537,17 @@ export class Ghosts {
       glows.push(...eyes);
     } else if (kind === 'krasue') {
       this.buildKrasue(root, e, (m) => { entrailMat = m; }, (l) => { light = l; }, (r, gm) => { rig = r; ghostMat = gm; });
+    } else if (kind === 'review') {
+      // ผีนางรีวิว: a long-haired lady in a white Thai dress (animated rig → talks, eats, poses), her glowing phone
+      charGhost(femaleLook('house_dress', '#f4f2ec', 'pha_thung', '#e8e4dc'), new THREE.Color(0.86, 0.9, 1.0));
+      try {
+        const phone = reviewPhone();
+        rig.attach('hand_r').add(phone);
+        extra.push(phone);
+      } catch {}
+      light = new THREE.PointLight(0xb8d4ff, 2.2, 5, 2);
+      light.position.set(0, 1.5, 0.3); light.userData.lifeNoFlicker = true;
+      root.add(light);
     } else if (kind === 'moto') {
       this.buildMoto(root, (l) => { light = l; }, (g) => glows.push(g), (gm) => { ghostMat = gm; });
       engine = loop('ghost_moto', { pos: root.position, vol: 1, ref: 6, max: 90 }) ?? loop('moto_idle', { pos: root.position, vol: 1, pitch: 0.55, ref: 6, max: 90, lowpass: 900 });
@@ -528,6 +557,9 @@ export class Ghosts {
     let t = 0, emitT = 0;
     const prev = root.position.clone();
     let lastVis = 0;
+    let lastAnimT: any = undefined;
+    let holdKey = '';
+    let holdObj: THREE.Object3D | null = null;
     return {
       object: root,
       update: (e: Ent, dt: number) => {
@@ -547,14 +579,29 @@ export class Ghosts {
         prev.copy(root.position);
         // float / sway
         const bob = kind === 'krasue' ? Math.sin(t * 1.7) * 0.08 : kind === 'moto' ? 0 : Math.sin(t * 1.1) * 0.04 + 0.05;
-        if (rig) { rig.root.position.y = (kind === 'krasue' ? 0 : bob); rig.root.rotation.z = kind === 'tani' || kind === 'pret' ? Math.sin(t * 0.7) * 0.04 : 0; rig.setMove?.(0); rig.update?.(dt); }
+        // scripted ghosts: animations (e.anim/animT/animLoop) + a held prop (e.hold = item kind, e.holdData)
+        if (rig && e.animT !== undefined && e.animT !== lastAnimT) { lastAnimT = e.animT; try { rig.play(e.anim ?? 'idle', { loop: !!e.animLoop }); } catch {} }
+        const hk = e.hold ? e.hold + JSON.stringify(e.holdData ?? null) : '';
+        if (rig && hk !== holdKey) {
+          holdKey = hk;
+          if (holdObj) { holdObj.removeFromParent(); holdObj = null; }
+          const def = e.hold ? game.items.def(e.hold) : null;
+          if (def) {
+            try {
+              holdObj = def.build({ id: -e.id - 2000, t: 'item', k: e.hold, p: [0, 0, 0], data: e.holdData ?? def.data?.() ?? {} } as any, game);
+              holdObj.traverse((o: any) => { if (o.isMesh) { o.castShadow = false; o.raycast = () => {}; } });
+              rig.attach('hand_l').add(holdObj);
+            } catch { holdObj = null; }
+          }
+        }
+        if (rig) { rig.root.position.y = (kind === 'krasue' ? 0 : bob); rig.root.rotation.z = kind === 'tani' || kind === 'pret' ? Math.sin(t * 0.7) * 0.04 : 0; rig.setMove?.(kind === 'review' ? Math.min(2.5, speed) : 0); rig.update?.(dt); }
         if (kind === 'krasue') { root.children.forEach((c) => { if (c.userData.krasueHead) c.position.y = 0.0 + bob; }); }
-        ghostMat?.set(vis, t);
+        ghostMat?.set(kind === 'review' ? Math.min(1, vis * 1.08) : vis, t);
         if (entrailMat) { entrailMat.uniforms.uTime.value = t; entrailMat.uniforms.uOpacity.value = vis; }
         for (const g of glows) (g.material as THREE.SpriteMaterial).opacity = vis * (0.6 + Math.random() * 0.4);
         if (light) {
           const fl = kind === 'moto' ? (Math.sin(t * 31) * Math.sin(t * 7.7) > 0.75 ? 0.1 : 1) : 0.8 + Math.sin(t * 9) * 0.2;
-          light.intensity = (kind === 'moto' ? 26 : kind === 'krasue' ? 4 : 2.5) * fl * vis;
+          light.intensity = (kind === 'moto' ? 26 : kind === 'krasue' ? 4 : kind === 'review' ? 2.2 : 2.5) * fl * vis;
         }
         root.visible = vis > 0.01;
         // mist
@@ -574,6 +621,7 @@ export class Ghosts {
         mist.mesh.removeFromParent(); mist.dispose();
         engine?.stop(0.6);
         ghostMat?.dispose();
+        holdObj?.removeFromParent();
         rig?.dispose?.();
         proxy.geometry.dispose();
       },
@@ -655,3 +703,24 @@ export class Ghosts {
 }
 
 export const DEV_GHOST = params.get('ghost');
+
+/** the review ghost's phone: rounded slab, cracked glowing screen (her live-stream never ended) */
+function reviewPhone(): THREE.Group {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new RoundedBoxGeometry(0.074, 0.152, 0.009, 3, 0.008), new THREE.MeshStandardMaterial({ color: '#d8d4e8', roughness: 0.25, metalness: 0.6 }));
+  g.add(body);
+  const cv = document.createElement('canvas'); cv.width = 128; cv.height = 256;
+  const ctx = cv.getContext('2d')!;
+  const gr = ctx.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#a8c8ff'); gr.addColorStop(1, '#e0f0ff');
+  ctx.fillStyle = gr; ctx.fillRect(0, 0, 128, 256);
+  ctx.fillStyle = '#e8202a'; ctx.fillRect(8, 10, 44, 18); ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif'; ctx.fillText('LIVE', 13, 24);
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(30, 60); ctx.lineTo(70, 120); ctx.lineTo(55, 170); ctx.moveTo(70, 120); ctx.lineTo(110, 140); ctx.stroke();
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.066, 0.142), new THREE.MeshStandardMaterial({ map: tex, emissive: '#ffffff', emissiveMap: tex, emissiveIntensity: 1.6, roughness: 0.15 }));
+  screen.position.z = 0.0047;
+  g.add(screen);
+  g.position.set(0.02, 0.03, 0.06);
+  g.rotation.set(-0.3, Math.PI, 0.1);
+  return g;
+}

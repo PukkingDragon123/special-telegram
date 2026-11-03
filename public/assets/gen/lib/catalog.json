@@ -982,6 +982,102 @@
   "title": "Food Lychee 01"
  },
  {
+  "id": "CashRegister_01",
+  "file": "furniture/ph/CashRegister_01/CashRegister_01.glb",
+  "category": "furniture",
+  "tags": [
+   "cash register",
+   "shop",
+   "counter"
+  ],
+  "size_m": [
+   0.598,
+   0.62,
+   0.623
+  ],
+  "tris": 3504,
+  "license": "CC0-1.0",
+  "author": "Joe Seabuhr (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/CashRegister_01",
+  "physics": "dynamic",
+  "mass_kg": 6,
+  "title": "Cash Register 01",
+  "bytes": 319824
+ },
+ {
+  "id": "Television_01",
+  "file": "furniture/ph/Television_01/Television_01.glb",
+  "category": "furniture",
+  "tags": [
+   "tv",
+   "crt",
+   "television",
+   "electronics"
+  ],
+  "size_m": [
+   0.6,
+   0.457,
+   0.471
+  ],
+  "tris": 1918,
+  "license": "CC0-1.0",
+  "author": "Gabriel Radić (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/Television_01",
+  "physics": "dynamic",
+  "mass_kg": 18,
+  "title": "Television 01",
+  "bytes": 217156
+ },
+ {
+  "id": "aircon_split",
+  "file": "furniture/aircon_split.glb",
+  "category": "furniture",
+  "tags": [
+   "air conditioner",
+   "split",
+   "wall",
+   "appliance"
+  ],
+  "size_m": [
+   0.819,
+   0.304,
+   0.209
+  ],
+  "tris": 10164,
+  "license": "CC-BY-4.0",
+  "author": "maxsbond.work (sketchfab.com/maxsbond.work)",
+  "source_url": "https://sketchfab.com/3d-models/26b0f7c8472741f4b85b889cf3b1d870",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 207368,
+  "title": "Air condition Daikin",
+  "uid": "26b0f7c8472741f4b85b889cf3b1d870"
+ },
+ {
+  "id": "ceiling_fan",
+  "file": "furniture/ph/ceiling_fan/ceiling_fan.glb",
+  "category": "furniture",
+  "tags": [
+   "ceiling fan",
+   "fan",
+   "appliance",
+   "ceiling"
+  ],
+  "size_m": [
+   1.463,
+   0.516,
+   1.463
+  ],
+  "tris": 5000,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/ceiling_fan",
+  "physics": "static",
+  "mass_kg": 6,
+  "title": "Ceiling Fan",
+  "bytes": 202896
+ },
+ {
   "id": "folding_wooden_stool",
   "file": "../world/models/folding_wooden_stool/folding_wooden_stool.glb",
   "category": "furniture",
@@ -1006,6 +1102,80 @@
   "bytes": 109528,
   "title": "Folding Wooden Stool",
   "friction": 0.6
+ },
+ {
+  "id": "hanging_industrial_lamp",
+  "file": "furniture/ph/hanging_industrial_lamp/hanging_industrial_lamp.glb",
+  "category": "furniture",
+  "tags": [
+   "lamp",
+   "pendant",
+   "light",
+   "ceiling"
+  ],
+  "size_m": [
+   0.55,
+   1.355,
+   0.55
+  ],
+  "tris": 3396,
+  "license": "CC0-1.0",
+  "author": "Kuutti Siitonen (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/hanging_industrial_lamp",
+  "physics": "static",
+  "mass_kg": 2,
+  "title": "Hanging Industrial Lamp",
+  "bytes": 168528
+ },
+ {
+  "id": "lucky_cat_gold",
+  "file": "furniture/lucky_cat_gold.glb",
+  "category": "furniture",
+  "tags": [
+   "lucky cat",
+   "maneki neko",
+   "decor",
+   "shop",
+   "gold"
+  ],
+  "size_m": [
+   0.18,
+   0.24,
+   0.14
+  ],
+  "tris": 6000,
+  "license": "CC-BY-4.0",
+  "author": "Arestame (sketchfab.com/Arestame)",
+  "source_url": "https://sketchfab.com/3d-models/9c1cd4d051bc419b8ce121f9cd2730ff",
+  "physics": "dynamic",
+  "mass_kg": 0.6,
+  "bytes": 187564,
+  "title": "Maneki-neko ~ Asian lucky cat",
+  "uid": "9c1cd4d051bc419b8ce121f9cd2730ff"
+ },
+ {
+  "id": "metal_office_desk",
+  "file": "furniture/ph/metal_office_desk/metal_office_desk.glb",
+  "category": "furniture",
+  "tags": [
+   "desk",
+   "counter",
+   "metal",
+   "office"
+  ],
+  "size_m": [
+   2.0,
+   0.787,
+   0.947
+  ],
+  "tris": 3999,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/metal_office_desk",
+  "physics": "static",
+  "mass_kg": 30,
+  "title": "Metal Office Desk",
+  "bytes": 173388
  },
  {
   "id": "metal_stool_02",
@@ -1033,6 +1203,102 @@
   "friction": 0.5
  },
  {
+  "id": "painted_wooden_cabinet",
+  "file": "furniture/ph/painted_wooden_cabinet/painted_wooden_cabinet.glb",
+  "category": "furniture",
+  "tags": [
+   "cabinet",
+   "wooden",
+   "storage",
+   "furniture"
+  ],
+  "size_m": [
+   1.195,
+   1.182,
+   0.617
+  ],
+  "tris": 2227,
+  "license": "CC0-1.0",
+  "author": "Kirill Sannikov (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/painted_wooden_cabinet",
+  "physics": "static",
+  "mass_kg": 28,
+  "title": "Painted Wooden Cabinet",
+  "bytes": 231748
+ },
+ {
+  "id": "painted_wooden_chair_01",
+  "file": "furniture/ph/painted_wooden_chair_01/painted_wooden_chair_01.glb",
+  "category": "furniture",
+  "tags": [
+   "chair",
+   "wooden",
+   "seat",
+   "furniture"
+  ],
+  "size_m": [
+   0.432,
+   0.956,
+   0.54
+  ],
+  "tris": 724,
+  "license": "CC0-1.0",
+  "author": "Kuutti Siitonen (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/painted_wooden_chair_01",
+  "physics": "dynamic",
+  "mass_kg": 3.5,
+  "title": "Painted Wooden Chair 01",
+  "bytes": 201440
+ },
+ {
+  "id": "painted_wooden_shelves",
+  "file": "furniture/ph/painted_wooden_shelves/painted_wooden_shelves.glb",
+  "category": "furniture",
+  "tags": [
+   "shelves",
+   "wooden",
+   "storage",
+   "furniture"
+  ],
+  "size_m": [
+   0.511,
+   1.125,
+   0.367
+  ],
+  "tris": 524,
+  "license": "CC0-1.0",
+  "author": "Kirill Sannikov (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/painted_wooden_shelves",
+  "physics": "dynamic",
+  "mass_kg": 9,
+  "title": "Painted Wooden Shelves",
+  "bytes": 294692
+ },
+ {
+  "id": "planter_box_01",
+  "file": "furniture/ph/planter_box_01/planter_box_01.glb",
+  "category": "furniture",
+  "tags": [
+   "planter",
+   "plants",
+   "decor",
+   "box"
+  ],
+  "size_m": [
+   0.913,
+   0.425,
+   0.414
+  ],
+  "tris": 4000,
+  "license": "CC0-1.0",
+  "author": "James Ray Cock (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/planter_box_01",
+  "physics": "static",
+  "mass_kg": 12,
+  "title": "Planter Box 01",
+  "bytes": 329152
+ },
+ {
   "id": "plastic_monobloc_chair_01",
   "file": "../world/models/plastic_monobloc_chair_01/plastic_monobloc_chair_01.glb",
   "category": "furniture",
@@ -1058,6 +1324,54 @@
   "title": "Plastic Monobloc Chair 01",
   "friction": 0.55,
   "tint": true
+ },
+ {
+  "id": "round_wooden_table_02",
+  "file": "furniture/ph/round_wooden_table_02/round_wooden_table_02.glb",
+  "category": "furniture",
+  "tags": [
+   "table",
+   "round",
+   "wooden",
+   "furniture"
+  ],
+  "size_m": [
+   0.796,
+   0.746,
+   0.796
+  ],
+  "tris": 3500,
+  "license": "CC0-1.0",
+  "author": "Ulan Cabanilla (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/round_wooden_table_02",
+  "physics": "dynamic",
+  "mass_kg": 14,
+  "title": "Round Wooden Table 02",
+  "bytes": 228872
+ },
+ {
+  "id": "standing_chalkboard_01",
+  "file": "furniture/ph/standing_chalkboard_01/standing_chalkboard_01.glb",
+  "category": "furniture",
+  "tags": [
+   "chalkboard",
+   "menu",
+   "sign",
+   "a-frame"
+  ],
+  "size_m": [
+   0.92,
+   1.509,
+   0.759
+  ],
+  "tris": 2372,
+  "license": "CC0-1.0",
+  "author": "ParzivalCG (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/standing_chalkboard_01",
+  "physics": "dynamic",
+  "mass_kg": 4,
+  "title": "Standing Chalkboard 01",
+  "bytes": 253760
  },
  {
   "id": "steel_frame_shelves_02",
@@ -1139,6 +1453,29 @@
   "title": "Stainless folding street table (โต๊ะพับสแตนเลส)",
   "friction": 0.5,
   "collider": "box"
+ },
+ {
+  "id": "wall_clock",
+  "file": "furniture/ph/wall_clock/wall_clock.glb",
+  "category": "furniture",
+  "tags": [
+   "clock",
+   "wall",
+   "decor"
+  ],
+  "size_m": [
+   0.321,
+   0.321,
+   0.047
+  ],
+  "tris": 1998,
+  "license": "CC0-1.0",
+  "author": "PierreB3D (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/wall_clock",
+  "physics": "static",
+  "mass_kg": 0.8,
+  "title": "Wall Clock",
+  "bytes": 82056
  },
  {
   "id": "wooden_display_shelves_01",
@@ -2519,6 +2856,46 @@
   "title": "Water Tank",
   "far": 1.5,
   "uid": "f44007d8b4a94e9d924bc5ee93480169"
+ },
+ {
+  "id": "bus_city",
+  "file": "vehicles/bus_city.glb",
+  "category": "vehicles",
+  "tags": [],
+  "size_m": [
+   2.575,
+   2.623,
+   10.6
+  ],
+  "tris": 13299,
+  "license": "CC-BY-4.0",
+  "author": "own.guest (sketchfab.com/own.guest)",
+  "source_url": "https://sketchfab.com/3d-models/14fe03d792914d51b6c6250b393c44fd",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 414156,
+  "title": "Generic Town Bus",
+  "uid": "14fe03d792914d51b6c6250b393c44fd"
+ },
+ {
+  "id": "car_sedan",
+  "file": "vehicles/car_sedan.glb",
+  "category": "vehicles",
+  "tags": [],
+  "size_m": [
+   2.026,
+   1.25,
+   4.55
+  ],
+  "tris": 4754,
+  "license": "CC-BY-4.0",
+  "author": "Comrade1280 (sketchfab.com/comrade1280)",
+  "source_url": "https://sketchfab.com/3d-models/20f9af9b8a404d5cb022ac6fe87f21f5",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 326176,
+  "title": "Generic passenger car pack",
+  "uid": "20f9af9b8a404d5cb022ac6fe87f21f5"
  },
  {
   "id": "pickup_hilux",

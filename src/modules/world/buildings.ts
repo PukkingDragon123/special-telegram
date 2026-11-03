@@ -7,7 +7,7 @@ import { canopyTree, weeds, grassPatch, bananaTree, coconutPalm, pottedPlant, bo
 import { flat, groundDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
 import { EMIS } from './mats';
-import { SW_H, SEVEN, CLOSED_HOUSE, APARTMENT, LOT, SPIRIT_LOT, TEMPLE, OFFICE, WHOLESALE, MAIN, UnitSpec, MARKET } from './layout';
+import { SW_H, SEVEN, CLOSED_HOUSE, RESTAURANT_UNITS, APARTMENT, LOT, SPIRIT_LOT, TEMPLE, OFFICE, WHOLESALE, MAIN, UnitSpec, MARKET } from './layout';
 
 export interface SpecialCtx extends ShopCtx { rng: RNG; holes: { x0: number; z0: number; x1: number; z1: number }[]; fol: FoliageSys | null }
 
@@ -142,8 +142,11 @@ function sevenTwelve(c: SpecialCtx) {
 // ======================================================================== CLOSED SHOPHOUSE + AWNING + APRON
 function closedHouse(c: SpecialCtx) {
   const w = c.w;
+  // the two southern units are the players' future restaurant: their ground floor (shutter, interior, colliders)
+  // is built and animated by the restaurant module (RESTAURANT_UNITS, src/modules/restaurant/shop3d.ts)
   const units: UnitSpec[] = [-30.5, -25.67, -20.83].map((a, i) => ({
-    face: 'W' as const, line: CLOSED_HOUSE.x0, a0: a, a1: a + 4.83, depth: 13.6, storeys: 3, shop: 'closed', ground: 'closed' as const, awning: 'none' as const, sign: 'old', noSign: i === 1, wall: 'plaster_peeling', tint: 0xd8cbb0,
+    face: 'W' as const, line: CLOSED_HOUSE.x0, a0: a, a1: a + 4.83, depth: 13.6, storeys: 3, shop: 'closed', ground: 'closed' as const, awning: 'none' as const, sign: 'old', noSign: i >= 1, wall: 'plaster_peeling', tint: 0xd8cbb0,
+    ...(RESTAURANT_UNITS.includes(a) ? { noGround: true, name: 'restaurant_' + i } : {}),
   }));
   buildRows(c, [units]);
   // big corrugated awning over the apron on steel posts (posts only at the corners: tables area stays free)

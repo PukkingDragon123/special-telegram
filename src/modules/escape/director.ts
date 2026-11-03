@@ -164,6 +164,8 @@ export class EscapeDirector {
     // trigger
     if (pl.mode !== 'play' || (me.mode && me.mode !== 'free') || game.ui.choosing) return;
     if (this.clock - this.lastEndAt < 1.2) return;
+    // the furniture store's back room lives far outside the map: no police there
+    if ((game as any).backrooms?.inside) return;
     const hit = edgeAt(pl.pos.x, pl.pos.z);
     if (hit) this.start(hit, this.clock - this.lastEndAt < REPEAT_S);
   }

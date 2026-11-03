@@ -203,6 +203,15 @@ export class ItemSystem {
     this.makeBody(e, vel);
   }
 
+  /** HOST: move a free item to a new upright pose (furniture build mode: drag, rotate, drop). `body` false keeps it
+   *  without physics while it is being dragged around; true (re)creates its body (fixed for furniture). */
+  setPose(e: Ent, pos: ArrayLike<number>, yaw: number, body = true) {
+    this.dropBody(e.id);
+    e.p = [pos[0], pos[1], pos[2]];
+    e.q = [0, Math.sin(yaw / 2), 0, Math.cos(yaw / 2)];
+    if (body && this.isFree(e)) this.makeBody(e);
+  }
+
   /** HOST: put an item into a container. */
   toContainer(e: Ent, container: Ent, at?: number[]): boolean {
     const cdef = this.defOf(container)?.container;

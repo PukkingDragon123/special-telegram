@@ -14,6 +14,7 @@ import { cachedMat, lateTex, pbr } from './assets';
 import { makeFlameMaterial, flameGeometry, CookFX } from './fx';
 import { buildGasTank } from './models-tools';
 import { pickKey, sfx, noRaycast, rd } from './util';
+import { libModel, libEntry } from '../world/lib';
 
 /* =============================================================================================
  * THE FOOD CART (entity t:'cart') — stainless อาหารตามสั่ง cart with glass display, high-pressure
@@ -143,8 +144,6 @@ export function buildCartModel() {
     p.push(bar([-0.78, 2.08, 0.37], [0.78, 2.08, 0.37], 0.012, 6), bar([-0.78, 1.96, -0.37], [0.78, 1.96, -0.37], 0.012, 6), bar([-0.78, 1.96, -0.37], [-0.78, 2.08, 0.37], 0.012, 6));
     // push handle: U-tube off the flap end
     p.push(tube([[1.08, 0.78, -0.27], [1.22, 0.86, -0.27], [1.28, 0.92, -0.2], [1.28, 0.92, 0.2], [1.22, 0.86, 0.27], [1.08, 0.78, 0.27]], 0.014, 24, 7));
-    // condiment caddy rails
-    p.push(bar([0.56, t + 0.1, -0.28], [0.76, t + 0.1, -0.28], 0.005, 5), bar([0.66, t, -0.28], [0.66, t + 0.14, -0.28], 0.006, 5));
     return merge(p);
   });
   root.add(mesh(frame, M.steel()));
@@ -224,27 +223,60 @@ export function buildCartModel() {
   root.add(mesh(hose, M.plasticRough(0xd25a1c)));
   root.add(mesh(gc('cartReg', () => new THREE.CylinderGeometry(0.03, 0.03, 0.035, 10).translate(CART.tank.x + 0.01, 0.6, CART.tank.z)), M.black()));
   // ---- roof (galvanized sheet) + tube light
-  const roof = gc('cartRoof', () => {
-    const r = new THREE.PlaneGeometry(1.9, 1.05, 8, 2);
-    r.rotateX(-Math.PI / 2 + Math.atan2(0.12, 0.74));
-    r.translate(0, 2.04, 0);
-    return planarUV(r, 1 / 1.1, 'y');
+  // corrugated galvanised sheet (real ridges, both faces, ~1 mm) on two square-tube rafters with an edge trim
+  const roofTilt = -Math.PI / 2 + Math.atan2(0.12, 0.74);
+  const roof = gc('cartRoof2', () => {
+    const sheet = (off: number) => {
+      const r = new THREE.PlaneGeometry(1.9, 1.05, 96, 2);
+      const p = r.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < p.count; i++) p.setZ(i, 0.009 * Math.sin((p.getX(i) / 0.076) * Math.PI * 2) + off);
+      r.computeVertexNormals();
+      return r;
+    };
+    const top = sheet(0);
+    const bot = sheet(-0.001);
+    // flip the underside's winding so it faces down
+    const idx = bot.index!.array as Uint16Array | Uint32Array;
+    for (let i = 0; i < idx.length; i += 3) { const t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; }
+    bot.computeVertexNormals();
+    const g = merge([top, bot]);
+    g.rotateX(roofTilt);
+    g.translate(0, 2.04, 0);
+    return planarUV(g, 1 / 1.1, 'y');
   });
   root.add(mesh(roof, M.roof()));
+  const trim = gc('cartRoofTrim', () => {
+    const parts: THREE.BufferGeometry[] = [];
+    for (const z of [-0.5, 0.5]) parts.push(rbox(1.94, 0.025, 0.03, 0.004, 0.5, 1).translate(0, 0, z));
+    for (const x of [-0.95, 0.95]) parts.push(rbox(0.025, 0.025, 1.06, 0.004, 0.5, 1).translate(x, 0, 0));
+    for (const x of [-0.45, 0.45]) parts.push(rbox(0.03, 0.03, 1.0, 0.004, 0.5, 1).translate(x, -0.022, 0));
+    const g = merge(parts);
+    g.rotateX(roofTilt + Math.PI / 2);
+    g.translate(0, 2.025, 0);
+    return g;
+  });
+  root.add(mesh(trim, M.steel()));
   const tubeL = mesh(gc('cartTube', () => new THREE.CylinderGeometry(0.014, 0.014, 0.9, 6).rotateZ(Math.PI / 2).translate(0, 1.95, 0.25)), M.emissive(0xfff4dc, 0.0));
   tubeL.name = 'tube';
   noRaycast(tubeL);
   root.add(tubeL);
   // ---- condiment caddy: 4 jars (sugar, fish sauce w/ chili, chili flakes, vinegar w/ chili)
-  const jarG = gc('caddyJar', () => lathe([[0.0001, 0], [0.024, 0], [0.026, 0.01], [0.026, 0.07], [0.024, 0.075]], 10));
-  const lidG = gc('caddyLid', () => lathe([[0.0001, 0.085], [0.026, 0.082], [0.027, 0.075], [0.025, 0.074]], 10));
-  const fills = [0xf4f1ea, 0xb06a22, 0xa82418, 0xe9e2c0];
-  fills.forEach((c, i) => {
-    const x = 0.585 + i * 0.05;
-    root.add(mesh(jarG, M.liquid(c, 0.4), [x, CART.top + 0.012, -0.28], undefined, [0.92, 0.85, 0.92]));
-    root.add(mesh(jarG, M.glassBottle(0xffffff, 0.25), [x, CART.top + 0.012, -0.28]));
-    root.add(mesh(lidG, M.steel(), [x, CART.top + 0.012, -0.28]));
-  });
+  // the real Thai condiment caddy (shared library: steel rack, 4 jars, spoons) — custom jars only as a fallback
+  if (libEntry('condiment_caddy')) {
+    const cad = libModel('condiment_caddy');
+    cad.position.set(0.66, CART.top, -0.28); cad.rotation.y = Math.PI;
+    root.add(cad);
+  } else {
+    const jarG = gc('caddyJar', () => lathe([[0.0001, 0], [0.024, 0], [0.026, 0.01], [0.026, 0.07], [0.024, 0.075]], 10));
+    const lidG = gc('caddyLid', () => lathe([[0.0001, 0.085], [0.026, 0.082], [0.027, 0.075], [0.025, 0.074]], 10));
+    const fills = [0xf4f1ea, 0xb06a22, 0xa82418, 0xe9e2c0];
+    fills.forEach((c, i) => {
+      const x = 0.585 + i * 0.05;
+      root.add(mesh(jarG, M.liquid(c, 0.4), [x, CART.top + 0.012, -0.28], undefined, [0.92, 0.85, 0.92]));
+      root.add(mesh(jarG, M.glassBottle(0xffffff, 0.25), [x, CART.top + 0.012, -0.28]));
+      root.add(mesh(lidG, M.steel(), [x, CART.top + 0.012, -0.28]));
+    });
+  }
   // ---- towel (ผ้าขาวม้า) hanging on the handle
   const towel = gc('cartTowel', () => {
     const t = new THREE.PlaneGeometry(0.42, 0.34, 10, 8);

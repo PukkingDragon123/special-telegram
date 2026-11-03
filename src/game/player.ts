@@ -116,7 +116,7 @@ export class LocalPlayer {
     // ---- slot selection (1-5 / wheel)
     if (playing && !this.game.ui.choosing) {
       for (let i = 0; i < 5; i++) if (Input.wasPressed('Digit' + (i + 1))) this.select(i);
-      if (Input.wheel) this.select(((me.sel ?? 0) + Input.wheel + 5) % 5);
+      if (Input.wheel && !(this.game as any).buildActive) this.select(((me.sel ?? 0) + Input.wheel + 5) % 5);   // build mode: wheel rotates
     }
 
     // ---- move

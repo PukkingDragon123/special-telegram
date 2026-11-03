@@ -10,7 +10,8 @@ import { ALL, SIDES } from './geo';
 import type { ShopCtx } from './shophouse';
 import { groundDecal, wallDecal } from './streets';
 import { wallShrine } from './archkit';
-import { RealProps, realPropObject, propHeight } from './realprops';
+import { RealProps, realPropObject, propHeight, loadModel } from './realprops';
+import { photoMat as shopPhotoMat } from '../shops/tex';
 import { makeFlyFan } from './realprops-stall';
 import { STEEL_TABLE } from './realprops-table';
 import { PLASTIC_COLORS } from './props';
@@ -273,8 +274,100 @@ function crateStand(real: RealProps, F0: Frame, x: number, z: number, nx: number
   }
   return F0.o.y + ny * 0.254;
 }
-/** photo heap (dome) — merged */
+/**
+ * Domed piles of REAL produce (instanced models: onions / garlic / shallots, chilies, long beans, limes, lychees,
+ * egg trays, meat cuts) and loose holy-basil sprigs, collected for a whole area and flushed as a handful of
+ * InstancedMeshes (one per model + tint). Keys are the old photo-heap keys ('heap_garlic', …) or produce kinds.
+ */
+const PILES: Record<string, { id: string; s: [number, number, number]; tint?: [number, number, number]; per: number }> = {
+  heap_garlic: { id: 'onion', s: [0.62, 0.55, 0.62], tint: [1.35, 1.32, 1.22], per: 520 },
+  heap_shallot: { id: 'onion', s: [0.5, 0.5, 0.5], tint: [1.0, 0.55, 0.55], per: 700 },
+  heap_onion: { id: 'onion', s: [1, 1, 1], tint: undefined, per: 300 },
+  heap_chili: { id: 'lime', s: [0.28, 0.28, 1.05], tint: [2.1, 0.32, 0.18], per: 1500 },
+  heap_beans: { id: 'lime', s: [0.22, 0.22, 4.2], tint: [0.75, 1.05, 0.55], per: 900 },
+  heap_lime: { id: 'lime', s: [1, 1, 1], per: 600 },
+  heap_lychee: { id: 'lychee', s: [1, 1, 1], per: 700 },
+  heap_tomato: { id: 'lime', s: [1.1, 0.95, 1.1], tint: [2.4, 0.5, 0.3], per: 450 },
+};
+/** produce kind (market goods) → pile key */
+export const KIND_PILE: Record<string, string> = { chili: 'heap_chili', lime: 'heap_lime', veg: 'heap_beans', fruit: 'heap_lychee', herbs: 'heap_basil', garlic: 'heap_garlic', egg: 'heap_eggs', meat: 'pork_table', banana: 'bananas', onion: 'heap_onion', tomato: 'heap_tomato' };
+
+export class PileBatch {
+  private inst = new Map<string, { id: string; tint?: [number, number, number]; m: THREE.Matrix4[] }>();
+  private leaves: THREE.BufferGeometry[] = [];
+  private objs: THREE.Object3D[] = [];
+  /** can this key be piled? */
+  static has(key: string) { return !!PILES[key] || key === 'heap_basil' || key === 'heap_eggs' || key === 'pork_table' || key === 'bananas'; }
+  /** a pile of `key` centred at p (world, bottom), radius rw × rd (local), facing yaw */
+  add(key: string, p: THREE.Vector3, yaw: number, rw: number, rd: number, seed: number) {
+    const r = (k: number) => { const v = Math.sin(seed * 91.7 + k * 12.9898) * 43758.5453; return v - Math.floor(v); };
+    const rot = (lx: number, lz: number) => new THREE.Vector3(lx, 0, lz).applyAxisAngle(_UP, yaw);
+    if (key === 'heap_eggs') { for (let k = 0; k < 3; k++) this.obj('egg_tray', p.clone().add(rot((r(k) - 0.5) * 0.04, (r(k + 9) - 0.5) * 0.04)).setY(p.y + 0.02 + k * 0.055), yaw + (r(k + 3) - 0.5) * 0.3); return; }
+    if (key === 'bananas') { this.obj('bananas', p.clone().setY(p.y + 0.02), yaw + r(1) * 2); return; }
+    if (key === 'pork_table') {
+      ['meat_belly', 'meat_ribs', 'meat_dark', 'meat_belly2'].forEach((id, k) => this.obj(id, p.clone().add(rot((k % 2 - 0.5) * rw * 0.7, (Math.floor(k / 2) - 0.5) * rd * 0.7)).setY(p.y + 0.02 + (k > 1 ? 0.03 : 0)), yaw + r(k) * 2));
+      return;
+    }
+    if (key === 'heap_basil') {
+      // loose leaf sprigs: curved leaf cards with the real basil photo, criss-crossed into a heap
+      for (let k = 0; k < 46; k++) {
+        const g = new THREE.PlaneGeometry(0.07, 0.11, 2, 2);
+        const pa = g.getAttribute('position') as THREE.BufferAttribute;
+        for (let i = 0; i < pa.count; i++) pa.setZ(i, Math.abs(pa.getX(i)) * 0.35);
+        const a = r(k) * Math.PI * 2, rr = Math.sqrt(r(k + 100)) * 0.85;
+        const off = rot(Math.cos(a) * rr * rw, Math.sin(a) * rr * rd);
+        g.rotateX(-Math.PI / 2 + (r(k + 7) - 0.5) * 1.2).rotateY(r(k + 3) * 6.28).translate(p.x + off.x, p.y + (1 - rr * rr) * 0.08 + 0.03, p.z + off.z);
+        this.leaves.push(g.toNonIndexed());
+      }
+      return;
+    }
+    const P = PILES[key];
+    if (!P) return;
+    const n = Math.max(6, Math.round(P.per * rw * rd));
+    const ck = P.id + ':' + (P.tint ?? []).join(',');
+    let e = this.inst.get(ck); if (!e) this.inst.set(ck, (e = { id: P.id, tint: P.tint, m: [] }));
+    for (let k = 0; k < n; k++) {
+      const a = r(k) * Math.PI * 2, rr = Math.sqrt(r(k + 50)) * 0.92;
+      const off = rot(Math.cos(a) * rr * rw, Math.sin(a) * rr * rd);
+      const ly = (1 - rr * rr) * Math.min(0.09, rw * 0.4) + (k > n * 0.7 ? 0.025 : 0) + 0.015;
+      const sc = 0.9 + r(k + 20) * 0.2;
+      _pq.setFromEuler(_pe.set(r(k + 30) * 6.28, r(k + 40) * 6.28, r(k + 60) * 0.6));
+      e.m.push(new THREE.Matrix4().compose(new THREE.Vector3(p.x + off.x, p.y + ly, p.z + off.z), _pq, new THREE.Vector3(P.s[0] * sc, P.s[1] * sc, P.s[2] * sc)));
+    }
+  }
+  private obj(id: string, p: THREE.Vector3, yaw: number) { const o = realPropObject(id); o.position.copy(p); o.rotation.y = yaw; this.objs.push(o); }
+  /** build the instanced meshes into `parent` */
+  flush(parent: THREE.Object3D) {
+    for (const o of this.objs) parent.add(o);
+    for (const e of this.inst.values()) {
+      const mats = e.m;
+      loadModel(e.id).then((mdl) => {
+        if (!mdl) return;
+        for (const part of mdl.parts) {
+          let mat = part.mat;
+          if (e.tint) { const c = (part.mat as THREE.MeshStandardMaterial).clone(); c.color.multiply(new THREE.Color(e.tint[0], e.tint[1], e.tint[2])); mat = c; }
+          const im = new THREE.InstancedMesh(part.geom, mat, mats.length);
+          mats.forEach((M, i) => im.setMatrixAt(i, M));
+          im.castShadow = true; im.receiveShadow = true; im.computeBoundingSphere();
+          im.name = 'pile:' + e.id;
+          parent.add(im);
+        }
+      });
+    }
+    if (this.leaves.length) {
+      const m = new THREE.Mesh(mergeGeometries(this.leaves, false)!, shopPhotoMat('heap_basil', { side: THREE.DoubleSide, rough: 0.6 }));
+      m.castShadow = m.receiveShadow = true; m.name = 'pile:basil';
+      parent.add(m);
+    }
+    this.inst.clear(); this.leaves = []; this.objs = [];
+  }
+}
+const _UP = new THREE.Vector3(0, 1, 0), _pq = new THREE.Quaternion(), _pe = new THREE.Euler();
+
+/** photo heap (dome) — merged. Real produce when a model exists (piles batch), photo dome otherwise. */
 function heap(mg: Merge, path: string, p: THREE.Vector3, r: number, h: number, seed: number) {
+  const key = path.replace(/^.*\//, '').replace(/\.\w+$/, '');
+  if (curPiles && PileBatch.has(key)) { curPiles.add(key, p, seed, r, r, seed); return; }
   const g = new THREE.SphereGeometry(1, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2);
   const pa = g.getAttribute('position') as THREE.BufferAttribute;
   for (let i = 0; i < pa.count; i++) { const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i); const n = 1 + Math.sin(x * 9 + seed) * Math.cos(z * 7 + seed) * 0.08; pa.setXYZ(i, x * r * n, y * h * n, z * r * n); }
@@ -303,9 +396,11 @@ function produceBasket(real: RealProps, rng: RNG, id: 'lib:plastic_basket' | 'li
 }
 
 // ------------------------------------------------------------------ the four functional stalls
+let curPiles: PileBatch | null = null;
 export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
   const real = c.props.real, A = c.anchors, rng = c.rng, w = c.w, D = c.decals;
   const mg = new Merge();
+  curPiles = new PileBatch();
   const cards = new PriceCards();
   const calTex = calendarTexture();
   const calMat = () => new THREE.MeshStandardMaterial({ map: calTex, roughness: 0.8 });
@@ -502,6 +597,7 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
 
   const extra = [mg.build('marketlife'), cards.build()];
   for (const o of extra) if (o) real.addObject(o);
+  if (curPiles) { const pg = new THREE.Group(); pg.name = 'market-piles'; curPiles.flush(pg); real.addObject(pg); curPiles = null; }
   void SIDES; void PLASTIC_COLORS;
 }
 

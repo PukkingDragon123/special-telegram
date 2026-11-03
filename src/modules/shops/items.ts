@@ -6,6 +6,8 @@ import type { ItemDef, CarryStyle } from '../../game/items';
 import { Assets } from '../../core/assets';
 import { TL, tl } from '../../core/util';
 import { photo, photoMat, mat } from './tex';
+import { libModel, libEntry } from '../world/lib';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 /**
  * Item kinds owned by the shops module (shopping basket, plastic bag, keeper props) plus
@@ -77,6 +79,19 @@ const labelMat = (file: string, o: { alpha?: boolean } = {}) => mat('label:' + f
   return m;
 });
 
+/** A shared-library model fitted to the fallback's size (uniform scale by height, or per-axis), or null if the
+ *  library doesn't have it. Extra children (e.g. a basket's `contents` group) can be appended by the caller. */
+function libFit(id: string, size: [number, number, number], o: { color?: number; perAxis?: boolean } = {}): THREE.Group | null {
+  const e = libEntry(id);
+  if (!e?.size_m) return null;
+  const g = libModel(id, o.color !== undefined ? { color: o.color } : {});
+  const [w, h, d] = size, [sw, sh, sd] = e.size_m;
+  if (o.perAxis) g.scale.set(w / sw, h / sh, d / sd); else g.scale.setScalar(h / sh);
+  const wrap = new THREE.Group(); wrap.add(g);
+  return wrap;
+}
+const rbox = (w: number, h: number, d: number, r: number) => new RoundedBoxGeometry(w, h, d, 2, Math.min(r, w / 2 - 1e-4, h / 2 - 1e-4, d / 2 - 1e-4)).translate(0, h / 2, 0);
+
 // ------------------------------------------------------------------ shape builders
 
 type Shape = 'tray' | 'bag' | 'bunch' | 'egg' | 'bottle' | 'jar' | 'can' | 'cup' | 'box' | 'sack' | 'tank' | 'jug' | 'pillow' | 'stool' | 'chair' | 'table' | 'umbrella' | 'tub' | 'rack' | 'bin' | 'wok' | 'utensil' | 'board' | 'mortar' | 'plate' | 'bowl' | 'cooker' | 'burner' | 'basket' | 'eggtray' | 'heap';
@@ -124,9 +139,9 @@ function build(spec: FbSpec): THREE.Object3D {
     case 'bottle': case 'jar': {
       const neck = spec.shape === 'bottle';
       const prof: [number, number][] = neck
-        ? [[0, 0], [w / 2, 0.004], [w / 2, h * 0.62], [w * 0.38, h * 0.74], [w * 0.15, h * 0.86], [w * 0.15, h], [0, h]]
+        ? [[0, 0], [w * 0.44, 0.002], [w / 2, 0.012], [w / 2, h * 0.6], [w * 0.47, h * 0.66], [w * 0.36, h * 0.73], [w * 0.2, h * 0.8], [w * 0.15, h * 0.86], [w * 0.15, h * 0.95], [w * 0.18, h * 0.96], [w * 0.17, h], [0, h]]
         : [[0, 0], [w / 2, 0.004], [w / 2, h * 0.86], [w * 0.42, h * 0.9], [w * 0.42, h], [0, h]];
-      const body = mesh(lathe(prof, 14), mat('bottlebody:' + (spec.body ?? 0x3a2412), () => new THREE.MeshStandardMaterial({ color: spec.body ?? 0x3a2412, roughness: 0.18, metalness: 0.05, transparent: (spec.body ?? 0) > 0x808080, opacity: (spec.body ?? 0) > 0x808080 ? 0.75 : 1 })));
+      const body = mesh(lathe(prof, 20), mat('bottlebody:' + (spec.body ?? 0x3a2412), () => new THREE.MeshStandardMaterial({ color: spec.body ?? 0x3a2412, roughness: 0.08, metalness: 0.1, envMapIntensity: 1.4, transparent: (spec.body ?? 0) > 0x808080, opacity: (spec.body ?? 0) > 0x808080 ? 0.62 : 1 })));
       const parts: THREE.Object3D[] = [body];
       if (spec.tex) {
         const y0 = neck ? 0.16 : 0.12, y1 = neck ? 0.6 : 0.84;
@@ -137,15 +152,37 @@ function build(spec: FbSpec): THREE.Object3D {
       return group(...parts);
     }
     case 'can': {
-      const body = mesh(spec.tex ? frontArc(cyl(w / 2, h, 18), 160) : cyl(w / 2, h, 16), spec.tex ? labelMat(spec.tex) : flat(c, 0.3, 0.6));
-      const top = mesh(cyl(w * 0.46, 0.006).translate(0, h, 0), steel());
-      return group(body, top);
+      // drawn aluminium can: domed base, straight printed wall, necked shoulder, rolled rim, pull tab
+      const r = w / 2;
+      const wall = mesh(spec.tex ? frontArc(cyl(r, h * 0.82, 24).translate(0, h * 0.06, 0), 170) : cyl(r, h * 0.82, 20).translate(0, h * 0.06, 0), spec.tex ? labelMat(spec.tex) : flat(c, 0.3, 0.6));
+      const alu = mat('can-alu', () => new THREE.MeshStandardMaterial({ color: 0xd4d6d8, roughness: 0.28, metalness: 0.95 }));
+      const ends = mesh(merge([
+        lathe([[0.0001, 0.006], [r * 0.7, 0.002], [r * 0.92, 0.0], [r, h * 0.035], [r, h * 0.06]], 24),
+        lathe([[r, h * 0.88], [r * 0.97, h * 0.92], [r * 0.82, h * 0.975], [r * 0.84, h], [r * 0.8, h * 0.995], [r * 0.76, h * 0.985], [0.0001, h * 0.985]], 24),
+      ]), alu);
+      const tab = mesh(new THREE.TorusGeometry(r * 0.22, r * 0.05, 4, 10).rotateX(Math.PI / 2).scale(1, 1, 1.5).translate(0, h * 0.99, r * 0.12), alu);
+      return group(wall, ends, tab);
     }
     case 'cup': {
-      const body = mesh(spec.tex ? frontArc(lathe([[0, 0], [w * 0.36, 0.004], [w / 2, h], [0, h]], 18), 180) : lathe([[0, 0], [w * 0.36, 0.004], [w / 2, h], [0, h]], 14), spec.tex ? labelMat(spec.tex) : flat(c, 0.6));
-      return group(body);
+      const prof: [number, number][] = [[0.0001, 0.004], [w * 0.34, 0.002], [w * 0.36, 0.008], [w * 0.49, h * 0.97], [w * 0.5, h * 0.97]];
+      const body = mesh(spec.tex ? frontArc(lathe(prof, 24), 180) : lathe(prof, 18), spec.tex ? labelMat(spec.tex) : plastic(c));
+      const rim = mesh(new THREE.TorusGeometry(w * 0.5, w * 0.018, 5, 24).rotateX(Math.PI / 2).translate(0, h * 0.975, 0), plastic(0xf4f2ec));
+      if (!spec.tex) return group(body, rim);
+      // printed foil lid with a peel tab
+      const lid = mesh(new THREE.CircleGeometry(w * 0.51, 24).rotateX(-Math.PI / 2).translate(0, h * 0.985, 0), mat('cuplid', () => new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: 0.35, metalness: 0.55 })));
+      const tab = mesh(rbox(w * 0.16, 0.002, w * 0.12, 0.0008).translate(w * 0.5, h * 0.984, 0), mat('cuplid', () => new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: 0.35, metalness: 0.55 })));
+      return group(body, rim, lid, tab);
     }
-    case 'box': case 'pillow': case 'sack': {
+    case 'box': if (spec.tex?.includes('rice_tray')) {
+      // microwave rice tray: clear moulded PP tray (rounded) with the printed film lid on top
+      const tray = mesh(rbox(w, h * 0.92, d, Math.min(0.012, h * 0.3)), mat('pptray', () => new THREE.MeshStandardMaterial({ color: 0xf6f3ea, roughness: 0.25, transparent: true, opacity: 0.88 })));
+      const flange = mesh(rbox(w * 1.06, 0.004, d * 1.08, 0.002).translate(0, h * 0.92, 0), mat('pptray', () => new THREE.MeshStandardMaterial({ color: 0xf6f3ea, roughness: 0.25, transparent: true, opacity: 0.88 })));
+      const film = mesh(new THREE.PlaneGeometry(w * 1.02, d * 1.04).rotateX(-Math.PI / 2).translate(0, h * 0.926, 0), labelMat(spec.tex, { alpha: true }));
+      const rice = mesh(wobble(new THREE.SphereGeometry(0.5, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2).scale(w * 0.92, h * 0.6, d * 0.9).translate(0, h * 0.25, 0), 0.06, 4), flat(0xf4f1e8, 0.9));
+      return group(rice, tray, flange, film);
+    }
+    // falls through for ordinary cartons
+    case 'pillow': case 'sack': {
       const g = new THREE.BoxGeometry(w, h, d, 3, 4, 2);
       if (spec.shape !== 'box') { // puffy
         const p = g.getAttribute('position') as THREE.BufferAttribute;
@@ -153,6 +190,17 @@ function build(spec: FbSpec): THREE.Object3D {
           const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
           const k = 1 - Math.pow(Math.abs(y) / (h / 2), 2) * 0.35;
           p.setXYZ(i, x * (spec.shape === 'sack' ? 1 : k), y, z * k * (spec.shape === 'pillow' ? 1.15 : 1));
+        }
+        g.computeVertexNormals();
+      }
+      else {
+        // carton: soften the 12 edges (fold creases are never razor sharp)
+        const p = g.getAttribute('position') as THREE.BufferAttribute;
+        for (let i = 0; i < p.count; i++) {
+          const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+          const ex = Math.abs(x) / (w / 2), ey = Math.abs(y) / (h / 2), ez = Math.abs(z) / (d / 2);
+          const k = 1 - 0.035 * Math.max(0, ex + ey + ez - 2.6);
+          p.setXYZ(i, x * k, y * k, z * k);
         }
         g.computeVertexNormals();
       }
@@ -175,6 +223,8 @@ function build(spec: FbSpec): THREE.Object3D {
       return group(body, front, cap);
     }
     case 'stool': {
+      const lib = libFit('thai_stool', spec.size, { color: spec.color ?? 0xc42a22 });
+      if (lib) return lib;
       const legs: THREE.BufferGeometry[] = [];
       for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + Math.PI / 4; legs.push(new THREE.BoxGeometry(0.05, h * 0.92, 0.07).translate(Math.cos(a) * w * 0.36, h * 0.46, Math.sin(a) * w * 0.36).rotateY(a)); }
       const seat = new THREE.CylinderGeometry(w / 2, w * 0.46, 0.035, 12).translate(0, h - 0.018, 0);
@@ -182,6 +232,8 @@ function build(spec: FbSpec): THREE.Object3D {
       return group(mesh(merge([...legs, seat, ring]), plastic(spec.color ?? 0xc42a22)));
     }
     case 'chair': {
+      const lib = libFit('plastic_monobloc_chair_01', spec.size, { color: spec.color });
+      if (lib) return lib;
       const seat = boxAt(w, 0.04, d * 0.9, 0, h * 0.44, 0.02);
       const back = boxAt(w, h * 0.5, 0.035, 0, h * 0.47, -d * 0.42).rotateX(-0.12);
       const legs: THREE.BufferGeometry[] = [];
@@ -189,6 +241,8 @@ function build(spec: FbSpec): THREE.Object3D {
       return group(mesh(merge([seat, back, ...legs]), plastic(spec.color ?? 0xf0efe9)));
     }
     case 'table': {
+      const lib = libFit('thai_table_steel', spec.size, { perAxis: true });
+      if (lib) return lib;
       const top = boxAt(w, 0.04, d, 0, h - 0.04, 0);
       const legs: THREE.BufferGeometry[] = [];
       for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) legs.push(boxAt(0.045, h - 0.04, 0.045, x * w * 0.44, 0, z * d * 0.42));
@@ -201,6 +255,8 @@ function build(spec: FbSpec): THREE.Object3D {
     }
     case 'tub': return group(mesh(lathe([[0, 0], [w * 0.36, 0.004], [w / 2, h], [w * 0.47, h], [w * 0.34, 0.03], [0, 0.03]], 18), plastic(spec.color ?? 0x2f6fd8)));
     case 'basket': {
+      const lib = libFit('plastic_basket', spec.size, { color: 0xc42a22, perAxis: true });
+      if (lib) { const contents = new THREE.Group(); contents.name = 'contents'; contents.position.y = 0.02; lib.add(contents); return lib; }
       const tex = photo('basket_red');
       const side = mat('basketside', () => { const m = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6, side: THREE.DoubleSide, alphaTest: 0.4, color: tex ? 0xffffff : 0xc42a22 }); return m; });
       const g = new THREE.BoxGeometry(w, h, d, 1, 1, 1);

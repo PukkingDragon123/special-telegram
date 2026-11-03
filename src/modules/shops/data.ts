@@ -51,6 +51,8 @@ export const PERSONALITIES: Record<string, Personality> = {
   // 8-Twelve clerk — robot: "ราคาตามระบบค่ะ"
   robot_clerk: { id: 'robot_clerk', bargain: false, maxDiscount: 0, likes: { polite: 0, sweet: 0, funny: 0, rude: 0 }, patience: 1, madAt: -99, voice: 1.45, chases: false, callPlayer: 'คุณลูกค้า' },
   // แม็กโคร่ง cashier — "ราคาส่งแล้วค่ะ"
+  // บ่าวคลาร์ค — deadpan furniture salesman: polite to a fault, never flinches, never gets mad, unmoved by jokes
+  deadpan_clerk: { id: 'deadpan_clerk', bargain: true, maxDiscount: 0.1, likes: { polite: 1.6, sweet: 0.3, funny: -0.1, rude: -0.4 }, patience: 3, madAt: -8, voice: 0.8, chases: false, callPlayer: 'คุณลูกค้า' },
   cashier: { id: 'cashier', bargain: true, maxDiscount: 0.03, likes: { polite: 0.6, sweet: 0.3, funny: 0.4, rude: -1.6 }, patience: 1, madAt: -2, voice: 1.3, chases: false, callPlayer: 'คุณลูกค้า' },
 };
 
@@ -254,6 +256,45 @@ export const SHOPS: ShopDef[] = [
       { id: 'water20', kinds: ['water_bottle_20l', 'water_20l', 'water_tank_20l'], fb: 'sfb_water20', price: 20, unit: 'ถังละ', qty: 8, show: 2 },
       { id: 'water', kinds: ['water_jug'], fb: 'sfb_water_jug', price: 12, unit: 'ขวดละ', qty: 10, show: 2 },
       { id: 'ice', kinds: ['ice_bag', 'ice'], fb: 'sfb_ice_bag', price: 15, unit: 'ถุงละ', qty: 10, show: 2 },
+    ],
+  },
+  // ------------------------------------------------------------------ เจริญพาณิชย์เฟอร์นิเจอร์ (build module showroom: real furniture
+  // models, placed with build mode). Big pieces are delivered (see TUNE.deliveryFee).
+  {
+    id: 'furniture_store', name: { th: 'เจริญพาณิชย์เฟอร์นิเจอร์', en: 'Charoen Panich Furniture' }, anchor: 'furniture_store', kind: 'shophouse',
+    open: 9, close: 19, day: 2, radius: 6.6, shutter: { w: 7.6, off: 0, h: 3.1 },
+    keeper: { name: { th: 'บ่าวคลาร์ค', en: 'Bao Clark' }, archetype: 'office_worker_m', personality: 'deadpan_clerk', seed: 2404, sit: false },
+    closedNote: { th: 'ปิดแล้ว เปิด 9 โมงเช้า', en: 'Closed — opens 9 am' },
+    lockedNote: { th: 'ปิดตรวจนับสต็อกหลังร้าน (อาจใช้เวลานาน)', en: 'Closed for back-room stocktake (may take a while)' },
+    stock: [
+      { id: 'stool_wood', kinds: ['stool_wood'], fb: 'stool_wood', price: 150, unit: 'ตัวละ', qty: 16, show: 2 },
+      { id: 'stool_metal', kinds: ['stool_metal'], fb: 'stool_metal', price: 220, unit: 'ตัวละ', qty: 12, show: 2 },
+      { id: 'chair_wood', kinds: ['chair_wood'], fb: 'chair_wood', price: 450, unit: 'ตัวละ', qty: 12, show: 2, big: true },
+      { id: 'table_formica', kinds: ['table_formica'], fb: 'table_formica', price: 690, unit: 'ตัวละ', qty: 8, show: 1, big: true },
+      { id: 'table_round_wood', kinds: ['table_round_wood'], fb: 'table_round_wood', price: 1590, unit: 'ตัวละ', qty: 6, show: 1, big: true },
+      { id: 'table_steel', kinds: ['table_steel'], fb: 'table_steel', price: 1290, unit: 'ตัวละ', qty: 6, show: 1, big: true },
+      { id: 'counter_desk', kinds: ['counter_desk'], fb: 'counter_desk', price: 2900, unit: 'ตัวละ', qty: 3, show: 1, big: true },
+      { id: 'cabinet_wood', kinds: ['cabinet_wood'], fb: 'cabinet_wood', price: 1890, unit: 'หลังละ', qty: 3, show: 1, big: true },
+      { id: 'shelf_wood', kinds: ['shelf_wood'], fb: 'shelf_wood', price: 690, unit: 'ตัวละ', qty: 4, show: 1, big: true },
+      { id: 'shelf_steel', kinds: ['shelf_steel'], fb: 'shelf_steel', price: 990, unit: 'ตัวละ', qty: 4, show: 1, big: true },
+      { id: 'drinks_fridge', kinds: ['drinks_fridge'], fb: 'drinks_fridge', price: 4500, unit: 'ตู้ละ', qty: 2, show: 1, big: true },
+      { id: 'food_cabinet', kinds: ['food_cabinet'], fb: 'food_cabinet', price: 1900, unit: 'ตู้ละ', qty: 3, show: 1, big: true },
+      { id: 'water_dispenser', kinds: ['water_dispenser'], fb: 'water_dispenser', price: 1890, unit: 'เครื่องละ', qty: 2, show: 1, big: true },
+      { id: 'stand_fan', kinds: ['stand_fan'], fb: 'stand_fan', price: 790, unit: 'ตัวละ', qty: 6, show: 1 },
+      { id: 'wall_fan', kinds: ['wall_fan'], fb: 'wall_fan', price: 890, unit: 'ตัวละ', qty: 6, show: 1 },
+      { id: 'ceiling_fan', kinds: ['ceiling_fan'], fb: 'ceiling_fan', price: 1490, unit: 'ตัวละ', qty: 4, show: 1 },
+      { id: 'aircon', kinds: ['aircon'], fb: 'aircon', price: 9900, unit: 'เครื่องละ', qty: 2, show: 1, big: true, day: 3, label: { th: 'แอร์ 12000 BTU (ติดตั้งเอง)', en: 'split air-con (DIY install)' } },
+      { id: 'tv_crt', kinds: ['tv_crt'], fb: 'tv_crt', price: 1800, unit: 'เครื่องละ', qty: 3, show: 1 },
+      { id: 'cash_register', kinds: ['cash_register'], fb: 'cash_register', price: 1200, unit: 'เครื่องละ', qty: 3, show: 1 },
+      { id: 'lucky_cat', kinds: ['lucky_cat'], fb: 'lucky_cat', price: 199, unit: 'ตัวละ', qty: 10, show: 1 },
+      { id: 'wall_clock', kinds: ['wall_clock'], fb: 'wall_clock', price: 159, unit: 'เรือนละ', qty: 8, show: 1 },
+      { id: 'shrine_shelf', kinds: ['shrine_shelf'], fb: 'shrine_shelf', price: 590, unit: 'หิ้งละ', qty: 3, show: 1 },
+      { id: 'menu_lightbox', kinds: ['menu_lightbox'], fb: 'menu_lightbox', price: 1500, unit: 'ป้ายละ', qty: 3, show: 1 },
+      { id: 'chalkboard', kinds: ['chalkboard'], fb: 'chalkboard', price: 350, unit: 'อันละ', qty: 4, show: 1 },
+      { id: 'planter_box', kinds: ['planter_box'], fb: 'planter_box', price: 390, unit: 'กระบะละ', qty: 6, show: 1 },
+      { id: 'plant_big', kinds: ['plant_big'], fb: 'plant_big', price: 290, unit: 'ต้นละ', qty: 8, show: 1 },
+      { id: 'plant_small', kinds: ['plant_small'], fb: 'plant_small', price: 79, unit: 'ต้นละ', qty: 12, show: 1 },
+      { id: 'lamp_pendant', kinds: ['lamp_pendant'], fb: 'lamp_pendant', price: 450, unit: 'ดวงละ', qty: 8, show: 1 },
     ],
   },
   // ------------------------------------------------------------------ 8-TWELVE (24 h, expensive)

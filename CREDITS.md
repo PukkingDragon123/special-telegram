@@ -1793,3 +1793,19 @@ Full per-model tables: `public/assets/gen/lib/CREDITS.md` and `public/assets/gen
 - Both machines (ธนาคารซอยทอง / SOI THONG BANK and ธนาคารตลาดสด / TALAD SOT BANK, fictional banks with original logos) are modelled in code: bevelled extrusions + rounded boxes, no downloaded mesh (the Sketchfab CC-BY ATMs checked were too low-detail and had no separate keys).
 - Textures reused from the shipped PBR library: `textures/pbr/metal_painted_chipped` (Poly Haven `green_metal_rust`, CC0), `aluminium_scratched` (Public Domain Mark), `stainless_brushed` (CC BY 2.0, see the PBR manifest), `chrome`, `plastic_glossy`, `plastic_rough` (ambientCG, CC0), `rubber_black`, `concrete_streaked` (Poly Haven, CC0), `galvanized_steel` (CC BY 2.0). Banknotes reuse `gen/social/money/note100.jpg` (see `references/credits/social.md`).
 - Screen UI, stickers, key labels, debit card and receipts are drawn at runtime on canvas with the shipped OFL Thai looped fonts (K2D, IBM Plex Sans Thai Looped, Sarabun). ATM sounds (key beeps, card motor, note counter, shutter, thermal printer) are synthesised with WebAudio.
+
+## Furniture store & build mode (`src/modules/build/`)
+- **Poly Haven (CC0)** furniture photoscans in `public/assets/gen/lib/furniture/ph/` (catalog ids in `public/assets/gen/lib/catalog.json`):
+  Ceiling Fan (Ulan Cabanilla), Television 01 (Gabriel Radić), Wall Clock (PierreB3D), Painted Wooden Chair 01 (Kuutti Siitonen),
+  Round Wooden Table 02 (Ulan Cabanilla), Painted Wooden Cabinet (Kirill Sannikov), Painted Wooden Shelves (Kirill Sannikov),
+  Cash Register 01 (Joe Seabuhr), Standing Chalkboard 01 (ParzivalCG), Planter Box 01 (James Ray Cock), Metal Office Desk
+  (Ulan Cabanilla), Hanging Industrial Lamp (Kuutti Siitonen) — https://polyhaven.com/models
+- **Sketchfab (CC-BY 4.0)**, via the Objaverse mirror, normalised with `scripts/libpub.py`:
+  "Maneki-neko ~ Asian lucky cat" by Arestame — https://sketchfab.com/3d-models/9c1cd4d051bc419b8ce121f9cd2730ff ;
+  "Air condition Daikin" by maxsbond.work — https://sketchfab.com/3d-models/26b0f7c8472741f4b85b889cf3b1d870
+- Custom-built in code (bevels + the shipped PBR library): 16" stand & wall fans, glass-door drinks fridge (stocked with the library's
+  bottle models), ตู้กับข้าว food display cabinet, หิ้งพระ shrine shelf, backlit menu lightbox (shows the live menu poster), formica folding
+  table, the STAFF ONLY back door, the showroom (terrazzo floor `textures/pbr/terrazzo_floor`, fluorescent fittings, signboard with
+  HarfBuzz-extruded looped Thai lettering). The restaurant's water dispenser was rebuilt (moulded body, taps, drip tray, cup tube) and its
+  trash bag now uses the Poly Haven "trashbag" photoscan.
+- บ่าวคลาร์ค (Bao Clark), the store's salesman, is an original character (deadpan, polite to a fault); no film character or actor likeness.

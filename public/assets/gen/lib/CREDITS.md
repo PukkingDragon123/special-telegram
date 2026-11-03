@@ -44,12 +44,26 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `vent_block_panel` | Ventilation block panel 5 × 3 (ช่องลม) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `bananas` | Bananas | Alexander Shulha (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/bananas |
 | `food_lychee_01` | Food Lychee 01 | Oliver Harries (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/food_lychee_01 |
+| `CashRegister_01` | Cash Register 01 | Joe Seabuhr (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/CashRegister_01 |
+| `Television_01` | Television 01 | Gabriel Radić (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/Television_01 |
+| `aircon_split` | Air condition Daikin | maxsbond.work (sketchfab.com/maxsbond.work) | CC-BY-4.0 | https://sketchfab.com/3d-models/26b0f7c8472741f4b85b889cf3b1d870 |
+| `ceiling_fan` | Ceiling Fan | Ulan Cabanilla (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/ceiling_fan |
 | `folding_wooden_stool` | Folding Wooden Stool | Ulan Cabanilla (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/folding_wooden_stool |
+| `hanging_industrial_lamp` | Hanging Industrial Lamp | Kuutti Siitonen (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/hanging_industrial_lamp |
+| `lucky_cat_gold` | Maneki-neko ~ Asian lucky cat | Arestame (sketchfab.com/Arestame) | CC-BY-4.0 | https://sketchfab.com/3d-models/9c1cd4d051bc419b8ce121f9cd2730ff |
+| `metal_office_desk` | Metal Office Desk | Ulan Cabanilla (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/metal_office_desk |
 | `metal_stool_02` | Metal Stool 02 | Ulan Cabanilla (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/metal_stool_02 |
+| `painted_wooden_cabinet` | Painted Wooden Cabinet | Kirill Sannikov (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/painted_wooden_cabinet |
+| `painted_wooden_chair_01` | Painted Wooden Chair 01 | Kuutti Siitonen (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/painted_wooden_chair_01 |
+| `painted_wooden_shelves` | Painted Wooden Shelves | Kirill Sannikov (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/painted_wooden_shelves |
+| `planter_box_01` | Planter Box 01 | James Ray Cock (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/planter_box_01 |
 | `plastic_monobloc_chair_01` | Plastic Monobloc Chair 01 | Kuutti Siitonen (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/plastic_monobloc_chair_01 |
+| `round_wooden_table_02` | Round Wooden Table 02 | Ulan Cabanilla (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/round_wooden_table_02 |
+| `standing_chalkboard_01` | Standing Chalkboard 01 | ParzivalCG (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/standing_chalkboard_01 |
 | `steel_frame_shelves_02` | Steel Frame Shelves 02 | James Ray Cock (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/steel_frame_shelves_02 |
 | `thai_stool` | Thai plastic stool (เก้าอี้พลาสติก) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_furniture.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `thai_table_steel` | Stainless folding street table (โต๊ะพับสแตนเลส) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `wall_clock` | Wall Clock | PierreB3D (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/wall_clock |
 | `wooden_display_shelves_01` | Wooden Display Shelves 01 | James Ray Cock (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/wooden_display_shelves_01 |
 | `worn_metal_rack` | Worn Metal Rack | Luca B (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/worn_metal_rack |
 | `hose_coil` | Coiled garden hose with brass nozzle (สายยาง) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_street.py (custom bpy model; textures: see public/assets/textures manifests) |
@@ -100,9 +114,11 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `transformer_platform` | Transformer platform: steel channel beams + braces (between two poles 2 m apart) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `water_tank_plastic` | Water Tank | Baidhar Hembram (sketchfab.com/hembramten) | CC-BY-4.0 | https://sketchfab.com/3d-models/11b6ea9cf9c44875a47a034182d5ff31 |
 | `water_tank_steel` | Water Tank | Arling (sketchfab.com/arling) | CC-BY-4.0 | https://sketchfab.com/3d-models/f44007d8b4a94e9d924bc5ee93480169 |
+| `bus_city` | Generic Town Bus | own.guest (sketchfab.com/own.guest) | CC-BY-4.0 | https://sketchfab.com/3d-models/14fe03d792914d51b6c6250b393c44fd |
+| `car_sedan` | Generic passenger car pack | Comrade1280 (sketchfab.com/comrade1280) | CC-BY-4.0 | https://sketchfab.com/3d-models/20f9af9b8a404d5cb022ac6fe87f21f5 |
 | `pickup_hilux` | Toyota Hilux Low Poly | sebodeweb (sketchfab.com/sebodeweb) | CC-BY-4.0 | https://sketchfab.com/3d-models/87dc5e8d45724fe6b4b68b1f432976fc |
 | `scooter_cub` | Honda Super Cub C70 moped (photogrammetry) | Bandit.545 (sketchfab.com/Bandit.545) | CC-BY-4.0 | https://sketchfab.com/3d-models/33afed83974d4534bb2f4d43a593e530 |
 | `scooter_wave` | Underbone moped, Honda Wave / SYM E-SR 110 type (photogrammetry) | Bandit.545 (sketchfab.com/Bandit.545) | CC-BY-4.0 | https://sketchfab.com/3d-models/518a7d5a4a0b41218650ee0823320f5a |
 | `tuktuk` | Thai tuk-tuk (ตุ๊กตุ๊ก) | iraida (sketchfab.com/iraida) | CC-BY-4.0 | https://sketchfab.com/3d-models/916b76665fb9458cac7473bd446cdd98 |
 
-Total: 98 models, 14.7 MB.
+Total: 114 models, 18.3 MB.

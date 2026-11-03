@@ -69,6 +69,8 @@ export interface DlgNode {
   options?: DlgOption[];
   next?: string;
   do?: (c: DlgCtx) => void;
+  /** the conversation ends after this line (continue card reads "จบ") */
+  end?: boolean;
 }
 
 export interface Dialogue {
@@ -80,6 +82,10 @@ export interface Dialogue {
   /** id of the first node (may depend on quest state / time / money) */
   start: (c: DlgCtx) => string;
   nodes: DlgNode[];
+  /** short lines the NPC calls out when you walk past (floating text, no conversation) */
+  barks?: (TL | string)[] | ((t: TalkTarget, game: Game) => (TL | string)[]);
+  /** speech blip pitch for this speaker (default from the shopkeeper personality / 1) */
+  voice?: number;
 }
 
 export interface QuestStep {
@@ -90,6 +96,8 @@ export interface QuestStep {
   done?: (game: Game, q: QuestState) => boolean;
   /** world position to point the tracker / marker at (optional) */
   where?: (game: Game) => [number, number, number] | null;
+  /** role of the TalkTarget where this step is handed in (shows a "?" over them) */
+  at?: string;
 }
 
 export interface QuestReward {
@@ -118,6 +126,18 @@ export interface QuestDef {
   /** comedic one-liners for start / complete (said by the giver) */
   startLine?: TL | string;
   doneLine?: TL | string;
+  /** how the giver pitches it when you ask "มีอะไรให้ช่วยไหม?" (default: startLine) */
+  offer?: Line;
+  /** HOST: when accepted (spawn quest items, set data…) */
+  onStart?: (game: Game, st: QuestState, pl: Ent) => void;
+  /** HOST: named operations a client can request with game.intent('quest.op', {id, op, data});
+   *  return true to advance to the next step (the last step completes the quest) */
+  ops?: Record<string, (game: Game, pl: Ent, data: any, st: QuestState) => boolean | void>;
+  /** extra dialogue: `options` are added to the first node of any conversation whose target matches `who`;
+   *  `nodes` become reachable from them (ids must be unique, prefix them with the quest id) */
+  dialog?: { who: (t: TalkTarget, game: Game) => boolean; options: (c: DlgCtx, st: QuestState | null) => DlgOption[]; nodes?: DlgNode[] }[];
+  /** sort order in the tracker / offers (lower first) */
+  order?: number;
 }
 
 /** replicated quest state lives in game.g.quests[id] */

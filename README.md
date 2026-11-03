@@ -67,5 +67,10 @@ collisions with people and walls). World builders publish laundry lines, hanger 
 `ClothSpots` (`src/modules/cloth/api.ts`). Moving props attach cloth with `registerClothAnchor` (the food cart's ผ้าขาวม้า).
 Garments are cut from real pattern outlines and use the real fabric photos in `public/assets/textures/clothing`.
 
+`src/modules/backrooms`: the back room of บ่าวคลาร์ค's furniture store is much bigger than it should be: a seeded,
+walkable liminal office maze (damp mono-yellow wallpaper, wet carpet, humming fluorescent panels that flicker), built
+far outside the map. The store's back door (anchor `furniture_backdoor`) leads in, the EXIT door in the first room leads
+back, and Clark waits at the "returns desk" in the farthest room. `?backrooms` starts inside.
+
 `src/modules/atm`: two street ATMs (fictional banks) with a realistic screen UI. Per-player bank accounts live in `g.atm`
 (host-authoritative `atm.op` intent).

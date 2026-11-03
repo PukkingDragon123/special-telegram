@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { questApi } from '../quests/api';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import type { Ctx } from '../../game/interact';
@@ -44,6 +45,8 @@ export class Homeless {
       if (!h) return;
       const isHim = h.kind === 'homeless' || (h.ent?.t === 'npc' && h.ent?.role === 'homeless');
       if (!isHim) return;
+      // with the quests module, giving money is part of a real conversation (E → คุย)
+      if (questApi()) return;
       return [{
         key: 'E', label: tl('ให้เงิน', 'give money'), priority: 7,
         run: () => {

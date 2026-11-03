@@ -4,7 +4,7 @@ import { Input } from '../../core/input';
 import { Sound } from '../../core/audio';
 import { F } from '../../core/fonts';
 import { Ease } from '../../core/util';
-import { RECIPES, RECIPE_IDS, DEFAULT_UNLOCKED, Recipe } from './recipes';
+import { RECIPES, RECIPE_IDS, DEFAULT_UNLOCKED, Recipe, RECIPE_UNLOCK_HINT } from './recipes';
 import { ING } from './data';
 import { mulberry, pickKey } from './util';
 
@@ -191,7 +191,17 @@ function drawRecipeLeft(c: CanvasRenderingContext2D, R: Recipe, ok: boolean, n: 
 function drawRecipeRight(c: CanvasRenderingContext2D, R: Recipe, ok: boolean, seed: number) {
   const r = mulberry(seed);
   paper(c, seed);
-  if (!ok) { scribbleOut(c, 70, 90, 380, 520, r); scrawl(c, '???', 200, 380, 60, r, { font: F.scrawl, color: PENCIL }); return; }
+  if (!ok) {
+    scribbleOut(c, 70, 90, 380, 520, r);
+    scrawl(c, '???', 200, 330, 60, r, { font: F.scrawl, color: PENCIL });
+    // how to get this page (ballpoint note stuck on the scribble)
+    const h = RECIPE_UNLOCK_HINT[R.id];
+    if (h) {
+      scrawl(c, 'หาสูตรได้จาก:', 84, 430, 26, r, { color: RED });
+      scrawl(c, h.th, 84, 474, 25, r, { maxW: PW - 110 });
+    }
+    return;
+  }
   scrawl(c, 'วิธีทำ', 84, 76, 38, r, { font: F.scrawl });
   let y = 132;
   R.steps.forEach((s, i) => {

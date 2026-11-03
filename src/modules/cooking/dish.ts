@@ -93,12 +93,12 @@ function buildFood(d: any): THREE.Group {
     case 'moo_kratiam':
       add(heapGeo('mk', 0.058, 0.024, 7), heapMat(T.porkCooked(), T.porkCookedN(), 0xffe0b0, burn, 'mk'), [fx, 0.004, 0.005], s);
       add(reliefGeo('garlic_minced_pile', 0.07, 0.07, 0.012, 12), reliefMat('garlicGold' + (burn > 0.4 ? 'b' : ''), 'garlic_minced_pile', photo('garlic_minced_pile'), { rough: 0.35, color: burn > 0.4 ? 0x6a5030 : 0xffd890, clearcoat: 0.5 }), [fx, 0.022, 0], s);
-      add(gc('cuc', () => { const c = new THREE.CylinderGeometry(0.016, 0.016, 0.006, 10); return c; }), cachedMat('cucSlice', () => new THREE.MeshStandardMaterial({ color: 0xd8e8b0, roughness: 0.4 })), [0.075, 0.005, 0.04]);
+      add(cucumberSlice(), cucumberMat(), [0.075, 0.0055, 0.04]); add(cucumberSlice(), cucumberMat(), [0.083, 0.008, 0.052]).rotation.set(0.15, 0.4, 0.1);
       break;
     case 'khao_phat':
       add(heapGeo('kp', 0.072, 0.036, 11, [1.1, 0.95]), heapMat(T.friedRice(), T.friedRiceN(), 0xffffff, burn, 'kp', 0.55), [0, 0.004, 0], s);
-      add(gc('lime', () => { const l = new THREE.SphereGeometry(0.018, 8, 6, 0, Math.PI); l.rotateX(-Math.PI / 2); return l; }), cachedMat('limeWedge', () => new THREE.MeshStandardMaterial({ color: 0x8ac040, roughness: 0.35 })), [0.07, 0.006, 0.05]);
-      add(gc('cuc', () => new THREE.CylinderGeometry(0.016, 0.016, 0.006, 10)), cachedMat('cucSlice', () => new THREE.MeshStandardMaterial({ color: 0xd8e8b0, roughness: 0.4 })), [0.06, 0.005, -0.06]);
+      { const lw = limeWedge(); lw.position.set(0.07, 0.022, 0.05); lw.rotation.y = 0.6; g.add(lw); }
+      add(cucumberSlice(), cucumberMat(), [0.06, 0.0055, -0.06]); add(cucumberSlice(), cucumberMat(), [0.071, 0.008, -0.052]).rotation.set(-0.12, 1.1, 0.14);
       break;
     case 'phat_si_io':
     case 'rat_na': {
@@ -114,12 +114,14 @@ function buildFood(d: any): THREE.Group {
       add(heapGeo('pb', 0.075, 0.03, 17, [1.2, 0.9]), heapMat(T.greens(), null, 0xffffff, burn, 'pb', 0.32), [0, 0.004, 0], s);
       break;
     case 'tom_yam': {
-      const broth = cachedMat('broth', () => new THREE.MeshStandardMaterial({ color: 0xd8642a, transparent: true, opacity: 0.86, roughness: 0.06, metalness: 0.05 }));
-      add(gc('brothDisc', () => { const c = new THREE.CircleGeometry(0.066, 20); c.rotateX(-Math.PI / 2); return c; }), broth, [0, 0.045, 0]);
-      add(gc('shrimpBits', () => scatter(dent(new THREE.TorusGeometry(0.012, 0.006, 5, 8, Math.PI * 1.3), 0.002, 40, 3), 5, (i, m, rr) => {
-        m.makeRotationFromEuler(new THREE.Euler(Math.PI / 2 + (rr() - 0.5) * 0.4, rr() * 6.28, 0));
-        m.setPosition((rr() - 0.5) * 0.08, 0.047, (rr() - 0.5) * 0.08);
-      }, 5)), cachedMat('shrimpCooked', () => new THREE.MeshStandardMaterial({ color: 0xf08a5a, roughness: 0.4 })), [0, 0, 0]);
+      // the soup surface is a real top-down photo of a bowl of tom yum (oil sheen, herbs, chilies), glossy
+      const broth = cachedMat('brothReal', () => new THREE.MeshStandardMaterial({ map: Assets.texture('textures/food/tomyum_bowl_top.png', { srgb: true, wrap: false }), roughness: 0.05, metalness: 0.05, transparent: true, opacity: 0.94 }));
+      add(gc('brothDisc2', () => { const c = new THREE.CircleGeometry(0.066, 28); c.rotateX(-Math.PI / 2); return c; }), broth, [0, 0.045, 0]);
+      const shrimpM = cachedMat('shrimpCooked2', () => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, color: 0xffffff }));
+      for (let k = 0; k < 4; k++) {
+        const sm = add(shrimpGeo(), shrimpM, [Math.cos(k * 1.7) * 0.034, 0.05, Math.sin(k * 1.7) * 0.034]);
+        sm.rotation.set(0.2 * Math.sin(k), k * 1.9, 0.15 * Math.cos(k));
+      }
       add(cards('chiliY', 2, 0.03, 0.04, 0.048, 7), cardM('chiliC', T.chiliCard()), [0, 0, 0]);
       add(cards('kaffirY', 3, 0.035, 0.045, 0.047, 8), cardM('kaffirC', T.kaleCard(), 0x7a9a5a), [0, 0, 0]);
       break;
@@ -243,3 +245,94 @@ export function dishToDirtyPlate(game: Game, dish: Ent): Ent | null {
 }
 
 void M; void lathe;
+
+// ------------------------------------------------------------------ garnish (real shapes + real food photos)
+
+/** a cucumber slice: 5 mm disc, both faces show one real slice from the photo, the edge is the dark skin */
+function cucumberSlice() {
+  return gc('cucSliceGeo', () => {
+    const g = new THREE.CylinderGeometry(0.016, 0.016, 0.005, 16, 1, false);
+    const uv = g.getAttribute('uv') as THREE.BufferAttribute, n = g.getAttribute('normal') as THREE.BufferAttribute, p = g.getAttribute('position') as THREE.BufferAttribute;
+    for (let i = 0; i < uv.count; i++) {
+      if (Math.abs(n.getY(i)) > 0.5) uv.setXY(i, 0.42 + (p.getX(i) / 0.016) * 0.165, 0.745 - (p.getZ(i) / 0.016) * 0.165);
+      else uv.setXY(i, 0.42 + Math.cos(Math.atan2(p.getZ(i), p.getX(i))) * 0.17, 0.745 + Math.sin(Math.atan2(p.getZ(i), p.getX(i))) * 0.17);
+    }
+    return g;
+  });
+}
+function cucumberMat() {
+  return cachedMat('cucSliceReal', () => new THREE.MeshStandardMaterial({
+    map: Assets.texture('textures/food/cucumber_slices_tile.jpg', { srgb: true, wrap: false }),
+    normalMap: Assets.texture('textures/food/cucumber_slices_tile_n.jpg', { srgb: false, wrap: false }),
+    roughness: 0.32,
+  }));
+}
+/** a lime wedge (1/6 of the fruit): peel outside, two cut flesh faces */
+function limeWedge(): THREE.Group {
+  const r = 0.019, arc = Math.PI / 3;
+  const peel = gc('limePeel', () => {
+    const pts: THREE.Vector2[] = [];
+    for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + (i / 10) * Math.PI; pts.push(new THREE.Vector2(Math.cos(a) * r * (1 + 0.04 * Math.sin(a * 3)), Math.sin(a) * r * 1.08)); }
+    return new THREE.LatheGeometry(pts, 8, 0, arc);
+  });
+  const face = gc('limeFace', () => {
+    const half = new THREE.CircleGeometry(r * 0.95, 12, -Math.PI / 2, Math.PI);
+    half.scale(1, 1.08, 1);
+    const a = half.clone().rotateY(-Math.PI / 2);                        // the face at phi = 0 (lathe profile plane)
+    const b = half.clone().rotateY(-Math.PI / 2).rotateY(arc);           // the face at phi = arc
+    const out = new THREE.BufferGeometry();
+    const merged = [a.toNonIndexed(), b.toNonIndexed()];
+    const pos = new Float32Array(merged.reduce((k, gg) => k + gg.getAttribute('position').array.length, 0));
+    let o = 0; for (const gg of merged) { pos.set(gg.getAttribute('position').array as Float32Array, o); o += gg.getAttribute('position').array.length; }
+    out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    out.computeVertexNormals();
+    return out;
+  });
+  const g = new THREE.Group();
+  g.add(mesh(peel, cachedMat('limePeelM', () => new THREE.MeshStandardMaterial({ color: 0x4f8a22, roughness: 0.5 }))));
+  g.add(mesh(face, cachedMat('limeFleshM', () => new THREE.MeshStandardMaterial({ color: 0xd4e69a, roughness: 0.18, emissive: new THREE.Color(0x2a3a10), emissiveIntensity: 0.25, side: THREE.DoubleSide }))));
+  g.rotation.set(0, 0, Math.PI / 2);                                       // lying on its peel
+  return g;
+}
+/** cooked shrimp: curled, tapering body with white/orange segment bands and a fanned tail */
+function shrimpGeo() {
+  return gc('shrimpCurled', () => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 12; i++) { const a = (i / 12) * Math.PI * 1.25; pts.push(new THREE.Vector3(Math.cos(a) * 0.012, 0, Math.sin(a) * 0.012)); }
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const TS = 18, RS = 8;
+    const g = new THREE.TubeGeometry(curve, TS, 1, RS, false);
+    const p = g.getAttribute('position') as THREE.BufferAttribute;
+    const col = new Float32Array(p.count * 3);
+    for (let ring = 0; ring <= TS; ring++) {
+      const t = ring / TS, c = curve.getPointAt(t);
+      const rad = 0.0062 * (1 - 0.62 * t) * (t < 0.06 ? 0.6 + t * 6 : 1);
+      const band = (ring % 3 === 0) ? [0.98, 0.86, 0.74] : [0.95, 0.45, 0.24];
+      for (let k = 0; k <= RS; k++) {
+        const i = ring * (RS + 1) + k;
+        const dx = p.getX(i) - c.x, dy = p.getY(i) - c.y, dz = p.getZ(i) - c.z;
+        p.setXYZ(i, c.x + dx * rad, c.y + dy * rad * 1.15, c.z + dz * rad);
+        const back = dy > 0 ? 1 : 0.86;                                   // back darker than the belly
+        col.set([band[0] * back, band[1] * back, band[2] * back], i * 3);
+      }
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    g.computeVertexNormals();
+    // tail fan at the thin end
+    const end = curve.getPointAt(1), tan = curve.getTangentAt(1);
+    const tail = new THREE.ConeGeometry(0.0055, 0.011, 6).scale(1, 1, 0.3);
+    tail.lookAt(tan); tail.rotateX(Math.PI / 2);
+    tail.translate(end.x + tan.x * 0.004, end.y, end.z + tan.z * 0.004);
+    const tc = new Float32Array(tail.getAttribute('position').count * 3); for (let i = 0; i < tc.length; i += 3) tc.set([0.85, 0.22, 0.12], i);
+    tail.setAttribute('color', new THREE.BufferAttribute(tc, 3));
+    const a = g.toNonIndexed(), b = tail.toNonIndexed();
+    for (const x of [a, b]) for (const k of Object.keys(x.attributes)) if (!['position', 'normal', 'color'].includes(k)) x.deleteAttribute(k);
+    const out = new THREE.BufferGeometry();
+    for (const k of ['position', 'normal', 'color']) {
+      const A2 = a.getAttribute(k).array as Float32Array, B2 = b.getAttribute(k).array as Float32Array;
+      const m = new Float32Array(A2.length + B2.length); m.set(A2); m.set(B2, A2.length);
+      out.setAttribute(k, new THREE.BufferAttribute(m, 3));
+    }
+    return out;
+  });
+}

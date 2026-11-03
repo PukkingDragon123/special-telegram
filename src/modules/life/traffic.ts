@@ -79,6 +79,10 @@ export class Traffic {
   private side: THREE.InstancedMesh[] = [];
   private wheels: THREE.InstancedMesh | null = null;
   private riders: Record<string, THREE.InstancedMesh> = {};
+  /** baked real-character riders (seated, hands on the bars): [rider, passenger] instanced meshes per variant */
+  private bakedRiders: { arch: string; ride: THREE.InstancedMesh[]; pax: THREE.InstancedMesh[]; n: number; np: number }[] = [];
+  private riderBake: { arch: string; rig: any; n: number }[] = [];
+  private riderBakeStarted = false;
   private boxes: THREE.InstancedMesh | null = null;
   private glowHead: THREE.InstancedMesh | null = null;
   private glowTail: THREE.InstancedMesh | null = null;
@@ -422,8 +426,73 @@ export class Traffic {
 
   // ------------------------------------------------------------------ rendering
 
+  /** archetypes that ride: win drivers in orange vests, delivery riders, everyday commuters */
+  private static RIDER_ARCHS = ['moto_taxi', 'delivery_rider', 'office_worker_m', 'student_f', 'uncle_singlet', 'construction_worker', 'housewife', 'office_worker_f'];
+  private startRiderBake() {
+    this.riderBakeStarted = true;
+    const chars: any = this.game.chars;
+    if (!chars?.create) return;
+    const all: string[] = chars.archetypes?.() ?? [];
+    for (const [i, arch] of Traffic.RIDER_ARCHS.entries()) {
+      if (all.length && !all.includes(arch)) continue;
+      try {
+        const rig = chars.create(chars.randomLook(arch, 4411 + i * 977 + this.seed), { lod: 'low', castShadow: false });
+        rig.play('sit', { loop: true });
+        this.riderBake.push({ arch, rig, n: 0 });
+      } catch (e) { console.warn('[life] rider rig failed', arch, e); }
+    }
+  }
+  /** pose (sit + reach for the handlebars), validate (no bind T-pose), bake to instanced meshes */
+  private riderBakeStep() {
+    if (!this.group) return;
+    for (const p of [...this.riderBake]) {
+      p.rig.update(1 / 30); p.n++;
+      if (p.n < 30 || p.n % 10) continue;
+      const done = () => this.riderBake.splice(this.riderBake.indexOf(p), 1);
+      const sm: THREE.SkinnedMesh | undefined = p.rig.mesh_ ?? p.rig.mesh;
+      if (!sm?.isSkinnedMesh) { p.rig.dispose(); done(); continue; }
+      const root: THREE.Object3D = p.rig.root;
+      root.updateMatrixWorld(true);
+      const bone = (n: string) => sm.skeleton.bones.find((b) => b.name === n);
+      const pelvis = bone('pelvis');
+      if (!pelvis) { p.rig.dispose(); done(); continue; }
+      const pv = pelvis.getWorldPosition(new THREE.Vector3());
+      const pax = bakeSkinned(sm, root);
+      pax.computeBoundingBox();
+      if (pax.boundingBox!.max.x - pax.boundingBox!.min.x > 1.1) { pax.dispose(); if (p.n > 900) { p.rig.dispose(); done(); } continue; }   // clips not in yet
+      // the hip sits ~0.88 m above the road; hands reach the grips (rig faces +Z here)
+      const lift = 0.88 - pv.y;
+      for (const side of ['l', 'r']) {
+        const ua = bone('upperarm_' + side), la = bone('lowerarm_' + side), hd = bone('hand_' + side);
+        if (!ua || !la || !hd) continue;
+        const sx = ua.getWorldPosition(new THREE.Vector3()).x;
+        const grip = new THREE.Vector3(Math.sign(sx || (side === 'l' ? 1 : -1)) * 0.27, 1.0 - lift, pv.z + 0.6);
+        const sh = ua.getWorldPosition(new THREE.Vector3());
+        const elbow = sh.clone().lerp(grip, 0.5).add(new THREE.Vector3(Math.sign(sx) * 0.07, -0.1, -0.04));
+        aimBone(ua, la, elbow);
+        aimBone(la, hd, grip);
+      }
+      const ride = bakeSkinned(sm, root);
+      const place = new THREE.Matrix4().makeTranslation(0, lift, 0.18).multiply(new THREE.Matrix4().makeRotationY(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(-pv.x, 0, -pv.z));
+      const paxPlace = new THREE.Matrix4().makeTranslation(0, lift + 0.04, 0).multiply(new THREE.Matrix4().makeRotationY(Math.PI)).multiply(new THREE.Matrix4().makeTranslation(-pv.x, 0, -pv.z));
+      ride.applyMatrix4(place); pax.applyMatrix4(paxPlace);
+      const mats = Array.isArray(sm.material) ? sm.material : [sm.material];
+      const body = new THREE.MeshStandardMaterial({ map: (mats[0] as any).map, roughness: 0.82 });
+      const matArr = mats.length > 1 ? [body, mats[1]] : body;
+      const mk = (g: THREE.BufferGeometry, cap: number) => { const im = new THREE.InstancedMesh(g, matArr as any, cap); im.count = 0; im.frustumCulled = false; im.castShadow = true; im.receiveShadow = true; im.name = 'rider:' + p.arch; this.group!.add(im); return im; };
+      this.bakedRiders.push({ arch: p.arch, ride: [mk(ride, 40)], pax: [mk(pax, 12)], n: 0, np: 0 });
+      done();
+    }
+    // the capsule riders are a fallback only
+    if (this.bakedRiders.length >= 3) for (const k of Object.keys(this.riders)) this.riders[k].visible = false;
+  }
+
   private render(dt: number, cam: THREE.Vector3, hour: number) {
     const night = this.game.clock.nightFactor;
+    if (this.realMotos && !this.riderBakeStarted) this.startRiderBake();
+    if (this.riderBake.length) this.riderBakeStep();
+    const useBaked = this.bakedRiders.length >= 3;
+    for (const b of this.bakedRiders) { b.n = 0; b.np = 0; }
     for (const it of this.inst.values()) it.n = 0;
     let nw = 0, nr = 0, nb = 0, ngh = 0, ngt = 0, ns = 0;
     const camQ = this.game.camera.getWorldQuaternion(new THREE.Quaternion());
@@ -467,10 +536,21 @@ export class Traffic {
       // rider(s)
       if (vh.rider && nr < 138) {
         const rd = vh.rider;
-        const place = (zoff: number, scale = 1) => {
+        const place = (zoff: number, scale = 1, passenger = false) => {
           const off = this.tmp.set(0, 0, zoff).applyQuaternion(this.q);
           const at = vh.pos.clone().add(off).setY(vh.pos.y + (vh.def.kind === 'tuktuk' ? -0.1 : -0.12));
           this.m.compose(at, this.q, new THREE.Vector3(scale, scale, scale));
+          if (useBaked) {
+            // a real character: delivery riders, win drivers in their orange vests, everyone else by seed
+            const B = this.bakedRiders;
+            const want = rd.box ? 'delivery_rider' : rd.shirt.getHex() === 0xe8682a ? 'moto_taxi' : null;
+            const b = (want && B.find((x) => x.arch === want)) || B[(vh.seed + (passenger ? 3 : 0)) % B.length];
+            const list = passenger ? b.pax : b.ride;
+            const cnt = passenger ? b.np : b.n;
+            if (cnt < list[0].instanceMatrix.count) { for (const im of list) im.setMatrixAt(cnt, this.m); if (passenger) b.np++; else b.n++; }
+            nr++;
+            return;
+          }
           for (const k of ['shirt', 'skin', 'pants']) R[k].setMatrixAt(nr, this.m);
           const hidden = new THREE.Matrix4().makeScale(0, 0, 0);
           R.helmet.setMatrixAt(nr, rd.helmet ? this.m : hidden);
@@ -483,7 +563,7 @@ export class Traffic {
           nr++;
         };
         place(vh.def.kind === 'tuktuk' ? -0.75 : 0);
-        if (rd.pax && nr < 138) place(0.42, 0.97);
+        if (rd.pax && nr < 138) place(0.42, 0.97, true);
         if (rd.box && nb < 40) {
           this.m.compose(vh.pos, this.q, this.one);
           boxes.setMatrixAt(nb, this.m);
@@ -513,6 +593,7 @@ export class Traffic {
     }
     wheelsIM.count = nw; wheelsIM.instanceMatrix.needsUpdate = true;
     for (const k of Object.keys(R)) { R[k].count = nr; R[k].instanceMatrix.needsUpdate = true; if (R[k].instanceColor) R[k].instanceColor!.needsUpdate = true; }
+    for (const b of this.bakedRiders) { for (const im of b.ride) { im.count = b.n; im.instanceMatrix.needsUpdate = true; } for (const im of b.pax) { im.count = b.np; im.instanceMatrix.needsUpdate = true; } }
     boxes.count = nb; boxes.instanceMatrix.needsUpdate = true; if (boxes.instanceColor) boxes.instanceColor.needsUpdate = true;
     for (const x of this.side) { x.count = ns; x.instanceMatrix.needsUpdate = true; }
     this.glowHead!.count = ngh; this.glowHead!.instanceMatrix.needsUpdate = true;
@@ -666,4 +747,59 @@ function icecreamSidecar(): { geo: THREE.BufferGeometry; mat: THREE.Material }[]
   const tyre = new THREE.TorusGeometry(0.17, 0.045, 8, 20).rotateY(Math.PI / 2).translate(X - 0.36, 0.2, 0.05);
   const rubber = new THREE.MeshStandardMaterial({ color: 0x1b1a19, roughness: 0.92, metalness: 0 });
   return [{ geo: clean([cab, lid, handle, tin]), mat: steel }, { geo: clean(frame), mat: paint }, { geo: clean([tyre]), mat: rubber }];
+}
+
+// ------------------------------------------------------------------ baking real riders
+
+/** rotate `bone` (world space) so its child points at `target` */
+function aimBone(bone: THREE.Object3D, child: THREE.Object3D, target: THREE.Vector3) {
+  bone.updateMatrixWorld(true);
+  const bp = bone.getWorldPosition(new THREE.Vector3()), cp = child.getWorldPosition(new THREE.Vector3());
+  const cur = cp.sub(bp).normalize(), want = target.clone().sub(bp).normalize();
+  if (cur.lengthSq() < 1e-8 || want.lengthSq() < 1e-8) return;
+  const dq = new THREE.Quaternion().setFromUnitVectors(cur, want);
+  const wq = bone.getWorldQuaternion(new THREE.Quaternion());
+  const pq = bone.parent ? bone.parent.getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion();
+  bone.quaternion.copy(pq.invert().multiply(dq.multiply(wq)));
+  bone.updateMatrixWorld(true);
+}
+
+/** CPU-skin a SkinnedMesh in its current pose (same maths as the skinning shader) into `root` space */
+function bakeSkinned(sm: THREE.SkinnedMesh, root: THREE.Object3D): THREE.BufferGeometry {
+  root.updateMatrixWorld(true);
+  sm.skeleton.update();
+  const src = sm.geometry;
+  const pos = src.getAttribute('position') as THREE.BufferAttribute;
+  const nrm = src.getAttribute('normal') as THREE.BufferAttribute | undefined;
+  const si = src.getAttribute('skinIndex') as THREE.BufferAttribute;
+  const sw = src.getAttribute('skinWeight') as THREE.BufferAttribute;
+  const bm = sm.skeleton.boneMatrices!;
+  const toLocal = new THREE.Matrix4().copy(root.matrixWorld).invert().multiply(sm.matrixWorld).multiply(sm.bindMatrixInverse);
+  const P = new Float32Array(pos.count * 3), N = new Float32Array(pos.count * 3);
+  const M = new THREE.Matrix4(), Mk = new THREE.Matrix4(), v = new THREE.Vector3(), n = new THREE.Vector3(), N3 = new THREE.Matrix3();
+  for (let i = 0; i < pos.count; i++) {
+    M.elements.fill(0);
+    for (let k = 0; k < 4; k++) {
+      const w = sw.getComponent(i, k);
+      if (w <= 0) continue;
+      Mk.fromArray(bm, si.getComponent(i, k) * 16);
+      for (let e = 0; e < 16; e++) M.elements[e] += Mk.elements[e] * w;
+    }
+    M.premultiply(toLocal).multiply(sm.bindMatrix);
+    v.fromBufferAttribute(pos, i).applyMatrix4(M);
+    P[i * 3] = v.x; P[i * 3 + 1] = v.y; P[i * 3 + 2] = v.z;
+    if (nrm) { n.fromBufferAttribute(nrm, i).applyMatrix3(N3.getNormalMatrix(M)).normalize(); N[i * 3] = n.x; N[i * 3 + 1] = n.y; N[i * 3 + 2] = n.z; }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(P, 3));
+  if (nrm) g.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+  for (const name of Object.keys(src.attributes)) {
+    if (name === 'position' || name === 'normal' || name === 'skinIndex' || name === 'skinWeight') continue;
+    g.setAttribute(name, (src.getAttribute(name) as THREE.BufferAttribute).clone());
+  }
+  if (src.index) g.setIndex(src.index.clone());
+  for (const gr of src.groups) g.addGroup(gr.start, gr.count, gr.materialIndex);
+  if (!nrm) g.computeVertexNormals();
+  g.computeBoundingSphere();
+  return g;
 }

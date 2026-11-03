@@ -314,8 +314,7 @@ export function plateFromWok(game: Game, pl: Ent, vessel: Ent, wok: Ent) {
   const isDish = vessel.k === 'dish';
   if (solids < 3 && eggN === 0 && omN === 0 && water < 30) { game.say(pl.id, tl('กระทะยังว่างอยู่เลย', 'the wok is empty'), { duration: 1.6 }); return; }
   if (vessel.data?.dirty) { game.say(pl.id, tl('จานสกปรก! ล้างก่อน', 'dirty plate!'), { duration: 1.8 }); return; }
-  const unlocked: string[] = game.g.unlocks?.recipes ?? DEFAULT_UNLOCKED;
-  void unlocked;
+  const unlocked: string[] = Array.isArray(game.g.unlocks?.recipes) && game.g.unlocks.recipes.length ? game.g.unlocks.recipes : DEFAULT_UNLOCKED;
   // fried egg only → one egg goes onto the vessel
   if (solids < 3 && omN === 0 && water < 30 && eggN > 0) {
     const e: EggState = { n: 1, wh: s.egg.wh, cr: s.egg.cr, yk: s.egg.yk, b: s.egg.b };
@@ -330,7 +329,7 @@ export function plateFromWok(game: Game, pl: Ent, vessel: Ent, wok: Ent) {
       dd.vis = { ...(dd.vis ?? {}), yolk: e.yk < 0.6 ? 'runny' : 'set' };
       vessel.data = dd;
     } else {
-      const dish = evaluate({ T: s.T, oil: s.oil, w: 0, it: {}, sa: {}, egg: e } as WokData, { rice: vessel.data?.rice ?? 0, riceQ: vessel.data?.riceQ, riceWet: vessel.data?.riceWet, egg: e, cook: pl.id });
+      const dish = evaluate({ T: s.T, oil: s.oil, w: 0, it: {}, sa: {}, egg: e } as WokData, { rice: vessel.data?.rice ?? 0, riceQ: vessel.data?.riceQ, riceWet: vessel.data?.riceWet, egg: e, cook: pl.id, allowed: unlocked });
       replaceWithDish(game, pl, vessel, { ...dish, eggSt: { wh: rd(e.wh, 2), cr: rd(e.cr, 2), yk: rd(e.yk, 2), b: rd(e.b, 2) } });
     }
     s.egg.n -= 1;
@@ -351,7 +350,7 @@ export function plateFromWok(game: Game, pl: Ent, vessel: Ent, wok: Ent) {
   }
   if (!eggSt && eggN > 0 && (solids >= 3 || omN > 0)) { eggSt = { n: 1, wh: s.egg.wh, cr: s.egg.cr, yk: s.egg.yk, b: s.egg.b }; s.egg.n -= 1; if (s.egg.n <= 0) s.egg = null; }
   const snap: WokData = JSON.parse(JSON.stringify({ T: s.T, oil: s.oil, w: s.w, it: s.it, sa: s.sa, egg: null, om: s.om, wh: s.wh, ob: s.ob }));
-  const dish = evaluate(snap, { rice, riceQ: vessel.data?.riceQ, riceWet: vessel.data?.riceWet, egg: eggSt, cook: pl.id, takeaway: vessel.k === 'takeaway_box' });
+  const dish = evaluate(snap, { rice, riceQ: vessel.data?.riceQ, riceWet: vessel.data?.riceWet, egg: eggSt, cook: pl.id, takeaway: vessel.k === 'takeaway_box', allowed: unlocked });
   replaceWithDish(game, pl, vessel, { ...dish, eggSt: eggSt ? { wh: rd(eggSt.wh, 2), cr: rd(eggSt.cr, 2), yk: rd(eggSt.yk, 2), b: rd(eggSt.b, 2) } : undefined });
   // wok keeps a film of oil
   s.it = {}; s.sa = {}; s.w = 0; s.om = null; s.oil = Math.min(4, (s.oil ?? 0) * 0.08); s.wh = 0; s.ob = (s.ob ?? 0) * 0.5;

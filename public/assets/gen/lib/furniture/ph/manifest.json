@@ -1,0 +1,206 @@
+{
+ "CashRegister_01": {
+  "file": "CashRegister_01/CashRegister_01.glb",
+  "name": "Cash Register 01",
+  "bytes": 319824,
+  "srcTris": 9927,
+  "tris": 3504,
+  "dims": [
+   0.6,
+   0.624,
+   0.621
+  ],
+  "authors": [
+   "Joe Seabuhr"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/CashRegister_01"
+ },
+ "ceiling_fan": {
+  "file": "ceiling_fan/ceiling_fan.glb",
+  "name": "Ceiling Fan",
+  "bytes": 202896,
+  "srcTris": 16356,
+  "tris": 5000,
+  "dims": [
+   1.463,
+   1.463,
+   0.516
+  ],
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/ceiling_fan"
+ },
+ "hanging_industrial_lamp": {
+  "file": "hanging_industrial_lamp/hanging_industrial_lamp.glb",
+  "name": "Hanging Industrial Lamp",
+  "bytes": 168528,
+  "srcTris": 9530,
+  "tris": 3396,
+  "dims": [
+   0.55,
+   0.55,
+   1.355
+  ],
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/hanging_industrial_lamp"
+ },
+ "metal_office_desk": {
+  "file": "metal_office_desk/metal_office_desk.glb",
+  "name": "Metal Office Desk",
+  "bytes": 173388,
+  "srcTris": 6898,
+  "tris": 3999,
+  "dims": [
+   2,
+   0.947,
+   0.788
+  ],
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/metal_office_desk"
+ },
+ "painted_wooden_cabinet": {
+  "file": "painted_wooden_cabinet/painted_wooden_cabinet.glb",
+  "name": "Painted Wooden Cabinet",
+  "bytes": 231748,
+  "srcTris": 2227,
+  "tris": 2227,
+  "dims": [
+   1.195,
+   0.617,
+   1.182
+  ],
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/painted_wooden_cabinet"
+ },
+ "painted_wooden_chair_01": {
+  "file": "painted_wooden_chair_01/painted_wooden_chair_01.glb",
+  "name": "Painted Wooden Chair 01",
+  "bytes": 201440,
+  "srcTris": 724,
+  "tris": 724,
+  "dims": [
+   0.432,
+   0.54,
+   0.956
+  ],
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/painted_wooden_chair_01"
+ },
+ "painted_wooden_shelves": {
+  "file": "painted_wooden_shelves/painted_wooden_shelves.glb",
+  "name": "Painted Wooden Shelves",
+  "bytes": 294692,
+  "srcTris": 524,
+  "tris": 524,
+  "dims": [
+   0.511,
+   0.367,
+   1.125
+  ],
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/painted_wooden_shelves"
+ },
+ "planter_box_01": {
+  "file": "planter_box_01/planter_box_01.glb",
+  "name": "Planter Box 01",
+  "bytes": 329152,
+  "srcTris": 8094,
+  "tris": 4000,
+  "dims": [
+   0.913,
+   0.414,
+   0.425
+  ],
+  "authors": [
+   "James Ray Cock"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/planter_box_01"
+ },
+ "round_wooden_table_02": {
+  "file": "round_wooden_table_02/round_wooden_table_02.glb",
+  "name": "Round Wooden Table 02",
+  "bytes": 228872,
+  "srcTris": 4254,
+  "tris": 3500,
+  "dims": [
+   0.796,
+   0.796,
+   0.746
+  ],
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/round_wooden_table_02"
+ },
+ "standing_chalkboard_01": {
+  "file": "standing_chalkboard_01/standing_chalkboard_01.glb",
+  "name": "Standing Chalkboard 01",
+  "bytes": 253760,
+  "srcTris": 2372,
+  "tris": 2372,
+  "dims": [
+   0.92,
+   0.759,
+   1.509
+  ],
+  "authors": [
+   "ParzivalCG"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/standing_chalkboard_01"
+ },
+ "Television_01": {
+  "file": "Television_01/Television_01.glb",
+  "name": "Television 01",
+  "bytes": 217156,
+  "srcTris": 1918,
+  "tris": 1918,
+  "dims": [
+   0.6,
+   0.471,
+   0.457
+  ],
+  "authors": [
+   "Gabriel Radić"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/Television_01"
+ },
+ "wall_clock": {
+  "file": "wall_clock/wall_clock.glb",
+  "name": "Wall Clock",
+  "bytes": 82056,
+  "srcTris": 3658,
+  "tris": 1998,
+  "dims": [
+   0.32,
+   0.047,
+   0.32
+  ],
+  "authors": [
+   "PierreB3D"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/wall_clock"
+ }
+}

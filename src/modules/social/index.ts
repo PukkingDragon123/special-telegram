@@ -116,7 +116,8 @@ export default defineModule({
     const have: string[] = Array.isArray(g.unlocks?.recipes) ? g.unlocks.recipes : [];
     const all = recipesFor(game, day);
     const fresh = all.filter((r) => !have.includes(r));
-    // new pages are handed over by the old man in the morning (sleep.ts); fallback unlock at 10:00
+    // the old man hands over the pages in the morning (sleep.ts); fallback unlock at 10:00.
+    // (most recipes are earned through quests / levels / the restaurant — quests module)
     if (fresh.length) g.pendingRecipes = [...new Set([...(g.pendingRecipes ?? []), ...fresh])];
   },
 });

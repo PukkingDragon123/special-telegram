@@ -13,6 +13,7 @@ import { FlyText } from './flytext';
 import { Sparkles, headPos, bodyPos, rigOf } from './fx';
 import { pick } from './lines';
 import { hostTimers, localTimers, anim, isPlayer } from './state';
+import { unlockRecipe } from '../quests/api';
 
 /* ============================================================================================
  * DAY CYCLE & SLEEP — at 'day:midnight' (host) everyone must sleep on CARDBOARD:
@@ -28,13 +29,16 @@ import { hostTimers, localTimers, anim, isPlayer } from './state';
  *           · sleep.up · sleep.wake
  * ========================================================================================== */
 
+/**
+ * What the OLD MAN brings (recipes are mostly EARNED now: quests, levels, buying cards, the restaurant —
+ * see the quests module). He still brings the omelette page on day 2, a catch-up page on day 5 if you never
+ * got the fried rice, and on day 8 every page you still miss, so nothing stays locked forever.
+ */
 export const RECIPE_SCHEDULE: Record<number, string[]> = {
   1: ['kaphrao_moo', 'khai_dao'],
   2: ['khai_jiao'],
-  3: ['khao_phat', 'phat_phrik_kaeng'],
-  4: ['moo_kratiam', 'phat_phak_bung'],
-  5: ['phat_si_io', 'rat_na'],
-  6: ['tom_yam'],
+  5: ['khao_phat'],
+  8: ['khao_phat', 'phat_phrik_kaeng', 'moo_kratiam', 'phat_phak_bung', 'phat_si_io', 'rat_na', 'tom_yam'],
 };
 const RECIPE_TH: Record<string, string> = {
   kaphrao_moo: 'กะเพราหมูสับ', khai_dao: 'ไข่ดาว', khai_jiao: 'ไข่เจียว', khao_phat: 'ข้าวผัด', phat_phrik_kaeng: 'ผัดพริกแกง',
@@ -301,9 +305,11 @@ export function installSleep(game: Game, sparks: Sparkles, save: () => void) {
   }
 
   // ------------------------------------------------------------------ old man brings new recipe pages
-  function unlockNow(recipes: string[]) {
-    const have: string[] = Array.isArray(game.g.unlocks?.recipes) ? game.g.unlocks.recipes : [];
-    game.g.unlocks = { ...(game.g.unlocks ?? {}), recipes: [...new Set([...have, ...recipes])] };
+  /** unlock through the shared API (menu entry, newspaper line, cinematic on every client). Returns the new ones. */
+  function unlockNow(recipes: string[]): string[] {
+    const fresh: string[] = [];
+    for (const r of recipes) if (unlockRecipe(game, r, 'oldman')) fresh.push(r);
+    return fresh;
   }
   let visit: { npc: Ent; t: number; stage: number } | null = null;
   function startVisit() {
@@ -327,7 +333,6 @@ export function installSleep(game: Game, sparks: Sparkles, save: () => void) {
         game.say(npc.id, tl(`${pick('unlock_old_man').th} — ${names}!`, `New recipe: ${recipes.join(', ')}`), { duration: 4.5, voice: 0.75 });
         game.g.pendingRecipes = [];
         unlockNow(recipes);
-        game.emit('unlock:recipe', { recipes, by: npc.id });
         hostTimers.after(6.5, () => {
           if (!visit) return;
           npc.lookAt = null;
@@ -338,6 +343,7 @@ export function installSleep(game: Game, sparks: Sparkles, save: () => void) {
   }
 
   game.on('unlock:recipe', (d: { recipes: string[]; by?: number }) => {
+    if ((game as any).questsRecipeFx) return;          // the quests module plays the big recipe-card cinematic
     const p = d.by != null ? headPos(game, d.by) : headPos(game, game.localPlayerId);
     if (p) {
       Sound.play('tada', { pos: p, vol: 0.8 });
@@ -428,7 +434,7 @@ export function installSleep(game: Game, sparks: Sparkles, save: () => void) {
         if (allAsleep && (g.time ?? 7) >= 21) { g.night = { phase: 'bed', late: 0, t: 0 }; }
         if (visit) visit.t += dt;
         else if ((g.pendingRecipes ?? []).length) {
-          if ((g.time ?? 7) >= 10) { const r = g.pendingRecipes; g.pendingRecipes = []; unlockNow(r); game.emit('unlock:recipe', { recipes: r }); }
+          if ((g.time ?? 7) >= 10) { const r = g.pendingRecipes; g.pendingRecipes = []; unlockNow(r); }
           else { g._visitT = (g._visitT ?? 0) + dt; if (g._visitT > 9) { g._visitT = 0; startVisit(); } }
         }
         return;
