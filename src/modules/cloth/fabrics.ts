@@ -67,6 +67,8 @@ export const FABRICS: Record<string, FabricDef> = {
   pkm_rainbow: { id: 'pkm_rainbow', file: 'phakhaoma_rainbow.jpg', normal: 'phakhaoma_rainbow_normal.jpg', tile: 0.3 },
   pkm_green: { id: 'pkm_green', file: 'phakhaoma_green_yellow.jpg', normal: 'phakhaoma_green_yellow_normal.jpg', tile: 0.3 },
   sarong: { id: 'sarong', file: 'sarong_red_purple.jpg', normal: 'sarong_red_purple_normal.jpg', tile: 0.34 },
+  // ambientCG Fabric044 canvas (CC0), tinted per tarp through vertex colours
+  tarp: { id: 'tarp', file: 'textures/pbr/canvas_tarp/albedo.jpg', normal: 'textures/pbr/canvas_tarp/normal.jpg', tile: 0.5, avg: 0xb2b2b2, rough: 0.82 },
 };
 
 /** accepts both the short ids above and the clothing file stems ('phakhaoma_red_yellow') */
@@ -106,9 +108,10 @@ export function fabricMaterial(id: string): THREE.MeshStandardMaterial {
   let m = mats.get(id);
   if (m) return m;
   const f = FABRICS[id] ?? FABRICS.jersey;
-  const map = Assets.texture(D + f.file, { srgb: true, wrap: f.uv !== 'panel' });
+  const path = (n: string) => (n.startsWith('textures/') ? n : D + n);
+  const map = Assets.texture(path(f.file), { srgb: true, wrap: f.uv !== 'panel' });
   map.anisotropy = 8;
-  const normalMap = f.normal ? Assets.texture(D + f.normal, { srgb: false }) : null;
+  const normalMap = f.normal ? Assets.texture(path(f.normal), { srgb: false }) : null;
   // (MeshPhysicalMaterial sheen produced NaN pixels through the post chain → black frames; plain PBR is safe)
   m = new THREE.MeshStandardMaterial({
     map, normalMap, normalScale: new THREE.Vector2(0.9, 0.9),
@@ -121,11 +124,11 @@ export function fabricMaterial(id: string): THREE.MeshStandardMaterial {
 }
 
 /** per-garment tint (linear multiplier applied through vertex colours) */
-export function fabricTint(id: string, rng: RNG): THREE.Color {
+export function fabricTint(id: string, rng: RNG, color?: number): THREE.Color {
   const f = FABRICS[id] ?? FABRICS.jersey;
   const c = new THREE.Color(1, 1, 1);
-  if (f.tints) {
-    const want = new THREE.Color(rng.pick(f.tints));
+  if (f.tints || color !== undefined) {
+    const want = new THREE.Color(color ?? rng.pick(f.tints!));
     const avg = new THREE.Color(f.avg ?? 0x888888);
     c.setRGB(want.r / Math.max(0.05, avg.r), want.g / Math.max(0.05, avg.g), want.b / Math.max(0.05, avg.b));
   }

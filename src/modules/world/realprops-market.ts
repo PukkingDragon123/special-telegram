@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { ClothSpots, type V3 } from '../cloth/api';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { Assets } from '../../core/assets';
@@ -76,10 +77,17 @@ const photoMat = (path: string, o: { alpha?: boolean; rough?: number; side?: THR
 
 // ------------------------------------------------------------------ wind cloth (tarps + umbrellas)
 export class WindCloth {
+  /** true → old vertex-shader tarps (no cloth module) */
+  shaderTarps = false;
   private pos: number[] = []; private uv: number[] = []; private col: number[] = []; private wgt: number[] = []; private idx: number[] = [];
   readonly uTime = { value: 0 };
   /** sagging tarp over 4 corners (a,b = front edge, c,d = back edge), corners pinned */
   tarp(a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, d: THREE.Vector3, color: number, sag = 0.12, nu = 10, nv = 6) {
+    // real cloth: the cloth module simulates the canvas (tied at the poles, sags, billows and flaps in gusts)
+    if (!this.shaderTarps) {
+      ClothSpots.tarp({ corners: [a.toArray() as V3, b.toArray() as V3, c.toArray() as V3, d.toArray() as V3], color, seed: Math.floor((a.x * 73.1 + a.z * 19.7 + color) % 1e6) + 7, tie: 'corners', slack: 0.02 + sag * 0.12 });
+      return;
+    }
     const o = this.pos.length / 3;
     const col = new THREE.Color(color);
     const P = new THREE.Vector3();

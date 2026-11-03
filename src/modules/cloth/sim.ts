@@ -46,7 +46,7 @@ export class Cloth {
   ground = -1e9;
   /** total mass kg (distributed evenly) */
   mass: number;
-  iters = 5;
+  iters = 4;
   damping = 0.985;
   drag = 0.55;
   /** bounding sphere (world), updated each step */

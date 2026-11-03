@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Assets } from '../../core/assets';
 import { RNG } from '../../core/rng';
+import { ClothSpots } from '../cloth/api';
 import { WB, ALL, SIDES, PX, NX, PY, NY, PZ, NZ } from './geo';
 import type { SpecialCtx } from './buildings';
 import { flat } from './streets';
@@ -233,16 +234,10 @@ function stiltHouse(c: SpecialCtx, x: number, rng: RNG) {
   w.mat('tiles_terracotta', { tint: 0x6a3a22, uv: 'local' });
   for (let k = 0; k < rng.int(1, 3); k++) { const jx = x + 0.4 + k * 0.7; w.cyl(jx, fy, z0 + 0.6, 0.28, 0.36, 0.5, 9, 0, 0, 0.03); w.cyl(jx, fy + 0.5, z0 + 0.6, 0.36, 0.22, 0.22, 9, 1, 0, 0.03); }
   if (rng.chance(0.6)) {
-    w.mat('rubber', { uv: 'local' });
-    w.tube([x, fy + 2.0, z0 + 1.2, x + W, fy + 2.0, z0 + 1.2], 0.005, 3);
-    let lx = x + 0.3;
-    while (lx < x + W - 0.6) {
-      const cw = rng.range(0.35, 0.65), ch = rng.range(0.4, 0.8);
-      w.mat('fabric', { tint: rng.pick([0xffffff, 0xd03030, 0x3050c0, 0xe0c020, 0x30a050, 0x202020, 0xe08030]), uv: 'local' });
-      w.quad(lx, fy + 2.0 - ch, z0 + 1.2, lx + cw, fy + 2.0 - ch, z0 + 1.2, lx + cw, fy + 2.0, z0 + 1.2, lx, fy + 2.0, z0 + 1.2);
-      w.quad(lx + cw, fy + 2.0 - ch, z0 + 1.19, lx, fy + 2.0 - ch, z0 + 1.19, lx, fy + 2.0, z0 + 1.19, lx + cw, fy + 2.0, z0 + 1.19);
-      lx += cw + rng.range(0.1, 0.3);
-    }
+    // clothes-line over the deck: real simulated laundry (cloth module draws the rope, pegs and garments)
+    const la = new THREE.Vector3(x, fy + 2.0, z0 + 1.2).applyMatrix4(w.M), lb = new THREE.Vector3(x + W, fy + 2.0, z0 + 1.2).applyMatrix4(w.M);
+    const lf = new THREE.Vector3(0, fy + 0.02, 0).applyMatrix4(w.M).y;
+    ClothSpots.line({ a: la.toArray() as [number, number, number], b: lb.toArray() as [number, number, number], seed: rng.int(1, 2 ** 30), fill: 0.85, style: 'alley', ...({ floor: lf } as any) });
   }
   w.setGroup('base');
   if (F) { if (rng.chance(0.6)) pottedPlant(w, F, x + W - 0.4, fy, z0 + 1.1, rng); if (rng.chance(0.4)) bananaTree(w, F, x + W + 1.4, RURAL_Y, z1 - 1.5, rng, 0.85); if (rng.chance(0.25)) coconutPalm(w, F, x - 1.5, RURAL_Y, z1 - 2, rng, 0.9); }

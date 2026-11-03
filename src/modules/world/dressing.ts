@@ -8,6 +8,7 @@ import { flat, groundDecal, wallDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
 import { dressSoi, tableSetting } from './realprops-dress';
 import { WindCloth } from './realprops-market';
+import { ClothSpots } from '../cloth/api';
 import { THAI_TABLE, STEEL_TABLE } from './realprops-table';
 import { propHeight, MODELS, resolveProp } from './realprops';
 import { EMIS } from './mats';
@@ -211,9 +212,9 @@ export function buildStreetLife(c: Ctx) {
     const x = mt[0], z = mt[2];
     w.put(P.bench(), x + 0.2, SW_H, z - 0.5, 0);
     w.put(P.vestRail(), x - 1.4, SW_H, z - 0.35, 0);
-    w.mat('tarp', { tint: 0xe86a1a, uv: 'local', ao: 0.95 });
-    w.quad(x - 2.8, SW_H + 2.5, z + 1.4, x + 1.6, SW_H + 2.5, z + 1.4, x + 1.6, SW_H + 2.75, z - 0.9, x - 2.8, SW_H + 2.75, z - 0.9);
-    w.quad(x + 1.6, SW_H + 2.49, z + 1.4, x - 2.8, SW_H + 2.49, z + 1.4, x - 2.8, SW_H + 2.74, z - 0.9, x + 1.6, SW_H + 2.74, z - 0.9);
+    // the drivers' orange วิน vests on hangers + the stand's tarp: real simulated cloth
+    ClothSpots.rail({ a: [x - 1.4 - 0.82, SW_H + 1.78, z - 0.35], b: [x - 1.4 + 0.82, SW_H + 1.78, z - 0.35], seed: 505, fill: 1, style: 'moto', ...({ floor: SW_H + 0.02 } as any) });
+    ClothSpots.tarp({ corners: [[x - 2.8, SW_H + 2.5, z + 1.4], [x + 1.6, SW_H + 2.5, z + 1.4], [x + 1.6, SW_H + 2.75, z - 0.9], [x - 2.8, SW_H + 2.75, z - 0.9]], color: 0xe86a1a, seed: 77, tie: 'back', slack: 0.035 });
     w.mat('steel_rust', { uv: 'local' });
     for (const [dx, dz] of [[-2.7, 1.3], [1.5, 1.3]]) { w.cyl(x + dx, SW_H, z + dz, 0.03, 0.03, 2.5, 5, 0); c.phys.box([x + dx, 1.3, z + dz], [0.08, 2.5, 0.08]); }
     const vs = c.signs?.any('moto', rng);

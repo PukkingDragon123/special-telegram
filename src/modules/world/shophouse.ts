@@ -621,9 +621,11 @@ export class Shophouse {
       if (!far && !fl.grille && fl.style !== 'balcony' && b - a > 1.0 && rng.chance(0.14)) ARCH.add('ac_window', w.M, a + 0.35 + rng.range(0, b - a - 0.75), fl.hy0 + 0.02, -0.3, 0);
       // open slider with a curtain blowing out of the window
       if (!far && !fl.grille && fl.style === 'slider' && rng.chance(0.22)) {
-        w.mat('fabric', { tint: rng.pick(CURTAIN), uv: 'local', ao: 0.95 });
         const cx0 = rng.chance(0.5) ? a + 0.05 : b - 0.75;
-        w.cloth(cx0, fl.hy0 + rng.range(0.0, 0.3), cx0 + 0.7, fl.hy1 - 0.06, 0.04, 4, 0.18, 1);
+        const ctop = fl.hy1 - 0.06, cbot = fl.hy0 + rng.range(0.0, 0.3);
+        const ca = new THREE.Vector3(cx0, ctop, 0.04).applyMatrix4(w.M), cb = new THREE.Vector3(cx0 + 0.7, ctop, 0.04).applyMatrix4(w.M);
+        const co = new THREE.Vector3(0, 0, 1).transformDirection(w.M);
+        ClothSpots.curtain({ a: ca.toArray() as [number, number, number], b: cb.toArray() as [number, number, number], h: ctop - cbot, out: co.toArray() as [number, number, number], seed: rng.int(1, 2 ** 30), color: rng.pick(CURTAIN) });
       }
     }
     // grille cage

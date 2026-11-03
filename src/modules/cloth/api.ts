@@ -35,14 +35,28 @@ export interface LineSpot {
   /** 0..1 how full the line is (default 0.8) */
   fill?: number;
   /** where it hangs: changes what is hung (balconies: everything; shops: towels + shirts; alleys: work clothes) */
-  style?: 'balcony' | 'grille' | 'street' | 'alley' | 'shop';
+  style?: 'balcony' | 'grille' | 'street' | 'alley' | 'shop' | 'moto';
 }
+
+/**
+ * Canvas tarp (stall roofs, awnings): corners a, b = front edge (left → right), c, d = back edge (right → left).
+ * 'corners' ties the 4 corners + the edge midpoints (stall poles), 'back' ties the whole back edge (wall /
+ * awning bar) + the 2 front corners (poles). The canvas has ~3 % slack: it sags, billows and flaps in gusts.
+ */
+/** window curtain on rings: top edge a → b (world), hangs h metres, blows out along `out` (horizontal) */
+export interface CurtainSpot { a: V3; b: V3; h: number; out: V3; seed: number; color?: number }
+
+export interface TarpSpot { corners: [V3, V3, V3, V3]; color: number; seed: number; tie?: 'corners' | 'back'; slack?: number }
 
 export const ClothSpots = {
   lines: [] as LineSpot[],
+  tarps: [] as TarpSpot[],
+  curtains: [] as CurtainSpot[],
   line(s: Omit<LineSpot, 'kind'>) { this.lines.push({ ...s, kind: 'line' }); },
   rail(s: Omit<LineSpot, 'kind'>) { this.lines.push({ ...s, kind: 'rail' }); },
-  clear() { this.lines.length = 0; },
+  tarp(s: TarpSpot) { this.tarps.push(s); },
+  curtain(s: CurtainSpot) { this.curtains.push(s); },
+  clear() { this.lines.length = 0; this.tarps.length = 0; this.curtains.length = 0; },
 };
 
 export interface AnchorSpec {

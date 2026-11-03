@@ -469,19 +469,14 @@ export function makeProps(w: WB) {
   }));
 
   const vestRail = () => memo('vests', () => T((w) => {
-    // motorcycle-taxi stand: a rail with orange vests hanging
+    // motorcycle-taxi stand: a galvanised pipe rail on two posts with base plates (the vests on it are simulated
+    // cloth on hangers, published by dressing.ts → cloth module)
     w.mat('steel_rust', { uv: 'local' });
-    w.box(-0.9, 0, -0.03, -0.86, 1.8, 0.03, SIDES);
-    w.box(0.86, 0, -0.03, 0.9, 1.8, 0.03, SIDES);
-    w.box(-0.9, 1.75, -0.02, 0.9, 1.79, 0.02, ALL);
-    w.mat('tarp', { tint: 0xf06818, uv: 'local' });
-    for (let i = 0; i < 6; i++) {
-      const x = -0.72 + i * 0.29;
-      w.pushTR(x, 1.75, 0.0, 0.05 * (i % 2), 0.1 * ((i * 7) % 3 - 1), 0);
-      w.quad(-0.13, -0.68, 0.015, 0.13, -0.68, 0.015, 0.11, -0.02, 0.015, -0.11, -0.02, 0.015);
-      w.quad(0.13, -0.68, -0.015, -0.13, -0.68, -0.015, -0.11, -0.02, -0.015, 0.11, -0.02, -0.015);
-      w.pop();
+    for (const x of [-0.88, 0.88]) {
+      w.cyl(x, 0, 0, 0.022, 0.022, 1.8, 8, 0);
+      w.bevelBox(x - 0.09, 0, -0.09, x + 0.09, 0.012, 0.09, 0.004);
     }
+    w.tube([-0.88, 1.78, 0, 0.88, 1.78, 0], 0.016, 8);
   }));
   const bench = () => memo('bench', () => T((w) => {
     w.mat('wood_paint', { tint: 0x5a7a4a, uv: 'local' });

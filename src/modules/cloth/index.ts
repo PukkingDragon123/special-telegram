@@ -5,9 +5,9 @@ import type { Game } from '../../game/game';
 import { RNG } from '../../core/rng';
 import { params } from '../../core/util';
 import { U } from '../world/mats';
-import { ClothSpots, ClothAnchors, type AnchorRec, type GarmentKind, type LineSpot } from './api';
+import { ClothSpots, ClothAnchors, type AnchorRec, type GarmentKind, type LineSpot, type TarpSpot, type CurtainSpot } from './api';
 import { Cloth, type ClothEnv } from './sim';
-import { pattern, meshGarment, nearestNode, topRow, rowAt, type GarmentMesh } from './garments';
+import { pattern, meshGarment, nearestNode, topRow, rowAt, rect, type GarmentMesh } from './garments';
 import { FABRICS, GARMENT_FABRICS, GARMENT_MASS, fabricMaterial, fabricTint, fabricId } from './fabrics';
 import { pegGeometry, hangerGeometry, hangerShoulderY, linePoint, PEG_COLORS, HANGER_COLORS } from './props';
 
@@ -138,11 +138,11 @@ export class ClothWorld {
   // ------------------------------------------------------------------ garment construction
 
   /** UVs + vertex colours (tint, hem/seam shading, grime) for a garment */
-  private dress(m: GarmentMesh, fabric: string, rng: RNG) {
+  private dress(m: GarmentMesh, fabric: string, rng: RNG, color?: number) {
     const f = FABRICS[fabric] ?? FABRICS.jersey;
     const uv = new Float32Array(m.n * 2), col = new Float32Array(m.n * 3);
     const ox = rng.next(), oy = rng.next();
-    const tint = fabricTint(fabric, rng);
+    const tint = fabricTint(fabric, rng, color);
     let ymax = -1e9, ymin = 1e9, xmin = 1e9, xmax = -1e9;
     for (let i = 0; i < m.n; i++) { ymax = Math.max(ymax, m.xy[i * 2 + 1]); ymin = Math.min(ymin, m.xy[i * 2 + 1]); xmin = Math.min(xmin, m.xy[i * 2]); xmax = Math.max(xmax, m.xy[i * 2]); }
     for (let i = 0; i < m.n; i++) {
@@ -287,7 +287,7 @@ export class ClothWorld {
     let s = rng.range(0.15, 0.3), i = 0;
     while (s < L - 0.15 && i < 14) {
       if (rng.next() > fill) { s += rng.range(0.2, 0.4); continue; }
-      const kind = weighted(rng, RAIL_KINDS);
+      const kind: GarmentKind = spot.style === 'moto' ? 'vest' : weighted(rng, RAIL_KINDS);
       const hp = new THREE.Vector3().copy(a).addScaledVector(u, s).addScaledVector(out, (i & 1 ? 0.014 : -0.008));
       const jitter = rng.range(-0.18, 0.18);
       const hu = u.clone().applyAxisAngle(UP, jitter);
@@ -315,15 +315,100 @@ export class ClothWorld {
           for (let j = 0; j < m.n; j++) if (Math.abs(m.xy[j * 2] - m.xy[k * 2]) < 0.03 && Math.abs(m.xy[j * 2 + 1] - m.xy[k * 2 + 1]) < m.step * 0.7) pins.push(j);
         }
         return { pos, pins: [...new Set(pins)] };
-      }, { walls, ground });
+      }, { walls, ground, fabric: spot.style === 'moto' ? (rng.chance(0.8) ? 'moto_vest' : 'vest_orange') : undefined });
       this.settle(g.cloth);
       const bt = this.batch(fabric);
       g.batch = bt;
       bt.garments.push(g);
       this.garments.push(g);
-      s += rng.range(0.22, 0.42);
+      s += spot.style === 'moto' ? rng.range(0.2, 0.28) : rng.range(0.22, 0.42);
       i++;
     }
+  }
+
+  /** a canvas tarp tied at its corners / back edge: sags under its own weight, billows and flaps in gusts */
+  private buildTarp(sp: TarpSpot) {
+    const rng = new RNG(sp.seed);
+    const [A, B, C, Dd] = sp.corners.map((c) => new THREE.Vector3(...c));
+    const Wd = (A.distanceTo(B) + Dd.distanceTo(C)) / 2, Dp = (A.distanceTo(Dd) + B.distanceTo(C)) / 2;
+    if (Wd < 0.3 || Dp < 0.3) return;
+    const slack = 1 + (sp.slack ?? 0.03);
+    const step = Math.max(0.12, Math.sqrt((Wd * Dp) / 320));
+    const pat = rect(Wd * slack, Dp * slack, step);
+    const m = meshGarment('sheet', pat, 'tarp:' + Wd.toFixed(2) + 'x' + Dp.toFixed(2) + ':' + step.toFixed(3));
+    const pos = new Float32Array(m.n * 3);
+    const uOf = (i: number) => (m.xy[i * 2] - m.x0) / m.w, vOf = (i: number) => -m.xy[i * 2 + 1] / m.h;
+    const top = new THREE.Vector3(), bot = new THREE.Vector3();
+    for (let i = 0; i < m.n; i++) {
+      const u = Math.max(0, Math.min(1, uOf(i))), v = Math.max(0, Math.min(1, vOf(i)));
+      top.lerpVectors(A, B, u); bot.lerpVectors(Dd, C, u);
+      _p.lerpVectors(top, bot, v);
+      _p.y -= 0.06 * Math.sin(Math.PI * u) * Math.sin(Math.PI * v) * (Wd + Dp) * 0.5;
+      pos.set([_p.x, _p.y, _p.z], i * 3);
+    }
+    // ties
+    const pins = new Set<number>();
+    const near = (u: number, v: number) => nearestNode(m, [m.x0 + u * m.w, -v * m.h]);
+    for (const [u, v] of [[0, 0], [1, 0], [1, 1], [0, 1]]) pins.add(near(u, v));
+    if ((sp.tie ?? 'corners') === 'back') {
+      // back edge laced to the awning bar every other grommet, front edge roped to the frame at the thirds
+      for (let i = 0; i < m.n; i++) if (vOf(i) > 1 - step / m.h * 0.5 && (Math.round(uOf(i) * m.w / step) & 1) === 0) pins.add(i);
+      pins.add(near(1 / 3, 0)); pins.add(near(2 / 3, 0));
+    } else {
+      pins.add(near(0.5, 0)); pins.add(near(0.5, 1));
+    }
+    // pinned nodes sit exactly on their tie points (no initial sag there)
+    for (const k of pins) {
+      const u = Math.max(0, Math.min(1, uOf(k))), v = Math.max(0, Math.min(1, vOf(k)));
+      top.lerpVectors(A, B, u); bot.lerpVectors(Dd, C, u);
+      _p.lerpVectors(top, bot, v);
+      pos.set([_p.x, _p.y, _p.z], k * 3);
+    }
+    // PVC-coated canvas: heavy (~0.55 kg/m²), taut between its ties; it ripples and lifts in gusts, never sails off
+    const cloth = new Cloth(m, pos, [...pins], Wd * Dp * 0.55, rng.next() * 100);
+    cloth.drag = 0.16;
+    cloth.iters = 6;
+    cloth.damping = 0.975;
+    cloth.ground = Math.min(A.y, B.y, C.y, Dd.y) - 2.2;
+    const { uv, col } = this.dress(m, 'tarp', rng, sp.color);
+    const g: Garment = { cloth, batch: null as any, vOff: 0, mesh: m, uv, col, lastStep: -1 };
+    this.settle(cloth, 24);
+    const bt = this.batch('tarp');
+    g.batch = bt;
+    bt.garments.push(g);
+    this.garments.push(g);
+  }
+
+  /** a curtain on rings across a window, gathered, blowing out of the opening in the breeze */
+  private buildCurtain(sp: CurtainSpot) {
+    const rng = new RNG(sp.seed);
+    const A = new THREE.Vector3(...sp.a), B = new THREE.Vector3(...sp.b);
+    const Wd = A.distanceTo(B);
+    if (Wd < 0.2 || sp.h < 0.3) return;
+    const out = new THREE.Vector3(...sp.out).setY(0).normalize();
+    const pat = rect(Wd * 1.3, sp.h, 0.06);
+    const m = meshGarment('sheet', pat, 'curtain:' + Wd.toFixed(2) + 'x' + sp.h.toFixed(2));
+    const pos = new Float32Array(m.n * 3);
+    const pins: number[] = [];
+    let ymax = -1e9;
+    for (let i = 0; i < m.n; i++) ymax = Math.max(ymax, m.xy[i * 2 + 1]);
+    for (let i = 0; i < m.n; i++) {
+      const x = m.xy[i * 2], y = m.xy[i * 2 + 1];
+      const u = (x - m.x0) / m.w;
+      _p.lerpVectors(A, B, u).addScaledVector(UP, y - ymax);
+      // gathered on the rod: pleats in and out
+      _p.addScaledVector(out, 0.025 * Math.sin(u * Math.PI * 2 * Math.max(2, Math.round(Wd * 7))) + 0.03);
+      pos.set([_p.x, _p.y, _p.z], i * 3);
+      if (y > ymax - 0.01 && (Math.round(u * m.w / 0.06) % 2) === 0) pins.push(i);
+    }
+    const fabric = rng.pick(['auntie_pink', 'auntie_mint', 'songkran', 'pkm_blue', 'sarong', 'paisley', 'terry']);
+    const cloth = new Cloth(m, pos, pins, Wd * sp.h * 0.18, rng.next() * 100);
+    cloth.ground = Math.min(A.y, B.y) - sp.h - 0.3;
+    const { uv, col } = this.dress(m, fabric, rng, fabric === 'terry' ? sp.color : undefined);
+    const g: Garment = { cloth, batch: null as any, vOff: 0, mesh: m, uv, col, lastStep: -1 };
+    this.settle(cloth, 12);
+    const bt = this.batch(fabric);
+    g.batch = bt; bt.garments.push(g); this.garments.push(g);
   }
 
   build(only?: LineSpot[]) {
@@ -339,6 +424,8 @@ export class ClothWorld {
       try { if (s.kind === 'line') this.buildLine(s, pegs, pegCol, ropes); else this.buildRail(s, hangers); }
       catch (e) { console.warn('[cloth] spot failed', e); }
     }
+    if (!only) for (const t of ClothSpots.tarps) { try { this.buildTarp(t); } catch (e) { console.warn('[cloth] tarp failed', e); } }
+    if (!only) for (const c of ClothSpots.curtains) { try { this.buildCurtain(c); } catch (e) { console.warn('[cloth] curtain failed', e); } }
     for (const b of this.batches.values()) b.finalize(this.root);
     // pegs (instanced)
     if (pegs.length) {
@@ -370,7 +457,7 @@ export class ClothWorld {
     }
     this.stats.garments = this.garments.length;
     this.stats.buildMs = Math.round(performance.now() - t0);
-    console.info(`[cloth] ${this.garments.length} garments on ${spots.length} lines/rails, ${this.batches.size} fabrics, built in ${this.stats.buildMs} ms`);
+    console.info(`[cloth] ${this.garments.length} garments + tarps on ${spots.length} lines/rails and ${ClothSpots.tarps.length} tarps, ${this.batches.size} fabrics, built in ${this.stats.buildMs} ms`);
   }
 
   // ------------------------------------------------------------------ anchors (moving props)
@@ -508,7 +595,7 @@ export class ClothWorld {
     const shelter = g.anchor ? 0.75 : 0.85;
     env.wx = w.x * shelter; env.wz = w.z * shelter; env.wy = 0.15 * Math.sin(this.time * 0.7 + c.cx);
     env.turb = 0.45 + Math.min(0.5, w.gust * 0.2);
-    env.dt = Math.min(1 / 30, Math.max(1 / 120, dt));
+    env.dt = Math.min(1 / 20, Math.max(1 / 120, dt));
     env.time = this.time;
     env.nSpheres = this.nSpheres;
     c.step(env);
@@ -547,14 +634,15 @@ export class ClothWorld {
       const c = g.cloth;
       const dx = c.cx - this.camPos.x, dy = c.cy - this.camPos.y, dz = c.cz - this.camPos.z;
       const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-      if (d > 34) continue;
+      if (d > 34 + c.rad) continue;
       sph.center.set(c.cx, c.cy, c.cz); sph.radius = c.rad + 0.3;
       if (d > 5 && !this.frustum.intersectsSphere(sph)) continue;
       active++;
-      if (active > 90) continue;                                        // budget: the nearest dense balconies
-      // full rate up close, half rate farther away (stepped with the double time step)
-      if (d > 15 && ((this.frameN + g.vOff) & 1)) continue;
-      this.stepGarment(g, d > 15 ? dt * 2 : dt);
+      if (active > 72) continue;                                        // budget: the nearest dense balconies
+      // full rate up close, then every 2nd / 3rd frame with a longer step (cloth far away needs less detail)
+      const every = d > 22 ? 3 : d > 12 ? 2 : 1;
+      if (every > 1 && (this.frameN + g.vOff) % every) continue;
+      this.stepGarment(g, dt * every);
     }
     for (const b of this.batches.values()) b.flush();
     this.anchorsFrame(dt);

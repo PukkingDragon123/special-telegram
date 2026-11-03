@@ -144,7 +144,7 @@ function bottoms(W: number, L: number, crotch: number, flare = 0.02): Pattern {
 }
 
 /** rectangle (towel / ผ้าขาวม้า / sarong / sheet), slightly irregular hand-woven edges */
-function rect(W: number, L: number, step: number): Pattern {
+export function rect(W: number, L: number, step: number): Pattern {
   const hw = W / 2;
   const o = poly([[-hw, 0], [hw, 0], [hw, -L], [-hw, -L]]);
   return { outline: o, pins: { top: [[-hw + 0.02, -0.01], [0, -0.01], [hw - 0.02, -0.01]], hem: [[-hw + 0.02, -L + 0.02], [hw - 0.02, -L + 0.02]], middle: -L / 2 }, step };

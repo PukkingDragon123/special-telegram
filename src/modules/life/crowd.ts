@@ -47,13 +47,14 @@ export class Crowd {
   private paths: Path[] = [];
   private walkers = new Map<string, Walker>();
   private fixed: Fixed[] = [];
-  private rigs = new Map<string, { rig: CharacterRig; anim: string; last: THREE.Vector3; bubbleT: number; low?: boolean }>();
+  private rigs = new Map<string, { rig: CharacterRig; anim: string; last: THREE.Vector3; bubbleT: number; low?: boolean; fresh?: boolean }>();
   private looks = new Map<string, Look>();
   private group: THREE.Group | null = null;
   private imp: { body: THREE.InstancedMesh; legs: THREE.InstancedMesh; head: THREE.InstancedMesh } | null = null;
   /** baked real-character impostors: VARIANTS looks × 2 stride frames (replace the capsule figures once ready) */
   private bakedImp: { frames: [THREE.InstancedMesh, THREE.InstancedMesh]; rig: CharacterRig; n: [number, number] }[] = [];
   private bakeTried = false;
+  private bakePending: { rig: CharacterRig; n: number }[] = [];
   private seed = 1;
   private nearCap = 12;
   private built = false;
@@ -112,6 +113,8 @@ export class Crowd {
     this.imp = null;
     for (const b of this.bakedImp) { for (const f of b.frames) f.geometry.dispose(); b.rig.dispose(); }
     this.bakedImp = [];
+    for (const p of this.bakePending) p.rig.dispose();
+    this.bakePending = [];
     this.bakeTried = false;
     this.built = false;
   }
@@ -221,34 +224,56 @@ export class Crowd {
     const want = ['office', 'auntie', 'student', 'worker', 'uncle', 'teen', 'grandma', 'vendor', 'tourist', 'rider'];
     const archs = [...want.map((w) => all.find((a) => a.includes(w))).filter(Boolean) as string[], ...all].filter((a, i, A) => A.indexOf(a) === i).slice(0, 8);
     while (archs.length < 6) archs.push(undefined as any);
-    const cap = 90;
     for (let i = 0; i < archs.length; i++) {
       try {
         const look = chars.randomLook(archs[i], 7919 * (i + 3) + this.seed);
         const rig: CharacterRig = chars.create(look, { lod: 'low', castShadow: false });
-        const sm: THREE.SkinnedMesh | undefined = (rig as any).mesh_ ?? (rig as any).mesh;
-        if (!sm?.isSkinnedMesh) { rig.dispose(); continue; }
         rig.play('idle' as any, { loop: true });
         rig.setMove(1.25);
-        for (let k = 0; k < 40; k++) rig.update(1 / 30);                // ramp the walk blend in
-        const frames: THREE.InstancedMesh[] = [];
-        for (const ph of [0.12, 0.62]) {
-          (rig as any).phase = ph;
-          rig.update(1e-4);
-          const geo = bakeSkinned(sm, rig.root);
-          const bodyMat = new THREE.MeshStandardMaterial({ map: (Array.isArray(sm.material) ? sm.material[0] : sm.material as any).map, roughness: 0.82, metalness: 0 });
-          const mats = Array.isArray(sm.material) ? [bodyMat, sm.material[1] ?? bodyMat] : bodyMat;
-          const im = new THREE.InstancedMesh(geo, mats as any, cap);
-          im.count = 0; im.frustumCulled = false; im.castShadow = false; im.receiveShadow = true;
-          im.name = 'crowd-impostor';
-          this.group.add(im);
-          frames.push(im);
-        }
-        this.bakedImp.push({ frames: frames as [THREE.InstancedMesh, THREE.InstancedMesh], rig, n: [0, 0] });
-      } catch (e) { console.warn('[life] impostor bake failed', e); }
+        this.bakePending.push({ rig, n: 0 });
+      } catch (e) { console.warn('[life] impostor rig failed', e); }
     }
-    // capsules only stay as a fallback when nothing could be baked
-    if (this.bakedImp.length && this.imp) for (const m of [this.imp.body, this.imp.legs, this.imp.head]) m.visible = false;
+  }
+
+  /** Bake pending impostor rigs once their animation clips are really playing (clips stream in per body
+   *  template: a too-early bake captured the bind T-pose). A bake wider than 1.1 m is still a T-pose → retry. */
+  private bakeStep() {
+    if (!this.bakePending.length || !this.group) return;
+    for (const p of [...this.bakePending]) {
+      p.rig.update(1 / 30);
+      p.n++;
+      if (p.n < 30 || p.n % 10) continue;
+      const sm: THREE.SkinnedMesh | undefined = (p.rig as any).mesh_ ?? (p.rig as any).mesh;
+      const drop = () => { this.bakePending.splice(this.bakePending.indexOf(p), 1); };
+      if (!sm?.isSkinnedMesh) { p.rig.dispose(); drop(); continue; }
+      const geos: THREE.BufferGeometry[] = [];
+      for (const ph of [0.12, 0.62]) {
+        (p.rig as any).phase = ph;
+        p.rig.update(1e-4);
+        geos.push(bakeSkinned(sm, p.rig.root));
+      }
+      geos[0].computeBoundingBox();
+      const bb = geos[0].boundingBox!;
+      if (bb.max.x - bb.min.x > 1.1) {                      // arms straight out: clips not playing yet
+        for (const g of geos) g.dispose();
+        if (p.n > 900) { p.rig.dispose(); drop(); }
+        continue;
+      }
+      const cap = 90;
+      const frames = geos.map((geo) => {
+        const bodyMat = new THREE.MeshStandardMaterial({ map: (Array.isArray(sm.material) ? sm.material[0] : sm.material as any).map, roughness: 0.82, metalness: 0 });
+        const mats = Array.isArray(sm.material) ? [bodyMat, sm.material[1] ?? bodyMat] : bodyMat;
+        const im = new THREE.InstancedMesh(geo, mats as any, cap);
+        im.count = 0; im.frustumCulled = false; im.castShadow = false; im.receiveShadow = true;
+        im.name = 'crowd-impostor';
+        this.group!.add(im);
+        return im;
+      }) as [THREE.InstancedMesh, THREE.InstancedMesh];
+      this.bakedImp.push({ frames, rig: p.rig, n: [0, 0] });
+      drop();
+    }
+    // capsules only stay as a fallback until a few real variants are ready
+    if (this.bakedImp.length >= 3 && this.imp) for (const m of [this.imp.body, this.imp.legs, this.imp.head]) m.visible = false;
   }
 
   // ------------------------------------------------------------------ frame
@@ -372,11 +397,14 @@ export class Crowd {
         try {
           const rig = this.game.chars.create(this.lookFor(c.key, c.arch, c.seed), wantFull ? { castShadow: d < 8 * 8 } : { lod: 'low', castShadow: false });
           this.group.add(rig.root);
-          r = { rig, anim: '', last: c.pos.clone(), bubbleT: 0, low: !wantFull };
+          // hidden until its clothing atlas is painted (no naked skin-coloured bodies) and posed (no T-pose frame)
+          rig.root.visible = false;
+          r = { rig, anim: '', last: c.pos.clone(), bubbleT: 0, low: !wantFull, fresh: true };
           this.rigs.set(c.key, r);
         } catch { continue; }
       }
       const rig = r.rig;
+      if (!rig.root.visible && !r.fresh && (rig as any).atlasE?.painted !== false) rig.root.visible = true;
       rig.root.position.copy(c.pos);
       rig.root.rotation.y = c.yaw;
       const sp = c.moving ? Math.min(6, c.pos.distanceTo(r.last) / Math.max(dt, 1e-4)) : 0;
@@ -388,13 +416,14 @@ export class Crowd {
       let lookP: THREE.Vector3 | null = null;
       for (const pp of players) if (pp.distanceTo(c.pos) < 4.5) { lookP = pp.clone().setY(pp.y + 1.55); break; }
       rig.lookAt(lookP);
-      if (d < 20 * 20 || (RigFrame & 1) === 0) rig.update(d < 20 * 20 ? dt : dt * 2);
+      if (r.fresh || d < 20 * 20 || (RigFrame & 1) === 0) { rig.update(d < 20 * 20 || r.fresh ? dt : dt * 2); r.fresh = false; }
     }
     RigFrame++;
 
     // ---- impostors for the rest (real baked characters; capsules only as a fallback)
     if (!this.bakeTried && this.game.chars && T > 0.5) this.bakeImpostors();
-    if (this.bakedImp.length) {
+    this.bakeStep();
+    if (this.bakedImp.length >= 3) {
       const B = this.bakedImp;
       for (const b of B) b.n[0] = b.n[1] = 0;
       for (const w of this.walkers.values()) {
@@ -416,6 +445,8 @@ export class Crowd {
       for (const b of B) for (let f = 0; f < 2; f++) { const im = b.frames[f]; im.count = b.n[f]; im.instanceMatrix.needsUpdate = true; }
       return;
     }
+    // with real characters available, far walkers simply wait for their baked impostors (never capsules)
+    if (this.game.chars) { if (this.imp) for (const m of [this.imp.body, this.imp.legs, this.imp.head]) { m.visible = false; m.count = 0; } return; }
     const imp = this.imp!;
     let n = 0;
     for (const w of this.walkers.values()) {
