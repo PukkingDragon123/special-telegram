@@ -393,9 +393,10 @@ const LANDLORD_NODES: DlgNode[] = [
   },
   {
     id: 'haggle', anim: 'shrug',
-    do: (c) => c.game.intent('rest.haggle', {}),
+    // count locally before the intent (the host applies it instantly, clients only see it after replication)
+    do: (c) => { c.vars.hg = rs(c.game).haggle; c.game.intent('rest.haggle', {}); },
     say: (c) => {
-      const h = rs(c.game).haggle;
+      const h = c.vars.hg ?? rs(c.game).haggle;
       return h === 0 ? T('ลดให้สองร้อย เพราะหน้าตาดี… แต่ค่าน้ำค่าไฟแยกนะ', "200 off because you're cute… water & power extra")
         : h === 1 ? T('อีกร้อยเดียว! นี่เจ๊ใจดีสุดในสามซอยแล้วนะ', "100 more! I'm the kindest landlady in three sois")
         : T('ลดอีก!? ลื้อจะเอาตึกเจ๊ไปฟรีเลยไหม! ไม่ลดแล้ว!', 'MORE?! you want my building for free?! no more!');

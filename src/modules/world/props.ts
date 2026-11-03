@@ -61,26 +61,53 @@ export function makeProps(w: WB) {
     w.cyl(0, 1.4, 0, 0.62, 0.22, 0.22, 14, 1);
   }));
   const antenna = () => memo('ant', () => T((w) => {
+    // Yagi TV aerials on a galvanised mast: round boom + folded dipole + directors, reflector grid, clamp, guy wires
     w.mat('galv', { uv: 'local' });
-    w.cyl(0, 0, 0, 0.025, 0.02, 3.2, 5, 1);
+    w.cyl(0, 0, 0, 0.026, 0.022, 3.2, 10, 1);
+    w.cyl(0, 3.2, 0, 0.03, 0.03, 0.03, 10, 1);                                     // end cap
     for (let k = 0; k < 2; k++) {
-      const y = 2.3 + k * 0.7;
-      w.box(-0.02, y - 0.015, -0.9, 0.02, y + 0.015, 0.9, ALL);
-      for (let i = 0; i < 9; i++) { const z = -0.85 + i * 0.21; const l = 0.55 - i * 0.03; w.box(-l, y - 0.008, z - 0.008, l, y + 0.008, z + 0.008, ALL); }
+      const y = 2.3 + k * 0.7, rot = k * 0.35;
+      w.pushTR(0, y, 0, 0, rot, 0);
+      w.bevelBox(-0.035, -0.03, -0.035, 0.035, 0.03, 0.035, 0.008);                // U-bolt clamp
+      w.tube([0, 0, -0.95, 0, 0, 0.95], 0.011, 8);                                // boom
+      for (let i = 0; i < 9; i++) { const z = -0.82 + i * 0.2; const l = 0.5 - i * 0.028; w.tube([-l, 0.012, z, l, 0.012, z], 0.004, 5); w.cyl(0, 0.004, z, 0.008, 0.008, 0.016, 6, 1); }
+      w.tube([-0.3, 0.012, 0.86, 0.3, 0.012, 0.86, 0.32, 0.03, 0.86, 0.3, 0.05, 0.86, -0.3, 0.05, 0.86, -0.32, 0.03, 0.86, -0.3, 0.012, 0.86], 0.005, 5);   // folded dipole
+      w.bevelBox(-0.04, -0.02, 0.8, 0.04, 0.035, 0.84, 0.006);                     // balun box
+      for (let j = 0; j < 4; j++) { const yy = -0.24 + j * 0.16; w.tube([-0.3, yy, 0.94, 0.3, yy, 0.94], 0.004, 5); }
+      w.tube([0, -0.26, 0.94, 0, 0.26, 0.94], 0.008, 6);
+      w.pop();
     }
+    w.mat('plastic', { tint: 0x1a1a1a, uv: 'local' });
+    w.tube([0.0, 2.33, 0.84, 0.03, 2.2, 0.4, 0.03, 1.8, 0.03, 0.03, 0.4, 0.03, 0.03, 0.0, 0.03], 0.0035, 4);   // coax down the mast
     w.mat('steel_rust', { uv: 'local' });
-    w.tube([0, 2.0, 0, 1.2, 0, 0.6], 0.006, 3);
-    w.tube([0, 2.0, 0, -1.1, 0, -0.5], 0.006, 3);
+    w.tube([0, 2.0, 0, 1.2, 0, 0.6], 0.004, 4);
+    w.tube([0, 2.0, 0, -1.1, 0, -0.5], 0.004, 4);
+    w.tube([0, 2.0, 0, 0.1, 0, -1.25], 0.004, 4);
   }));
   const dish = () => memo('dish', () => T((w) => {
+    // satellite dish: wall/roof bracket, curved reflector (rings of a paraboloid), feed arm, LNB
     w.mat('galv', { tint: 0xd8d8d4, uv: 'local' });
-    w.cyl(0, 0, 0, 0.03, 0.03, 0.9, 5, 1);
+    w.cyl(0, 0, 0, 0.03, 0.03, 0.9, 10, 1);
+    w.bevelBox(-0.12, 0, -0.12, 0.12, 0.012, 0.12, 0.01);                          // base plate
     w.pushTR(0, 0.95, 0, -0.9, 0, 0);
-    w.cyl(0, -0.05, 0, 0.05, 0.38, 0.14, 12, 0);
-    w.cyl(0, 0.09, 0, 0.38, 0.36, 0.01, 12, 1);
-    w.pop();
+    w.bevelBox(-0.05, -0.08, -0.05, 0.05, -0.02, 0.05, 0.01);                      // tilt mount
+    const R = 0.38, D = 0.07, rings = 6, segs = 24;
+    const pp = (i: number, j: number, off: number): [number, number, number] => { const r = (i / rings) * R, an = (j / segs) * Math.PI * 2; return [Math.cos(an) * r, D * (r / R) ** 2 - 0.02 + off, Math.sin(an) * r]; };
+    for (let i = 0; i < rings; i++) for (let j = 0; j < segs; j++) {
+      const a = pp(i, j, 0.006), b = pp(i, j + 1, 0.006), c = pp(i + 1, j + 1, 0.006), d = pp(i + 1, j, 0.006);
+      w.quad(...a, ...b, ...c, ...d);                                              // concave face
+      const a2 = pp(i, j, 0), b2 = pp(i, j + 1, 0), c2 = pp(i + 1, j + 1, 0), d2 = pp(i + 1, j, 0);
+      w.quad(...a2, ...d2, ...c2, ...b2);                                          // back
+    }
+    w.cyl(0, D - 0.022, 0, R, R + 0.004, 0.01, 24, 0);                             // rolled rim
     w.mat('metal_paint', { tint: 0x333333, uv: 'local' });
-    w.box(-0.02, 0.9, 0.2, 0.02, 0.95, 0.55, ALL);
+    w.tube([0, -0.03, 0.3, 0, 0.15, 0.24, 0, 0.36, 0.02], 0.01, 6);                  // feed arm
+    w.pushTR(0, 0.38, 0, 0, 0, 0);
+    w.cyl(0, -0.02, 0, 0.028, 0.024, 0.09, 12, 1);                                 // LNB body
+    w.mat('plastic', { tint: 0xf0f0ea, uv: 'local' });
+    w.cyl(0, -0.03, 0, 0.032, 0.032, 0.02, 12, 1);                                 // feed horn cap
+    w.pop();
+    w.pop();
   }));
 
   // ------------------------------------------------------------------ plastic furniture

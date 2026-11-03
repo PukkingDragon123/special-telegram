@@ -457,9 +457,20 @@ export function dressMarketStalls(c: Ctx, cloth: WindCloth) {
     const kb0 = B.at(-2.05, 0, 1.36);
     w.mat('wood_old', { uv: 'local', group: 'detail' });
     w.pushT(kb0.x, ct, kb0.z, B.yaw);
-    w.box(-0.3, 0.05, -0.02, 0.3, 0.62, 0.0, ALL);
+    // wooden backboard (bevelled, on two battens) + magnetic strip in a stainless channel with end screws
+    w.pushTR(0, 0, 0, Math.PI / 2, 0, 0);
+    w.bevelBox(-0.3, -0.02, -0.62, 0.3, 0.0, -0.05, 0.012, true, true);
+    w.pop();
+    w.mat('wood_old', { uv: 'local', group: 'detail', tint: 0x8a7a66 });
+    for (const y of [0.14, 0.56]) w.box(-0.28, y - 0.02, -0.035, 0.28, y + 0.02, -0.02, ALL);
     w.mat('stainless', { uv: 'local' });
-    w.box(-0.27, 0.48, 0.0, 0.27, 0.52, 0.012, ALL);
+    w.pushTR(0, 0, 0, Math.PI / 2, 0, 0);
+    w.bevelBox(-0.27, 0.0, -0.525, 0.27, 0.014, -0.475, 0.005, true, false);
+    w.pop();
+    w.mat('metal_paint', { tint: 0x202020, uv: 'local' });
+    w.box(-0.26, 0.484, 0.012, 0.26, 0.516, 0.015, ALL);
+    w.mat('stainless', { uv: 'local' });
+    for (const sx of [-0.25, 0.25]) { w.pushTR(sx, 0.5, 0.013, Math.PI / 2, 0, 0); w.cyl(0, 0, 0, 0.006, 0.005, 0.004, 8, 1); w.pop(); }
     w.pop();
     for (let k = 0; k < 4; k++) { const p = B.at(-2.25 + k * 0.13, 0, 1.335); real.add('knife', p.x, ct + 0.31, p.z, B.yaw + Math.PI / 2, { rz: (rng.next() - 0.5) * 0.08 }); }
     const ctin = B.at(-1.85, 0, 1.2); real.add('cash_tin', ctin.x, ct, ctin.z, rng.range(0, 6));

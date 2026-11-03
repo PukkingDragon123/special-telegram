@@ -1836,3 +1836,11 @@ Full per-model tables: `public/assets/gen/lib/CREDITS.md` and `public/assets/gen
   - drawn at runtime with the shipped OFL looped Thai fonts;
   - the dish photos are the existing real food photos in `public/assets/textures/food`.
 - เจ๊ลำไย (the landlady) and "ห้างทองเจ๊ลำไย" on the calendar are original characters and businesses; the phone number is fictional.
+
+## Lazy-asset pass: traffic, shops & props (`life/traffic.ts`, `shops/*`, `world/*`, Nov 3)
+Full per-model rows: `public/assets/gen/lib/CREDITS.md`.
+- Traffic sedans and taxis `lib/vehicles/car_sedan.glb`: the "Sedan Body" of "Generic passenger car pack" by Comrade1280, CC-BY-4.0, https://sketchfab.com/3d-models/20f9af9b8a404d5cb022ac6fe87f21f5 (via the Objaverse mirror; other cars in the pack dropped, retopologised to 4.8k tris). Taxi paint, roof sign and songthaew canopy are added in code.
+- City bus `lib/vehicles/bus_city.glb`: "Generic Town Bus" by own.guest, CC-BY-4.0, https://sketchfab.com/3d-models/14fe03d792914d51b6c6250b393c44fd (via the Objaverse mirror; decimated 32k → 13.3k tris).
+- Motorbike riders are the project's own character rigs, posed in code (sit + arm IK to the grips) and baked to instanced meshes.
+- Shop goods, the 8-Twelve drinks cooler, market produce piles, the police pickup, ong water jars and stall stools/tables/chairs reuse library models already credited above (`bottle_*`, `cardboard_box_01`, `hanging_scale`, `ong_jar`, `pickup_hilux`, `thai_stool`, `thai_table_steel`, `plastic_monobloc_chair_01`, `plastic_basket`, `condiment_caddy`, `steel_table`). Shelf packs show slices of the shops module's real shelf photos (credited in the shops section).
+- Gondolas, counters, racks, shutters, fly fan, casino panelling and chandeliers, album-stand legs, boats, shrines, woks and pots are modelled in code (rounded-box / lathe / extrude / tube geometry) with the shipped PBR library textures.

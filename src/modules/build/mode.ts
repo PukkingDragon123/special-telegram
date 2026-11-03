@@ -153,6 +153,7 @@ export class BuildMode {
       if (!live) { this.tagSet(null, ''); this.setHint(''); this.target = null; this.hover = null; }
       return;
     }
+    if (!this.root.parent) g.scene.add(this.root);   // the implicit preview (holding a piece) needs it too, not only B
     if (held?.id !== this.lastHeld) { this.lastHeld = held?.id ?? null; if (heldKind) { this.yaw = this.snapYawToPlayer(); this.autoYaw = true; } }
     const shift = Input.isDown('ShiftLeft') || Input.isDown('ShiftRight');
     // rotation: R (unless you're aiming at a person / shop to haggle), wheel only in build mode (else it switches slots)

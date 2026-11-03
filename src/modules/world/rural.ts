@@ -103,14 +103,49 @@ export function buildRural(c: SpecialCtx) {
   {
     const a = c.anchors.rural_spot.p;
     const x = a[0] + 3.4, z = a[2];
+    const Y = RURAL_Y;
+    const bam = (ax: number, ay: number, az: number, bx: number, by: number, bz: number, r: number) => w.tube([x + ax, Y + ay, z + az, x + bx, Y + by, z + bz], r, 8);
+    // posts: thick bamboo with a node ring every ~45 cm, sitting on a concrete footing
+    for (const [dx, dz] of [[-1.2, -1.4], [1.2, -1.4], [-1.2, 1.4], [1.2, 1.4]]) {
+      w.mat('concrete_old', { uv: 'local' });
+      w.bevelBox(x + dx - 0.11, Y - 0.02, z + dz - 0.11, x + dx + 0.11, Y + 0.08, z + dz + 0.11, 0.02);
+      w.mat('bamboo', { uv: 'local' });
+      w.cyl(x + dx, Y + 0.08, z + dz, 0.058, 0.052, 2.36, 10, 1);
+      for (let k = 0; k < 5; k++) w.cyl(x + dx, Y + 0.32 + k * 0.45, z + dz, 0.064, 0.064, 0.025, 10, 0);
+      c.phys.box([x + dx, 1.2, z + dz], [0.12, 2.4, 0.12]);
+    }
+    // platform: bamboo bearers + joists, woven deck with split-bamboo edging
     w.mat('bamboo', { uv: 'local' });
-    for (const [dx, dz] of [[-1.2, -1.4], [1.2, -1.4], [-1.2, 1.4], [1.2, 1.4]]) { w.cyl(x + dx, RURAL_Y, z + dz, 0.06, 0.06, 2.4, 6, 1); c.phys.box([x + dx, 1.2, z + dz], [0.12, 2.4, 0.12]); }
+    for (const dz of [-1.4, 1.4]) bam(-1.32, 0.38, dz, 1.32, 0.38, dz, 0.05);
+    for (const dx of [-1.2, 0, 1.2]) bam(dx, 0.44, -1.5, dx, 0.44, 1.5, 0.04);
     w.mat('bamboo_woven', { uv: 'world' });
-    w.box(x - 1.3, RURAL_Y + 0.45, z - 1.5, x + 1.3, RURAL_Y + 0.55, z + 1.5, ALL);
+    w.bevelBox(x - 1.28, Y + 0.47, z - 1.48, x + 1.28, Y + 0.52, z + 1.48, 0.03);
+    w.mat('bamboo', { uv: 'local' });
+    for (const s of [-1, 1]) { bam(-1.3, 0.53, s * 1.49, 1.3, 0.53, s * 1.49, 0.03); bam(s * 1.29, 0.53, -1.5, s * 1.29, 0.53, 1.5, 0.03); }
     c.phys.box([x, 0.3, z], [2.6, 0.6, 3]);
+    // roof frame: wall plates, tie beams, ridge pole, rafters, purlins
+    for (const dz of [-1.4, 1.4]) bam(-1.75, 2.39, dz, 1.75, 2.39, dz, 0.05);
+    for (const dx of [-1.2, 1.2]) bam(dx, 2.33, -1.5, dx, 2.33, 1.5, 0.045);
+    for (const dx of [-1.2, 1.2]) bam(dx, 2.35, 0, dx, 2.83, 0, 0.04);               // king posts
+    bam(-1.8, 2.84, 0, 1.8, 2.84, 0, 0.05);                                          // ridge pole
+    for (const dx of [-1.6, -0.8, 0, 0.8, 1.6]) for (const s of [-1, 1]) bam(dx, 2.83, 0, dx, 2.24, s * 1.95, 0.032);
+    for (const s of [-1, 1]) for (const f of [0.35, 0.72]) bam(-1.75, 2.869 - 0.62 * f, s * 1.95 * f, 1.75, 2.869 - 0.62 * f, s * 1.95 * f, 0.026);
+    // fibre-cement roof sheets with real thickness (top, underside, fascia edges), ridge capping
     w.mat('roof_fibre', { tint: 0xc8b890, uv: 'world' });
-    w.quad(x - 1.7, RURAL_Y + 2.3, z + 1.9, x + 1.7, RURAL_Y + 2.3, z + 1.9, x + 1.7, RURAL_Y + 2.9, z, x - 1.7, RURAL_Y + 2.9, z);
-    w.quad(x + 1.7, RURAL_Y + 2.3, z - 1.9, x - 1.7, RURAL_Y + 2.3, z - 1.9, x - 1.7, RURAL_Y + 2.9, z, x + 1.7, RURAL_Y + 2.9, z);
+    for (const s of [-1, 1]) {
+      const e = z + s * 1.95, r = z, ye = Y + 2.3, yr = Y + 2.92, t = 0.025;
+      const [l, rr] = s > 0 ? [x - 1.75, x + 1.75] : [x + 1.75, x - 1.75];
+      w.quad(l, ye, e, rr, ye, e, rr, yr, r, l, yr, r);
+      w.quad(l, ye - t, e, l, yr - t, r, rr, yr - t, r, rr, ye - t, e);
+      w.quad(rr, ye - t, e, rr, ye, e, l, ye, e, l, ye - t, e);
+      w.quad(l, ye - t, e, l, ye, e, l, yr, r, l, yr - t, r);
+      w.quad(rr, yr - t, r, rr, yr, r, rr, ye, e, rr, ye - t, e);
+    }
+    w.mat('metal_paint', { tint: 0x8a8578, uv: 'local' });
+    w.pushTR(x, Y + 2.93, z, 0, 0, 0);
+    w.quad(-1.78, -0.05, 0.16, 1.78, -0.05, 0.16, 1.78, 0.02, 0, -1.78, 0.02, 0);
+    w.quad(1.78, -0.05, -0.16, -1.78, -0.05, -0.16, -1.78, 0.02, 0, 1.78, 0.02, 0);
+    w.pop();
     if (F) canopyTree(w, F, x + 5, RURAL_Y, z - 4, rng, { h: 9, r: 5, trunk: 0.45 });
     const R2 = c.props.real;
     R2.add('basket', x - 0.6, RURAL_Y + 0.55, z + 0.4, 0.3, { phys: 'none' });

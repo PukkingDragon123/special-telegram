@@ -428,6 +428,9 @@ function bagItems(rt: ShopRT, pl: Ent, ids: number[]) {
 }
 
 function deliveryTarget(): number[] {
+  // the real restaurant is open: furniture is carried inside the shop, not dumped by the cart
+  const rest: any = (G as any).restaurant?.premises;
+  if (rest?.mods?.().active) { const d = rest.deliverySpot(); return [d[0] + Math.random() * 1.2, d[1] + 0.3, d[2] + (Math.random() - 0.5) * 1.2]; }
   const cart = G.state.find('cart', () => true);
   const a = G.world?.anchors.tables_area ?? G.world?.anchors.cart_start;
   const base = cart?.p ?? a?.p ?? [5, 0.15, -23];
