@@ -22,11 +22,11 @@ export interface DlgLineSpec { name: string; nameEn?: string; th: string; en?: s
 export interface DlgEvents { picked?: number; cont?: boolean; leave?: boolean; buzz?: number }
 
 const LINE: Text3DOpts = {
-  font: 'talk', size: 0.05, depth: 0.28, bevel: 0.06, color: 0xfff4de, side: 0x41281a, roughness: 0.35, emissive: 0.42, shadow: 0.65,
+  font: 'talk', size: 0.043, depth: 0.28, bevel: 0.06, color: 0xfff4de, side: 0x41281a, roughness: 0.35, emissive: 0.42, shadow: 0.65,
   xray: true, castShadow: false, align: 'left', valign: 'top', lineHeight: 1.36, anim: { pop: 0.26, rise: 0.5, spin: 0.8, vanish: 0.22, drift: 0.4 },
 };
 const LINE_EN: Text3DOpts = {
-  font: 'ui', size: 0.023, depth: 0.2, bevel: 0.05, color: 0xd9cfbd, side: 0x2c231c, roughness: 0.5, emissive: 0.3, shadow: 0.55,
+  font: 'ui', size: 0.02, depth: 0.2, bevel: 0.05, color: 0xd9cfbd, side: 0x2c231c, roughness: 0.5, emissive: 0.3, shadow: 0.55,
   xray: true, castShadow: false, align: 'left', valign: 'top', anim: { pop: 0.22, rise: 0.3, spin: 0.4, vanish: 0.2, drift: 0.3 },
 };
 const NAME: Text3DOpts = {
@@ -200,8 +200,8 @@ export class DialogueView {
         // its top a little above eye level, never off screen; it still lives in the world (parallax, depth)
         const ndc = _v.copy(head).project(cam);
         const right = THREE.MathUtils.clamp(ndc.x - 0.1, -0.2, 0.55);
-        const left = Math.max(-0.94, right - 1.12);
-        const top = THREE.MathUtils.clamp(ndc.y + 0.3, -0.1, 0.86);
+        const left = Math.max(-0.95, right - 1.3);
+        const top = THREE.MathUtils.clamp(ndc.y + 0.55, 0.42, 0.88);   // the line lives in the top band, answers in the bottom
         const z = THREE.MathUtils.clamp(ndc.z, -1, 0.9999);
         const pL = _r.set(left, top, z).unproject(cam);
         const pR = _u.set(right, top, z).unproject(cam);
@@ -228,17 +228,19 @@ export class DialogueView {
     let total = 0;
     for (const c of this.cards) {
       const tw = Math.max(c.main.width, c.sub?.width ?? 0, c.reason?.width ?? 0, 0.12);
-      c.w = tw + 0.07;
-      c.h = Math.max(0.034, c.main.height + (c.sub ? c.sub.height + 0.006 : 0) + (c.reason ? c.reason.height + 0.004 : 0) + 0.018);
+      c.w = tw + 0.078;
+      c.h = Math.max(0.036, c.main.height * 1.22 + (c.sub ? c.sub.height + 0.008 : 0) + (c.reason ? c.reason.height + 0.006 : 0) + 0.02);
       total += c.h + gap;
     }
     // layout is designed for a 72° view at z -0.75 (half height 0.545); the group scales to the real FOV so the
     // stack always sits at the bottom of the screen at the same on-screen size
     const zBase = -0.75;
     const halfH = Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) * -zBase;
-    const ks = halfH / 0.545;
+    const ks = (halfH / 0.545) * 0.86;
     this.cardGroup.scale.setScalar(ks);
-    this.cardGroup.position.set(0.06 * halfH * cam.aspect, 0, zBase * (1 - ks));
+    this.cardGroup.position.set(0, 0, zBase * (1 - ks));
+    // the answers form a column under the speaker's line, on the left of the frame
+    const leftX = -(halfH * cam.aspect / ks) * 0.9;
     let y = -0.5 + total + 0.01;     // bottom of the stack just above the bottom edge (design units)
     // input: hover
     if (inputOn && n) {
@@ -266,7 +268,7 @@ export class DialogueView {
       const sc = Math.max(0.001, pop) * (hot ? 1.06 : 1);
       const r = c.root;
       r.scale.setScalar(r.scale.x + (sc - r.scale.x) * Math.min(1, dt * 16));
-      const x = -c.w / 2 + (hot ? 0.012 : 0);
+      const x = leftX + (hot ? 0.014 : 0);
       r.position.set(r.position.x ? r.position.x + (x - r.position.x) * Math.min(1, dt * 12) : x, y + c.h / 2 + Math.sin(this.t * 2 + i * 1.3) * 0.0016, zBase + (hot ? 0.025 : 0));
       r.rotation.set(Math.sin(this.t * 1.2 + i) * 0.025 - 0.03, Math.sin(this.t * 0.8 + i * 2) * 0.03, 0);
       // plate behind the text block (local origin = left edge, vertical centre)
@@ -276,12 +278,13 @@ export class DialogueView {
       c.edge.scale.set(c.w + 0.036, c.h + 0.006, 1);
       c.edge.position.set(c.w / 2 - 0.005, 0, -0.005);
       (c.edge.material as THREE.MeshBasicMaterial).opacity = hot && !c.opt.locked ? 0.85 : c.opt.tone ? 0.28 : 0.0;
-      c.num.position.set(0.018, 0, 0.004);
-      const tx = 0.042;
-      const top = c.h / 2 - 0.009;
-      c.main.position.set(tx, top - c.main.height / 2, 0.004);
-      if (c.sub) c.sub.position.set(tx, top - c.main.height - 0.004, 0.004);
-      if (c.reason) c.reason.position.set(tx, top - c.main.height - (c.sub ? c.sub.height + 0.008 : 0.004), 0.004);
+      c.num.position.set(0.02, 0, 0.004);
+      const tx = 0.05;
+      const top = c.h / 2 - 0.01;
+      const mh = c.main.height * 1.22;                 // Thai marks / descenders reach below the em box
+      c.main.position.set(tx, top - mh / 2, 0.004);
+      if (c.sub) c.sub.position.set(tx, top - mh - 0.004, 0.004);
+      if (c.reason) c.reason.position.set(tx, top - mh - (c.sub ? c.sub.height + 0.01 : 0.006), 0.004);
     });
     // ---- input: picks
     if (!inputOn) return ev;

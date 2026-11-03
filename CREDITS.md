@@ -1809,3 +1809,16 @@ Full per-model tables: `public/assets/gen/lib/CREDITS.md` and `public/assets/gen
   HarfBuzz-extruded looped Thai lettering). The restaurant's water dispenser was rebuilt (moulded body, taps, drip tray, cup tube) and its
   trash bag now uses the Poly Haven "trashbag" photoscan.
 - บ่าวคลาร์ค (Bao Clark), the store's salesman, is an original character (deadpan, polite to a fault); no film character or actor likeness.
+
+## Ghost ritual easter egg (`src/modules/ritual/`, ritual parts of `src/modules/life/{ghosts,eggs,items}.ts`)
+- ผีนางรีวิว (the "review ghost") is an original character: a food-review influencer ghost with a white Thai dress and long hair, built on the
+  existing character rig (`src/modules/characters`) with the life module's `ghostify` noise shader. Folk-ghost humour only, no real person.
+- Offering table, incense pot, zebra figurine, incense bundle, boiled-egg plate, bendy straw, pocket summoning manual, lottery ticket and the
+  framed afterlife certificate are modelled in code (lathe / rounded-box / extrude geometry). Textures: shipped PBR library
+  (`wood_teak`, `bamboo_poles`, `gravel_crushed`, `wood_painted_weathered`), eggs reuse the cooking module's real egg-shell texture,
+  red soda reuses the library `bottle_fanta_red` model (credited above), the incense pot is the library `khan_bowl`.
+- Lottery and amulet stalls now stand on the library `thai_table_steel`; the karaoke uncle's speaker is the library `boombox`.
+- Printed texts (manual pages, flyer, ticket, certificate, polaroid caption) are drawn at runtime with the shipped OFL looped Thai fonts
+  (Itim, Charmonman, K2D, IBM Plex Sans Thai Looped). The lottery ticket design is fictional ("สลากกินแบ่งซอยเฮียผัด"), with no official emblems.
+- Sounds: existing entries of `public/assets/audio/manifest.json` (thunder, wind_howl, eerie_drone_loop, bells_eerie, dog_howl_night,
+  ghost_scare_sting, female_scream_comedic, camera_shutter, sparkle_chime, crowd_cheer, laugh_track, …).

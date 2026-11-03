@@ -34,25 +34,27 @@ class Fr {
 interface SlotSpec { stock: string; x: number; z: number; y?: number; face?: number }
 
 /** the showroom layout (local metres: x ∈ [−3.8, 3.8] across, z ∈ [−1, 4.2] from the door to the back wall) */
-function layout(ceil: number, B: number): SlotSpec[] {
-  // B = back wall line (probed), the counter stands 1.6 m out from it, vignettes fill the middle
-  const C = B - 1.6, M1 = Math.min(2.2, B * 0.34), M2 = Math.max(M1 + 1.6, B * 0.62);
+function layout(ceil: number, bk: Backs): SlotSpec[] {
+  // the two merged units can have different depths: the left half's back wall is bk.L, the right half's bk.R
+  // (the STAFF ONLY door + counter live in the right half); vignettes fill the middle of the shallower one
+  const B = bk.min, L = bk.L, Rb = bk.R, C = Rb - 1.6, M1 = Math.min(2.2, B * 0.34), M2 = Math.max(M1 + 1.6, B * 0.62);
+  const cab = Math.max(0.55, bk.step + 0.6);
   return [
     // back wall, floor: fridge, food cabinet, dispenser, shelving, cabinet
-    { stock: 'drinks_fridge', x: -3.35, z: B - 0.31 },
-    { stock: 'food_cabinet', x: -2.4, z: B - 0.25 },
-    { stock: 'water_dispenser', x: -1.6, z: B - 0.2 },
-    { stock: 'shelf_steel', x: -0.95, z: B - 0.25 },
-    { stock: 'shelf_wood', x: -0.25, z: B - 0.19 },
-    { stock: 'cabinet_wood', x: 0.55, z: B - 0.28 },
+    { stock: 'drinks_fridge', x: -3.35, z: L - 0.31 },
+    { stock: 'food_cabinet', x: -2.4, z: L - 0.25 },
+    { stock: 'water_dispenser', x: -1.6, z: L - 0.2 },
+    { stock: 'shelf_steel', x: -0.95, z: L - 0.25 },
+    { stock: 'shelf_wood', x: -0.3, z: L - 0.19 },
+    { stock: 'cabinet_wood', x: cab, z: Rb - 0.28 },
     // back wall, mounted
-    { stock: 'aircon', x: -2.35, z: B - 0.12, y: 2.45 },
-    { stock: 'wall_fan', x: -0.95, z: B - 0.22, y: 2.05 },
-    { stock: 'wall_clock', x: -0.25, z: B - 0.03, y: 2.15 },
-    { stock: 'shrine_shelf', x: 0.55, z: B - 0.17, y: 1.9 },
-    { stock: 'menu_lightbox', x: 3.2, z: B - 0.05, y: 1.85 },
+    { stock: 'aircon', x: -2.35, z: L - 0.12, y: 2.45 },
+    { stock: 'wall_fan', x: -0.95, z: L - 0.22, y: 2.05 },
+    { stock: 'wall_clock', x: -0.3, z: L - 0.03, y: 2.15 },
+    { stock: 'shrine_shelf', x: cab, z: Rb - 0.17, y: 1.9 },
+    { stock: 'menu_lightbox', x: 3.2, z: Rb - 0.05, y: 1.85 },
     // tops: TV on the wooden shelf, register / lucky cats / plants on the counter
-    { stock: 'tv_crt', x: -0.25, z: B - 0.2, y: 1.13 },
+    { stock: 'tv_crt', x: -0.3, z: L - 0.2, y: 1.13 },
     // counter (front right) — the keeper sits behind it
     { stock: 'counter_desk', x: 2.85, z: C },
     { stock: 'cash_register', x: 3.25, z: C + 0.05, y: 0.9, face: Math.PI },
@@ -77,16 +79,31 @@ function layout(ceil: number, B: number): SlotSpec[] {
   ];
 }
 
-/** the back wall line (local z): the world picks the interior depth per unit, so probe the real wall */
-export function probeBack(game: Game): number {
+/** back wall lines (local z) of the two merged units: the world picks the interior depth per unit, so probe the
+ *  real walls. L = left half (local x < 0), R = right half (x > 0), step = local x of the return wall between them */
+export interface Backs { L: number; R: number; min: number; max: number; step: number }
+export function probeBacks(game: Game): Backs {
   const fr = new Fr(STORE.anchor.p, STORE.anchor.yaw);
-  let B = 99;
-  for (const x of [-2.5, 0, 2.5]) {
-    const h = game.physics?.raycast(fr.at(x, 1.4, 0.3), fr.f.clone(), 12, 1);
-    if (h) B = Math.min(B, 0.3 + h.toi);
+  const depth = (xs: number[]) => {
+    let B = 99;
+    for (const x of xs) {
+      const h = game.physics?.raycast(fr.at(x, 1.4, 0.3), fr.f.clone(), 12, 1);
+      if (h) B = Math.min(B, 0.3 + h.toi);
+    }
+    return B > 3 && B < 9 ? B : 4.15;
+  };
+  const L = depth([-3.0, -1.8, -0.6]), R = depth([0.6, 1.8, 3.0]);
+  // the return wall between a shallow and a deep half: cast sideways (from the deep half toward the shallow one)
+  let step = 0;
+  if (Math.abs(L - R) > 0.3) {
+    const z = (L + R) / 2, dir = L < R ? -1 : 1;
+    const h = game.physics?.raycast(fr.at(dir < 0 ? 2.5 : -2.5, 1.4, z), fr.r.clone().multiplyScalar(dir), 5, 1);
+    if (h) step = (dir < 0 ? 2.5 : -2.5) + dir * h.toi;
   }
-  return B > 3 && B < 9 ? B : 4.15;
+  return { L, R, min: Math.min(L, R), max: Math.max(L, R), step };
 }
+/** back wall line on the door's side */
+export function probeBack(game: Game): number { const b = probeBacks(game); return DOOR_X < 0 ? b.L : b.R; }
 
 /** the STAFF ONLY door in the back wall (local x) — leads to the backrooms (backrooms module) */
 export const DOOR_X = 1.65;
@@ -104,8 +121,8 @@ export function buildShowroom(game: Game): Showroom {
   const unit = ROW_SOI_E2.find((u) => u.name === 'furniture_store')!;
   const dims = unitDims(unit);
   const ceil = Math.min(3.4, dims.h0 - 0.35);      // ceiling over the ground floor (slab underside)
-  const B = probeBack(game);
-  const D = B + 1.15, mid = (B - 1.15) / 2;        // floor / ceiling span from the facade to the back wall
+  const bk = probeBacks(game), B = bk.min, Rb = DOOR_X < 0 ? bk.L : bk.R;
+  const D = bk.max + 1.15, mid = (bk.max - 1.15) / 2;   // floor / ceiling span from the facade to the deeper back wall
   const root = new THREE.Group(); root.name = 'build:showroom';
   // ---- floor: polished terrazzo with a skirting line
   const floor = mesh(rbox(7.66, 0.012, D, 0.004, 0, 0, 0), pbr('terrazzo_floor', { repeat: 2.2, rough: 0.35 }));
@@ -116,7 +133,7 @@ export function buildShowroom(game: Game): Showroom {
   slab.position.copy(fr.at(0, ceil, mid)); slab.rotation.y = fr.yaw;
   root.add(slab);
   const tubeGlow = mat('fluoroTube', () => new THREE.MeshStandardMaterial({ color: 0xf6fbff, emissive: 0xeef6ff, emissiveIntensity: 2.2, roughness: 0.3 }));
-  for (const [x, z] of [[-2.2, 0.6], [0.4, 0.6], [2.6, 0.6], [-2.2, B * 0.5], [0.4, B * 0.5], [2.6, B * 0.5], [-2.2, B - 0.8], [0.4, B - 0.8], [2.6, B - 0.8]]) {
+  for (const [x, z] of [[-2.2, 0.6], [0.4, 0.6], [2.6, 0.6], [-2.2, B * 0.5], [0.4, B * 0.5], [2.6, B * 0.5], [-2.2, bk.L - 0.8], [0.4, bk.R - 0.8], [2.6, bk.R - 0.8]]) {
     const fit = new THREE.Group();
     fit.add(mesh(rbox(1.24, 0.05, 0.13, 0.012, 0, -0.05, 0), pbr('aluminium_scratched', { repeat: 1 }), false));
     const t = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1.18, 10).rotateZ(Math.PI / 2).translate(0, -0.075, 0), tubeGlow);
@@ -135,17 +152,17 @@ export function buildShowroom(game: Game): Showroom {
   sub.position.copy(fr.at(0, signY + 0.2, -1.44)); sub.rotation.y = fr.yaw;
   root.add(title, sub);
   // ---- keeper corner: a metal stool behind the counter
-  const kp = fr.arr(2.85, 0, B - 0.85);
+  const kp = fr.arr(2.85, 0, Rb - 0.85);
   const kst = libFit('metal_stool_02', 0.46); kst.position.set(kp[0], kp[1], kp[2]); root.add(kst);
   // ---- the STAFF ONLY door in the back wall (behind the counter): no collider in its opening
   const door = staffDoor();
-  door.position.copy(fr.at(DOOR_X, 0, B - 0.002)); door.rotation.y = fr.yaw;
+  door.position.copy(fr.at(DOOR_X, 0, Rb - 0.002)); door.rotation.y = fr.yaw;
   door.name = 'build:backdoor';
   root.add(door);
   // ---- display slots + price stands
   const slots: Showroom['slots'] = [];
   const tagsDone = new Set<string>();
-  for (const s of layout(ceil, B)) {
+  for (const s of layout(ceil, bk)) {
     const f = FURN_BY_KIND[s.stock] ?? footprintOf(s.stock);
     const p = fr.arr(s.x, s.y ?? 0, s.z);
     const yaw = fr.toDoor + (s.face ?? 0);
@@ -168,8 +185,9 @@ export function buildShowroom(game: Game): Showroom {
   // night glow
   (game.world as any)?.addLightPoint?.(fr.at(0, ceil - 0.3, 1.0), 0xf0f6ff, 14, 9, 0.4);
   (game.world as any)?.addLightPoint?.(fr.at(0, ceil - 0.3, B - 1.2), 0xf0f6ff, 12, 8, 0.25);
+  (game.world as any)?.addLightPoint?.(fr.at(DOOR_X, ceil - 0.3, Rb - 0.6), 0xf0f6ff, 8, 5, 0.2);
   root.traverse((o: any) => { if (o.isMesh && o.castShadow === undefined) o.castShadow = true; });
-  return { backdoor: backdoorAnchor(game, B), root, slots, keeper: { p: kp, yaw: fr.personToDoor, sit: false }, colliders, ceil };
+  return { backdoor: backdoorAnchor(game, Rb), root, slots, keeper: { p: kp, yaw: fr.personToDoor, sit: false }, colliders, ceil };
 }
 
 /** acrylic price stand: chrome pole + white card with a red 3D price (and the Thai name) */

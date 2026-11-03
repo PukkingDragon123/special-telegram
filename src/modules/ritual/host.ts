@@ -286,11 +286,11 @@ export class RitualHost {
       }
       case 'summon': {
         const A = L.arrive;
-        this.once('lz1', 2.5, () => this.fx('lightning', { k: 0.8 }));
+        this.once('lz1', 2.5, () => this.fx('lightning', { power: 0.8 }));
         this.once('howl', 3.5, () => game.sfx('dog_howl_night', this.frame().pos.toArray(), { vol: 0.8 }));
-        this.once('lz2', 5.2, () => this.fx('lightning', { k: 1 }));
+        this.once('lz2', 5.2, () => this.fx('lightning', { power: 1 }));
         this.once('spawn', 6.5, () => { this.spawnGhost(); this.fx('appear', { gid: rstate(game)?.gid, faint: this.near(9).map((p) => p.id) }); for (const p of this.near(9)) this.anim(p, 'fall'); });
-        this.once('lz3', 7.4, () => this.fx('lightning', { k: 1 }));
+        this.once('lz3', 7.4, () => this.fx('lightning', { power: 1 }));
         this.once('a0', 8.6, () => { this.sayG(A[0], 3, 'shout'); this.anim(this.ghost(), 'angry'); });
         this.once('wake', 10.5, () => { for (const p of this.near(9)) this.anim(p, 'wake_up'); });
         this.once('a1', 12, () => { this.sayG(A[1], 4.2); this.anim(this.ghost(), 'angry'); });

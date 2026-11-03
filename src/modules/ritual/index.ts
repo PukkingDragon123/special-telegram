@@ -95,7 +95,7 @@ function installClient(game: Game) {
           setTimeout(() => play('heartbeat_slow', { vol: 0.6 }), 1500);
         }
         break;
-      case 'lightning': if (meNear(f.pos, 80)) fx.lightning(d.k2 ?? 1); break;
+      case 'lightning': if (meNear(f.pos, 80)) fx.lightning(d.power ?? 1); break;
       case 'appear':
         play('ghost_scare_sting', { vol: 0.9 });
         setTimeout(() => play('female_scream_comedic|gasp', { vol: 0.7 }), 350);
@@ -223,7 +223,12 @@ export default defineModule({
     fx.attach(game.scene!);
     offLate?.();
     offLate = game.engine.onLate((f) => fx?.late(f.rawDt > 0 ? Math.min(0.1, f.rawDt) : 0)) as any;
-    if (game.isHost) ensureState(game);
+    if (game.isHost) {
+      // a save made mid-ritual: start clean (no stale phase, no leftover scripted ghost, time running)
+      const r = ensureState(game);
+      for (const gh of game.state.all('ghost')) if (gh.rit) game.state.despawn(gh);
+      if (r.st !== 'idle') { (game.g as any).ritual = { ...r, st: 'idle', gid: undefined, t0: 0 }; delete (game.g as any).freezeTime; }
+    }
     const dev = params.get('ritual');
     if (dev && game.isHost) devStart(game, dev);
   },

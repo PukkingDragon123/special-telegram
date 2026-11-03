@@ -11,6 +11,7 @@ import { glowTexture, lifeTex } from './tex';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { libLoad } from '../world/lib';
+import { rbox as krbox, tube as ktube, lathe as klathe, mergeLoose } from '../shops/kit';
 import type { Life } from './index';
 
 /* ============================================================================================
@@ -191,6 +192,7 @@ export class Traffic {
     }
     for (let i = 0; i < 4; i++) this.loops.push({ v: null, h: null, key: '' });
     this.loadRealMotos();
+    this.loadRealCars();
   }
 
   /**
@@ -262,6 +264,53 @@ export class Traffic {
     }).catch((e) => console.warn('[life] traffic scooter: no real model, motorbike traffic stays hidden', e?.message ?? e));
   }
   private realMotos = false;
+  /** vehicle ids whose real model carries its own wheels (no generic spinning wheels drawn) */
+  private ownWheels = new Set<string>();
+
+  /**
+   * Cars, pickups, songthaews, the junk truck, buses and tuk-tuks are real models too (shared library): the photoscan-ish
+   * sedan repainted as Bangkok taxis (all-pink / green-and-yellow two-tone) with a TAXI-METER roof sign, the Hilux (pickup,
+   * + a built canopy and benches = songthaew, + a load of scrap = รถรับซื้อของเก่า), the city bus, the tuk-tuk. The old
+   * lofted photo boxes stay only until (or if) a model fails to load.
+   */
+  private loadRealCars() {
+    type Part = { geo: THREE.BufferGeometry; mat: THREE.Material };
+    const CARS: Record<string, { lib: string; flip: boolean; own: boolean; paint?: 'pink' | 'gy'; add?: (h: number) => Part[] }> = {
+      taxi_pink: { lib: 'car_sedan', flip: false, own: false, paint: 'pink', add: taxiSign },
+      taxi_gy: { lib: 'car_sedan', flip: false, own: false, paint: 'gy', add: taxiSign },
+      pickup: { lib: 'pickup_hilux', flip: true, own: true },
+      songthaew: { lib: 'pickup_hilux', flip: true, own: true, add: songthaewCanopy },
+      junk: { lib: 'pickup_hilux', flip: true, own: true, add: junkLoad },
+      bus_red: { lib: 'bus_city', flip: false, own: true },
+      tuktuk: { lib: 'tuktuk', flip: true, own: true },
+    };
+    for (const [id, c] of Object.entries(CARS)) {
+      libLoad(c.lib).then((a) => {
+        if (!a || !a.parts.length || !this.group) return;
+        const it = this.inst.get(id);
+        if (!it) return;
+        const d = VDEFS[id];
+        const size = a.box.getSize(new THREE.Vector3());
+        const k = d.len / Math.max(0.1, size.z);
+        const M = new THREE.Matrix4().makeScale(k, k, k);
+        if (c.flip) M.premultiply(new THREE.Matrix4().makeRotationY(Math.PI));
+        // biggest textured part = painted body
+        let bodyIdx = 0, best = -1;
+        a.parts.forEach((p, i) => { const n = p.geom.getAttribute('position').count * ((p.mat as any).map ? 2 : 1); if (n > best) { best = n; bodyIdx = i; } });
+        const parts: Part[] = a.parts.map((p, i) => ({ geo: p.geom.clone().applyMatrix4(M), mat: c.paint && i === bodyIdx ? taxiPaint(p.mat as THREE.MeshStandardMaterial, c.paint, size.y * k) : p.mat }));
+        if (c.add) parts.push(...c.add(size.y * k));
+        const ims = parts.map((p) => {
+          const im = new THREE.InstancedMesh(p.geo, p.mat, it.cap);
+          im.frustumCulled = false; im.castShadow = id === 'bus_red' || id === 'songthaew' || id === 'pickup' || id.startsWith('taxi'); im.receiveShadow = true; im.count = 0;
+          this.group!.add(im);
+          return im;
+        });
+        it.body.removeFromParent(); it.cut?.removeFromParent();
+        it.body = ims[0]; it.extra = ims.slice(1); it.cut = undefined;
+        if (c.own) this.ownWheels.add(id);
+      }).catch((e) => console.warn('[life] traffic car model', id, e?.message ?? e));
+    }
+  }
 
   dispose() {
     for (const l of this.loops) l.h?.stop(0.3);
@@ -517,7 +566,7 @@ export class Traffic {
       if (vh.def.id === 'icecream' && this.side.length && ns < this.side[0].instanceMatrix.count) { for (const x of this.side) x.setMatrixAt(ns, this.m); ns++; }
       // wheels
       const spin = vh.s;
-      const ownWheels = this.realMotos && (vh.def.kind === 'moto' || vh.def.kind === 'icecream');
+      const ownWheels = (this.realMotos && (vh.def.kind === 'moto' || vh.def.kind === 'icecream')) || this.ownWheels.has(vh.def.id);
       if (!ownWheels) for (const w of vh.def.wheels) {
         const xs = w.x > 0 ? [w.x, -w.x] : [0];
         for (const x of xs) {
@@ -802,4 +851,94 @@ function bakeSkinned(sm: THREE.SkinnedMesh, root: THREE.Object3D): THREE.BufferG
   if (!nrm) g.computeVertexNormals();
   g.computeBoundingSphere();
   return g;
+}
+
+// ------------------------------------------------------------------ real car dressing
+
+/** repaint a car body: keep the texture's shading (panel lines, AO, dirt) as luminance, apply the taxi colours.
+ *  'gy' = Bangkok two-tone (green below the belt line, yellow above). */
+function taxiPaint(base: THREE.MeshStandardMaterial, mode: 'pink' | 'gy', height: number): THREE.Material {
+  const m = base.clone();
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uBelt = { value: height * 0.62 };
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying float vObjY;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvObjY = position.y;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vObjY;\nuniform float uBelt;')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+      {
+        float lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+        ${mode === 'pink' ? 'vec3 paint = vec3(0.93, 0.32, 0.55);' : 'vec3 paint = vObjY < uBelt ? vec3(0.1, 0.42, 0.16) : vec3(0.96, 0.76, 0.1);'}
+        diffuseColor.rgb = paint * clamp(lum * 1.9, 0.12, 1.25);
+      }`);
+  };
+  m.customProgramCacheKey = () => 'taxipaint:' + mode;
+  return m;
+}
+
+let signMat: THREE.Material | null = null;
+/** the TAXI-METER roof sign (white plastic box, printed both sides) — traffic vehicle space (front −Z) */
+function taxiSign(h: number): { geo: THREE.BufferGeometry; mat: THREE.Material }[] {
+  if (!signMat) {
+    const cv = document.createElement('canvas'); cv.width = 256; cv.height = 64;
+    const x = cv.getContext('2d')!;
+    x.fillStyle = '#f4f2ea'; x.fillRect(0, 0, 256, 64);
+    x.fillStyle = '#c81e1e'; x.font = 'bold 40px "K2D", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('TAXI-METER', 128, 34);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+    signMat = new THREE.MeshStandardMaterial({ map: t, roughness: 0.4, emissive: new THREE.Color(0xffffff), emissiveMap: t, emissiveIntensity: 0.15 });
+  }
+  const g = new RoundedBoxGeometry(0.62, 0.13, 0.2, 2, 0.03);
+  // printed faces (±z): map the canvas, the rest takes a white strip of it
+  const uv = g.getAttribute('uv') as THREE.BufferAttribute, n = g.getAttribute('normal') as THREE.BufferAttribute, p = g.getAttribute('position') as THREE.BufferAttribute;
+  for (let i = 0; i < uv.count; i++) {
+    if (Math.abs(n.getZ(i)) > 0.6) uv.setXY(i, 0.5 + (p.getX(i) / 0.62) * (n.getZ(i) > 0 ? 1 : -1), 0.5 + p.getY(i) / 0.13);
+    else uv.setXY(i, 0.02, 0.05);
+  }
+  g.rotateY(Math.PI / 2).translate(0, h + 0.055, 0.15);   // across the roof, read from the side (as in Bangkok)
+  return [{ geo: g, mat: signMat }];
+}
+
+let canopyMats: { paint: THREE.Material; vinyl: THREE.Material; steel: THREE.Material } | null = null;
+/** สองแถว: two bench rows under a painted steel canopy on the Hilux bed (vehicle space, front −Z, rear +Z) */
+function songthaewCanopy(h: number): { geo: THREE.BufferGeometry; mat: THREE.Material }[] {
+  canopyMats ??= {
+    paint: Assets.pbr('metal_painted_chipped', { repeat: 1, color: 0x2f5aa8, fallback: 0x2f5aa8 }),
+    vinyl: new THREE.MeshStandardMaterial({ color: 0x8a1e1a, roughness: 0.45 }),
+    steel: Assets.pbr('aluminium_scratched', { repeat: 1, fallback: 0xc0c0c0 }),
+  };
+  const z0 = 0.35, z1 = 2.55, y0 = h * 0.52, yR = h + 0.42, hw = 0.84;
+  const posts: THREE.BufferGeometry[] = [], roof: THREE.BufferGeometry[] = [], seats: THREE.BufferGeometry[] = [];
+  for (const x of [-hw, hw]) for (const z of [z0, (z0 + z1) / 2, z1]) posts.push(ktube([x, y0, z], [x, yR, z], 0.025, 8));
+  for (const x of [-hw, hw]) posts.push(ktube([x, y0 + 0.62, z0], [x, y0 + 0.62, z1], 0.018, 8), ktube([x, yR - 0.05, z0], [x, yR - 0.05, z1], 0.02, 8));
+  roof.push(krbox(hw * 2 + 0.12, 0.06, z1 - z0 + 0.25, 0.025, 1).translate(0, yR, (z0 + z1) / 2));
+  for (const x of [-hw + 0.22, hw - 0.22]) {
+    seats.push(krbox(0.34, 0.08, z1 - z0 - 0.15, 0.03, 1).translate(x, y0 + 0.36, (z0 + z1) / 2));
+    seats.push(krbox(0.05, 0.3, z1 - z0 - 0.15, 0.02, 1).translate(x + Math.sign(x) * 0.2, y0 + 0.42, (z0 + z1) / 2));
+  }
+  const step = krbox(1.0, 0.04, 0.32, 0.01, 1).translate(0, 0.42, z1 + 0.12);
+  return [
+    { geo: mergeLoose([...posts, step]), mat: canopyMats.steel },
+    { geo: mergeLoose(roof), mat: canopyMats.paint },
+    { geo: mergeLoose(seats), mat: canopyMats.vinyl },
+  ];
+}
+
+let junkMats: { tyre: THREE.Material; card: THREE.Material; drum: THREE.Material; horn: THREE.Material } | null = null;
+/** รถรับซื้อของเก่า: tyres, flattened cartons, a rusty drum and a loudspeaker horn on the cab roof */
+function junkLoad(h: number): { geo: THREE.BufferGeometry; mat: THREE.Material }[] {
+  const b = h * 0.52 - 0.86;   // bed floor offset from the 0.86 m the load was laid out for
+  junkMats ??= {
+    tyre: Assets.pbr('rubber_black', { repeat: 1, fallback: 0x1c1c1c }),
+    card: Assets.pbr('cardboard_worn', { repeat: 1, fallback: 0xa88660 }),
+    drum: Assets.pbr('corrugated_rusty', { repeat: 1, fallback: 0x7a4a2a }),
+    horn: Assets.pbr('metal_painted_chipped', { repeat: 1, color: 0xd8d8d0, fallback: 0xd8d8d0 }),
+  };
+  const tyres = [new THREE.TorusGeometry(0.28, 0.1, 8, 16).rotateX(Math.PI / 2).translate(-0.35, 1.0 + b, 1.1), new THREE.TorusGeometry(0.28, 0.1, 8, 16).rotateX(Math.PI / 2 + 0.3).translate(-0.3, 1.18 + b, 1.25)];
+  const cards = [krbox(0.8, 0.25, 0.6, 0.02, 0.5).translate(0.35, 0.9 + b, 1.0), krbox(0.7, 0.2, 0.5, 0.02, 0.5).rotateY(0.4).translate(0.3, 1.15 + b, 1.9), krbox(0.5, 0.35, 0.45, 0.02, 0.5).translate(-0.4, 0.9 + b, 2.1)];
+  const drum = [new THREE.CylinderGeometry(0.28, 0.28, 0.85, 14).translate(0.4, 1.32 + b, 1.7)];
+  const horn = [klathe([[0.02, 0], [0.04, 0.05], [0.18, 0.28], [0.19, 0.3]], 14).rotateX(-Math.PI / 2 + 0.15).translate(0, h + 0.12, -0.3), ktube([0, h, -0.3], [0, h + 0.14, -0.3], 0.015, 6)];
+  return [
+    { geo: mergeLoose(tyres), mat: junkMats.tyre },
+    { geo: mergeLoose(cards), mat: junkMats.card },
+    { geo: mergeLoose(drum), mat: junkMats.drum },
+    { geo: mergeLoose(horn), mat: junkMats.horn },
+  ];
 }
