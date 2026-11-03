@@ -182,6 +182,13 @@ export class Eggs {
       this.group!.add(rig.root);
       try { rig.play(anim as any, { loop: true }); } catch {}
       this.npcs.push({ rig, from, to, anim, lines, talkT: 0, pos: p.clone() });
+      // sitting sellers get a real red plastic stool under them (library model), a little behind the pelvis
+      if (anim === 'sit') {
+        const st = libModel('thai_stool');
+        st.position.set(p.x + Math.sin(yaw) * 0.08, p.y, p.z + Math.cos(yaw) * 0.08);
+        st.rotation.y = yaw + 0.3;
+        this.group!.add(st);
+      }
       return rig;
     } catch { return null; }
   }
@@ -194,7 +201,7 @@ export class Eggs {
   }
   private amuletStall(p: THREE.Vector3) {
     this.table(p, 'amulet_table.jpg', 0, true);
-    this.seller('grandpa', new THREE.Vector3(p.x, p.y, p.z - 0.75), 0, 'sit', 7, 17);
+    this.seller('grandpa', new THREE.Vector3(p.x, p.y, p.z - 0.75), Math.PI, 'sit', 7, 17);   // behind the table, facing his customers
     this.makeTalkable('egg:amulet', 'amulet_grandpa', tl('ตาเปลี่ยน แผงพระ', 'Grandpa Plian, amulet stall'));
   }
 

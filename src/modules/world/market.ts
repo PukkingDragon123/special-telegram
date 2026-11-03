@@ -188,14 +188,21 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
     const top = y0 + 0.82;
     // tiled concrete counter or steel table
     if (rng.chance(0.5)) {
+      // tiled concrete counter: recessed kick, bevelled body, overhanging tiled top with a rounded nosing
       w.mat('tiles_wall', { tint: rng.pick([0xffffff, 0xd8e8e0, 0xe8e0d0]), ov: 'plaster_moldy', ovAmt: 0.5, uv: 'world' });
-      w.box(a, y0, b, cc, top, d, ALL & ~NY);
+      w.bevelBox(a + 0.04, y0 + 0.1, b + 0.04, cc - 0.04, top - 0.05, d - 0.04, 0.02);
+      w.mat('concrete_old', { uv: 'world', ao: 0.6 });
+      w.bevelBox(a + 0.08, y0, b + 0.08, cc - 0.08, y0 + 0.1, d - 0.08, 0.01);
+      w.mat('tiles_wall', { tint: 0xf2f2ee, uv: 'world' });
+      w.bevelBox(a - 0.02, top - 0.05, b - 0.02, cc + 0.02, top, d + 0.02, 0.025);
     } else {
+      // stainless market table: bevelled top with a folded edge, round tube legs with feet, a lower shelf
       w.mat('stainless_dirty', { uv: 'local' });
-      w.box(a, top - 0.04, b, cc, top, d, ALL);
-      for (const [px, pz] of [[a + 0.05, b + 0.05], [cc - 0.05, b + 0.05], [a + 0.05, d - 0.05], [cc - 0.05, d - 0.05]]) w.box(px - 0.025, y0, pz - 0.025, px + 0.025, top - 0.04, pz + 0.025, SIDES);
+      w.bevelBox(a, top - 0.04, b, cc, top, d, 0.015);
+      for (const [px, pz] of [[a + 0.05, b + 0.05], [cc - 0.05, b + 0.05], [a + 0.05, d - 0.05], [cc - 0.05, d - 0.05]]) { w.cyl(px, y0, pz, 0.022, 0.022, top - 0.04 - y0, 10, 0); w.cyl(px, y0, pz, 0.03, 0.03, 0.02, 10, 1); }
+      w.bevelBox(a + 0.03, y0 + 0.2, b + 0.03, cc - 0.03, y0 + 0.22, d - 0.03, 0.008);
       w.mat('plastic', { tint: rng.pick([0x2a5ab0, 0xd03030, 0x2a8a4a, 0xe0d0b0]), uv: 'local' });
-      w.box(a - 0.02, top, b - 0.02, cc + 0.02, top + 0.01, d + 0.02, PY);
+      w.box(a - 0.02, top, b - 0.02, cc + 0.02, top + 0.006, d + 0.02, PY);
     }
     c.phys.box([(a + cc) / 2, top / 2, (b + d) / 2], [cc - a, top, d - b]);
     // goods: trays/baskets with real produce photos (or tinted fill)

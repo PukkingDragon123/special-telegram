@@ -181,17 +181,28 @@ export function makeProps(w: WB) {
     w.mat('brass', { uv: 'local' });
     w.cyl(0, 0.6, 0, 0.025, 0.025, 0.09, 6, 1);
   }));
+  // carbon-steel wok: a curved bowl from stacked turned bands, a rolled rim, steel shank + wooden grip, a loop helper
   const wok = () => memo('wok', () => T((w) => {
-    w.mat('stainless_dirty', { tint: 0x55504a, uv: 'local' });
-    w.cyl(0, 0, 0, 0.06, 0.2, 0.09, 12, 0);
+    w.mat('stainless_dirty', { tint: 0x45403a, uv: 'local' });
+    w.cyl(0, 0, 0, 0.03, 0.1, 0.025, 16, 1);
+    w.cyl(0, 0.025, 0, 0.1, 0.16, 0.035, 16, 0);
+    w.cyl(0, 0.06, 0, 0.16, 0.198, 0.032, 16, 0);
+    w.cyl(0, 0.092, 0, 0.198, 0.205, 0.006, 16, 0);
+    w.tube([0.2, 0.085, 0, 0.27, 0.095, 0], 0.009, 6);
     w.mat('wood_old', { uv: 'local' });
-    w.box(0.19, 0.07, -0.015, 0.4, 0.1, 0.015, ALL);
+    w.pushTR(0.27, 0.095, 0, 0, 0, -Math.PI / 2 + 0.06); w.cyl(0, 0, 0, 0.016, 0.014, 0.14, 8, 1); w.pop();
+    w.mat('stainless_dirty', { tint: 0x45403a, uv: 'local' });
+    w.tube([-0.2, 0.09, -0.03, -0.24, 0.1, 0, -0.2, 0.09, 0.03], 0.006, 6);
   }));
+  // aluminium stock pot: rolled rim, riveted loop handles, lid with a knob
   const pot = (r: number) => memo('pot' + r, () => T((w) => {
     w.mat('alu', { uv: 'local' });
-    w.cyl(0, 0, 0, r, r, r * 1.6, 12, 1);
-    w.box(-r - 0.05, r * 1.3, -0.015, -r, r * 1.4, 0.015, ALL);
-    w.box(r, r * 1.3, -0.015, r + 0.05, r * 1.4, 0.015, ALL);
+    w.cyl(0, 0, 0, r * 0.97, r, r * 1.55, 16, 1);
+    w.cyl(0, r * 1.55, 0, r * 1.02, r * 1.02, r * 0.05, 16, 0);
+    for (const sx of [-1, 1]) w.tube([sx * r, r * 1.38, -0.035, sx * (r + 0.045), r * 1.36, 0, sx * r, r * 1.38, 0.035], 0.006, 6);
+    w.cyl(0, r * 1.6, 0, r * 1.0, r * 0.25, r * 0.12, 16, 1);
+    w.mat('plastic', { tint: 0x1a1a1a, uv: 'local' });
+    w.cyl(0, r * 1.72, 0, 0.012, 0.016, 0.02, 10, 1);
   }));
 
   // ------------------------------------------------------------------ vehicles

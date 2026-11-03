@@ -40,44 +40,79 @@ export function birdcage(w: WB, v = 0): Template {
   });
 }
 
-/** red floor shrine (ตี่จู้เอี๊ยะ) at a shop entrance, with incense and a candle glow */
+/** a round fruit (orange / pomelo) from two stacked tapered cylinders — reads round at shrine scale */
+function fruit(w: WB, x: number, y: number, z: number, r: number) {
+  w.cyl(x, y, z, r * 0.55, r, r * 0.9, 12, 1);
+  w.cyl(x, y + r * 0.9, z, r, r * 0.5, r * 0.85, 12, 1);
+}
+/** red soda bottle (น้ำแดง offering): body, shoulder, neck, cap */
+function soda(w: WB, x: number, y: number, z: number, s = 1) {
+  w.mat('plastic_gloss', { uv: 'local', tint: 0xc81830 });
+  w.cyl(x, y, z, 0.026 * s, 0.026 * s, 0.11 * s, 12, 1);
+  w.cyl(x, y + 0.11 * s, z, 0.026 * s, 0.012 * s, 0.05 * s, 12, 0);
+  w.cyl(x, y + 0.16 * s, z, 0.011 * s, 0.011 * s, 0.025 * s, 10, 0);
+  w.mat('plastic', { uv: 'local', tint: 0xe8e4dc });
+  w.cyl(x, y + 0.185 * s, z, 0.013 * s, 0.013 * s, 0.012 * s, 10, 1);
+}
+
+/** red floor shrine (ตี่จู้เอี๊ยะ) at a shop entrance: lacquered cabinet with gilt trim, columns and a flared roof,
+ *  incense bowl, oranges, a red soda and a candle glow */
 export function floorShrine(w: WB): Template {
   return M(w, 'floorShrine', (w) => {
     w.mat('plastic_gloss', { uv: 'local', tint: 0xa01410, ao: 0.9 });
-    w.box(-0.22, 0, -0.16, 0.22, 0.36, 0.16, ALL & ~NY & ~PZ);
-    w.box(-0.24, 0.36, -0.17, 0.24, 0.4, 0.2, ALL);
-    w.mat('brass', { uv: 'local' });
-    w.box(-0.24, 0.0, 0.16, 0.24, 0.03, 0.17, PZ | PY);
+    w.bevelBox(-0.24, 0, -0.17, 0.24, 0.05, 0.19, 0.01);                       // plinth
+    w.bevelBox(-0.22, 0.05, -0.16, -0.19, 0.36, 0.14, 0.006);                  // sides
+    w.bevelBox(0.19, 0.05, -0.16, 0.22, 0.36, 0.14, 0.006);
+    w.bevelBox(-0.22, 0.05, -0.17, 0.22, 0.36, -0.14, 0.006);                  // back
+    w.bevelBox(-0.25, 0.36, -0.18, 0.25, 0.4, 0.21, 0.012);                    // top slab
     w.mat('plastic', { uv: 'local', tint: 0x3a1a0a, ao: 0.5 });
-    w.quad(-0.2, 0.02, -0.15, 0.2, 0.02, -0.15, 0.2, 0.34, -0.15, -0.2, 0.34, -0.15);
-    // incense pot + sticks, oranges, a red Fanta bottle
+    w.quad(-0.19, 0.05, -0.139, 0.19, 0.05, -0.139, 0.19, 0.36, -0.139, -0.19, 0.36, -0.139);
+    // gilt trim + front columns with gold rings
     w.mat('brass', { uv: 'local' });
-    w.cyl(0, 0.02, 0.06, 0.06, 0.05, 0.08, 8, 1);
+    w.bevelBox(-0.245, 0.04, 0.18, 0.245, 0.055, 0.195, 0.004);
+    w.bevelBox(-0.255, 0.395, 0.2, 0.255, 0.41, 0.215, 0.004);
+    for (const x of [-0.205, 0.205]) {
+      w.mat('plastic_gloss', { uv: 'local', tint: 0xa01410, ao: 0.9 }); w.cyl(x, 0.05, 0.16, 0.014, 0.014, 0.31, 10, 0);
+      w.mat('brass', { uv: 'local' }); for (const y of [0.06, 0.34]) w.cyl(x, y, 0.16, 0.019, 0.019, 0.016, 10, 1);
+    }
+    // flared roof with upturned corners
+    w.mat('plastic_gloss', { uv: 'local', tint: 0xb01a14, ao: 0.9 });
+    w.bevelBox(-0.27, 0.41, -0.2, 0.27, 0.43, 0.23, 0.02);
+    for (const x of [-0.27, 0.27]) { w.pushTR(x, 0.425, 0.22, 0, 0, x < 0 ? -0.5 : 0.5); w.bevelBox(-0.02, 0, -0.015, 0.02, 0.05, 0.015, 0.006); w.pop(); }
+    // incense bowl (turned brass) with sticks, two oranges, a red soda, the candle
+    w.mat('brass', { uv: 'local' });
+    w.cyl(0, 0.05, 0.06, 0.035, 0.055, 0.035, 14, 1); w.cyl(0, 0.085, 0.06, 0.055, 0.058, 0.008, 14, 1);
     w.mat('wood_old', { uv: 'local', tint: 0x8a2a1a });
-    for (let i = 0; i < 5; i++) w.tube([-0.02 + i * 0.01, 0.1, 0.06, -0.03 + i * 0.015, 0.28, 0.06 + (i - 2) * 0.01], 0.003, 3);
+    for (let i = 0; i < 5; i++) w.tube([-0.02 + i * 0.01, 0.09, 0.06, -0.03 + i * 0.015, 0.28, 0.06 + (i - 2) * 0.01], 0.003, 4);
     w.mat('plastic_gloss', { uv: 'local', tint: 0xe86010 });
-    for (const x of [-0.13, 0.13]) w.cyl(x, 0.02, 0.07, 0.035, 0.035, 0.06, 6, 1, 0, 0.15);
-    w.mat('plastic_gloss', { uv: 'local', tint: 0xc81830 });
-    w.cyl(0.17, 0.02, -0.05, 0.025, 0.02, 0.16, 6, 1);
+    for (const x of [-0.13, -0.09]) fruit(w, x, 0.05, 0.08, 0.026);
+    soda(w, 0.15, 0.05, -0.04, 0.95);
     w.mat('plastic_gloss', { uv: 'local', tint: 0xff4020, emis: EMIS.candle.i, emisK: 0.8 });
-    w.cyl(-0.13, 0.02, -0.06, 0.018, 0.018, 0.07, 6, 1);
+    w.cyl(0.12, 0.05, 0.08, 0.016, 0.016, 0.06, 10, 1);
   });
 }
 
-/** wall shrine shelf (หิ้ง): red bracket shelf with a little gilded shrine, garlands and a candle */
+/** wall shrine shelf (หิ้ง): bevelled red bracket shelf with a little gilded shrine, garland, candles */
 export function wallShrine(w: WB): Template {
   return M(w, 'wallShrine', (w) => {
     w.mat('wood_paint', { uv: 'local', tint: 0x9a1810, ao: 0.9 });
-    w.box(-0.3, 0, 0, 0.3, 0.04, 0.32, ALL);
-    w.box(-0.28, -0.18, 0, -0.25, 0, 0.26, ALL); w.box(0.25, -0.18, 0, 0.28, 0, 0.26, ALL);
+    w.bevelBox(-0.3, 0, 0, 0.3, 0.035, 0.32, 0.01);
+    w.bevelBox(-0.3, 0.035, 0.0, 0.3, 0.06, 0.02, 0.006);                      // back lip
+    for (const x of [-0.265, 0.265]) { w.bevelBox(x - 0.015, -0.18, 0, x + 0.015, 0, 0.05, 0.004); w.pushTR(x, -0.02, 0.03, -0.8, 0, 0); w.bevelBox(-0.012, -0.2, 0, 0.012, 0, 0.025, 0.004); w.pop(); }
+    // gilded mini shrine: base, body, columns, roof
     w.mat('brass', { uv: 'local', tint: 0xe0b050 });
-    w.box(-0.12, 0.04, 0.06, 0.12, 0.2, 0.22, ALL & ~NY);
-    w.cyl(0, 0.2, 0.14, 0.15, 0.0, 0.16, 4, 0, Math.PI / 4);
+    w.bevelBox(-0.13, 0.035, 0.05, 0.13, 0.055, 0.24, 0.006);
+    w.bevelBox(-0.11, 0.055, 0.07, 0.11, 0.19, 0.2, 0.008);
+    for (const x of [-0.1, 0.1]) w.cyl(x, 0.055, 0.215, 0.008, 0.008, 0.14, 8, 0);
+    w.cyl(0, 0.19, 0.14, 0.16, 0.0, 0.14, 4, 0, Math.PI / 4);
+    w.mat('plastic', { uv: 'local', tint: 0x2a0e08, ao: 0.6 });
+    w.quad(-0.09, 0.06, 0.201, 0.09, 0.06, 0.201, 0.09, 0.18, 0.201, -0.09, 0.18, 0.201);
     w.mat('fabric', { uv: 'local', tint: 0xf0d040 });
-    w.tube([-0.25, 0.03, 0.31, -0.1, -0.08, 0.32, 0.1, -0.08, 0.32, 0.25, 0.03, 0.31], 0.018, 4);
+    w.tube([-0.25, 0.03, 0.31, -0.1, -0.08, 0.32, 0.1, -0.08, 0.32, 0.25, 0.03, 0.31], 0.018, 6);
+    soda(w, -0.21, 0.035, 0.12, 0.8);
     w.mat('plastic_gloss', { uv: 'local', tint: 0xff3010, emis: EMIS.candle.i, emisK: 0.9 });
-    w.cyl(0.2, 0.04, 0.2, 0.02, 0.02, 0.07, 6, 1);
-    w.cyl(-0.2, 0.04, 0.2, 0.02, 0.02, 0.07, 6, 1);
+    w.cyl(0.2, 0.035, 0.2, 0.018, 0.018, 0.07, 10, 1);
+    w.cyl(-0.2, 0.035, 0.24, 0.018, 0.018, 0.07, 10, 1);
   });
 }
 

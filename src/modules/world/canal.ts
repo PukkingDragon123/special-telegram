@@ -267,16 +267,38 @@ function boat(c: SpecialCtx, x: number, z: number, rng: RNG) {
   w.setGroup('detail');
   w.mat('wood_paint', { tint: rng.pick([0x8a4a2a, 0x2a5a8a, 0x6a6a2a]), uv: 'local', ov: 'plaster_moldy', ovAmt: 0.4 });
   // hull: tapered prism (pointed bow), length along x
-  const pts: [number, number][] = [[x - L / 2, z], [x - L / 2 + 0.6, z - Wd / 2], [x + L / 2 - 1.4, z - Wd / 2], [x + L / 2, z - 0.05], [x + L / 2 - 1.4, z + Wd / 2], [x - L / 2 + 0.6, z + Wd / 2]];
-  w.prism(pts, y, y + 0.45, false, true);
+  // hull: a smooth plan-view outline (fine stern, long entry to a sharp bow) in two strakes (the upper one flares out)
+  const hull = (k: number): [number, number][] => {
+    const out: [number, number][] = [];
+    for (let i = 0; i <= 12; i++) {
+      const t = i / 12, xx = x - L / 2 + t * L;
+      const half = (Wd / 2) * k * Math.pow(Math.sin(Math.min(1, t * 1.25 + 0.12) * Math.PI * 0.5), 0.6) * (t > 0.7 ? Math.cos((t - 0.7) / 0.3 * Math.PI * 0.5) : 1);
+      out.push([xx, z - half]);
+    }
+    for (let i = 12; i >= 0; i--) { const p = out[i]; out.push([p[0], z + (z - p[1])]); }
+    return out;
+  };
+  const pts = hull(1);
+  w.prism(hull(0.88), y, y + 0.22, false, true);
+  w.prism(pts, y + 0.22, y + 0.45, false, false);
+  w.mat('wood_old', { uv: 'local', tint: 0x6a4a2a });
+  for (const side of [-1, 1]) for (let i = 1; i < 12; i++) { const a = pts[side < 0 ? i : 25 - i], b = pts[side < 0 ? i + 1 : 24 - i]; w.tube([a[0], y + 0.46, a[1], b[0], y + 0.46, b[1]], 0.025, 5); }   // gunwale
+  for (let i = 2; i < 11; i += 2) { const p = pts[i]; w.tube([p[0], y + 0.25, p[1] + 0.03, p[0], y + 0.25, 2 * z - p[1] - 0.03], 0.02, 4); }   // thwarts / ribs
   w.mat('wood_old', { uv: 'local' });
   w.fan(pts.map(([px, pz]) => [x + (px - x) * 0.92, z + (pz - z) * 0.85] as [number, number]), y + 0.25, true);
   // bow ribbons + long-tail engine shaft
   w.mat('fabric', { tint: 0xe03030, uv: 'local' });
   w.tube([x + L / 2, y + 0.45, z, x + L / 2 + 0.2, y + 0.9, z], 0.03, 4);
   w.mat('steel_rust', { uv: 'local' });
-  w.box(x - L / 2 + 0.2, y + 0.4, z - 0.25, x - L / 2 + 0.8, y + 0.8, z + 0.25, ALL);
-  w.tube([x - L / 2 + 0.5, y + 0.6, z, x - L / 2 - 2.2, y - 0.2, z], 0.03, 5);
+  // the long-tail: a car engine block on a swivel mount, a long propeller shaft into the water
+  w.bevelBox(x - L / 2 + 0.2, y + 0.4, z - 0.22, x - L / 2 + 0.8, y + 0.72, z + 0.22, 0.04);
+  w.bevelBox(x - L / 2 + 0.3, y + 0.72, z - 0.16, x - L / 2 + 0.7, y + 0.84, z + 0.16, 0.03);
+  w.mat('rubber', { uv: 'local' });
+  w.cyl(x - L / 2 + 0.85, y + 0.5, z, 0.08, 0.08, 0.12, 12, 1);
+  w.mat('steel_rust', { uv: 'local' });
+  w.tube([x - L / 2 + 0.5, y + 0.6, z, x - L / 2 - 2.2, y - 0.2, z], 0.03, 8);
+  w.tube([x - L / 2 + 0.6, y + 0.75, z, x - L / 2 + 1.5, y + 1.1, z], 0.02, 6);   // tiller
+  w.pushTR(x - L / 2 - 2.2, y - 0.2, z, 0, 0, Math.PI / 2); w.cyl(0, -0.02, 0, 0.12, 0.12, 0.04, 3, 1); w.pop();     // propeller
   w.setGroup('base');
   void PLASTIC_COLORS; void PX; void NX; void PZ; void NZ; void CROAD;
 }
