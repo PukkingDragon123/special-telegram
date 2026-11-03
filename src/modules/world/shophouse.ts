@@ -180,9 +180,12 @@ export class Shophouse {
       w.quad(ox0, y0 + 0.002, 0, ox1, y0 + 0.002, 0, ox1, y0 + 0.002, -rd, ox0, y0 + 0.002, -rd);
       this.col(0, 0, -rd, W, y0, 0);
       // interior shell
-      const inL = shop === 'gold' ? 'plaster' : rng.pick(['plaster', 'plaster_dirty', 'tiles_wall', 'plaster_moldy']);
-      const inT = shop === 'gold' ? 0x8a1a1a : shop === 'pharmacy' ? 0xf0f0ec : rng.pick([0xe8e4d8, 0xd8d0c0, 0xc8d0c8, 0xe0d8c8]);
-      w.mat(inL, { tint: inT, ao: 0.62, ov: 'plaster_moldy', ovAmt: 0.4, autoDirt: true });
+      const inL0 = shop === 'gold' ? 'plaster' : rng.pick(['plaster', 'plaster_dirty', 'tiles_wall', 'plaster_moldy']);
+      const inT0 = shop === 'gold' ? 0x8a1a1a : shop === 'pharmacy' ? 0xf0f0ec : rng.pick([0xe8e4d8, 0xd8d0c0, 0xc8d0c8, 0xe0d8c8]);
+      // the furniture showroom is freshly painted (bright, barely any damp); same rng calls as every other unit
+      const show = shop === 'furniture';
+      const inL = show ? 'plaster' : inL0, inT = show ? 0xf6f2e8 : inT0;
+      w.mat(inL, { tint: inT, ao: show ? 0.88 : 0.62, ov: 'plaster_moldy', ovAmt: show ? 0.1 : 0.4, autoDirt: !show });
       if (!nb.mergeL) w.quad(ox0, y0, -rd, ox0, y0, 0, ox0, yb, 0, ox0, yb, -rd); // left wall faces +x
       if (!nb.mergeR) w.quad(ox1, y0, 0, ox1, y0, -rd, ox1, yb, -rd, ox1, yb, 0); // right wall faces -x
       w.quad(ox0, y0, -rd, ox1, y0, -rd, ox1, yb, -rd, ox0, yb, -rd);              // back wall
@@ -768,7 +771,8 @@ export class Shophouse {
     w.setGroup('detail');
     const S = c.signs;
     // a real photo of a shop interior on the back wall gives instant believable clutter
-    if (S && ground !== 'gate' && shop !== 'residence') {
+    // (not in the furniture store: the build module dresses its showroom, and บ่าวคลาร์ค's STAFF ONLY door is on that wall)
+    if (S && ground !== 'gate' && shop !== 'residence' && shop !== 'furniture') {
       const r = S.interior(shop, rng);
       if (r) {
         const ww = x1 - x0 - 0.2, hh = Math.min(yb - y0 - 0.2, ww / Math.max(0.5, r.aspect));

@@ -262,31 +262,25 @@ class Backrooms {
     const chair = libModel('plastic_monobloc_chair_01');
     chair.position.set(0, 0, -1.25);
     g.add(desk, chair);
-    // a laminated sign on the desk: the returns department at the end of the universe
-    const sign = text3d('แผนกรับคืนสินค้า', { font: 'heavy', size: 0.07, color: 0x2a2a2a, side: 0x111111, depth: 0.12, align: 'center' });
-    sign.position.set(0, 0.84, -0.25);
-    g.add(sign);
-    const sub = text3d('RETURNS · กรุณารอสักครู่', { font: 'ui', size: 0.032, color: 0x3a3a3a, align: 'center' });
-    sub.position.set(0, 0.79, -0.25);
-    g.add(sub);
+    // an acrylic desk sign: the returns department at the end of the universe
+    const plate = new THREE.Mesh(new RoundedBoxGeometry(0.66, 0.2, 0.014, 2, 0.006), new THREE.MeshStandardMaterial({ color: 0xf4f2ec, roughness: 0.25, metalness: 0 }));
+    plate.position.set(0, 0.86, -0.2);
+    plate.rotation.x = -0.12;
+    plate.castShadow = true;
+    const foot = new THREE.Mesh(new RoundedBoxGeometry(0.66, 0.012, 0.09, 2, 0.004), plate.material);
+    foot.position.set(0, 0.762, -0.2);
+    const sign = text3d('แผนกรับคืนสินค้า', { font: 'heavy', size: 0.058, color: 0x1e3c8c, depth: 0.08, align: 'center' });
+    sign.position.set(0, 0.012, 0.009);
+    const sub = text3d('RETURNS · กรุณารอสักครู่', { font: 'ui', size: 0.024, color: 0x3a3a3a, depth: 0.05, align: 'center' });
+    sub.position.set(0, -0.062, 0.009);
+    plate.add(sign, sub);
+    g.add(plate, foot);
     game.physics?.addBox([c.x, O.y + 0.4, c.z - 0.55], [1.3, 0.8, 0.7]);
-    // the man himself (his shop look if the keeper exists)
-    let rig: any = null;
-    try {
-      const keeper = game.state.all('npc').find((e: Ent) => /คลาร์ค|clark/i.test(JSON.stringify(e.name ?? '')));
-      const look = keeper?.look ?? game.chars?.randomLook?.('security_guard', 7);
-      rig = game.chars?.create(look, { castShadow: true });
-      if (rig) {
-        rig.root.position.set(0, 0.02, -1.22);
-        rig.root.rotation.y = 0;
-        rig.play('sit', { loop: true });
-        g.add(rig.root);
-      }
-    } catch (e) { console.warn('[backrooms] clark rig', e); }
+    // the man himself: created on your first visit with his shop look (the keeper entity spawns after the world)
     this.root.add(g);
     const head = new THREE.Vector3(c.x, O.y + 1.35, c.z - 1.15);
-    this.clark = { root: g, rig, head };
-    const target: TalkTarget = { kind: 'local', key: 'backrooms_clark', role: 'backrooms_clark', name: tl('บ่าวคลาร์ค', 'Bao Clark'), head: () => head.clone(), act: (anim) => { if (anim && rig) rig.play(anim, { loop: anim === 'sit' }); } };
+    this.clark = { root: g, rig: null, head };
+    const target: TalkTarget = { kind: 'local', key: 'backrooms_clark', role: 'backrooms_clark', name: tl('บ่าวคลาร์ค', 'Bao Clark'), head: () => head.clone(), act: (anim) => { const r = this.clark?.rig; if (anim && r) r.play(anim, { loop: anim === 'sit' }); } };
     const proxy = proxyBox(new THREE.Vector3(c.x, O.y + 0.8, c.z - 1.2), 0, [0.8, 1.6, 0.8]);
     this.root.add(proxy);
     game.interact.register(proxy, { kind: 'backrooms_clark', data: { name: target.name } });
@@ -295,6 +289,24 @@ class Backrooms {
     this.clarkTarget = target;
   }
   clarkTarget: TalkTarget | null = null;
+
+  /** build Clark's rig with the furniture keeper's look (falls back to a tidy office worker) */
+  private ensureClark() {
+    const cl = this.clark;
+    if (!cl || cl.rig) return;
+    const game = this.game;
+    try {
+      const keeper = game.state.all('npc').find((e: Ent) => e.role === 'shopkeeper:furniture_store' || /คลาร์ค|clark/i.test(JSON.stringify(e.name ?? '')));
+      const look = keeper?.look ?? game.chars?.randomLook?.('office_worker_m', 2404);
+      const rig: any = game.chars?.create(look, { castShadow: true });
+      if (!rig) return;
+      rig.root.position.set(0, 0.02, -1.22);
+      rig.root.rotation.y = Math.PI;          // rigs face −Z: turn him toward the visitor (+Z)
+      rig.play('sit', { loop: true });
+      cl.root.add(rig.root);
+      cl.rig = rig;
+    } catch (e) { console.warn('[backrooms] clark rig', e); }
+  }
 
   // ------------------------------------------------------------------ teleports
 
@@ -334,7 +346,7 @@ class Backrooms {
     this.t += dt;
     const cam = this.game.engine.camera.position;
     const inside = Math.abs(cam.x - O.x) < HALF + 4 && Math.abs(cam.z - O.z) < HALF + 4 && cam.y > O.y - 6 && cam.y < O.y + 12;
-    if (inside !== this.inside) { this.inside = inside; this.onSwitch(inside); }
+    if (inside !== this.inside) { this.inside = inside; this.onSwitch(inside); if (inside) this.ensureClark(); }
     (this.game as any).backrooms = { inside, enter: () => this.enter(), exit: () => this.exit() };
     if (!inside) return;
     // flicker: faulty tubes stutter; every so often a surge ripples through every panel near you
@@ -546,7 +558,8 @@ let BR: Backrooms | null = null;
 
 export default defineModule({
   id: 'backrooms',
-  deps: ['world', 'characters'],
+  // 'build' publishes the furniture_backdoor anchor in its buildWorld (when it is loaded)
+  deps: ['world', 'characters', 'build'],
   init(game) {
     registerClarkDialogue();
     // HOST: first visit + Clark's travel money (once per player)

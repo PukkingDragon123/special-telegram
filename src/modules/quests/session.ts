@@ -4,6 +4,7 @@ import { Input } from '../../core/input';
 import { Sound } from '../../core/audio';
 import { tl, TL } from '../../core/util';
 import { Overlay } from '../../ui3d/overlay';
+import { G } from '../../sim/physics';
 import { DialogueView, DlgViewOption } from '../../ui3d/dialogue3d';
 import { PERSONALITIES, SHOP_BY_ID } from '../shops/data';
 import { Dialogues, Dialogue, DlgCtx, DlgNode, DlgOption, Line, Quests, TalkTarget } from './api';
@@ -88,7 +89,7 @@ export function canTalk(game: Game, t: TalkTarget, minPriority = -Infinity): boo
 }
 
 const UP = new THREE.Vector3(0, 1, 0);
-const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _m = new THREE.Matrix4();
+const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _c = new THREE.Vector3(), _e = new THREE.Vector3(), _m = new THREE.Matrix4();
 
 export class DialogueSession {
   view: DialogueView | null = null;
@@ -252,9 +253,26 @@ export class DialogueSession {
     d.normalize();
     const right = new THREE.Vector3(-d.z, 0, d.x);
     const back = Math.min(1.25, 0.75 + dist * 0.22);
-    out.p.copy(eye).addScaledVector(d, -back).addScaledVector(right, 0.58).addScaledVector(UP, 0.14 + Math.max(0, head.y - eye.y) * 0.3);
+    const lift = 0.14 + Math.max(0, head.y - eye.y) * 0.3;
+    // camera collision: never put the lens inside / behind a wall (narrow alleys, shop corners, the backrooms).
+    // Try the right shoulder, then the left; keep the one with the most room, pulled in front of whatever blocks it.
+    const phys = this.game.physics;
+    let side = 1, room = 1;
+    if (phys) {
+      const fit = (sd: number) => {
+        const want = _c.copy(eye).addScaledVector(d, -back).addScaledVector(right, 0.58 * sd).addScaledVector(UP, lift);
+        const dir = _e.subVectors(want, eye), len = dir.length();
+        if (len < 1e-4) return 1;
+        dir.multiplyScalar(1 / len);
+        const hit = phys.raycast(eye, dir, len + 0.25, G.STATIC);
+        return hit ? Math.max(0, (hit.toi - 0.22) / len) : 1;
+      };
+      const r = fit(1);
+      if (r < 0.95) { const l = fit(-1); if (l > r) { side = -1; room = l; } else room = r; }
+    }
+    out.p.copy(eye).addScaledVector(d, -back * room).addScaledVector(right, 0.58 * side * room).addScaledVector(UP, lift * Math.max(0.4, room));
     // aim left of the speaker so they sit on the right third; their words float in the space to their left
-    const look = head.clone().addScaledVector(right, -0.2 * (dist + back)).addScaledVector(UP, -0.12);
+    const look = head.clone().addScaledVector(right, -0.2 * side * (dist + back * room)).addScaledVector(UP, -0.12);
     _m.lookAt(out.p, look, UP);
     out.q.setFromRotationMatrix(_m);
     out.fov = THREE.MathUtils.clamp(46 + dist * 3, 46, 58);

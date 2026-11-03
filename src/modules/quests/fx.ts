@@ -188,8 +188,9 @@ export class QuestFX {
     const cam = this.game.camera;
     const z = -0.62;
     const hh = Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) * -z, hw = hh * cam.aspect;
-    // same share of the screen whatever the FOV (designed at 60°), a touch bigger than that
-    const ks = (hh / 0.358) * 1.15;
+    // same share of the screen whatever the FOV (designed at 60°); sized like a real sticky note in the corner
+    // (at 1.15 it covered a third of the view at 1280×720)
+    const ks = (hh / 0.358) * 0.72;
     n.group.scale.setScalar(Math.max(0.001, n.k) * ks);
     // stack the lines from their real (wrapped) heights; the paper grows to fit
     let y = 0.082;
