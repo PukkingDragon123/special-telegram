@@ -609,6 +609,8 @@ export class ShopHouse3D {
     barB.add(boxUV(new THREE.TorusGeometry(0.022, 0.005, 6, 14, Math.PI).toNonIndexed()).translate(W / 2, -0.005, 0.012), M.chrome());
     barB.flush(bar, 'shutter-bar');
     root.add(bar);
+    // the bottom bar stays reachable when the shutter is rolled up (pull it back down at closing time)
+    game.interact.register(bar, { kind: 'rest_shutter', data: { unit: u.i }, reach: 3.6 });
 
     B.flush(root, 'shophouse');
 
@@ -789,7 +791,7 @@ export class ShopHouse3D {
   }
 
   dispose() {
-    for (const r of this.units) { for (const k of Object.keys(r.loops)) r.loops[k]?.stop(0.1); this.game.interact.unregister(r.shutter); }
+    for (const r of this.units) { for (const k of Object.keys(r.loops)) r.loops[k]?.stop(0.1); this.game.interact.unregister(r.shutter); this.game.interact.unregister(r.bar); }
     for (const b of [...this.bodies]) this.uncol(b);
     this.bodies = [];
     this.units = [];

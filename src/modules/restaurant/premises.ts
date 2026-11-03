@@ -206,6 +206,15 @@ export function serviceFrame(game: Game = G): SvcFrame {
   };
 }
 
+/** a player close enough to take orders: at the shop counter, or at the cart (which may still be parked outside) */
+export function staffNearby(game: Game = G): Ent | null {
+  const sf = serviceFrame(game);
+  const at = game.nearestPlayer(sf.p, sf.orderRadius);
+  if (at || sf.mode === 'cart') return at;
+  const c = game.state.find('cart', () => true);
+  return c?.p ? game.nearestPlayer(c.p, 6) : null;
+}
+
 /** where big deliveries (furniture, gas) are dropped: inside the open restaurant, else next to the cart */
 export function deliverySpot(game: Game = G): number[] {
   if (shopActive(game)) return unitToWorld(UNITS[0], 1.0, SW_H + 0.02, -2.2) as number[];
@@ -234,6 +243,7 @@ function landlordHost(game: Game, dt: number) {
   const want = (qualifies(game) || s.rented) && t >= RENT.landlordHours[0] && t <= RENT.landlordHours[1];
   let e = landlord(game);
   if (want && !e) {
+    if (!game.chars) return;
     const look = game.chars.randomLook('housewife', 4242);
     (look as any).acc = [...new Set([...((look as any).acc ?? []), 'gold_chain', 'watch_casio'])];
     (look as any).height = 1.56;

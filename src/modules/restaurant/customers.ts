@@ -9,7 +9,7 @@ import { L, X, MAD, pickL, fillL, stars as starStr, Line } from './lines';
 import { makeOrder, orderSpeech, orderShort, judge, menuRecipes, menuPrice, Order, reviewBubble, JudgeCtx, SPICY_RECIPES } from './judge';
 import { SEAT_KINDS, TABLE_KINDS, SEAT_H, TABLE_H, TABLE_SIZE, SODA_KINDS } from './furniture';
 import { addReview, stats } from './stats';
-import { serviceFrame, restMods, isInside, rs, setRS } from './premises';
+import { serviceFrame, restMods, isInside, rs, setRS, staffNearby } from './premises';
 
 /* =============================================================================================
  * CUSTOMERS (host AI). npc entities { role:'customer', look, arch, cs, mood, ord, seat, posture … }.
@@ -273,7 +273,7 @@ function tick(c: Ent, dt: number, q: Ent[]) {
       }
       if (t > 3.6) {
         // somebody has to be at the cart to take the order
-        if (!G.nearestPlayer(cf.p, cf.orderRadius)) {
+        if (!staffNearby(G)) {
           patienceTick(c, dt, 0.6);
           if (now() - (c._lastSay ?? 0) > 6.5) { say(c, pickL(X.call), { duration: 3 }); anim(c, 'wave'); }
           if (c._waited > c._pat * 0.8) leave(c, pickL(L.bad.wait), true);
@@ -281,7 +281,7 @@ function tick(c: Ent, dt: number, q: Ent[]) {
         }
         const o: Order = c._order;
         setCS(c, 'order');
-        c.lookAt = G.nearestPlayer(cf.p, cf.orderRadius)?.id ?? null;
+        c.lookAt = staffNearby(G)?.id ?? null;
         c.ord = o;
         anim(c, 'point');
         say(c, orderSpeech(G, c, o), { duration: 5.5 });
