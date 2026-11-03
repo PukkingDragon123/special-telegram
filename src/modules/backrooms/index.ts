@@ -280,7 +280,7 @@ class Backrooms {
     this.root.add(g);
     const head = new THREE.Vector3(c.x, O.y + 1.35, c.z - 1.15);
     this.clark = { root: g, rig: null, head };
-    const target: TalkTarget = { kind: 'local', key: 'backrooms_clark', role: 'backrooms_clark', name: tl('บ่าวคลาร์ค', 'Bao Clark'), head: () => head.clone(), act: (anim) => { const r = this.clark?.rig; if (anim && r) r.play(anim, { loop: anim === 'sit' }); } };
+    const target: TalkTarget = { kind: 'local', key: 'backrooms_clark', role: 'backrooms_clark', name: tl('บ่าวคลาร์ค', 'Bao Clark'), head: () => head.clone(), act: () => { /* deadpan: he never gets up from the returns desk, whatever the line */ const r = this.clark?.rig; if (r && r.anim !== 'sit') r.play('sit', { loop: true }); } };
     const proxy = proxyBox(new THREE.Vector3(c.x, O.y + 0.8, c.z - 1.2), 0, [0.8, 1.6, 0.8]);
     this.root.add(proxy);
     game.interact.register(proxy, { kind: 'backrooms_clark', data: { name: target.name } });
@@ -532,7 +532,7 @@ function registerClarkDialogue() {
     match: (t) => t.role === 'backrooms_clark',
     start: (c) => (rewarded(c) ? 'again' : 'hello'),
     nodes: [
-      { id: 'hello', say: tl('อ้าว… มาถึงนี่ได้ยังไงครับ', 'Oh. How did you get all the way out here?'), anim: 'idle', options: [
+      { id: 'hello', say: tl('อ้าว… มาถึงนี่ได้ยังไงครับ', 'Oh. How did you get all the way out here?'), options: [
         { text: tl('ผมหลงทางครับ', "I'm lost."), next: 'lost' },
         { text: tl('เดี๋ยว! คุณมาถึงก่อนผมได้ยังไง!?', 'Wait! How did you get here before me?!'), next: 'before' },
         { text: tl('เก้าอี้ตัวนั้นขายไหม', 'Is that chair for sale?'), next: 'chair' },
