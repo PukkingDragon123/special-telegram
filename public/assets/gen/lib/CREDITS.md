@@ -89,6 +89,7 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `concrete_road_barrier_02` | Concrete Road Barrier 02 | Amal Kumar (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/concrete_road_barrier_02 |
 | `fire_hydrant` | Fire Hydrant | Gonçalo Felício (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/fire_hydrant |
 | `hand_truck` | Hand Truck | Mutanzom3D (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/hand_truck |
+| `payphone` | Korean Public Payphone 01 | UM JOORIN (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/korean_public_payphone_01 |
 | `power_box_01` | Power Box 01 | Rico Cilliers, Yann Kervran (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/power_box_01 |
 | `utility_box_01` | Utility Box 01 | James Ray Cock (Poly Haven) | CC0-1.0 | https://polyhaven.com/a/utility_box_01 |
 | `condiment_caddy` | Condiment caddy, 4 jars (พวงเครื่องปรุง) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_kitchen.py (custom bpy model; textures: see public/assets/textures manifests) |
@@ -97,8 +98,11 @@ CC-BY / CC-BY-SA models are credited below as required; changes: re-scaled, re-c
 | `cctv_bullet` | CCTV bullet camera | Just8 (sketchfab.com/Just8) | CC-BY-4.0 | https://sketchfab.com/3d-models/281b2b84260447e49ab4a6b34bf78697 |
 | `transformer` | Pole-mounted distribution transformer (หม้อแปลงไฟฟ้า) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests) |
 | `transformer_platform` | Transformer platform: steel channel beams + braces (between two poles 2 m apart) | เฮียผัด! assets (custom, headless Blender) | CC0-1.0 | scripts/thai/models_urban.py (custom bpy model; textures: see public/assets/textures manifests) |
+| `water_tank_plastic` | Water Tank | Baidhar Hembram (sketchfab.com/hembramten) | CC-BY-4.0 | https://sketchfab.com/3d-models/11b6ea9cf9c44875a47a034182d5ff31 |
+| `water_tank_steel` | Water Tank | Arling (sketchfab.com/arling) | CC-BY-4.0 | https://sketchfab.com/3d-models/f44007d8b4a94e9d924bc5ee93480169 |
+| `pickup_hilux` | Toyota Hilux Low Poly | sebodeweb (sketchfab.com/sebodeweb) | CC-BY-4.0 | https://sketchfab.com/3d-models/87dc5e8d45724fe6b4b68b1f432976fc |
 | `scooter_cub` | Honda Super Cub C70 moped (photogrammetry) | Bandit.545 (sketchfab.com/Bandit.545) | CC-BY-4.0 | https://sketchfab.com/3d-models/33afed83974d4534bb2f4d43a593e530 |
 | `scooter_wave` | Underbone moped, Honda Wave / SYM E-SR 110 type (photogrammetry) | Bandit.545 (sketchfab.com/Bandit.545) | CC-BY-4.0 | https://sketchfab.com/3d-models/518a7d5a4a0b41218650ee0823320f5a |
 | `tuktuk` | Thai tuk-tuk (ตุ๊กตุ๊ก) | iraida (sketchfab.com/iraida) | CC-BY-4.0 | https://sketchfab.com/3d-models/916b76665fb9458cac7473bd446cdd98 |
 
-Total: 94 models, 13.6 MB.
+Total: 98 models, 14.7 MB.

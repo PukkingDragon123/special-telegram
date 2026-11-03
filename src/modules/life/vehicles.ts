@@ -201,23 +201,22 @@ export function vehicleModel(id: string): VModel {
   if (hit) return hit;
   const d = VDEFS[id];
   const fallbackCol: Record<string, string> = { taxi_pink: '#e0508a', taxi_gy: '#3e9a4a', pickup: '#d8d8d4', songthaew: '#2f5aa8', bus_red: '#b83a2a', junk: '#c9c2a8', moto_red: '#b8282a', moto_blue: '#2a4aa8', tuktuk: '#2a4ab8', icecream: '#3a7ac8' };
-  const atlas = lifeTex(`veh_${id}.${d.kind === 'moto' || d.kind === 'tuktuk' || d.kind === 'icecream' ? 'png' : 'jpg'}`, { fallback: fallbackCol[id] ?? '#888888', kind: 'plastic', clamp: true });
-  atlas.anisotropy = 4;
   let m: VModel;
   if (d.kind === 'moto' || d.kind === 'icecream') {
+    // Motorbikes never use a photo atlas / cut-out planes (there are none for them): traffic renders the real
+    // scooter model (ghost_scooter.glb, else the library scooter) and doesn't show motos at all until it is
+    // loaded (traffic.ts). This plain body only exists for debugPlace() and as a non-null VModel.
     const core = merge([
-      boxGeo(0.22, 0.32, 1.1, 0, 0.62, 0.05, [0.45, 0.62, 0.55, 0.7]),     // body / seat block
-      boxGeo(0.12, 0.5, 0.18, 0, 0.75, -0.62, [0.12, 0.7, 0.2, 0.82]),     // front fork cover
+      boxGeo(0.22, 0.32, 1.1, 0, 0.62, 0.05, [0, 0, 1, 1]),
+      boxGeo(0.12, 0.5, 0.18, 0, 0.75, -0.62, [0, 0, 1, 1]),
     ]);
-    const mat = new THREE.MeshStandardMaterial({ map: atlas, roughness: 0.5, metalness: 0.2 });
-    const cmat = new THREE.MeshStandardMaterial({ map: atlas, roughness: 0.5, metalness: 0.15, alphaTest: 0.5, side: THREE.DoubleSide });
-    m = { geo: core, mat, cutout: { geo: cutoutPlanes(d.len, d.hgt, 0.13), mat: cmat } };
-    if (d.kind === 'icecream') {
-      // sidecar freezer box (blue/white, uses the front region of the atlas = box photo)
-      const box = boxGeo(0.62, 0.62, 0.9, 0.62, 0.62, 0.05, [0, 0, 0.5, 0.5]);
-      m.geo = merge([core, box]);
-    }
-  } else if (d.kind === 'tuktuk') {
+    m = { geo: core, mat: new THREE.MeshStandardMaterial({ color: fallbackCol[id] ?? '#888888', roughness: 0.5, metalness: 0.2 }) };
+    models.set(id, m);
+    return m;
+  }
+  const atlas = lifeTex(`veh_${id}.${d.kind === 'tuktuk' ? 'png' : 'jpg'}`, { fallback: fallbackCol[id] ?? '#888888', kind: 'plastic', clamp: true });
+  atlas.anisotropy = 4;
+  if (d.kind === 'tuktuk') {
     const parts = [
       boxGeo(1.18, 0.12, 1.5, 0, 0.42, 0.55, [0.4, 0.52, 0.6, 0.56]),            // floor
       boxGeo(1.25, 0.06, 2.0, 0, 1.78, 0.25, [0.3, 0.97, 0.7, 0.99]),             // roof

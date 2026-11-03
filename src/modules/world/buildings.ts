@@ -129,8 +129,9 @@ function sevenTwelve(c: SpecialCtx) {
   c.phys.box([(x0 + x1) / 2, 2, gz], [x1 - x0, 4, 0.12]);
   // ATM + ice chest outside, bins
   w.setGroup('detail');
-  w.put(c.props.atm(), x0 - 0.45, SW_H, -13.3, -Math.PI / 2);
-  c.phys.box([x0 - 0.45, 1.1, -13.3], [0.8, 2.2, 0.8]);
+  // the working ATM is built by the `atm` module at this anchor (rotation.y of a +Z-front model)
+  c.anchors['atm:store'] = { p: [x0 - 0.45, SW_H, -13.3], yaw: -Math.PI / 2, r: 1.2 };
+  c.phys.box([x0 - 0.53, SW_H + 0.98, -13.3], [0.88, 1.96, 0.76]);
   w.put(c.props.bin(0x2a7a3a), x0 - 0.5, SW_H, -1.6, -Math.PI / 2);
   w.setGroup('base');
   // shelf anchors for the shops module (gondola lines in the store)

@@ -13,6 +13,7 @@ import type { FoliageSys } from './foliage';
 import { vines, bougainvillea, pottedPlant, weeds } from './foliage';
 import { birdcage, floorShrine, wallShrine, cctv, drainpipe, rebar, breezeBlocks, grilleMotif } from './archkit';
 import { ARCH } from './archmodels';
+import { ClothSpots } from '../cloth/api';
 
 /**
  * PROCEDURAL SHOPHOUSE (ตึกแถว) GENERATOR
@@ -47,7 +48,6 @@ export interface ShopCtx {
 const WALL_TINTS = [0xe8dcc8, 0xd9c7a6, 0xc9d6c2, 0xe2c6c0, 0xc8d2dc, 0xe6d7a0, 0xd8d8d0, 0xb8c4a8, 0xd8b8a0, 0xa8b8c8, 0xe0e0d8, 0xd0c0b0, 0xc0b8a8, 0xe8c8a0];
 const TRIM_TINTS = [0xffffff, 0xe0d8c8, 0x8a8478, 0x5a6a5a, 0x7a3a2a, 0x3a4a6a];
 const GRILLE_TINTS = [0xe8e8e0, 0x2a2a2a, 0x3a5a3a, 0x6a4a2a, 0x8a8a8a, 0x2a3a5a, 0x9a2a2a];
-const CLOTH = [0xffffff, 0xd03030, 0x3050c0, 0xe0c020, 0x30a050, 0xf080a0, 0x202020, 0xe08030, 0x80c0e0, 0xf0f0e8, 0x7a3a8a];
 const CURTAIN = [0xf0e8d8, 0xe8d0a0, 0xc84a3a, 0x5a7ab0, 0xf4f0f0, 0x8aa070, 0xe0a0b0];
 const SHUTTER_TINTS = [0xc8c8c0, 0x8aa0b0, 0x9aa890, 0xc0a080, 0x7a8a9a, 0xd0c8a8, 0xa04030, 0x40607a];
 
@@ -574,17 +574,11 @@ export class Shophouse {
         if (fl.grille) for (let z = 0.15; z < bd - 0.1; z += 0.15) { w.box(0.09, yb0, z, 0.11, top, z + 0.018, PX | NX | PZ | NZ); w.box(W - 0.11, yb0, z, W - 0.09, top, z + 0.018, PX | NX | PZ | NZ); }
         // laundry on a line (real cloth that sways)
         if (rng.chance(deco.laundry ? 0.85 : 0.4)) {
-          w.mat('steel_rust', { uv: 'local' });
+          // clothes-line hooked between the side walls: real simulated laundry (cloth module)
           const ly = fl.y + 2.05;
-          w.box(0.15, ly, bd * 0.6, W - 0.15, ly + 0.015, bd * 0.6 + 0.015, ALL);
-          let x = 0.3;
-          while (x < W - 0.6) {
-            const cw = rng.range(0.35, 0.7), ch = rng.range(0.45, 0.85);
-            const den = rng.chance(0.25);
-            w.mat(den ? 'denim' : 'fabric', { tint: den ? 0xffffff : rng.pick(CLOTH), uv: 'local', ao: 0.95 });
-            w.cloth(x, ly - ch, x + cw, ly, bd * 0.6 + 0.01, 3, 0, 1);
-            x += cw + rng.range(0.05, 0.25);
-          }
+          w.mat('steel_rust', { uv: 'local' });
+          for (const hx of [0.12, W - 0.12]) w.box(hx - 0.012, ly - 0.02, bd * 0.6 - 0.012, hx + 0.012, ly + 0.03, bd * 0.6 + 0.012, ALL);   // wall hooks
+          clothSpot(w, 'line', 0.15, W - 0.15, ly, bd * 0.6, 0.05, fl.y + 0.08, rng, deco.laundry ? 0.85 : 0.6, 'balcony');
         }
         // potted plants on the slab / along the railing, a birdcage hanging from the ceiling
         if (deco.plants && this.c.fol) {
@@ -661,14 +655,8 @@ export class Shophouse {
         w.mat('steel_rust', { uv: 'local' });
         const ly = y1 - 0.12;
         w.tube([x0 - 0.15, ly, gz + 0.06, x1 + 0.15, ly, gz + 0.06], 0.01, 4);
-        let x = x0 + 0.1;
-        while (x < x1 - 0.4) {
-          const cw = rng.range(0.3, 0.55), ch = rng.range(0.4, 0.7);
-          const den = rng.chance(0.2);
-          w.mat(den ? 'denim' : 'fabric', { tint: den ? 0xffffff : rng.pick(CLOTH), uv: 'local', ao: 0.95 });
-          w.cloth(x, ly - ch, x + cw, ly - 0.02, gz + 0.07, 3, 0, 1);
-          x += cw + rng.range(0.08, 0.3);
-        }
+        // garments on hangers hooked over the pole (cloth module simulates them)
+        clothSpot(w, 'rail', x0 + 0.05, x1 - 0.05, ly, gz + 0.06, gz + 0.02, ly - 1.6, rng, 0.75, 'grille');
       }
       // rust bleeding down the wall from the cage anchors
       if (this.c.decals && rng.chance(0.4)) { const k = rng.int(0, 3); this.cellDecal('decal_wall_grime_streaks_photo', k % 2, k >> 1, x0 + rng.range(0, Math.max(0.05, x1 - x0 - 0.8)), y0 - rng.range(0.8, 1.5), 0.8, rng.range(0.8, 1.5), 0, 0.6, 0x9a6a48); }
@@ -977,3 +965,17 @@ export function buildRows(c: ShopCtx, rows: UnitSpec[][]) {
 }
 
 void PY; void NY; void NZ; void PX; void NX; void PZ;
+
+/**
+ * Publish a laundry spot for the cloth module: a line / rail from (x0, y, z) to (x1, y, z) in the writer's
+ * local frame (facing +z), a wall plane at local z = wallZ the cloth can't pass, and the floor height.
+ */
+function clothSpot(w: WB, kind: 'line' | 'rail', x0: number, x1: number, y: number, z: number, wallZ: number, floorY: number, rng: RNG, fill: number, style: 'balcony' | 'grille') {
+  const M = w.M;
+  const a = new THREE.Vector3(x0, y, z).applyMatrix4(M), b = new THREE.Vector3(x1, y, z).applyMatrix4(M);
+  const n = new THREE.Vector3(0, 0, 1).transformDirection(M);
+  const d = n.dot(new THREE.Vector3(0, 0, wallZ).applyMatrix4(M));
+  const floor = new THREE.Vector3(0, floorY, 0).applyMatrix4(M).y;
+  const spot = { a: a.toArray() as [number, number, number], b: b.toArray() as [number, number, number], seed: rng.int(1, 2 ** 30), wall: { n: n.toArray() as [number, number, number], d }, fill, style, floor };
+  if (kind === 'line') ClothSpots.line(spot); else ClothSpots.rail(spot);
+}

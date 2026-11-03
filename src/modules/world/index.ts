@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { ClothSpots } from '../cloth/api';
 import { defineModule } from '../../game/contracts';
 import type { WorldAPI, AnchorPt } from '../../game/contracts';
 import type { Game } from '../../game/game';
@@ -103,6 +104,7 @@ async function loadDecals(man: any, atlasSize = 4096): Promise<Atlas | null> {
 const TIMES: Record<string, number> = {};
 (window as any).__worldTimes = TIMES;
 async function buildWorld(game: Game) {
+  ClothSpots.clear();      // shophouses re-publish their laundry lines for the cloth module
   const t0 = performance.now();
   const assets = await startPreload(game);
   await loadLib().catch(() => []);   // shared library models (lib:<id>) must be registered before props are placed

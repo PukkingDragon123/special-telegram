@@ -300,7 +300,10 @@ def run_blender(code, *args, timeout=1800):
     open(sp, 'w').write(code)
     r = subprocess.run([sys.executable, '-I', sp, *args], capture_output=True, text=True, timeout=timeout)
     out = r.stdout + r.stderr
-    if r.returncode: raise RuntimeError(out[-4000:])
+    # the pip `bpy` module sometimes segfaults at interpreter shutdown, after the export finished: that output is fine
+    done = 'Finished glTF 2.0 export' in out or 'PREVIEW ' in out or 'BAKED' in out
+    if r.returncode and not (r.returncode in (-11, 139) and done):
+        raise RuntimeError('\n'.join(l for l in out.splitlines() if ' | INFO: ' not in l and 'WARN (bke' not in l)[-4000:])
     return out
 
 

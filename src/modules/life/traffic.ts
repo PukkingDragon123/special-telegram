@@ -7,7 +7,10 @@ import { VDEFS, VDef, vehicleModel, wheelModel, riderGeometries } from './vehicl
 import { h01, hashN, hweighted, bump, qmul } from './util';
 import { loop, play } from './sounds';
 import { line } from './lines';
-import { glowTexture } from './tex';
+import { glowTexture, lifeTex } from './tex';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { libLoad } from '../world/lib';
 import type { Life } from './index';
 
 /* ============================================================================================
@@ -70,7 +73,10 @@ export class Traffic {
   private lanes: Lane[] = [];
   private veh = new Map<string, Veh>();
   private group: THREE.Group | null = null;
-  private inst = new Map<string, { body: THREE.InstancedMesh; cut?: THREE.InstancedMesh; cap: number; n: number }>();
+  /** body = first part; extra = further material parts of the real (GLB) model */
+  private inst = new Map<string, { body: THREE.InstancedMesh; extra?: THREE.InstancedMesh[]; cut?: THREE.InstancedMesh; cap: number; n: number }>();
+  /** ice-cream sidecar cart parts (instanced, one per ice-cream bike) */
+  private side: THREE.InstancedMesh[] = [];
   private wheels: THREE.InstancedMesh | null = null;
   private riders: Record<string, THREE.InstancedMesh> = {};
   private boxes: THREE.InstancedMesh | null = null;
@@ -125,7 +131,8 @@ export class Traffic {
       body.receiveShadow = true;
       body.frustumCulled = false;
       body.count = 0;
-      g.add(body);
+      // motorbikes stay out of the scene until the real scooter model replaces them (loadRealMotos)
+      if (!isMotoKind(VDEFS[id].kind)) g.add(body);
       let cut: THREE.InstancedMesh | undefined;
       if (mdl.cutout) {
         cut = new THREE.InstancedMesh(mdl.cutout.geo, mdl.cutout.mat, cap);
@@ -150,9 +157,8 @@ export class Traffic {
       this.riders[k] = im;
     }
     // delivery boxes (instanced, colour per instance)
-    const bg = new THREE.BoxGeometry(0.42, 0.4, 0.4);
-    bg.translate(0, 1.18, 0.62);
-    this.boxes = new THREE.InstancedMesh(bg, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 }), 40);
+    this.boxes = new THREE.InstancedMesh(deliveryBagGeometry(), deliveryBagMaterial(), 40);
+    this.boxes.castShadow = true;
     this.boxes.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(40 * 3).fill(1), 3);
     this.boxes.frustumCulled = false; this.boxes.count = 0; g.add(this.boxes);
     // lamp glows (additive camera-facing quads)
@@ -183,33 +189,71 @@ export class Traffic {
     this.loadRealMotos();
   }
 
-  /** Swap the photo cut-out motorbikes for the real sculpted scooter model (instanced) once loaded. */
+  /**
+   * Motorbikes (+ the ice-cream sidecar bike) are only ever drawn with a real scooter model: the photoscanned library
+   * Honda Wave (moto_red, ice-cream) and Super Cub (moto_blue) — the bikes every Bangkok win / delivery rider uses —
+   * or, if the library can't load, the sculpted ghost_scooter.glb. Until a model is in, moto traffic is not rendered,
+   * heard or collided with at all (no placeholder boxes).
+   */
   private loadRealMotos() {
-    Assets.glb('gen/life/models/ghost_scooter.glb').then((gl: any) => {
-      if (!this.group) return;
+    type Part = { geo: THREE.BufferGeometry; mat: THREE.Material; tint: boolean };
+    const flip = new THREE.Matrix4().makeRotationY(Math.PI);   // models face +Z; traffic vehicles face -Z
+    const fromGhost = (): Promise<Part[]> => Assets.glb('gen/life/models/ghost_scooter.glb').then((gl: any) => {
       gl.scene.updateMatrixWorld(true);
       let mesh: THREE.Mesh | null = null;
       gl.scene.traverse((o: any) => { if (o.isMesh && (!mesh || o.geometry.attributes.position.count > mesh.geometry.attributes.position.count)) mesh = o; });
-      if (!mesh) return;
+      if (!mesh) throw new Error('ghost_scooter: no mesh');
       const m = mesh as THREE.Mesh;
-      const geo = m.geometry.clone().applyMatrix4(m.matrixWorld).applyMatrix4(new THREE.Matrix4().makeRotationY(Math.PI));
-      const mat = (Array.isArray(m.material) ? m.material[0] : m.material) as THREE.MeshStandardMaterial;
-      for (const id of ['moto_red', 'moto_blue', 'icecream']) {
+      const mat = (Array.isArray(m.material) ? m.material[0] : m.material) as THREE.Material;
+      return [{ geo: m.geometry.clone().applyMatrix4(m.matrixWorld).applyMatrix4(flip), mat, tint: true }];
+    });
+    const fromLib = (id: string): Promise<Part[]> => libLoad(id).then((a) => {
+      if (!a || !a.parts.length) throw new Error(id + ': not loaded');
+      // photoscans carry their own paint (one baked material): no instance tint
+      return a.parts.map((p) => ({ geo: p.geom.clone().applyMatrix4(flip), mat: p.mat, tint: false }));
+    });
+    const pick = async (id: string): Promise<Part[]> => {
+      try { return await fromLib(id); } catch (e: any) {
+        console.warn('[life] traffic scooter: library', id, 'failed, using ghost_scooter.glb', e?.message ?? e);
+        return fromGhost();
+      }
+    };
+    Promise.all([pick('scooter_wave'), pick('scooter_cub')]).then(([wave, cub]) => {
+      if (!this.group) return;
+      for (const id of Object.keys(VDEFS)) {
+        if (!isMotoKind(VDEFS[id].kind)) continue;
         const it = this.inst.get(id);
         if (!it) continue;
-        const im = new THREE.InstancedMesh(geo, mat.clone(), it.cap);
-        im.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(it.cap * 3).fill(1), 3);
-        const tints = id === 'moto_red' ? ['#ffffff', '#c8c8d0', '#ffd0c0'] : ['#7a90ff', '#9a9a9a', '#3a3a3a'];
-        for (let i = 0; i < it.cap; i++) im.setColorAt(i, new THREE.Color(tints[i % tints.length]));
-        im.frustumCulled = false; im.castShadow = true; im.count = 0;
-        this.group.add(im);
+        const parts = id === 'moto_blue' ? cub : wave;
+        const ims = parts.map((p) => {
+          const im = new THREE.InstancedMesh(p.geo, p.tint ? p.mat.clone() : p.mat, it.cap);
+          im.frustumCulled = false; im.castShadow = true; im.receiveShadow = true; im.count = 0;
+          this.group!.add(im);
+          return im;
+        });
+        if (parts[0].tint) {
+          // sculpted fallback: paint variation per instance
+          const body = ims[0];
+          body.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(it.cap * 3).fill(1), 3);
+          const tints = id === 'moto_red' ? ['#ffffff', '#c8c8d0', '#ffd0c0'] : ['#7a90ff', '#9a9a9a', '#3a3a3a'];
+          for (let i = 0; i < it.cap; i++) body.setColorAt(i, new THREE.Color(tints[i % tints.length]));
+        }
         it.body.removeFromParent();
         it.cut?.removeFromParent();
-        it.body = im;
+        it.body = ims[0];
+        it.extra = ims.slice(1);
         it.cut = undefined;
       }
+      // ice-cream sidecar cart
+      const cap = this.inst.get('icecream')?.cap ?? 2;
+      for (const p of icecreamSidecar()) {
+        const im = new THREE.InstancedMesh(p.geo, p.mat, cap);
+        im.frustumCulled = false; im.castShadow = true; im.receiveShadow = true; im.count = 0;
+        this.group.add(im);
+        this.side.push(im);
+      }
       this.realMotos = true;
-    }).catch(() => {});
+    }).catch((e) => console.warn('[life] traffic scooter: no real model, motorbike traffic stays hidden', e?.message ?? e));
   }
   private realMotos = false;
 
@@ -223,6 +267,8 @@ export class Traffic {
     this.group?.traverse((o: any) => { if (o.isInstancedMesh && o.geometry && !o.geometry.userData?.shared) {} });
     this.group = null;
     this.inst.clear();
+    this.side = [];
+    this.realMotos = false;
     this.veh.clear();
     this.specialBubble?.close?.();
     this.built = false;
@@ -377,7 +423,7 @@ export class Traffic {
   private render(dt: number, cam: THREE.Vector3, hour: number) {
     const night = this.game.clock.nightFactor;
     for (const it of this.inst.values()) it.n = 0;
-    let nw = 0, nr = 0, nb = 0, ngh = 0, ngt = 0;
+    let nw = 0, nr = 0, nb = 0, ngh = 0, ngt = 0, ns = 0;
     const camQ = this.game.camera.getWorldQuaternion(new THREE.Quaternion());
     const wheelsIM = this.wheels!, R = this.riders, boxes = this.boxes!;
     const near: Veh[] = [];
@@ -385,6 +431,7 @@ export class Traffic {
       const dx = vh.pos.x - cam.x, dz = vh.pos.z - cam.z;
       const d2 = dx * dx + dz * dz;
       if (d2 > 170 * 170) continue;
+      if (!this.realMotos && isMotoKind(vh.def.kind)) continue;
       const it = this.inst.get(vh.def.id);
       if (!it || it.n >= it.cap) continue;
       // body tilt for motorbikes in turns / weaving
@@ -394,7 +441,9 @@ export class Traffic {
       this.m.compose(vh.pos, this.q, this.one);
       it.body.setMatrixAt(it.n, this.m);
       it.cut?.setMatrixAt(it.n, this.m);
+      if (it.extra) for (const x of it.extra) x.setMatrixAt(it.n, this.m);
       it.n++;
+      if (vh.def.id === 'icecream' && this.side.length && ns < this.side[0].instanceMatrix.count) { for (const x of this.side) x.setMatrixAt(ns, this.m); ns++; }
       // wheels
       const spin = vh.s;
       const ownWheels = this.realMotos && (vh.def.kind === 'moto' || vh.def.kind === 'icecream');
@@ -458,10 +507,12 @@ export class Traffic {
     for (const it of this.inst.values()) {
       it.body.count = it.n; it.body.instanceMatrix.needsUpdate = true;
       if (it.cut) { it.cut.count = it.n; it.cut.instanceMatrix.needsUpdate = true; }
+      if (it.extra) for (const x of it.extra) { x.count = it.n; x.instanceMatrix.needsUpdate = true; }
     }
     wheelsIM.count = nw; wheelsIM.instanceMatrix.needsUpdate = true;
     for (const k of Object.keys(R)) { R[k].count = nr; R[k].instanceMatrix.needsUpdate = true; if (R[k].instanceColor) R[k].instanceColor!.needsUpdate = true; }
     boxes.count = nb; boxes.instanceMatrix.needsUpdate = true; if (boxes.instanceColor) boxes.instanceColor.needsUpdate = true;
+    for (const x of this.side) { x.count = ns; x.instanceMatrix.needsUpdate = true; }
     this.glowHead!.count = ngh; this.glowHead!.instanceMatrix.needsUpdate = true;
     this.glowTail!.count = ngt; this.glowTail!.instanceMatrix.needsUpdate = true;
     // headlight spots on the nearest vehicles
@@ -489,7 +540,7 @@ export class Traffic {
     }
     if (this.tAudio > 0) return;
     this.tAudio = 0.3;
-    const list = [...this.veh.values()].map((v) => ({ v, d: v.pos.distanceToSquared(cam) })).filter((o) => o.d < 38 * 38).sort((a, b) => a.d - b.d).slice(0, this.loops.length);
+    const list = [...this.veh.values()].filter((v) => this.realMotos || !isMotoKind(v.def.kind)).map((v) => ({ v, d: v.pos.distanceToSquared(cam) })).filter((o) => o.d < 38 * 38).sort((a, b) => a.d - b.d).slice(0, this.loops.length);
     const want = new Set(list.map((o) => o.v.key));
     for (const l of this.loops) if (l.v && !want.has(l.v.key)) { l.h?.stop(0.5); l.h = null; l.v = null; }
     for (const o of list) {
@@ -523,7 +574,7 @@ export class Traffic {
   private physicsSync(cam: THREE.Vector3) {
     if (!this.colliders.length) return;
     const me = this.game.player?.pos ?? cam;
-    const list = [...this.veh.values()].filter((v) => v.pos.distanceToSquared(me) < 30 * 30).sort((a, b) => a.pos.distanceToSquared(me) - b.pos.distanceToSquared(me)).slice(0, this.colliders.length);
+    const list = [...this.veh.values()].filter((v) => (this.realMotos || !isMotoKind(v.def.kind)) && v.pos.distanceToSquared(me) < 30 * 30).sort((a, b) => a.pos.distanceToSquared(me) - b.pos.distanceToSquared(me)).slice(0, this.colliders.length);
     this.colliders.forEach((c, i) => {
       const vh = list[i];
       const b = c.body.body;
@@ -553,4 +604,64 @@ export class Traffic {
   /** for other systems: vehicles near a point */
   near(p: THREE.Vector3, r: number) { const out: { pos: THREE.Vector3; yaw: number; kind: string }[] = []; for (const v of this.veh.values()) if (v.pos.distanceToSquared(p) < r * r) out.push({ pos: v.pos, yaw: v.yaw, kind: v.def.kind }); return out; }
   get count() { return this.veh.size; }
+}
+
+// ------------------------------------------------------------------ real-model helpers (no placeholder boxes)
+
+function isMotoKind(k: string) { return k === 'moto' || k === 'icecream'; }
+
+let bagGeo: THREE.BufferGeometry | null = null;
+/** insulated food-delivery bag on the rear rack: padded body, lid flap with a rolled edge, carry strap (vehicle space, -Z forward) */
+function deliveryBagGeometry() {
+  if (bagGeo) return bagGeo;
+  const body = new RoundedBoxGeometry(0.42, 0.34, 0.4, 3, 0.045).translate(0, 1.15, 0.62);
+  const lid = new RoundedBoxGeometry(0.44, 0.06, 0.42, 2, 0.025).translate(0, 1.34, 0.62);
+  const seam = new RoundedBoxGeometry(0.43, 0.025, 0.41, 1, 0.01).translate(0, 1.035, 0.62);
+  const strap = new THREE.TorusGeometry(0.11, 0.012, 5, 14, Math.PI).rotateY(Math.PI / 2).translate(0, 1.37, 0.62);
+  const parts = [body, lid, seam, strap].map((g) => (g.index ? g.toNonIndexed() : g));
+  for (const g of parts) for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal' && k !== 'uv') g.deleteAttribute(k);
+  bagGeo = mergeGeometries(parts, false) ?? body;
+  return bagGeo;
+}
+function deliveryBagMaterial() {
+  // polyester rider fabric (photo normal map), colour from the instance (green / pink), slight sheen
+  const n = lifeTex('textures/clothing/rider_green_poly_normal.jpg', { srgb: false, repeat: [2, 2] });
+  return new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.62, metalness: 0.0, normalMap: n, normalScale: new THREE.Vector2(0.6, 0.6) });
+}
+
+/**
+ * Coconut ice-cream sidecar (รถพ่วงข้าง) on the bike's left: stainless freezer cabinet with a lid and handle on a
+ * galvanised frame, a small third wheel with a mudguard, a cash tin. Vehicle space (-Z forward, left = -X).
+ */
+function icecreamSidecar(): { geo: THREE.BufferGeometry; mat: THREE.Material }[] {
+  const X = -0.7;
+  const clean = (gs: THREE.BufferGeometry[]) => {
+    const ps = gs.map((g) => { const h = g.index ? g.toNonIndexed() : g; for (const k of Object.keys(h.attributes)) if (k !== 'position' && k !== 'normal' && k !== 'uv') h.deleteAttribute(k); return h; });
+    return mergeGeometries(ps, false) ?? ps[0];
+  };
+  const rod = (a: THREE.Vector3, b: THREE.Vector3, r: number) => {
+    const L = a.distanceTo(b);
+    const g = new THREE.CylinderGeometry(r, r, L, 8, 1, false).translate(0, L / 2, 0);
+    g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize())));
+    return g.translate(a.x, a.y, a.z);
+  };
+  const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
+  // cabinet + lid (stainless)
+  const cab = new RoundedBoxGeometry(0.56, 0.5, 0.82, 3, 0.04).translate(X, 0.62, 0.05);
+  const lid = new RoundedBoxGeometry(0.6, 0.05, 0.86, 2, 0.02).translate(X, 0.895, 0.05);
+  const handle = rod(V(X - 0.12, 0.935, 0.05), V(X + 0.12, 0.935, 0.05), 0.012);
+  const tin = new RoundedBoxGeometry(0.18, 0.1, 0.14, 2, 0.015).translate(X, 0.97, -0.25);
+  const steel = Assets.pbr('aluminium_scratched', { repeat: 1 });
+  // frame + mudguard + rim (painted / galvanised)
+  const frame = [
+    rod(V(-0.12, 0.32, -0.45), V(X, 0.32, -0.45), 0.02), rod(V(-0.12, 0.32, 0.5), V(X, 0.32, 0.5), 0.02),
+    rod(V(X - 0.3, 0.34, -0.42), V(X - 0.3, 0.34, 0.5), 0.02), rod(V(X + 0.3, 0.34, -0.42), V(X + 0.3, 0.34, 0.5), 0.02),
+    rod(V(X - 0.3, 0.34, -0.42), V(X - 0.3, 0.36, -0.42), 0.02),
+    new THREE.CylinderGeometry(0.235, 0.235, 0.1, 16, 1, true, 0, Math.PI).rotateZ(Math.PI / 2).rotateX(Math.PI / 2).translate(X - 0.36, 0.2, 0.05),
+    new THREE.CylinderGeometry(0.11, 0.11, 0.065, 12).rotateZ(Math.PI / 2).translate(X - 0.36, 0.2, 0.05),
+  ];
+  const paint = new THREE.MeshStandardMaterial({ color: 0x2f6fb8, roughness: 0.45, metalness: 0.3 });
+  const tyre = new THREE.TorusGeometry(0.17, 0.045, 8, 20).rotateY(Math.PI / 2).translate(X - 0.36, 0.2, 0.05);
+  const rubber = new THREE.MeshStandardMaterial({ color: 0x1b1a19, roughness: 0.92, metalness: 0 });
+  return [{ geo: clean([cab, lid, handle, tin]), mat: steel }, { geo: clean(frame), mat: paint }, { geo: clean([tyre]), mat: rubber }];
 }

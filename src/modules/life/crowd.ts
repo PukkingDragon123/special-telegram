@@ -47,10 +47,13 @@ export class Crowd {
   private paths: Path[] = [];
   private walkers = new Map<string, Walker>();
   private fixed: Fixed[] = [];
-  private rigs = new Map<string, { rig: CharacterRig; anim: string; last: THREE.Vector3; bubbleT: number }>();
+  private rigs = new Map<string, { rig: CharacterRig; anim: string; last: THREE.Vector3; bubbleT: number; low?: boolean }>();
   private looks = new Map<string, Look>();
   private group: THREE.Group | null = null;
   private imp: { body: THREE.InstancedMesh; legs: THREE.InstancedMesh; head: THREE.InstancedMesh } | null = null;
+  /** baked real-character impostors: VARIANTS looks × 2 stride frames (replace the capsule figures once ready) */
+  private bakedImp: { frames: [THREE.InstancedMesh, THREE.InstancedMesh]; rig: CharacterRig; n: [number, number] }[] = [];
+  private bakeTried = false;
   private seed = 1;
   private nearCap = 12;
   private built = false;
@@ -58,6 +61,7 @@ export class Crowd {
   private tmpT = new THREE.Vector2();
   private laughAt: { p: THREE.Vector3; t: number } | null = null;
   private createBudget = 0;
+  private fullFaces = false;
 
   constructor(private game: Game, private life: Life) {}
 
@@ -74,7 +78,8 @@ export class Crowd {
     this.built = true;
     this.seed = (game.g.seed ?? 1) | 0;
     const q = quality();
-    this.nearCap = q === 'low' ? 5 : q === 'medium' ? 9 : q === 'ultra' ? 18 : 13;
+    this.nearCap = q === 'low' ? 6 : q === 'medium' ? 10 : q === 'ultra' ? 20 : 15;
+    this.fullFaces = q === 'high' || q === 'ultra';
     const k = 1 / qmul();
     // sidewalk paths (from the map plan: soi sidewalks ±4.8, main-road sidewalks z≈3.6 / 24, market aisles, temple, canal, rural road)
     this.paths = [
@@ -105,6 +110,9 @@ export class Crowd {
     this.group?.removeFromParent();
     this.group = null;
     this.imp = null;
+    for (const b of this.bakedImp) { for (const f of b.frames) f.geometry.dispose(); b.rig.dispose(); }
+    this.bakedImp = [];
+    this.bakeTried = false;
     this.built = false;
   }
 
@@ -199,12 +207,59 @@ export class Crowd {
     this.imp = { body: mk(body), legs: mk(legs), head: mk(head) };
   }
 
+  /**
+   * Far walkers used to be capsules (a lathe body, a cylinder for legs, a ball head): they read as "lazy simple
+   * shapes" at 15-40 m. Bake a handful of REAL character rigs (low LOD, real fabric atlas) into static meshes at two
+   * opposite walk-cycle phases and draw them instanced; walkers alternate frames with their stride.
+   */
+  private bakeImpostors() {
+    if (this.bakeTried || !this.group) return;
+    this.bakeTried = true;
+    const chars: any = this.game.chars;
+    if (!chars?.create) return;
+    const all: string[] = chars.archetypes?.() ?? [];
+    const want = ['office', 'auntie', 'student', 'worker', 'uncle', 'teen', 'grandma', 'vendor', 'tourist', 'rider'];
+    const archs = [...want.map((w) => all.find((a) => a.includes(w))).filter(Boolean) as string[], ...all].filter((a, i, A) => A.indexOf(a) === i).slice(0, 8);
+    while (archs.length < 6) archs.push(undefined as any);
+    const cap = 90;
+    for (let i = 0; i < archs.length; i++) {
+      try {
+        const look = chars.randomLook(archs[i], 7919 * (i + 3) + this.seed);
+        const rig: CharacterRig = chars.create(look, { lod: 'low', castShadow: false });
+        const sm: THREE.SkinnedMesh | undefined = (rig as any).mesh_ ?? (rig as any).mesh;
+        if (!sm?.isSkinnedMesh) { rig.dispose(); continue; }
+        rig.play('idle' as any, { loop: true });
+        rig.setMove(1.25);
+        for (let k = 0; k < 40; k++) rig.update(1 / 30);                // ramp the walk blend in
+        const frames: THREE.InstancedMesh[] = [];
+        for (const ph of [0.12, 0.62]) {
+          (rig as any).phase = ph;
+          rig.update(1e-4);
+          const geo = bakeSkinned(sm, rig.root);
+          const bodyMat = new THREE.MeshStandardMaterial({ map: (Array.isArray(sm.material) ? sm.material[0] : sm.material as any).map, roughness: 0.82, metalness: 0 });
+          const mats = Array.isArray(sm.material) ? [bodyMat, sm.material[1] ?? bodyMat] : bodyMat;
+          const im = new THREE.InstancedMesh(geo, mats as any, cap);
+          im.count = 0; im.frustumCulled = false; im.castShadow = false; im.receiveShadow = true;
+          im.name = 'crowd-impostor';
+          this.group.add(im);
+          frames.push(im);
+        }
+        this.bakedImp.push({ frames: frames as [THREE.InstancedMesh, THREE.InstancedMesh], rig, n: [0, 0] });
+      } catch (e) { console.warn('[life] impostor bake failed', e); }
+    }
+    // capsules only stay as a fallback when nothing could be baked
+    if (this.bakedImp.length && this.imp) for (const m of [this.imp.body, this.imp.legs, this.imp.head]) m.visible = false;
+  }
+
   // ------------------------------------------------------------------ frame
 
   private _m = new THREE.Matrix4();
   private _q = new THREE.Quaternion();
   private _s = new THREE.Vector3();
   private _c = new THREE.Color();
+  private _p = new THREE.Vector3();
+  private _up = new THREE.Vector3(0, 1, 0);
+  private _fwd = new THREE.Vector3();
 
   frame(dt: number) {
     if (!this.built || !this.group) return;
@@ -292,19 +347,32 @@ export class Crowd {
       if (f.lines && f.pos.distanceTo(cam) < 14 && T > (f.talkT ?? 0)) { f.talkT = T + 9 + h01(f.seed, Math.floor(T)) * 10; this.say(f.pos.clone().setY(f.pos.y + 1.9), line(f.lines)); }
     }
     for (const w of this.walkers.values()) if (w.laugh > 0) w.laugh -= dt;
-    const scored = cands.map((c) => ({ c, d: c.pos.distanceToSquared(cam) })).filter((o) => o.d < 42 * 42).sort((a, b) => a.d - b.d).slice(0, this.nearCap);
+    // who gets a real rig: nearest first, but people in front of the camera count as ~2.5x closer than people behind it
+    const fwd = game.camera.getWorldDirection(this._fwd);
+    const scored = cands.map((c) => {
+      const d = c.pos.distanceToSquared(cam);
+      const dx = c.pos.x - cam.x, dz = c.pos.z - cam.z, inv = 1 / Math.max(0.01, Math.hypot(dx, dz));
+      const front = (dx * fwd.x + dz * fwd.z) * inv;            // -1 behind … 1 ahead
+      return { c, d, s: d * (front > 0.35 ? 0.16 : front > -0.2 ? 0.5 : 1) };
+    }).filter((o) => o.d < 46 * 46).sort((a, b) => a.s - b.s).slice(0, this.nearCap);
     const want = new Set(scored.map((o) => o.c.key));
     for (const [k, r] of this.rigs) if (!want.has(k)) { r.rig.root.removeFromParent(); r.rig.dispose(); this.rigs.delete(k); }
     this.createBudget = Math.min(1, this.createBudget + dt * 3);
     for (const { c, d } of scored) {
       let r = this.rigs.get(c.key);
+      // close up (≤ 11 m, high/ultra): swap the low-LOD body for a full rig with the scanned 3D face
+      const wantFull = this.fullFaces && d < 11 * 11;
+      if (r && r.low && wantFull && this.createBudget >= 1) {
+        this.createBudget = 0;
+        r.rig.root.removeFromParent(); r.rig.dispose(); this.rigs.delete(c.key); r = undefined;
+      }
       if (!r) {
         if (this.createBudget < 1) continue;
         this.createBudget = 0;
         try {
-          const rig = this.game.chars.create(this.lookFor(c.key, c.arch, c.seed), { lod: 'low', castShadow: false });
+          const rig = this.game.chars.create(this.lookFor(c.key, c.arch, c.seed), wantFull ? { castShadow: d < 8 * 8 } : { lod: 'low', castShadow: false });
           this.group.add(rig.root);
-          r = { rig, anim: '', last: c.pos.clone(), bubbleT: 0 };
+          r = { rig, anim: '', last: c.pos.clone(), bubbleT: 0, low: !wantFull };
           this.rigs.set(c.key, r);
         } catch { continue; }
       }
@@ -324,7 +392,30 @@ export class Crowd {
     }
     RigFrame++;
 
-    // ---- impostors for the rest (40–110 m)
+    // ---- impostors for the rest (real baked characters; capsules only as a fallback)
+    if (!this.bakeTried && this.game.chars && T > 0.5) this.bakeImpostors();
+    if (this.bakedImp.length) {
+      const B = this.bakedImp;
+      for (const b of B) b.n[0] = b.n[1] = 0;
+      for (const w of this.walkers.values()) {
+        if (w.gone || this.rigs.has('w' + w.key)) continue;
+        const d = w.pos.distanceTo(cam);
+        if (d > 130) continue;
+        const b = B[w.seed % B.length];
+        const stride = Math.floor((T * 1.9 * w.speed + (w.seed % 97) * 0.013) % 2) as 0 | 1;
+        const im = b.frames[stride];
+        if (b.n[stride] >= im.instanceMatrix.count) continue;
+        const L = this.lookFor('w' + w.key, w.arch, w.seed);
+        const hs = (L.height ?? 1.65) / 1.65;
+        this._q.setFromAxisAngle(this._up, w.yaw + (w.flee > 0 ? 0 : 0));
+        this._s.set(hs * (0.96 + (w.seed % 7) * 0.012), hs, hs);
+        const bob = Math.abs(Math.sin(T * 6 * w.speed + (w.seed % 100))) * 0.02;
+        this._m.compose(this._p.set(w.pos.x, w.pos.y + bob, w.pos.z), this._q, this._s);
+        im.setMatrixAt(b.n[stride]++, this._m);
+      }
+      for (const b of B) for (let f = 0; f < 2; f++) { const im = b.frames[f]; im.count = b.n[f]; im.instanceMatrix.needsUpdate = true; }
+      return;
+    }
     const imp = this.imp!;
     let n = 0;
     for (const w of this.walkers.values()) {
@@ -359,3 +450,50 @@ export class Crowd {
 }
 
 let RigFrame = 0;
+
+/**
+ * CPU-skin a SkinnedMesh in its current pose into a static geometry in `root`'s local space (positions +
+ * normals skinned with the blended bone matrices; uv, groups and other attributes copied).
+ */
+function bakeSkinned(sm: THREE.SkinnedMesh, root: THREE.Object3D): THREE.BufferGeometry {
+  root.updateMatrixWorld(true);
+  sm.skeleton.update();
+  const src = sm.geometry;
+  const pos = src.getAttribute('position') as THREE.BufferAttribute;
+  const nrm = src.getAttribute('normal') as THREE.BufferAttribute | undefined;
+  const si = src.getAttribute('skinIndex') as THREE.BufferAttribute;
+  const sw = src.getAttribute('skinWeight') as THREE.BufferAttribute;
+  const bm = sm.skeleton.boneMatrices!;
+  // exactly what the skinning shader does: modelMatrix · bindMatrixInverse · Σ wₖBₖ · bindMatrix · p, then into root space
+  const toLocal = new THREE.Matrix4().copy(root.matrixWorld).invert().multiply(sm.matrixWorld).multiply(sm.bindMatrixInverse);
+  const P = new Float32Array(pos.count * 3), N = new Float32Array(pos.count * 3);
+  const M = new THREE.Matrix4(), Mk = new THREE.Matrix4(), v = new THREE.Vector3(), n = new THREE.Vector3(), N3 = new THREE.Matrix3();
+  for (let i = 0; i < pos.count; i++) {
+    M.elements.fill(0);
+    for (let k = 0; k < 4; k++) {
+      const w = sw.getComponent(i, k);
+      if (w <= 0) continue;
+      Mk.fromArray(bm, si.getComponent(i, k) * 16);
+      for (let e = 0; e < 16; e++) M.elements[e] += Mk.elements[e] * w;
+    }
+    M.premultiply(toLocal).multiply(sm.bindMatrix);
+    v.fromBufferAttribute(pos, i).applyMatrix4(M);
+    P[i * 3] = v.x; P[i * 3 + 1] = v.y; P[i * 3 + 2] = v.z;
+    if (nrm) {
+      n.fromBufferAttribute(nrm, i).applyMatrix3(N3.getNormalMatrix(M)).normalize();
+      N[i * 3] = n.x; N[i * 3 + 1] = n.y; N[i * 3 + 2] = n.z;
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(P, 3));
+  if (nrm) g.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+  for (const name of Object.keys(src.attributes)) {
+    if (name === 'position' || name === 'normal' || name === 'skinIndex' || name === 'skinWeight') continue;
+    g.setAttribute(name, (src.getAttribute(name) as THREE.BufferAttribute).clone());
+  }
+  if (src.index) g.setIndex(src.index.clone());
+  for (const gr of src.groups) g.addGroup(gr.start, gr.count, gr.materialIndex);
+  if (!nrm) g.computeVertexNormals();
+  g.computeBoundingSphere();
+  return g;
+}

@@ -4,7 +4,7 @@ import {
   SMAAEffect, SMAAPreset, ChromaticAberrationEffect, DepthOfFieldEffect, Effect, BlendFunction, EffectAttribute,
 } from 'postprocessing';
 import { N8AOPostPass } from 'n8ao';
-import { InkEdgePass, InkEffect, InkSettings, CEL, installMaterialPatch, updateInkHulls, InkParams } from './ink';
+import { InkEdgePass, InkEffect, InkSettings, CEL, installMaterialPatch, updateInkHulls, InkParams, LOOK_STYLE } from './ink';
 
 export type Quality = 'low' | 'medium' | 'high' | 'ultra';
 
@@ -236,8 +236,8 @@ export interface GradeParams {
   split?: number;
 }
 
-/** Named looks. Modules may blend between them (day cycle, night, casino, dream). */
-export const LOOKS: Record<string, GradeParams> = {
+/** Named looks for the opt-in anime style (?look=anime): punchy, saturated, cel-friendly. */
+const LOOKS_ANIME: Record<string, GradeParams> = {
   // anime-sunny Thai afternoon: warm saturated highlights, clean teal-leaning shadows, punchy but not crushed
   thaiDay: { lift: [0.008, 0.01, 0.014], gamma: [1.03, 1.01, 0.97], gain: [1.08, 1.03, 0.95], saturation: 1.17, contrast: 1.1, tint: [1.01, 1, 0.98], split: 0.42 },
   golden: { lift: [0.018, 0.01, 0.004], gamma: [1.04, 0.99, 0.9], gain: [1.16, 1.01, 0.8], saturation: 1.22, contrast: 1.13, tint: [1.01, 0.98, 0.92], split: 0.55 },
@@ -248,6 +248,22 @@ export const LOOKS: Record<string, GradeParams> = {
   album: { lift: [0.03, 0.02, 0.0], gamma: [1.05, 1.0, 0.86], gain: [1.08, 1.0, 0.8], saturation: 1.08, contrast: 1.05, tint: [1, 0.98, 0.9] },
   neutral: {},
 };
+/**
+ * Named looks for the default REALISTIC style: photographic grades on top of ACES filmic (which already
+ * adds contrast + saturation): humid tropical daylight with a hint of warmth, real golden hour, sodium/LED
+ * night with cool shadows. Kept close to neutral so PBR materials read as the real thing.
+ */
+const LOOKS_REAL: Record<string, GradeParams> = {
+  thaiDay: { lift: [0.004, 0.005, 0.007], gamma: [1.0, 1.0, 0.99], gain: [1.04, 1.02, 0.98], saturation: 1.06, contrast: 1.04, tint: [1, 1, 0.99], split: 0.22 },
+  golden: { lift: [0.012, 0.007, 0.003], gamma: [1.02, 0.99, 0.93], gain: [1.1, 1.01, 0.86], saturation: 1.1, contrast: 1.07, tint: [1.01, 0.99, 0.94], split: 0.4 },
+  night: { lift: [0.0, 0.004, 0.009], gamma: [0.98, 1.0, 1.03], gain: [1.02, 1.0, 1.02], saturation: 1.05, contrast: 1.08, tint: [0.99, 1, 1.01], split: 0.45 },
+  casino: { lift: [0.012, 0.0, 0.0], gamma: [1.03, 0.98, 0.92], gain: [1.08, 0.99, 0.85], saturation: 1.08, contrast: 1.05, tint: [1, 0.98, 0.93] },
+  dream: LOOKS_ANIME.dream,
+  album: LOOKS_ANIME.album,
+  neutral: {},
+};
+/** Named looks. Modules may blend between them (day cycle, night, casino, dream). */
+export const LOOKS: Record<string, GradeParams> = LOOK_STYLE === 'anime' ? LOOKS_ANIME : LOOKS_REAL;
 
 export class PostFX {
   composer: EffectComposer;
@@ -322,7 +338,8 @@ export class PostFX {
 
     this.ink = new InkEffect(this.inkPass.target.texture);
     this.bloom = new BloomEffect({ mipmapBlur: true, intensity: 0.55, luminanceThreshold: 0.88, luminanceSmoothing: 0.22, radius: 0.68 });
-    this.tone = new ToneMappingEffect({ mode: ToneMappingMode.AGX });
+    // realistic: ACES filmic (photographic contrast + highlight roll-off); anime: AgX (flatter, cel-friendly)
+    this.tone = new ToneMappingEffect({ mode: LOOK_STYLE === 'anime' ? ToneMappingMode.AGX : ToneMappingMode.ACES_FILMIC });
     this.grade = new GradeEffect();
     this.vignette = new VignetteEffect({ offset: 0.28, darkness: 0.5 });
     this.noise = new GrainEffect();
@@ -542,6 +559,7 @@ export class PostFX {
   }
 }
 
-const params_noImpact = new URLSearchParams(location.search).has('noimpact');
+// the full-screen inverted / halftone impact frame is an anime device: off in the realistic look unless ?impact=1
+const params_noImpact = (() => { const q = new URLSearchParams(location.search); return q.has('noimpact') || (LOOK_STYLE !== 'anime' && q.get('impact') !== '1'); })();
 const _sz = new THREE.Vector2();
 const _v = new THREE.Vector3(), _p = new THREE.Vector3();

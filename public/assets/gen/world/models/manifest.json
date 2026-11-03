@@ -130,7 +130,7 @@
    0.372
   ],
   "authors": [
-   "Aron Łyczek"
+   "Aron \u0141yczek"
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/ceramic_pot"
@@ -169,6 +169,23 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/concrete_road_barrier_02"
  },
+ "covered_car": {
+  "file": "covered_car/covered_car.glb",
+  "name": "Covered Car",
+  "bytes": 298228,
+  "srcTris": 12592,
+  "tris": 7999,
+  "dims": [
+   1.789,
+   4.38,
+   1.411
+  ],
+  "authors": [
+   "MP"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/covered_car"
+ },
  "dustpan": {
   "file": "dustpan/dustpan.glb",
   "name": "Dustpan",
@@ -198,7 +215,7 @@
    0.799
   ],
   "authors": [
-   "Gonçalo Felício"
+   "Gon\u00e7alo Fel\u00edcio"
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/fire_hydrant"
@@ -355,6 +372,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/old_tyre"
+ },
+ "painted_wooden_bench": {
+  "file": "painted_wooden_bench/painted_wooden_bench.glb",
+  "name": "Painted Wooden Bench",
+  "bytes": 258768,
+  "srcTris": 630,
+  "tris": 630,
+  "dims": [
+   1.165,
+   0.497,
+   0.889
+  ],
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/painted_wooden_bench"
  },
  "planter_pot_clay": {
   "file": "planter_pot_clay/planter_pot_clay.glb",

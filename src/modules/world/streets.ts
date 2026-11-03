@@ -71,11 +71,22 @@ export function curb(w: WB, layer: string, x0: number, z0: number, x1: number, z
     const cross = dx * nz - dz * nx; // >0 → (a→b) runs with the road on the right... choose order
     const [px0, pz0, px1, pz1] = cross < 0 ? [ax, az, bx, bz] : [bx, bz, ax, az];
     const [uu0, uu1] = cross < 0 ? [u0, u1] : [u1, u0];
-    // vertical face (v 0..0.6 of the texture)
-    w.quad(px0, base, pz0, px1, base, pz1, px1, h, pz1, px0, h, pz0, [uu0, 0, uu1, tV * 0.6]);
-    // top strip (v 0.6..1.0)
+    // real kerb profile (not a flat bar): grimy foot where road water runs, slightly battered face,
+    // a 25 mm chamfered arris that catches a thin highlight, then the worn top strip
+    const ch = Math.min(0.025, (h - base) * 0.2), bat = 0.012;
     const ix = -nx * topW, iz = -nz * topW;
-    w.quad(px0, h, pz0, px1, h, pz1, px1 + ix, h, pz1 + iz, px0 + ix, h, pz0 + iz, [uu0, tV * 0.6, uu1, tV]);
+    const cx = -nx * ch, cz = -nz * ch, bx2 = -nx * bat, bz2 = -nz * bat;
+    const yF = base + Math.min(0.045, (h - base) * 0.3);
+    const vF = tV * 0.6 * ((yF - base) / Math.max(1e-3, h - base)), vC = tV * 0.6 * ((h - ch - base) / Math.max(1e-3, h - base));
+    w.mat(layer, { uv: 'face', autoDirt: false, group: 'base', ao: 0.5, dirt: 1.6 });
+    w.quad(px0, base, pz0, px1, base, pz1, px1 + bx2 * 0.3, yF, pz1 + bz2 * 0.3, px0 + bx2 * 0.3, yF, pz0 + bz2 * 0.3, [uu0, 0, uu1, vF]);
+    w.mat(layer, { uv: 'face', autoDirt: false, group: 'base', ao: 0.86 });
+    w.quad(px0 + bx2 * 0.3, yF, pz0 + bz2 * 0.3, px1 + bx2 * 0.3, yF, pz1 + bz2 * 0.3, px1 + bx2, h - ch, pz1 + bz2, px0 + bx2, h - ch, pz0 + bz2, [uu0, vF, uu1, vC]);
+    w.mat(layer, { uv: 'face', autoDirt: false, group: 'base', ao: 0.97 });
+    w.quad(px0 + bx2, h - ch, pz0 + bz2, px1 + bx2, h - ch, pz1 + bz2, px1 + bx2 + cx, h, pz1 + bz2 + cz, px0 + bx2 + cx, h, pz0 + bz2 + cz, [uu0, vC, uu1, tV * 0.6]);
+    // top strip (v 0.6..1.0), slightly darker toward the paving joint
+    w.mat(layer, { uv: 'face', autoDirt: false, group: 'base', ao: 0.9 });
+    w.quad(px0 + bx2 + cx, h, pz0 + bz2 + cz, px1 + bx2 + cx, h, pz1 + bz2 + cz, px1 + ix, h, pz1 + iz, px0 + ix, h, pz0 + iz, [uu0, tV * 0.6, uu1, tV]);
   }
 }
 

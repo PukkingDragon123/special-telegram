@@ -24,12 +24,21 @@ import { params } from './util';
  *                   pixels, SkinnedMesh-aware: same skeleton, same bind) for characters, animals and
  *                   hero props. Hulls are children of their source mesh (LOD / visibility follow it).
  *
- *  ?ink=0 disables outlines + hulls, ?cel=0 disables the cel banding (for comparisons).
+ *  The default look is REALISTIC (plain PBR, no outlines, no cel bands). The inked anime look is opt-in:
+ *  ?look=anime (or localStorage 'hp.look' = 'anime'); ?ink=1/0 and ?cel=1/0 override each part.
  * ============================================================================================= */
 
+/** 'realistic' (default) | 'anime' (inked realism + cel bands) */
+export const LOOK_STYLE: 'realistic' | 'anime' = (() => {
+  let v = params.get('look');
+  if (!v) { try { v = localStorage.getItem('hp.look'); } catch {} }
+  return v === 'anime' ? 'anime' : 'realistic';
+})();
+const flag = (name: string, def: boolean) => { const v = params.get(name); return v === null ? def : v !== '0'; };
+
 export const InkSettings = {
-  ink: params.get('ink') !== '0',
-  cel: params.get('cel') !== '0',
+  ink: flag('ink', LOOK_STYLE === 'anime'),
+  cel: flag('cel', LOOK_STYLE === 'anime'),
 };
 
 // ------------------------------------------------------------------ shared uniforms

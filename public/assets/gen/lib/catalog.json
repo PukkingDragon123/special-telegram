@@ -2222,6 +2222,31 @@
   "title": "Hand Truck"
  },
  {
+  "id": "payphone",
+  "file": "street/payphone.glb",
+  "category": "street",
+  "tags": [
+   "payphone",
+   "phone",
+   "telephone",
+   "public",
+   "wall"
+  ],
+  "size_m": [
+   0.401,
+   0.738,
+   0.3
+  ],
+  "tris": 6500,
+  "license": "CC0-1.0",
+  "author": "UM JOORIN (Poly Haven)",
+  "source_url": "https://polyhaven.com/a/korean_public_payphone_01",
+  "physics": "none",
+  "mass_kg": 0,
+  "bytes": 273616,
+  "title": "Korean Public Payphone 01"
+ },
+ {
   "id": "power_box_01",
   "file": "../world/models/power_box_01/power_box_01.glb",
   "category": "street",
@@ -2441,6 +2466,86 @@
   "bytes": 39256,
   "title": "Transformer platform: steel channel beams + braces (between two poles 2 m apart)",
   "far": 1.6
+ },
+ {
+  "id": "water_tank_plastic",
+  "file": "utility/water_tank_plastic.glb",
+  "category": "utility",
+  "tags": [
+   "water tank",
+   "plastic",
+   "rooftop",
+   "tank"
+  ],
+  "size_m": [
+   1.195,
+   1.4,
+   1.175
+  ],
+  "tris": 3134,
+  "license": "CC-BY-4.0",
+  "author": "Baidhar Hembram (sketchfab.com/hembramten)",
+  "source_url": "https://sketchfab.com/3d-models/11b6ea9cf9c44875a47a034182d5ff31",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 195980,
+  "title": "Water Tank",
+  "tint": true,
+  "far": 1.5,
+  "uid": "11b6ea9cf9c44875a47a034182d5ff31"
+ },
+ {
+  "id": "water_tank_steel",
+  "file": "utility/water_tank_steel.glb",
+  "category": "utility",
+  "tags": [
+   "water tank",
+   "stainless",
+   "rooftop",
+   "tank"
+  ],
+  "size_m": [
+   1.054,
+   2.05,
+   1.0
+  ],
+  "tris": 1239,
+  "license": "CC-BY-4.0",
+  "author": "Arling (sketchfab.com/arling)",
+  "source_url": "https://sketchfab.com/3d-models/f44007d8b4a94e9d924bc5ee93480169",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 427668,
+  "title": "Water Tank",
+  "far": 1.5,
+  "uid": "f44007d8b4a94e9d924bc5ee93480169"
+ },
+ {
+  "id": "pickup_hilux",
+  "file": "vehicles/pickup_hilux.glb",
+  "category": "vehicles",
+  "tags": [
+   "pickup",
+   "truck",
+   "hilux",
+   "car",
+   "parked"
+  ],
+  "size_m": [
+   1.851,
+   1.659,
+   5.3
+  ],
+  "tris": 6628,
+  "license": "CC-BY-4.0",
+  "author": "sebodeweb (sketchfab.com/sebodeweb)",
+  "source_url": "https://sketchfab.com/3d-models/87dc5e8d45724fe6b4b68b1f432976fc",
+  "physics": "static",
+  "mass_kg": 0,
+  "bytes": 262900,
+  "title": "Toyota Hilux Low Poly",
+  "far": 1.6,
+  "uid": "87dc5e8d45724fe6b4b68b1f432976fc"
  },
  {
   "id": "scooter_cub",

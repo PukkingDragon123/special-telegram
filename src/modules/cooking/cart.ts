@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { registerClothAnchor } from '../cloth/api';
 import type RAPIER from '@dimforge/rapier3d-compat';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
@@ -257,7 +258,16 @@ export function buildCartModel() {
     t.translate(1.29, 0.76, 0.0);
     return t;
   });
-  root.add(mesh(towel, cachedMat('towelM', () => new THREE.MeshStandardMaterial({ map: towelTex(), roughness: 0.95, side: THREE.DoubleSide }))));
+  const towelMesh = mesh(towel, cachedMat('towelM', () => new THREE.MeshStandardMaterial({ map: towelTex(), roughness: 0.95, side: THREE.DoubleSide })));
+  root.add(towelMesh);
+  // the real thing: a simulated ผ้าขาวม้า (real woven-check photo fabric) folded over the push handle; it swings and
+  // trails when the cart is pushed. The static towel above stays as the fallback until the cloth module takes over.
+  registerClothAnchor(root, {
+    garment: 'phakhaoma', fabric: 'phakhaoma_red_yellow', size: [0.34, 0.9], seed: 5,
+    drape: { a: [1.28, 0.92, -0.17], b: [1.28, 0.92, 0.17], r: 0.016 },
+    capsules: [[[1.08, 0.78, -0.27], [1.22, 0.86, -0.27], 0.016], [[1.08, 0.78, 0.27], [1.22, 0.86, 0.27], 0.016], [[1.12, 0.835, -0.3], [1.12, 0.835, 0.3], 0.02]],
+    fallback: towelMesh,
+  });
   // ---- flame (noise shader) + light
   const flameMat = makeFlameMaterial();
   const flame = new THREE.Mesh(flameGeometry(0.045, 0.16, 0.2), flameMat);

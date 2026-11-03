@@ -1780,3 +1780,16 @@ Also uses the shared libraries credited by the research agents (textures/pbr, te
 ## Escape cinematic & critters
 - Music: "Sneaky Snitch" by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/).
 - Full per-file sources: `public/assets/gen/escape/CREDITS.md`, `public/assets/gen/critters/CREDITS.md`.
+
+## Street props & traffic upgrade (assets pass, Nov 3)
+Full per-model tables: `public/assets/gen/lib/CREDITS.md` and `public/assets/gen/world/models/CREDITS.md`.
+- Parked pickup `lib/vehicles/pickup_hilux.glb`: "Toyota Hilux Low Poly" by sebodeweb, CC-BY-4.0, https://sketchfab.com/3d-models/87dc5e8d45724fe6b4b68b1f432976fc (via the Objaverse mirror).
+- Rooftop tanks `lib/utility/water_tank_steel.glb`: "Water Tank" by Arling, CC-BY-4.0, https://sketchfab.com/3d-models/f44007d8b4a94e9d924bc5ee93480169 · `lib/utility/water_tank_plastic.glb`: "Water Tank" by Baidhar Hembram, CC-BY-4.0, https://sketchfab.com/3d-models/11b6ea9cf9c44875a47a034182d5ff31.
+- Phone-booth payphone `lib/street/payphone.glb`: "Korean Public Payphone 01" by UM JOORIN, Poly Haven, CC0, https://polyhaven.com/a/korean_public_payphone_01 (decimated 48k → 6.5k tris).
+- `world/models/painted_wooden_bench` ("Painted Wooden Bench", Kirill Sannikov) and `world/models/covered_car` ("Covered Car", MP): Poly Haven, CC0.
+- Traffic motorbikes now use the existing library scooters `scooter_wave` / `scooter_cub` (credited above); the ice-cream sidecar cart, delivery bags, phone-booth shell, bus shelter and road barriers are modelled in code (textures: `textures/pbr/aluminium_scratched`, `textures/clothing/rider_green_poly_normal.jpg`, world material atlas).
+
+## ATM (`src/modules/atm/`)
+- Both machines (ธนาคารซอยทอง / SOI THONG BANK and ธนาคารตลาดสด / TALAD SOT BANK, fictional banks with original logos) are modelled in code: bevelled extrusions + rounded boxes, no downloaded mesh (the Sketchfab CC-BY ATMs checked were too low-detail and had no separate keys).
+- Textures reused from the shipped PBR library: `textures/pbr/metal_painted_chipped` (Poly Haven `green_metal_rust`, CC0), `aluminium_scratched` (Public Domain Mark), `stainless_brushed` (CC BY 2.0, see the PBR manifest), `chrome`, `plastic_glossy`, `plastic_rough` (ambientCG, CC0), `rubber_black`, `concrete_streaked` (Poly Haven, CC0), `galvanized_steel` (CC BY 2.0). Banknotes reuse `gen/social/money/note100.jpg` (see `references/credits/social.md`).
+- Screen UI, stickers, key labels, debit card and receipts are drawn at runtime on canvas with the shipped OFL Thai looped fonts (K2D, IBM Plex Sans Thai Looped, Sarabun). ATM sounds (key beeps, card motor, note counter, shutter, thermal printer) are synthesised with WebAudio.

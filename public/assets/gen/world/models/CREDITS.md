@@ -15,6 +15,7 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Ceramic Pot (`ceramic_pot`) | https://polyhaven.com/a/ceramic_pot | Aron Łyczek | 80 KB |
 | Cleaner Tin 01 (`cleaner_tin_01`) | https://polyhaven.com/a/cleaner_tin_01 | Tom Phillips | 31 KB |
 | Concrete Road Barrier 02 (`concrete_road_barrier_02`) | https://polyhaven.com/a/concrete_road_barrier_02 | Amal Kumar | 128 KB |
+| Covered Car (`covered_car`) | https://polyhaven.com/a/covered_car | MP | 291 KB |
 | Dustpan (`dustpan`) | https://polyhaven.com/a/dustpan | Balen | 98 KB |
 | Fire Hydrant (`fire_hydrant`) | https://polyhaven.com/a/fire_hydrant | Gonçalo Felício | 181 KB |
 | Fish Knife (`fish_knife`) | https://polyhaven.com/a/fish_knife | Mateusz Sadek | 42 KB |
@@ -26,6 +27,7 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Metal Stool 02 (`metal_stool_02`) | https://polyhaven.com/a/metal_stool_02 | Ulan Cabanilla | 117 KB |
 | Multi Cleaner 5 Litre (`multi_cleaner_5_litre`) | https://polyhaven.com/a/multi_cleaner_5_litre | James Ray Cock | 50 KB |
 | Old Tyre (`old_tyre`) | https://polyhaven.com/a/old_tyre | MP | 111 KB |
+| Painted Wooden Bench (`painted_wooden_bench`) | https://polyhaven.com/a/painted_wooden_bench | Kirill Sannikov | 253 KB |
 | Planter Pot Clay (`planter_pot_clay`) | https://polyhaven.com/a/planter_pot_clay | Amal Kumar | 64 KB |
 | Plastic Bottle Gallon (`plastic_bottle_gallon`) | https://polyhaven.com/a/plastic_bottle_gallon | Rahul Chaudhary | 36 KB |
 | Plastic Broom (`plastic_broom`) | https://polyhaven.com/a/plastic_broom | L | 55 KB |
@@ -49,7 +51,7 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Wooden Display Shelves 01 (`wooden_display_shelves_01`) | https://polyhaven.com/a/wooden_display_shelves_01 | James Ray Cock | 76 KB |
 | Worn Metal Rack (`worn_metal_rack`) | https://polyhaven.com/a/worn_metal_rack | Luca B | 102 KB |
 
-Total: 4.4 MB in 43 models.
+Total: 6.2 MB in 46 models.
 
 
 ## Photo-derived textures (props agent)

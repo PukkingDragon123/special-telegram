@@ -115,6 +115,9 @@ export const MODELS: Record<PropId, ModelDef> = {
   power_box: M('power_box_01', { phys: 'static', far: 1.0, anchor: 'back' }),
   hydrant: M('fire_hydrant', { phys: 'static', far: 1.2, shadow: true }),
   barrier: M('concrete_road_barrier_02', { phys: 'static', far: 1.6, shadow: true }),
+  bench_wood: M('painted_wooden_bench', { phys: 'dyn', mass: 14, friction: 0.7, shadow: true, collider: 'box', far: 1.1 }),
+  // parked car under a dust cover (Poly Haven) — callers add their own static colliders
+  covered_car: M('covered_car', { phys: 'none', shadow: true, far: 1.7 }),
   // ---- vehicles (realprops-vehicle.ts) — callers add their own static colliders
   scooter: { phys: 'none', recolor: true, shadow: true, far: 1.3 },
   food_cart: { phys: 'none', recolor: true, shadow: true, far: 1.5 },

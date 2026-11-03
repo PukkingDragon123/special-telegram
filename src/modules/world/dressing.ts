@@ -9,7 +9,7 @@ import { PLASTIC_COLORS } from './props';
 import { dressSoi, tableSetting } from './realprops-dress';
 import { WindCloth } from './realprops-market';
 import { THAI_TABLE, STEEL_TABLE } from './realprops-table';
-import { propHeight } from './realprops';
+import { propHeight, MODELS, resolveProp } from './realprops';
 import { EMIS } from './mats';
 import { SW_H, SOI, MAIN, CROAD, ZEBRAS, POLES_SOI, POLES_SOI_E, POLES_MAIN_N, POLES_MAIN_S } from './layout';
 
@@ -33,6 +33,9 @@ export function buildStreetLife(c: Ctx) {
     const a = A[n]; if (a) clear.push([a.p[0], a.p[2], n.endsWith('_shop') ? 4.2 : n.startsWith('wake') ? 1.6 : 2.4]);
   }
   for (const z of ZEBRAS) if (z.axis === 'z') clear.push([-4.75, z.at, 2]), clear.push([4.75, z.at, 2]);
+  // phone booths (placed further down): no weeds / pots / clutter growing inside them
+  const BOOTHS: [number, number, number][] = [[-14.5, 0.8, 0], [33, 25.4, Math.PI]];
+  for (const [bx, bz] of BOOTHS) clear.push([bx, bz, 0.75]);
   const ok = (x: number, z: number, r = 0.6) => !clear.some(([cx, cz, cr]) => Math.hypot(x - cx, z - cz) < cr + r);
   const tables = A.tables_area;
   const okT = (x: number, z: number, r = 0.6) => ok(x, z, r) && !(tables && Math.hypot(x - tables.p[0], z - tables.p[2]) < (tables.r ?? 3.6) + 0.5);
@@ -70,9 +73,10 @@ export function buildStreetLife(c: Ctx) {
     w.quad(a[0], a[1], a[2], b[0], b[1], b[2], cc[0], cc[1], cc[2], d[0], d[1], d[2], [r.u0, r.v0, r.u1, r.v1]);
   };
   const pickupAt = (col: number, x: number, z: number, yaw: number) => {
+    // the library pickup carries its own plates (and a dust-covered car has none): photo plates only on the fallback
+    const real = !!MODELS[resolveProp('lib:pickup_hilux')];
     w.put(P.pickup(col), x, 0, z, yaw);
-    plate(x, 0.6, z, yaw, -2.607, 'plate');
-    plate(x, 0.42, z, yaw, 2.585, 'plate');
+    if (!real) { plate(x, 0.6, z, yaw, -2.607, 'plate'); plate(x, 0.42, z, yaw, 2.585, 'plate'); }
   };
   // a parked pickup in the soi (half on the curb) + one on the canal road
   pickupAt(0xd8d8d4, 2.4, -112, Math.PI + 0.02);
@@ -144,25 +148,62 @@ export function buildStreetLife(c: Ctx) {
 
   // ---------------------------------------------------------------- bus stop shelter (bus_stop anchor)
   {
+    // BMA bus shelter: round steel posts on welded base plates, box beams carrying a vaulted fibre-sheet roof with
+    // fascia trim, a stainless bench on three legs, framed tinted back glass with an advert lightbox, blue pole sign
     const bs = A.bus_stop.p;
-    const x = bs[0], z = 2.5;
-    w.mat('metal_paint', { tint: 0x2a5a8a, ov: 'steel_rust', ovAmt: 0.4, uv: 'local' });
-    for (const dx of [-2.2, 2.2]) { w.box(x + dx - 0.06, SW_H, z - 0.9, x + dx + 0.06, SW_H + 2.6, z - 0.78, SIDES); w.box(x + dx - 0.06, SW_H, z + 0.5, x + dx + 0.06, SW_H + 2.6, z + 0.62, SIDES); c.phys.box([x + dx, 1.4, z - 0.15], [0.15, 2.6, 1.5]); }
-    w.mat('roof_fibre', { tint: 0xd8dccc, uv: 'local' });
-    w.quad(x - 2.5, SW_H + 2.6, z + 1.1, x + 2.5, SW_H + 2.6, z + 1.1, x + 2.5, SW_H + 2.75, z - 1.2, x - 2.5, SW_H + 2.75, z - 1.2);
-    w.quad(x + 2.5, SW_H + 2.59, z + 1.1, x - 2.5, SW_H + 2.59, z + 1.1, x - 2.5, SW_H + 2.74, z - 1.2, x + 2.5, SW_H + 2.74, z - 1.2);
-    w.mat('stainless', { uv: 'local' });
-    w.box(x - 1.8, SW_H + 0.42, z - 0.75, x + 1.8, SW_H + 0.47, z - 0.4, ALL);
-    for (const dx of [-1.6, 0, 1.6]) w.box(x + dx - 0.03, SW_H, z - 0.6, x + dx + 0.03, SW_H + 0.42, z - 0.55, SIDES);
+    const x = bs[0], z = 2.5, y0 = SW_H;
+    w.mat('metal_paint', { tint: 0x3a4a5a, ov: 'steel_rust', ovAmt: 0.35, uv: 'local' });
+    for (const dx of [-2.2, 2.2]) {
+      for (const dz of [-0.84, 0.56]) {
+        const px = x + dx, pz = z + dz;
+        w.cyl(px, y0, pz, 0.055, 0.055, 2.62, 12, 0);
+        w.bevelBox(px - 0.11, y0, pz - 0.11, px + 0.11, y0 + 0.016, pz + 0.11, 0.006);
+        w.cyl(px, y0 + 0.016, pz, 0.075, 0.058, 0.07, 12, 0);
+      }
+      c.phys.box([x + dx, 1.4, z - 0.15], [0.15, 2.6, 1.5]);
+    }
+    w.bevelBox(x - 2.45, y0 + 2.58, z + 0.5, x + 2.45, y0 + 2.7, z + 0.62, 0.015);
+    w.bevelBox(x - 2.45, y0 + 2.58, z - 0.9, x + 2.45, y0 + 2.7, z - 0.78, 0.015);
+    for (const dx of [-2.2, 0, 2.2]) w.bevelBox(x + dx - 0.045, y0 + 2.6, z - 1.15, x + dx + 0.045, y0 + 2.7, z + 1.05, 0.012);
+    const za = z + 1.1, zb = z - 1.2, rise = 0.22, N = 8;
+    const ry = (t: number) => y0 + 2.7 + Math.sin(t * Math.PI) * rise;
+    w.mat('roof_fibre', { tint: 0xd0d6cc, uv: 'local' });
+    for (let i = 0; i < N; i++) {
+      const t0 = i / N, t1 = (i + 1) / N, zA = za + (zb - za) * t0, zB = za + (zb - za) * t1, yA = ry(t0), yB = ry(t1);
+      w.quad(x - 2.55, yA, zA, x + 2.55, yA, zA, x + 2.55, yB, zB, x - 2.55, yB, zB);
+      w.quad(x + 2.55, yA - 0.012, zA, x - 2.55, yA - 0.012, zA, x - 2.55, yB - 0.012, zB, x + 2.55, yB - 0.012, zB);
+    }
+    w.mat('metal_paint', { tint: 0x2a5a8a, ov: 'steel_rust', ovAmt: 0.25, uv: 'local' });
+    w.bevelBox(x - 2.58, y0 + 2.63, za - 0.035, x + 2.58, y0 + 2.75, za + 0.035, 0.012);
+    w.bevelBox(x - 2.58, y0 + 2.63, zb - 0.035, x + 2.58, y0 + 2.75, zb + 0.035, 0.012);
+    // bench: seat with a rolled back lip, three legs with foot plates
+    w.mat('stainless_dirty', { uv: 'local' });
+    w.bevelBox(x - 1.8, y0 + 0.42, z - 0.78, x + 1.8, y0 + 0.46, z - 0.4, 0.012);
+    w.bevelBox(x - 1.8, y0 + 0.46, z - 0.8, x + 1.8, y0 + 0.52, z - 0.75, 0.015);
+    for (const dx of [-1.6, 0, 1.6]) {
+      w.bevelBox(x + dx - 0.03, y0, z - 0.66, x + dx + 0.03, y0 + 0.42, z - 0.52, 0.008);
+      w.bevelBox(x + dx - 0.12, y0, z - 0.7, x + dx + 0.12, y0 + 0.012, z - 0.48, 0.004);
+    }
     c.phys.box([x, 0.4, z - 0.6], [3.6, 0.5, 0.4]);
-    // back panel with an advert photo
+    // framed back glass (mullions, top/bottom rails)
     w.mat('glass', { tint: 0x1a2024 });
-    w.box(x - 2.2, SW_H + 0.3, z - 0.92, x + 2.2, SW_H + 2.4, z - 0.88, PZ | NZ);
+    w.box(x - 2.15, y0 + 0.3, z - 0.92, x + 2.15, y0 + 2.4, z - 0.88, PZ | NZ);
+    w.mat('metal_paint', { tint: 0x3a4a5a, ov: 'steel_rust', ovAmt: 0.3, uv: 'local' });
+    w.bevelBox(x - 2.2, y0 + 0.26, z - 0.945, x + 2.2, y0 + 0.31, z - 0.855, 0.01);
+    w.bevelBox(x - 2.2, y0 + 2.39, z - 0.945, x + 2.2, y0 + 2.44, z - 0.855, 0.01);
+    for (const dx of [-1.12, 1.12]) w.bevelBox(x + dx - 0.025, y0 + 0.3, z - 0.945, x + dx + 0.025, y0 + 2.4, z - 0.855, 0.008);
     const ad = c.signs?.any('poster', rng);
-    if (ad) { w.atlas('sign', { e0: 0.8, ao: 1 }); w.quad(x - 1.0, SW_H + 0.6, z - 0.86, x + 1.0, SW_H + 0.6, z - 0.86, x + 1.0, SW_H + 2.2, z - 0.86, x - 1.0, SW_H + 2.2, z - 0.86, [ad.u0, ad.v0, ad.u1, ad.v1]); c.lights.add({ p: new THREE.Vector3(x, SW_H + 1.4, z - 0.6), color: new THREE.Color(0xf0f6ff), intensity: 3, range: 4, glow: 0.6, kind: 'sign' }); }
-    // bus stop pole sign
-    w.mat('galv', { uv: 'local' }); w.cyl(x + 3, SW_H, z + 1.0, 0.04, 0.04, 2.8, 6, 1);
-    w.mat('metal_paint', { tint: 0x2a62b8, uv: 'local' }); w.box(x + 2.75, SW_H + 2.2, z + 0.98, x + 3.25, SW_H + 2.8, z + 1.02, ALL);
+    if (ad) {
+      w.mat('metal_paint', { tint: 0x2c3036, uv: 'local' });
+      w.bevelBox(x - 1.06, y0 + 0.54, z - 0.875, x + 1.06, y0 + 2.26, z - 0.81, 0.012);
+      w.atlas('sign', { e0: 0.8, ao: 1 });
+      w.quad(x - 1.0, y0 + 0.6, z - 0.806, x + 1.0, y0 + 0.6, z - 0.806, x + 1.0, y0 + 2.2, z - 0.806, x - 1.0, y0 + 2.2, z - 0.806, [ad.u0, ad.v0, ad.u1, ad.v1]);
+      c.lights.add({ p: new THREE.Vector3(x, SW_H + 1.4, z - 0.6), color: new THREE.Color(0xf0f6ff), intensity: 3, range: 4, glow: 0.6, kind: 'sign' });
+    }
+    // bus stop pole sign: galvanised pole, blue bevelled plate with a white inner panel
+    w.mat('galv', { uv: 'local' }); w.cyl(x + 3, y0, z + 1.0, 0.04, 0.04, 2.86, 10, 1);
+    w.mat('metal_paint', { tint: 0x2a62b8, uv: 'local' }); w.bevelBox(x + 2.72, y0 + 2.2, z + 0.965, x + 3.28, y0 + 2.82, z + 1.035, 0.012);
+    w.mat('metal_paint', { tint: 0xeeeee6, uv: 'local' }); w.box(x + 2.79, y0 + 2.27, z + 1.036, x + 3.21, y0 + 2.75, z + 1.04, PZ);
   }
   // ---------------------------------------------------------------- motorcycle-taxi stand (win)
   {
@@ -208,10 +249,7 @@ export function buildStreetLife(c: Ctx) {
   // ---------------------------------------------------------------- pedestrian overpass at x -45
   overpass(c);
   // phone booth + extra ATM
-  w.put(P.phoneBooth(), -14.5, SW_H, 0.8, 0);
-  c.phys.box([-14.5, 1.2, 0.8], [0.9, 2.3, 0.8]);
-  w.put(P.phoneBooth(), 33, SW_H, 25.4, Math.PI);
-  c.phys.box([33, 1.2, 25.4], [0.9, 2.3, 0.8]);
+  for (const [bx, bz, by] of BOOTHS) { w.put(P.phoneBooth(), bx, SW_H, bz, by); c.phys.box([bx, 1.2, bz], [0.9, 2.3, 0.8]); }
   // ---------------------------------------------------------------- posters & loan stickers on poles
   for (const [px, pz] of allPoles) {
     if (rng.chance(0.4)) continue;
