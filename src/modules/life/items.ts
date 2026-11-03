@@ -102,6 +102,18 @@ export function defineLifeItems(game: Game) {
       lens.position.set(0.131, 0.03, 0);
       lens.name = 'lens';
       g.add(lens);
+      // the real thing: Poly Haven's small plastic torch (CC0, gen/escape/models). The procedural body stays
+      // as the fallback until it loads (and if it fails)
+      torchModel().then((m) => {
+        if (!m) return;
+        const t = m.clone(true);
+        t.traverse((o: any) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+        g.add(t);
+        body.visible = false; head.visible = false;
+        lens.position.set(TORCH.len / 2 + 0.002, 0.03, 0);
+        (lens.geometry as THREE.CircleGeometry).dispose();
+        lens.geometry = new THREE.CircleGeometry(TORCH.lensR, 16);
+      });
       return g;
     },
     animate: (obj: THREE.Object3D, e: Ent, _dt: number, game: Game) => {
@@ -390,4 +402,51 @@ export function defineRitualItems(game: Game) {
     },
     hold: { pos: [0, -0.1, 0], rot: [0, 0, 0], scale: 0.7 },
   });
+}
+
+/**
+ * The library torch, normalised once: longest axis → +X, the wider end (the lamp head) facing +X, centred on
+ * the old procedural body (x 0, y 0.03), real size kept. Resolves null if the model can't load.
+ */
+const TORCH = { len: 0.2, lensR: 0.024 };
+let torchP: Promise<THREE.Object3D | null> | null = null;
+function torchModel(): Promise<THREE.Object3D | null> {
+  if (torchP) return torchP;
+  torchP = Assets.glb('gen/escape/models/small_plastic_torch/small_plastic_torch.glb').then((gl: any) => {
+    const src: THREE.Object3D = gl.scene;
+    src.updateMatrixWorld(true);
+    const pts: THREE.Vector3[] = [];
+    src.traverse((o: any) => {
+      if (!o.isMesh) return;
+      const pos = o.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i += 3) pts.push(new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld));
+    });
+    if (!pts.length) return null;
+    const box = new THREE.Box3().setFromPoints(pts), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+    const ax = size.x >= size.y && size.x >= size.z ? 'x' : size.y >= size.z ? 'y' : 'z';
+    const L = size[ax];
+    // which end is wider (the reflector head)?
+    let r0 = 0, r1 = 0;
+    for (const p of pts) {
+      const t = (p[ax] - box.min[ax]) / L, q = p.clone().sub(c); q[ax] = 0;
+      const r = q.length();
+      if (t < 0.15) r0 = Math.max(r0, r); else if (t > 0.85) r1 = Math.max(r1, r);
+    }
+    const headPositive = r1 >= r0;
+    const pivot = new THREE.Group();
+    const inner = src.clone(true);
+    inner.position.copy(c).multiplyScalar(-1);
+    const rot = new THREE.Group();
+    rot.add(inner);
+    // map the long axis onto +X with the head forward
+    if (ax === 'y') rot.rotation.z = headPositive ? -Math.PI / 2 : Math.PI / 2;
+    else if (ax === 'z') rot.rotation.y = headPositive ? Math.PI / 2 : -Math.PI / 2;
+    else if (!headPositive) rot.rotation.y = Math.PI;
+    pivot.add(rot);
+    pivot.position.set(0, 0.03, 0);
+    TORCH.len = L;
+    TORCH.lensR = Math.max(0.012, Math.min(0.04, Math.max(r0, r1) * 0.82));
+    return pivot;
+  }).catch(() => null);
+  return torchP;
 }

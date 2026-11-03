@@ -5,6 +5,7 @@ import type { Ent } from '../../sim/state';
 import type { Ctx } from '../../game/interact';
 import { tl, TL } from '../../core/util';
 import { Assets } from '../../core/assets';
+import { libModel } from '../world/lib';
 import { anchorP, dist2, proxyMaterial } from './util';
 import { line } from './lines';
 import { sfx } from './sounds';
@@ -216,20 +217,30 @@ export class Homeless {
     card2.position.set(-0.55, 0.014, 0.35);
     card2.rotation.y = -0.4;
     g.add(card2);
-    // tin cup for coins (photo of a dented tin can)
-    const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.09, 12, 1, true), Assets.pbr('aluminium_scratched', { fallback: 0x9a9a96, side: THREE.DoubleSide }));
-    cup.position.set(0.55, 0.05, -0.3);
-    cup.castShadow = true;
-    g.add(cup);
-    const coins = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.012, 10), new THREE.MeshStandardMaterial({ color: '#c9b37a', metalness: 0.9, roughness: 0.3 }));
-    coins.position.set(0.55, 0.02, -0.3);
-    g.add(coins);
-    // bundle of belongings: a stuffed rice sack (real woven sack photo)
-    const sack = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 6), Assets.pbr('canvas_tarp', { fallback: 0xd8d2bf, color: '#e8e0c8' }));
-    sack.scale.set(1, 0.75, 0.8);
-    sack.position.set(-0.45, 0.16, -0.38);
-    sack.castShadow = true;
+    // begging can (library rusted tin), a few real baht coins on the cardboard, a rice sack of belongings and a
+    // squashed carton as a pillow — all library models (no primitives)
+    const can = libModel('can_rusted');
+    can.position.set(0.55, 0.012, -0.3);
+    g.add(can);
+    const social: any = (game as any).social;
+    for (const [v, x, z, r] of [[10, 0.42, -0.22, 0.4], [5, 0.47, -0.36, 1.9], [10, 0.36, -0.31, 3.1]] as [number, number, number, number][]) {
+      try {
+        const coin: THREE.Object3D | null = social?.money?.(v) ?? null;
+        if (!coin) continue;
+        coin.position.set(x, 0.015, z);
+        coin.rotation.set(-Math.PI / 2, 0, r);
+        g.add(coin);
+      } catch {}
+    }
+    const sack = libModel('rice_sack');
+    sack.position.set(-0.45, 0.012, -0.42);
+    sack.rotation.y = 0.5;
     g.add(sack);
+    const box = libModel('cardboard_box_01');
+    box.scale.set(1.05, 0.38, 1.05);                // squashed flat: his pillow
+    box.position.set(-0.52, 0.012, 0.32);
+    box.rotation.y = -0.3;
+    g.add(box);
     // interaction proxy around him
     const proxy = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.2, 0.9), proxyMaterial());
     proxy.position.set(0, 0.6, 0);

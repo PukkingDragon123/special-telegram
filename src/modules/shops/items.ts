@@ -73,7 +73,10 @@ const plastic = (color: number) => mat('plastic:' + color, () => { const m = Ass
 const flat = (color: number, rough = 0.7, metal = 0) => mat(`flat:${color}:${rough}:${metal}`, () => new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal }));
 const steel = () => mat('steel', () => Assets.pbr('stainless_brushed', { repeat: 1, fallback: 0xb8bcc0 }));
 const labelMat = (file: string, o: { alpha?: boolean } = {}) => mat('label:' + file + (o.alpha ? 'a' : ''), () => {
-  const t = Assets.texture(file.includes('/') ? file : LAB + file, { srgb: true, wrap: false });
+  // bare stems ('heap_garlic', 'pork_table', 'water20') are the shop photos in gen/shops/; names with an
+  // extension are product labels in img/labels/
+  const path = file.includes('/') ? file : /\.\w+$/.test(file) ? LAB + file : 'gen/shops/' + file + (file === 'water20' ? '.png' : '.jpg');
+  const t = Assets.texture(path, { srgb: true, wrap: false });
   const m = new THREE.MeshStandardMaterial({ map: t, roughness: 0.45, metalness: 0 });
   if (o.alpha) m.alphaTest = 0.4;
   return m;

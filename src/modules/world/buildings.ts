@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RNG } from '../../core/rng';
 import { WB, ALL, SIDES, PX, NX, PY, NY, PZ, NZ } from './geo';
+import { libInstanced } from './lib';
 import { Shophouse, ShopCtx, buildRows } from './shophouse';
 import type { FoliageSys } from './foliage';
 import { canopyTree, weeds, grassPatch, bananaTree, coconutPalm, pottedPlant, bougainvillea } from './foliage';
@@ -448,8 +449,15 @@ function spiritLot(c: SpecialCtx) {
   w.put(c.props.spiritHouse(), sp[0], SW_H, sp[2] - 0.2, Math.PI / 2);
   c.phys.box([sp[0], 0.8, sp[2] - 0.2], [1.8, 1.6, 1.8]);
   w.setGroup('detail');
-  w.mat('plastic_gloss', { tint: 0xc81818, uv: 'local' });
-  for (let i = 0; i < 6; i++) w.cyl(sp[0] + 0.45 - (i % 3) * 0.15, SW_H + 0.42, sp[2] - 0.6 + Math.floor(i / 3) * 0.12, 0.03, 0.025, 0.2, 6, 1);
+  // red soda offerings (น้ำแดง): real library bottles, two rows of three, a few slightly turned
+  {
+    const ms: THREE.Matrix4[] = [];
+    for (let i = 0; i < 6; i++) {
+      const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (i * 1.7) % 6.28);
+      ms.push(new THREE.Matrix4().compose(new THREE.Vector3(sp[0] + 0.45 - (i % 3) * 0.15, SW_H + 0.42, sp[2] - 0.6 + Math.floor(i / 3) * 0.12), q, new THREE.Vector3(1, 1, 1)));
+    }
+    c.props.real.addObject(libInstanced('bottle_fanta_red', ms));
+  }
   w.mat('fabric', { tint: 0xf0a020, uv: 'local' });
   for (let i = 0; i < 5; i++) w.tube(WB.sagLine(sp[0] + 0.42, SW_H + 2.05, sp[2] - 0.6 + i * 0.25, sp[0] + 0.42, SW_H + 2.0, sp[2] - 0.45 + i * 0.25, 0.25, 6), 0.035, 5);
   // ม้าลาย: painted plaster zebra offerings, rounded and striped (alternating white / black lathe segments)
