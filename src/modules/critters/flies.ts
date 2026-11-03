@@ -4,6 +4,7 @@ import { Sound, SoundHandle } from '../../core/audio';
 import { Assets } from '../../core/assets';
 import { isFoodItem } from '../life/util';
 import { Spots } from './spots';
+import { makeFlyFan } from '../world/realprops-stall';
 import { night, qmul, tex } from './util';
 
 /* ============================================================================================
@@ -194,29 +195,11 @@ class FlyFan {
 
   constructor() {
     this.group.name = 'butcher-fly-fan';
-    const plastic = Assets.pbr('plastic_glossy', { color: 0xd8d2c4 });
-    const steel = Assets.pbr('stainless_brushed', { color: 0xcfcfcf });
-    const motor = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.12, 12), plastic);
-    motor.position.y = 0.06;
-    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.42, 6), steel);
-    rod.position.y = 0.33;
-    this.group.add(motor, rod);
-    this.rotor.position.y = 0.52;
-    const strip = Assets.pbr('plastic_glossy', { color: 0xf0f4ff }).clone();
-    strip.transparent = true; strip.opacity = 0.55; strip.side = THREE.DoubleSide; strip.depthWrite = false;
-    const pink = strip.clone(); pink.color.set(0xff8fb0);
-    for (let k = 0; k < 4; k++) {
-      const g = new THREE.PlaneGeometry(0.03, 0.42, 1, 6);
-      g.translate(0, -0.21, 0);
-      const m = new THREE.Mesh(g, k % 2 ? pink : strip);
-      const a = (k / 4) * Math.PI * 2;
-      m.position.set(Math.cos(a) * 0.012, 0, Math.sin(a) * 0.012);
-      m.rotation.y = -a;
-      this.rotor.add(m);
-      this.strips.push(m);
-    }
-    this.group.add(this.rotor);
-    this.group.traverse((o: any) => { if (o.isMesh) o.castShadow = false; });
+    // the same real fly-fan model the market stalls use (lathe-moulded ABS base, chrome pole, foil strips, mains cord)
+    const f = makeFlyFan();
+    this.group.add(f.object);
+    this.rotor = f.spin as THREE.Group;
+    this.rotor.traverse((o: any) => { if (o.isMesh && o.material?.metalness === 1) this.strips.push(o); });
   }
 
   /** returns true while spinning */

@@ -3,6 +3,8 @@ import type { Game } from '../../game/game';
 import type { CharacterRig, Look } from '../../game/contracts';
 import { Assets } from '../../core/assets';
 import { vehicleModel, wheelModel, VDEFS } from '../life/vehicles';
+import { libLoad, libEntry } from '../world/lib';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { GEN, loadGlb } from './util';
 
 /* ============================================================================================
@@ -57,9 +59,10 @@ export class Police {
     const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4, metalness: 0.28, envMapIntensity: 1.2 });
     const body = new THREE.Mesh(vm.geo, mat);
     body.castShadow = true; body.receiveShadow = true;
-    this.truck.add(body);
+    const useLib = !!libEntry('pickup_hilux');
+    if (!useLib) this.truck.add(body);
     const wm = wheelModel();
-    for (const w of VDEFS.pickup.wheels) for (const s of [1, -1]) {
+    if (!useLib) for (const w of VDEFS.pickup.wheels) for (const s of [1, -1]) {
       const wh = new THREE.Mesh(wm.geo, wm.mat);
       wh.scale.set(0.26, w.r, w.r);
       wh.position.set(s * w.x, w.r, w.z);
@@ -67,9 +70,29 @@ export class Police {
       this.wheels.push(wh);
       this.truck.add(wh);
     }
+    // the real Hilux (shared library) in Thai patrol livery: brown below the belt line, cream above, ตำรวจ on the doors
+    if (useLib) libLoad('pickup_hilux').then((a) => {
+      if (!a) { this.truck.add(body); return; }
+      const size = a.box.getSize(new THREE.Vector3());
+      const k = VDEFS.pickup.len / size.z;
+      const M = new THREE.Matrix4().makeRotationY(Math.PI).multiply(new THREE.Matrix4().makeScale(k, k, k));
+      let bi = 0, best = -1;
+      a.parts.forEach((p, i) => { const n = p.geom.getAttribute('position').count * ((p.mat as any).map ? 2 : 1); if (n > best) { best = n; bi = i; } });
+      for (const [i, p] of a.parts.entries()) {
+        const m = new THREE.Mesh(p.geom.clone().applyMatrix4(M), i === bi ? policePaint(p.mat as THREE.MeshStandardMaterial, size.y * k) : p.mat);
+        m.castShadow = true; m.receiveShadow = true;
+        this.truck.add(m);
+      }
+      const lbl = policeDoorMat();
+      for (const sx of [1, -1]) {
+        const d = new THREE.Mesh(new THREE.PlaneGeometry(1.15, 0.26), lbl);
+        d.position.set(sx * (size.x * k / 2 - 0.035), size.y * k * 0.5, -0.35); d.rotation.y = sx * Math.PI / 2;
+        this.truck.add(d);
+      }
+    });
     // light bar on the cab roof: chrome base + two lens halves
     const baseMat = Assets.pbr('chrome', { color: 0x9a9a9a });
-    const base = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.07, 0.26), baseMat);
+    const base = new THREE.Mesh(new RoundedBoxGeometry(1.3, 0.07, 0.26, 2, 0.025), baseMat);
     base.position.set(0, 1.8, -0.2);
     this.truck.add(base);
     const lensGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.6, 10, 1);
@@ -252,4 +275,34 @@ function orientTorch(m: THREE.Object3D): THREE.Object3D {
   outer.add(inner);
   outer.name = 'police-torch';
   return outer;
+}
+
+/** repaint the library pickup in Royal Thai Police patrol colours (keeps the texture's shading as luminance) */
+function policePaint(base: THREE.MeshStandardMaterial, height: number): THREE.Material {
+  const m = base.clone();
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uBelt = { value: height * 0.55 };
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying float vObjY;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvObjY = position.y;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vObjY;\nuniform float uBelt;')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+      {
+        float lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+        vec3 paint = vObjY < uBelt ? vec3(0.22, 0.09, 0.06) : vec3(0.92, 0.9, 0.84);
+        diffuseColor.rgb = paint * clamp(0.35 + lum * 2.2, 0.2, 1.2);
+      }`);
+  };
+  m.customProgramCacheKey = () => 'policepaint';
+  return m;
+}
+let doorMat: THREE.Material | null = null;
+function policeDoorMat() {
+  if (doorMat) return doorMat;
+  const cv = document.createElement('canvas'); cv.width = 512; cv.height = 116;
+  const x = cv.getContext('2d')!;
+  x.clearRect(0, 0, 512, 116);
+  x.fillStyle = '#f2efe6'; x.font = 'bold 64px "K2D", sans-serif'; x.textBaseline = 'middle'; x.fillText('ตำรวจ', 18, 56);
+  x.fillStyle = '#e8c23a'; x.font = 'bold 44px "K2D", sans-serif'; x.fillText('POLICE 191', 230, 60);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+  doorMat = new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.3, roughness: 0.4, polygonOffset: true, polygonOffsetFactor: -2, side: THREE.DoubleSide });
+  return doorMat;
 }

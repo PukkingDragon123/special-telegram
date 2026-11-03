@@ -202,7 +202,12 @@ function swapShowroom(game: Game) {
     placeKeeper(game, rt.keeper, ROOM.keeper);
     dressClark(game, rt.keeper);
   }
-  if (game.world) (game.world.anchors as any).furniture_backdoor = ROOM.backdoor;
+  if (game.world) {
+    const early = (game.world.anchors as any).furniture_backdoor;
+    if (early?.p && Math.hypot(early.p[0] - ROOM.backdoor.p[0], early.p[2] - ROOM.backdoor.p[2]) > 0.05)
+      console.warn('[build] furniture_backdoor moved after world:ready', early.p, '→', ROOM.backdoor.p);
+    (game.world.anchors as any).furniture_backdoor = ROOM.backdoor;
+  }
 }
 
 function buildlab(game: Game) {

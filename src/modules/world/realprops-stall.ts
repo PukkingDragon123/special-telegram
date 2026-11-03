@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Assets } from '../../core/assets';
 import { ProcModel, tex, lathe, tubeGeom, plasticMat, clean, mergeAll } from './realprops-proc';
 
 /**
@@ -249,11 +250,18 @@ export const STALL_MODELS: Record<string, () => Promise<ProcModel>> = {
 export function makeFlyFan(): { object: THREE.Group; spin: THREE.Object3D } {
   const g = new THREE.Group();
   g.name = 'flyfan';
-  const plastic = new THREE.MeshStandardMaterial({ color: 0xe8e4dc, roughness: 0.45 });
-  const base = lathe([[0, 0], [0.07, 0], [0.072, 0.012], [0.05, 0.03], [0.012, 0.04], [0, 0.04]], 16);
-  const pole = new THREE.CylinderGeometry(0.007, 0.007, 0.32, 8).translate(0, 0.19, 0);
-  const motor = lathe([[0, 0.34], [0.024, 0.34], [0.026, 0.37], [0.018, 0.4], [0, 0.402]], 12);
-  g.add(new THREE.Mesh(mergeAll([base, pole, motor]), plastic));
+  // moulded ABS (real plastic PBR, sun-yellowed), weighted base with a rocker switch, chrome pole, motor pod, mains cord
+  const plastic = Assets.pbr('plastic_rough', { repeat: 0.3, color: 0xe8e2d4, fallback: 0xe8e4dc }).clone() as THREE.MeshStandardMaterial;
+  plastic.roughness = 0.5;
+  const base = lathe([[0, 0], [0.068, 0], [0.072, 0.006], [0.072, 0.014], [0.062, 0.026], [0.03, 0.036], [0.012, 0.042], [0, 0.042]], 24);
+  const pole = new THREE.CylinderGeometry(0.0065, 0.0065, 0.32, 10).translate(0, 0.19, 0);
+  const motor = lathe([[0, 0.334], [0.02, 0.334], [0.026, 0.342], [0.027, 0.372], [0.022, 0.392], [0.012, 0.4], [0, 0.402]], 18);
+  const sw = new THREE.CylinderGeometry(0.009, 0.009, 0.01, 10).rotateZ(Math.PI / 2).scale(1, 1, 1.4).translate(0.05, 0.026, 0.02);
+  g.add(new THREE.Mesh(mergeAll([base, motor]), plastic));
+  g.add(new THREE.Mesh(mergeAll([pole]), new THREE.MeshStandardMaterial({ color: 0xd8dadc, metalness: 1, roughness: 0.22 })));
+  g.add(new THREE.Mesh(mergeAll([sw]), new THREE.MeshStandardMaterial({ color: 0xc8241a, roughness: 0.4 })));
+  const cord = new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-0.06, 0.008, 0), new THREE.Vector3(-0.12, 0.004, 0.04), new THREE.Vector3(-0.22, 0.004, -0.02), new THREE.Vector3(-0.32, 0.004, 0.05)]), 16, 0.0028, 5, false);
+  g.add(new THREE.Mesh(cord, new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.55 })));
   const spin = new THREE.Group();
   spin.position.y = 0.4;
   const arms: THREE.BufferGeometry[] = [], strips: THREE.BufferGeometry[] = [];

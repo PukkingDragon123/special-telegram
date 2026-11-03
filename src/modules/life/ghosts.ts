@@ -707,8 +707,17 @@ export const DEV_GHOST = params.get('ghost');
 /** the review ghost's phone: rounded slab, cracked glowing screen (her live-stream never ended) */
 function reviewPhone(): THREE.Group {
   const g = new THREE.Group();
-  const body = new THREE.Mesh(new RoundedBoxGeometry(0.074, 0.152, 0.009, 3, 0.008), new THREE.MeshStandardMaterial({ color: '#d8d4e8', roughness: 0.25, metalness: 0.6 }));
+  // glittery pink influencer case + triple camera bump on the back (reads from behind too)
+  const body = new THREE.Mesh(new RoundedBoxGeometry(0.078, 0.156, 0.011, 3, 0.009), new THREE.MeshStandardMaterial({ color: '#e8609a', roughness: 0.35, metalness: 0.35 }));
   g.add(body);
+  const bump = new THREE.Mesh(new RoundedBoxGeometry(0.032, 0.034, 0.004, 2, 0.006), new THREE.MeshStandardMaterial({ color: '#2a2a30', roughness: 0.2, metalness: 0.7 }));
+  bump.position.set(-0.016, 0.052, -0.0065);
+  g.add(bump);
+  for (const [x, y] of [[-0.024, 0.06], [-0.009, 0.06], [-0.024, 0.044]]) {
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.0055, 14), new THREE.MeshStandardMaterial({ color: '#0a0a10', roughness: 0.05, metalness: 0.9 }));
+    lens.position.set(x, y, -0.0088); lens.rotation.y = Math.PI;
+    g.add(lens);
+  }
   const cv = document.createElement('canvas'); cv.width = 128; cv.height = 256;
   const ctx = cv.getContext('2d')!;
   const gr = ctx.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#a8c8ff'); gr.addColorStop(1, '#e0f0ff');
@@ -718,7 +727,7 @@ function reviewPhone(): THREE.Group {
   ctx.beginPath(); ctx.moveTo(30, 60); ctx.lineTo(70, 120); ctx.lineTo(55, 170); ctx.moveTo(70, 120); ctx.lineTo(110, 140); ctx.stroke();
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.066, 0.142), new THREE.MeshStandardMaterial({ map: tex, emissive: '#ffffff', emissiveMap: tex, emissiveIntensity: 1.6, roughness: 0.15 }));
-  screen.position.z = 0.0047;
+  screen.position.z = 0.0058;
   g.add(screen);
   g.position.set(0.02, 0.03, 0.06);
   g.rotation.set(-0.3, Math.PI, 0.1);

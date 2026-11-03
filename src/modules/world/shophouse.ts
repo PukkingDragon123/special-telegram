@@ -14,6 +14,7 @@ import { vines, bougainvillea, pottedPlant, weeds } from './foliage';
 import { birdcage, floorShrine, wallShrine, cctv, drainpipe, rebar, breezeBlocks, grilleMotif } from './archkit';
 import { ARCH } from './archmodels';
 import { ClothSpots } from '../cloth/api';
+import { libEntry } from './lib';
 
 /**
  * PROCEDURAL SHOPHOUSE (ตึกแถว) GENERATOR
@@ -775,22 +776,34 @@ export class Shophouse {
         w.quad(x0 + 0.1, y0 + 0.1, -rd + 0.05, x1 - 0.1, y0 + 0.1, -rd + 0.05, x1 - 0.1, y0 + 0.1 + hh, -rd + 0.05, x0 + 0.1, y0 + 0.1 + hh, -rd + 0.05, [r.u0, r.v0, r.u1, r.v1]);
       }
     }
+    // what stands on the shelves of each kind of shop: real shared-library products [id, scale]
+    const GOODS: Record<string, [string, number][]> = {
+      grocery: [['lib:bottle_fish_sauce_tiparos', 1], ['lib:bottle_oyster_sauce', 1], ['lib:bottle_light_soy', 1], ['lib:bottle_dark_soy', 1], ['lib:bottle_golden_mountain', 1], ['lib:bottle_beer_chang', 1], ['lib:bottle_beer_leo', 1], ['lib:bottle_fanta_red', 1], ['lib:plastic_bottle_gallon', 0.8], ['lib:cardboard_box_01', 0.45]],
+      pharmacy: [['lib:cardboard_box_01', 0.28], ['lib:cleaner_tin_01', 0.8], ['lib:plastic_bottle_gallon', 0.55], ['lib:cardboard_box_01', 0.2]],
+      hardware: [['lib:cleaner_tin_01', 1], ['lib:multi_cleaner_5_litre', 1], ['lib:plastic_jerrycan', 0.8], ['lib:can_rusted', 1], ['lib:cardboard_box_01', 0.5], ['lib:dustpan', 1]],
+      other: [['lib:cardboard_box_01', 0.35], ['lib:cardboard_box_01', 0.25], ['lib:plastic_bottle_gallon', 0.6], ['lib:cleaner_tin_01', 0.9]],
+    };
+    const goods = GOODS[shop] ?? GOODS.other;
+    const widthOf = (id: string, sc: number) => (libEntry(id.slice(4))?.size_m?.[0] ?? 0.12) * sc;
+    /** slotted-angle shelving along a side wall (bevelled uprights + 5 decks), stocked with real products */
     const shelfRow = (side: 'L' | 'R', za: number, zb: number, h = 2.2, layer = 'metal_paint', tint = 0xd8d4c8) => {
       const x = side === 'L' ? x0 + 0.02 : x1 - 0.47;
       w.mat(layer, { tint, uv: 'local', ao: 0.8 });
-      for (const z of [za, zb]) w.box(x, y0, z - 0.03, x + 0.45, y0 + h, z, ALL & ~NY);
-      for (let k = 0; k < 5; k++) { const y = y0 + 0.1 + k * (h - 0.15) / 4; w.box(x, y, zb, x + 0.45, y + 0.025, za, ALL); }
-      // goods: boxes & bottles of random colours
+      for (const z of [za, (za + zb) / 2, zb]) for (const dx of [0, 0.41]) w.bevelBox(x + dx, y0, z - 0.04, x + dx + 0.04, y0 + h, z, 0.008);
+      const levels: number[] = [];
+      for (let k = 0; k < 5; k++) { const y = y0 + 0.1 + k * (h - 0.15) / 4; w.bevelBox(x, y, zb, x + 0.45, y + 0.022, za, 0.006); levels.push(y + 0.022); }
+      // stock (instanced real models), facing the aisle, a few gaps where things sold out
+      const face = this.yaw + (side === 'L' ? Math.PI / 2 : -Math.PI / 2);
       for (let k = 0; k < 4; k++) {
-        const y = y0 + 0.125 + k * (h - 0.15) / 4;
-        let z = zb + 0.05;
-        while (z < za - 0.15) {
-          const bw = rng.range(0.12, 0.35), bh = rng.range(0.15, (h - 0.15) / 4 - 0.08);
-          const kind = rng.int(0, 2);
-          if (kind === 0) { w.mat('cardboard', { uv: 'local', ao: 0.8, tint: rng.pick([0xffffff, 0xe8d0b0, 0xd0e0f0, 0xf0d0d0]) }); w.box(x + 0.05, y, z, x + 0.4, y + bh, z + bw, ALL & ~NY); }
-          else if (kind === 1) { w.mat('plastic_gloss', { uv: 'local', ao: 0.85, tint: rng.pick(PLASTIC_COLORS) }); for (let q = 0; q < 3; q++) w.cyl(x + 0.12 + q * 0.11, y, z + bw / 2, 0.045, 0.04, bh, 6, 1); }
-          else { w.mat('paper', { uv: 'local', ao: 0.85, tint: rng.pick([0xffffff, 0xfff0c0, 0xd0f0d0, 0xf0c0c0]) }); w.box(x + 0.05, y, z, x + 0.42, y + bh * 0.6, z + bw, ALL & ~NY); }
-          z += bw + 0.03;
+        const y = levels[k];
+        const [id, sc] = goods[(k + (side === 'L' ? 0 : 2) + rng.int(0, 1)) % goods.length];
+        const step = widthOf(id, sc) + 0.012;
+        for (let z = zb + 0.05 + step / 2; z < za - step / 2; z += step) {
+          if (rng.chance(0.08)) continue;
+          for (const dx of [0.14, 0.31]) {
+            const p = this.wp(x + dx, y, z);
+            P.real.add(id, p.x, p.y, p.z, face + rng.range(-0.12, 0.12), { scale: sc * rng.range(0.96, 1.04), phys: 'none' });
+          }
         }
       }
       this.col(side === 'L' ? x0 : x1 - 0.47, 0, zb, side === 'L' ? x0 + 0.47 : x1, y0 + h, za);
@@ -834,9 +847,14 @@ export class Shophouse {
         shelfRow('L', -0.8, -rd + 0.4, 2.2, 'metal_paint', tint);
         shelfRow('R', -1.4, -rd + 0.4, 2.2, 'metal_paint', tint);
         // counter
-        w.mat(shop === 'pharmacy' || shop === 'phone' ? 'glass' : 'wood_paint', { tint: shop === 'pharmacy' || shop === 'phone' ? 0x9ab0b0 : 0x8a6a4a, uv: 'local', ao: 0.8 });
         const cx = rng.chance(0.5) ? x0 + 0.5 : x1 - 1.6;
-        w.box(cx, y0, -1.6, cx + 1.1, y0 + 0.95, -1.0, ALL & ~NY);
+        // shop counter: bevelled carcass, darker kick, a glass display top (pharmacy / phone) or a worn laminate top
+        w.mat('wood_paint', { tint: shop === 'pharmacy' || shop === 'phone' ? 0xe8e6e0 : 0x8a6a4a, uv: 'local', ao: 0.8 });
+        w.bevelBox(cx + 0.03, y0 + 0.08, -1.57, cx + 1.07, y0 + 0.9, -1.03, 0.02);
+        w.mat('metal_paint', { tint: 0x2a2a2a, uv: 'local', ao: 0.7 });
+        w.bevelBox(cx + 0.06, y0, -1.54, cx + 1.04, y0 + 0.08, -1.06, 0.01);
+        if (shop === 'pharmacy' || shop === 'phone') { w.mat('glass', { tint: 0x9ab0b0, uv: 'local', ao: 0.8 }); w.bevelBox(cx, y0 + 0.9, -1.6, cx + 1.1, y0 + 0.95, -1.0, 0.01); }
+        else { w.mat('wood_paint', { tint: 0x5a4030, uv: 'local', ao: 0.8 }); w.bevelBox(cx, y0 + 0.9, -1.62, cx + 1.1, y0 + 0.95, -0.98, 0.012); }
         this.col(cx, 0, -1.6, cx + 1.1, y0 + 0.95, -1.0);
         if (shop === 'hardware') for (let x = x0 + 0.4; x < x1 - 0.3; x += 0.5) w.put(P.bucket(rng.pick(PLASTIC_COLORS)), x, yb - 0.5, -0.4, 0);
         break;
@@ -856,9 +874,8 @@ export class Shophouse {
         const sc = rng.pick(PLASTIC_COLORS);
         for (let z = -1.8; z > -rd + 1; z -= 1.6) {
           const tx = (x0 + x1) / 2 + rng.range(-0.3, 0.3);
-          w.mat('stainless', { uv: 'local', ao: 0.85 });
-          w.box(tx - 0.5, y0 + 0.72, z - 0.35, tx + 0.5, y0 + 0.75, z + 0.35, ALL);
-          for (const [dx, dz] of [[-0.45, -0.3], [0.45, -0.3], [-0.45, 0.3], [0.45, 0.3]]) w.box(tx + dx - 0.02, y0, z + dz - 0.02, tx + dx + 0.02, y0 + 0.72, z + dz + 0.02, SIDES);
+          // the real Thai stainless restaurant table (shared model), two side by side
+          for (const dx of [-0.37, 0.37]) { const tp = this.wp(tx + dx, y0, z); P.real.add('steel_table', tp.x, tp.y, tp.z, this.yaw + Math.PI / 2, { phys: 'none' }); }
           for (const [dx, dz] of [[-0.75, 0], [0.75, 0], [0, 0.6]]) w.put(P.stool(sc), tx + dx, y0, z + dz, rng.range(0, 6));
           this.col(tx - 0.5, 0, z - 0.35, tx + 0.5, y0 + 0.75, z + 0.35);
         }
@@ -874,17 +891,32 @@ export class Shophouse {
       case 'barber': case 'salon': {
         w.mat('glass', { tint: 0x8aa0a8, uv: 'local' });
         w.box(x0 + 0.05, y0 + 1.0, -rd + 0.5, x0 + 0.08, y0 + 2.1, -0.8, PX);
-        w.mat('leather', { uv: 'local' });
-        for (let z = -1.5; z > -rd + 0.8; z -= 1.3) { w.box(x0 + 0.5, y0 + 0.4, z - 0.3, x0 + 1.1, y0 + 0.9, z + 0.3, ALL & ~NY); w.box(x0 + 1.0, y0 + 0.9, z - 0.3, x0 + 1.1, y0 + 1.5, z + 0.3, ALL); }
+        // hydraulic barber chairs: chrome pedestal + footrest, padded seat, back and headrest, armrests
+        for (let z = -1.5; z > -rd + 0.8; z -= 1.3) {
+          const cx2 = x0 + 0.8;
+          w.mat('stainless', { uv: 'local' });
+          w.cyl(cx2, y0, z, 0.26, 0.22, 0.05, 16, 1); w.cyl(cx2, y0 + 0.05, z, 0.07, 0.07, 0.32, 12, 0);
+          w.bevelBox(cx2 - 0.62, y0 + 0.16, z - 0.22, cx2 - 0.42, y0 + 0.19, z + 0.22, 0.01);
+          for (const sz of [-0.27, 0.27]) w.bevelBox(cx2 - 0.15, y0 + 0.62, z + sz - 0.03, cx2 + 0.25, y0 + 0.66, z + sz + 0.03, 0.012);
+          w.mat('leather', { uv: 'local' });
+          w.bevelBox(cx2 - 0.26, y0 + 0.37, z - 0.25, cx2 + 0.22, y0 + 0.5, z + 0.25, 0.035);
+          w.bevelBox(cx2 + 0.18, y0 + 0.48, z - 0.24, cx2 + 0.3, y0 + 1.15, z + 0.24, 0.04);
+          w.bevelBox(cx2 + 0.2, y0 + 1.2, z - 0.12, cx2 + 0.28, y0 + 1.36, z + 0.12, 0.03);
+          for (const sz of [-0.27, 0.27]) w.bevelBox(cx2 - 0.15, y0 + 0.66, z + sz - 0.045, cx2 + 0.2, y0 + 0.71, z + sz + 0.045, 0.02);
+        }
         if (shop === 'barber') { w.mat('plastic_gloss', { tint: 0xf0f0f0, uv: 'local', emis: EMIS.red.i, emisK: 0.2 }); w.cyl(x1 - 0.1, y0 + 1.4, 0.15, 0.08, 0.08, 0.7, 8, 3); }
         break;
       }
       case 'massage': {
         w.mat('fabric', { tint: 0x8a2a4a, uv: 'local', ao: 0.8 });
         w.box(x0 + 0.05, y0, -1.5, x1 - 0.05, yb - 0.1, -1.45, PZ);
+        // foot-massage recliners: padded base, sloped back cushion, footstool
         w.mat('leather', { uv: 'local' });
-        w.box(x0 + 0.3, y0, -0.9, x0 + 1.0, y0 + 0.5, -0.2, ALL & ~NY);
-        w.box(x1 - 1.0, y0, -0.9, x1 - 0.3, y0 + 0.5, -0.2, ALL & ~NY);
+        for (const [a, b] of [[x0 + 0.3, x0 + 1.0], [x1 - 1.0, x1 - 0.3]]) {
+          w.bevelBox(a, y0, -0.9, b, y0 + 0.42, -0.2, 0.05);
+          w.pushTR((a + b) / 2, y0 + 0.42, -0.85, -0.45, 0, 0); w.bevelBox(-(b - a) / 2, 0, -0.06, (b - a) / 2, 0.55, 0.08, 0.05); w.pop();
+          w.bevelBox(a + 0.15, y0, 0.0, b - 0.15, y0 + 0.3, 0.35, 0.04);
+        }
         break;
       }
       case 'repair': {
@@ -895,17 +927,26 @@ export class Shophouse {
         break;
       }
       case 'laundry': {
-        w.mat('plastic_gloss', { tint: 0xf0f0ec, uv: 'local' });
-        for (let z = -1.2; z > -rd + 0.6; z -= 0.75) { w.box(x0 + 0.1, y0, z - 0.33, x0 + 0.75, y0 + 0.9, z + 0.33, ALL & ~NY); }
+        // coin-op front-loading washers: bevelled cabinet, porthole door with chrome ring and glass, control strip
+        for (let z = -1.2; z > -rd + 0.6; z -= 0.75) {
+          w.mat('plastic_gloss', { tint: 0xf0f0ec, uv: 'local' });
+          w.bevelBox(x0 + 0.1, y0, z - 0.32, x0 + 0.72, y0 + 0.88, z + 0.32, 0.03);
+          w.mat('plastic_gloss', { tint: 0x3a3e44, uv: 'local' });
+          w.bevelBox(x0 + 0.72, y0 + 0.74, z - 0.3, x0 + 0.735, y0 + 0.85, z + 0.3, 0.004);
+          w.mat('stainless', { uv: 'local' });
+          w.pushTR(x0 + 0.72, y0 + 0.4, z, 0, 0, -Math.PI / 2); w.cyl(0, 0, 0, 0.21, 0.21, 0.025, 20, 1); w.pop();
+          w.mat('glass', { tint: 0x6a8a98, uv: 'local' });
+          w.pushTR(x0 + 0.745, y0 + 0.4, z, 0, 0, -Math.PI / 2); w.cyl(0, 0, 0, 0.16, 0.15, 0.012, 20, 1); w.pop();
+        }
         this.col(x0, 0, -rd + 0.3, x0 + 0.8, y0 + 0.9, -0.8);
         break;
       }
       case 'residence': default: {
         if (rng.chance(0.8)) w.put(P.motorbike(rng.pick([0xc0302a, 0x1c1c1e, 0x2a62b8, 0xe8e4dc, 0x3a3a3a])), (x0 + x1) / 2 + rng.range(-0.6, 0.6), y0, -1.6, rng.range(-0.4, 0.4) + Math.PI / 2, 1, { rz: 0.09 });
-        if (rng.chance(0.6)) { w.mat('teak', { uv: 'local', ao: 0.8 }); w.box(x0 + 0.1, y0, -rd + 0.3, x0 + 1.8, y0 + 0.45, -rd + 1.0, ALL & ~NY); }
+        if (rng.chance(0.6)) { w.mat('teak', { uv: 'local', ao: 0.8 }); w.bevelBox(x0 + 0.1, y0 + 0.38, -rd + 0.3, x0 + 1.8, y0 + 0.45, -rd + 1.0, 0.015); for (const lx of [x0 + 0.18, x0 + 1.72]) w.bevelBox(lx - 0.04, y0, -rd + 0.35, lx + 0.04, y0 + 0.38, -rd + 0.95, 0.008); }
         // household shrine shelf (red glow)
         w.mat('plastic_gloss', { tint: 0xa01818, uv: 'local', emis: EMIS.candle.i, emisK: 0.35 });
-        w.box(x1 - 1.0, y0 + 1.9, -rd + 0.05, x1 - 0.2, y0 + 2.0, -rd + 0.35, ALL);
+        w.bevelBox(x1 - 1.0, y0 + 1.9, -rd + 0.05, x1 - 0.2, y0 + 2.0, -rd + 0.35, 0.012);
         w.put(P.bucket(rng.pick(PLASTIC_COLORS)), x0 + 0.3, y0, -0.5, 0);
         break;
       }

@@ -124,7 +124,7 @@ export class RitualFx {
     for (let i = 0; i < 5; i++) {
       const m = new THREE.Mesh(geo, i < n ? gold : ghost);
       const a = (i - 2) * 0.32;
-      m.position.set(Math.sin(a) * 0.95, Math.cos(a) * 0.4 - 0.2, 0);
+      m.position.set(Math.sin(a) * 0.62, Math.cos(a) * 0.28 - 0.12, 0);
       m.scale.setScalar(0.001);
       g.add(m); meshes.push(m);
     }
@@ -133,7 +133,7 @@ export class RitualFx {
     this.items.push({
       obj: g, t: 0, dur: 9, texts: [], meshes,
       update: (_k, dt) => {
-        const p = at(); if (p) g.position.copy(p).add(new THREE.Vector3(0, 0.75, 0));
+        const p = at(); if (p) g.position.copy(p).add(new THREE.Vector3(0, 0.32, 0));
         const cp = this.game.camera.getWorldPosition(_v); g.rotation.y = Math.atan2(cp.x - g.position.x, cp.z - g.position.z);
         const it = this.items.find((x) => x.obj === g)!;
         const want = Math.min(5, Math.floor(it.t / 0.55));
@@ -141,7 +141,7 @@ export class RitualFx {
         meshes.forEach((m, i) => {
           const age = it.t - i * 0.55;
           const s = age <= 0 ? 0.001 : age < 0.25 ? (age / 0.25) * 1.35 : 1 + Math.max(0, 0.35 - (age - 0.25) * 1.4);
-          m.scale.setScalar(Math.max(0.001, s * 0.17));
+          m.scale.setScalar(Math.max(0.001, s * 0.12));
           m.rotation.y += dt * (i < n ? 2.4 : 0.6);
         });
       },
@@ -153,7 +153,7 @@ export class RitualFx {
   mosquitoes(center: THREE.Vector3, dur = 8) {
     this.swarm?.mesh.removeFromParent();
     const N = 140;
-    const mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.006, 0), new THREE.MeshBasicMaterial({ color: '#141210' }), N);
+    const mesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.0045, 0), new THREE.MeshBasicMaterial({ color: '#141210' }), N);
     mesh.frustumCulled = false;
     this.root.add(mesh);
     const seeds = new Float32Array(N * 4);
@@ -165,11 +165,12 @@ export class RitualFx {
     if (!s) return;
     s.t += dt;
     const m = new THREE.Matrix4();
-    const cam = this.game.camera.getWorldPosition(new THREE.Vector3());
-    const c = s.center.clone().lerp(cam, 0.6);
+    // a buzzing cloud right around your face (they always find you)
+    const cam = this.game.camera;
+    const c = cam.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, -0.1, -0.75).applyQuaternion(cam.getWorldQuaternion(_q)));
     for (let i = 0; i < s.mesh.count; i++) {
-      const a = s.seeds[i * 4] * 6.28 + s.t * (2 + s.seeds[i * 4 + 1] * 4), r = 0.3 + s.seeds[i * 4 + 2] * 1.4;
-      m.makeTranslation(c.x + Math.cos(a) * r, c.y - 0.3 + Math.sin(s.t * 3 + i) * 0.4 + s.seeds[i * 4 + 3] * 0.8, c.z + Math.sin(a * 1.3) * r);
+      const a = s.seeds[i * 4] * 6.28 + s.t * (2 + s.seeds[i * 4 + 1] * 4), r = 0.15 + s.seeds[i * 4 + 2] * 0.85;
+      m.makeTranslation(c.x + Math.cos(a) * r, c.y + Math.sin(s.t * 3 + i) * 0.18 + (s.seeds[i * 4 + 3] - 0.5) * 0.7, c.z + Math.sin(a * 1.3) * r);
       s.mesh.setMatrixAt(i, m);
     }
     s.mesh.instanceMatrix.needsUpdate = true;

@@ -198,11 +198,27 @@ export function makeCard(face: number): THREE.Group {
   const cell = (c: number) => { const t = atlas.clone(); t.repeat.set(250 / 1024, 350 / 512); t.offset.set((c * 256 + 3) / 1024, 1 - 350 / 512); t.needsUpdate = true; return t; };
   const w = 0.063, h = 0.088;
   const g = new THREE.Group();
-  const front = new THREE.Mesh(new THREE.PlaneGeometry(w, h).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ map: cell(face), roughness: 0.5 }));
-  front.position.y = 0.0004;
-  const back = new THREE.Mesh(new THREE.PlaneGeometry(w, h).rotateX(Math.PI / 2), new THREE.MeshStandardMaterial({ map: cell(3), roughness: 0.5 }));
+  // real card stock: 3 mm rounded corners, printed both faces, a thin white paper edge (0.3 mm)
+  const r = 0.003, t = 0.0003;
+  const sh = new THREE.Shape();
+  sh.moveTo(-w / 2 + r, -h / 2); sh.lineTo(w / 2 - r, -h / 2); sh.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+  sh.lineTo(w / 2, h / 2 - r); sh.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); sh.lineTo(-w / 2 + r, h / 2);
+  sh.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r); sh.lineTo(-w / 2, -h / 2 + r); sh.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+  const faceGeo = (mirror: boolean) => {
+    const f = new THREE.ShapeGeometry(sh, 4);
+    const p = f.getAttribute('position') as THREE.BufferAttribute, uv = f.getAttribute('uv') as THREE.BufferAttribute;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, mirror ? 1 - (p.getX(i) + w / 2) / w : (p.getX(i) + w / 2) / w, (p.getY(i) + h / 2) / h);
+    return f;
+  };
+  const front = new THREE.Mesh(faceGeo(false).rotateX(-Math.PI / 2), new THREE.MeshStandardMaterial({ map: cell(face), roughness: 0.42 }));
+  front.position.y = t / 2 + 0.00002;
+  const back = new THREE.Mesh(faceGeo(true).rotateX(Math.PI / 2), new THREE.MeshStandardMaterial({ map: cell(3), roughness: 0.42 }));
+  back.position.y = -t / 2 - 0.00002;
+  const edgeG = new THREE.ExtrudeGeometry(sh, { depth: t, bevelEnabled: false, curveSegments: 4 });
+  edgeG.rotateX(-Math.PI / 2).translate(0, -t / 2, 0);
+  const edge = new THREE.Mesh(edgeG, [new THREE.MeshBasicMaterial({ visible: false }), new THREE.MeshStandardMaterial({ color: 0xf4f1ea, roughness: 0.6 })]);
   front.castShadow = back.castShadow = true;
-  g.add(front, back);
+  g.add(front, back, edge);
   return g;
 }
 

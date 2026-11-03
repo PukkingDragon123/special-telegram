@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { Game } from '../../game/game';
 import { loadModel } from '../world/realprops';
 import { vehicleModel, wheelModel, VDEFS } from '../life/vehicles';
+import { libModelAsync, libEntry } from '../world/lib';
 import { RNG } from '../../core/rng';
 import { HideDef, HideKind, hideDefs } from './zones';
 import { loadGlb, mergeGroup } from './util';
@@ -139,14 +140,22 @@ export class HideSpots {
       sp.half = 0.6;
       phys?.addBox([P.x, 0.25 + P.y, P.z], [1.3, 0.5, 1.1], yaw);
     } else if (sp.kind === 'pickup') {
-      const vm = vehicleModel('pickup');
-      raw.add(new THREE.Mesh(vm.geo, vm.mat));
-      const wm = wheelModel();
-      for (const w of VDEFS.pickup.wheels) for (const s of [1, -1]) {
-        const wh = new THREE.Mesh(wm.geo, wm.mat);
-        wh.scale.set(0.26, w.r, w.r);
-        wh.position.set(s * w.x, w.r, w.z);
-        raw.add(wh);
+      if (libEntry('pickup_hilux')) {
+        // the real parked Hilux (shared library), turned to the vehicle convention (front −Z) and scaled to the slot
+        const h = await libModelAsync('pickup_hilux');   // loaded before the cluster is merged
+        const sz = libEntry('pickup_hilux')!.size_m;
+        h.scale.setScalar(VDEFS.pickup.len / sz[2]); h.rotation.y = Math.PI;
+        raw.add(h);
+      } else {
+        const vm = vehicleModel('pickup');
+        raw.add(new THREE.Mesh(vm.geo, vm.mat));
+        const wm = wheelModel();
+        for (const w of VDEFS.pickup.wheels) for (const s of [1, -1]) {
+          const wh = new THREE.Mesh(wm.geo, wm.mat);
+          wh.scale.set(0.26, w.r, w.r);
+          wh.position.set(s * w.x, w.r, w.z);
+          raw.add(wh);
+        }
       }
       sp.half = 2.6;
       phys?.addBox([P.x, 0.9 + P.y, P.z], [1.85, 1.8, 5.1], yaw);

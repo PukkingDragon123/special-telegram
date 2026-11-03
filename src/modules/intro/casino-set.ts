@@ -86,14 +86,19 @@ export function buildCasino(): CasinoSet {
     walls.push(g);
   };
   const wain = (x: number, z: number, len: number, yaw: number) => {
-    const g = new THREE.BoxGeometry(len, 1.1, 0.06);
+    // panelled teak wainscot: bevelled backboard + raised panels every 1.2 m, a skirting board, moulded dado + crown rails
+    const g = new RoundedBoxGeometry(len, 1.1, 0.05, 2, 0.012);
     const uv = g.getAttribute('uv');
     for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * len / 2, uv.getY(i) * 0.55);
     g.rotateY(yaw).translate(x, 0.55, z);
     wains.push(g);
-    const r = new THREE.BoxGeometry(len, 0.06, 0.1).rotateY(yaw).translate(x, 1.12, z);
-    const r2 = new THREE.BoxGeometry(len, 0.18, 0.14).rotateY(yaw).translate(x, H - 0.09, z);
-    rails.push(r, r2);
+    const np = Math.max(1, Math.floor(len / 1.2));
+    for (let k = 0; k < np; k++) {
+      const px = -len / 2 + (len / np) * (k + 0.5);
+      wains.push(new RoundedBoxGeometry(len / np - 0.24, 0.62, 0.035, 2, 0.015).translate(px, 0.62, 0.025).rotateY(yaw).translate(x, 0, z));
+    }
+    wains.push(new RoundedBoxGeometry(len, 0.16, 0.075, 2, 0.01).translate(0, 0.08, 0).rotateY(yaw).translate(x, 0, z));
+    rails.push(moulding(len, 0.07, 0.06).rotateY(yaw).translate(x, 1.1, z), moulding(len, 0.2, 0.15).rotateY(yaw).translate(x, H - 0.2, z));
   };
   // back wall with an archway opening (x -3.2..3.2, height 4)
   const AW = 3.2, AH = 4.0;
@@ -107,8 +112,17 @@ export function buildCasino(): CasinoSet {
 
   // archway: brass frame + a corridor into a second hall (real casino-floor photo, seen out of focus)
   const arch = new THREE.Group();
-  const frame = [new THREE.BoxGeometry(0.35, AH, 0.4).translate(-AW - 0.17, AH / 2, Z0), new THREE.BoxGeometry(0.35, AH, 0.4).translate(AW + 0.17, AH / 2, Z0), new THREE.BoxGeometry(AW * 2 + 0.7, 0.4, 0.4).translate(0, AH + 0.2, Z0)];
-  arch.add(mesh(mergeGeometries(frame), brass));
+  // brass pilasters (plinth, shaft, capital) and a moulded lintel
+  const frame: THREE.BufferGeometry[] = [];
+  for (const sx of [-1, 1]) {
+    const px = sx * (AW + 0.17);
+    frame.push(new RoundedBoxGeometry(0.45, 0.3, 0.5, 2, 0.03).translate(px, 0.15, Z0));
+    frame.push(new RoundedBoxGeometry(0.33, AH - 0.62, 0.38, 2, 0.05).translate(px, 0.3 + (AH - 0.62) / 2, Z0));
+    frame.push(new RoundedBoxGeometry(0.45, 0.32, 0.5, 2, 0.04).translate(px, AH - 0.16, Z0));
+  }
+  frame.push(new RoundedBoxGeometry(AW * 2 + 0.8, 0.36, 0.42, 2, 0.04).translate(0, AH + 0.18, Z0));
+  frame.push(moulding(AW * 2 + 0.95, 0.14, 0.12).translate(0, AH + 0.36, Z0 + 0.15));
+  arch.add(mesh(mergeGeometries(frame.map((g) => (g.index ? g.toNonIndexed() : g))), brass));
   const corrMat = damask.clone(); corrMat.color.set(0x8a6a60);
   const corr = [new THREE.PlaneGeometry(6, 4).rotateY(Math.PI / 2).translate(-AW, 2, Z0 - 3), new THREE.PlaneGeometry(6, 4).rotateY(-Math.PI / 2).translate(AW, 2, Z0 - 3)];
   arch.add(mesh(mergeGeometries(corr), corrMat, false));
@@ -132,17 +146,23 @@ export function buildCasino(): CasinoSet {
   ceil.rotation.x = Math.PI / 2; ceil.position.set(0, H, (Z0 + Z1) / 2);
   root.add(ceil);
   const beams: THREE.BufferGeometry[] = [];
-  for (let x = X0 + 3.5; x < X1; x += 3.5) beams.push(new THREE.BoxGeometry(0.28, 0.32, D).translate(x, H - 0.16, (Z0 + Z1) / 2));
-  for (let z = Z0 + 3.66; z < Z1; z += 3.66) beams.push(new THREE.BoxGeometry(W, 0.32, 0.28).translate(0, H - 0.16, z));
+  for (let x = X0 + 3.5; x < X1; x += 3.5) beams.push(new RoundedBoxGeometry(0.28, 0.32, D, 2, 0.05).translate(x, H - 0.16, (Z0 + Z1) / 2));
+  for (let z = Z0 + 3.66; z < Z1; z += 3.66) beams.push(new RoundedBoxGeometry(W, 0.32, 0.28, 2, 0.05).translate(0, H - 0.16, z));
   root.add(mesh(mergeGeometries(beams), brass, false));
-  // photo chandeliers hanging in the coffers (billboards)
-  const chMat = new THREE.SpriteMaterial({ map: tex('chandelier.png'), color: 0xfff0d8, transparent: true, depthWrite: false, fog: true });
-  for (let x = X0 + 1.75; x < X1; x += 3.5) for (let z = Z0 + 1.83; z < Z1; z += 3.66) {
-    if (Math.abs(x) < 2.5 && Math.abs(z) < 2.5) continue;
-    const s = new THREE.Sprite(chMat);
-    s.scale.set(1.25, 0.94, 1);
-    s.position.set(x, H - 0.62, z);
-    root.add(s);
+  // small 3D crystal chandeliers in the coffers (instanced copies of the big one, no billboards)
+  {
+    const mats: THREE.Matrix4[] = [];
+    for (let x = X0 + 1.75; x < X1; x += 3.5) for (let z = Z0 + 1.83; z < Z1; z += 3.66) {
+      if (Math.abs(x) < 2.5 && Math.abs(z) < 2.5) continue;
+      mats.push(new THREE.Matrix4().compose(new THREE.Vector3(x, H, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (x + z) * 0.7), new THREE.Vector3(0.55, 0.55, 0.55)));
+    }
+    const small = buildChandelier(brass);
+    for (const ch of small.children as THREE.Mesh[]) {
+      const im = new THREE.InstancedMesh(ch.geometry, ch.material as THREE.Material, mats.length);
+      mats.forEach((m, i) => im.setMatrixAt(i, m));
+      im.castShadow = false; im.receiveShadow = false;
+      root.add(im);
+    }
   }
 
   // ---------------------------------------------------------------- 3D crystal chandeliers over the tables
@@ -336,11 +356,11 @@ function buildSlots() {
   const chrome = Assets.pbr('chrome', { repeat: 1, roughness: 0.25 });
   const leather = Assets.pbr('leather_red_quilted', { repeat: 1 });
   const parts: { g: THREE.BufferGeometry; m: THREE.Material; shadow?: boolean }[] = [
-    { g: new THREE.BoxGeometry(0.62, 0.16, 0.55).translate(0, 0.08, 0), m: chrome },
+    { g: new RoundedBoxGeometry(0.62, 0.16, 0.55, 2, 0.03).translate(0, 0.08, 0), m: chrome },
     { g: new RoundedBoxGeometry(0.66, 1.25, 0.58, 2, 0.04).translate(0, 0.78, 0), m: cab, shadow: true },
     { g: new RoundedBoxGeometry(0.64, 0.34, 0.5, 2, 0.06).translate(0, 1.6, -0.02), m: cab },
-    { g: new THREE.BoxGeometry(0.6, 0.07, 0.24).rotateX(0.25).translate(0, 0.6, 0.36), m: chrome },
-    { g: new THREE.CylinderGeometry(0.2, 0.2, 0.1, 16).translate(0, 0.62, 0.95), m: leather },
+    { g: new RoundedBoxGeometry(0.6, 0.07, 0.24, 2, 0.02).rotateX(0.25).translate(0, 0.6, 0.36), m: chrome },
+    { g: new THREE.LatheGeometry([[0.0001, 0], [0.17, 0], [0.2, 0.02], [0.205, 0.06], [0.19, 0.095], [0.12, 0.11], [0.0001, 0.112]].map(([r, y]) => new THREE.Vector2(r, y)), 24).translate(0, 0.57, 0.95), m: leather },
     { g: new THREE.CylinderGeometry(0.025, 0.025, 0.58, 8).translate(0, 0.31, 0.95), m: chrome },
     { g: new THREE.CylinderGeometry(0.22, 0.24, 0.03, 16).translate(0, 0.015, 0.95), m: chrome },
   ];
@@ -468,5 +488,19 @@ export function makeGlass(kind: 'wine' | 'beer'): THREE.Group {
     g.add(new THREE.Mesh(lathe([[0.0, 0.004], [0.031, 0.006], [0.037, 0.12], [0.0, 0.12]], 16), new THREE.MeshStandardMaterial({ color: 0xc8860c, roughness: 0.15, transparent: true, opacity: 0.85 })));
     g.add(new THREE.Mesh(lathe([[0.0, 0.12], [0.037, 0.12], [0.039, 0.145], [0.0, 0.15]], 16), new THREE.MeshStandardMaterial({ color: 0xfff6e2, roughness: 0.9 })));
   }
+  return g;
+}
+
+/** classical moulding (ogee + fillets) extruded along X, centred, profile height h × depth d (back face at z = 0) */
+function moulding(len: number, h: number, d: number) {
+  const sh = new THREE.Shape();
+  sh.moveTo(0, 0); sh.lineTo(d * 0.55, 0); sh.lineTo(d * 0.55, h * 0.12);
+  sh.quadraticCurveTo(d * 1.0, h * 0.2, d * 0.95, h * 0.45);
+  sh.quadraticCurveTo(d * 0.6, h * 0.6, d * 0.85, h * 0.8);
+  sh.lineTo(d, h * 0.86); sh.lineTo(d, h); sh.lineTo(0, h); sh.lineTo(0, 0);
+  const g = new THREE.ExtrudeGeometry(sh, { depth: len, bevelEnabled: false, curveSegments: 6 });
+  // profile is in the x-y plane, extruded along +z → turn it so it runs along X and faces +Z
+  g.rotateY(-Math.PI / 2).translate(len / 2, 0, 0);
+  g.computeVertexNormals();
   return g;
 }

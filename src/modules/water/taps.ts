@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { libModel, libEntry } from '../world/lib';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import { Assets } from '../../core/assets';
@@ -61,7 +63,7 @@ function tapModel(kind: 'wall' | 'stand'): THREE.Group {
   nose.position.set(-0.03, 0.017, 0); g.add(nose);
   const lever = new THREE.Group(); lever.name = 'lever';
   const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.03, 6), brass); stem.position.y = 0.015; lever.add(stem);
-  const bar = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.009, 0.012), Assets.pbr('plastic_glossy', { color: 0xc82020, repeat: 0.2 }));
+  const bar = new THREE.Mesh(new RoundedBoxGeometry(0.075, 0.009, 0.012, 2, 0.004), Assets.pbr('plastic_glossy', { color: 0xc82020, repeat: 0.2 }));
   bar.position.y = 0.032; lever.add(bar);
   lever.position.set(0.1, 0.1, 0); g.add(lever);
   if (kind === 'wall') {
@@ -75,7 +77,7 @@ function tapModel(kind: 'wall' | 'stand'): THREE.Group {
   } else {
     const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.98, 8), galv);
     pipe.position.set(0.15, -0.42, 0); g.add(pipe);
-    const base = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.22), Assets.pbr('concrete_old_cracked', { repeat: 0.3 }));
+    const base = new THREE.Mesh(new RoundedBoxGeometry(0.22, 0.12, 0.22, 2, 0.02), Assets.pbr('concrete_old_cracked', { repeat: 0.3 }));
     base.position.set(0.15, -0.92, 0); g.add(base);
     const top = new THREE.Mesh(new THREE.SphereGeometry(0.02, 8, 6), galv);
     top.position.set(0.15, 0.07, 0); g.add(top);
@@ -140,14 +142,16 @@ export function buildWashCorner(game: Game, vols: Volumes, parent: THREE.Object3
   // ---- glazed water jar (โอ่ง) with a plastic dipper bowl floating
   const jx = 12.92, jz = -17.3;
   const glaze = Assets.pbr('plastic_glossy', { color: 0x5a2c16, repeat: [4, 2], side: THREE.DoubleSide, roughness: 0.6 });
-  const jar = lathe([[0.0001, 0], [0.22, 0], [0.3, 0.06], [0.4, 0.26], [0.42, 0.4], [0.38, 0.58], [0.3, 0.7], [0.26, 0.75], [0.275, 0.78], [0.265, 0.8], [0.245, 0.78], [0.24, 0.72], [0.3, 0.6], [0.38, 0.4], [0.28, 0.08], [0.0001, 0.06]], 32, glaze);
+  // the real Thai glazed dragon jar (shared library model, scaled to this jar's size); lathe jar only as a fallback
+  const jar = libEntry('ong_jar') ? libModel('ong_jar') : lathe([[0.0001, 0], [0.22, 0], [0.3, 0.06], [0.4, 0.26], [0.42, 0.4], [0.38, 0.58], [0.3, 0.7], [0.26, 0.75], [0.275, 0.78], [0.265, 0.8], [0.245, 0.78], [0.24, 0.72], [0.3, 0.6], [0.38, 0.4], [0.28, 0.08], [0.0001, 0.06]], 32, glaze);
+  if (libEntry('ong_jar')) jar.scale.set(0.84 / 0.63, 0.8 / 0.765, 0.84 / 0.63);
   jar.position.set(jx, F, jz); root.add(jar);
   surf(jx, F + 0.68, jz, 0.27, 0x3a4c4c, 0.78);
   ringColliders(game, jx, F, jz, 0.25, 0.8, 0.05, 12);
   ringColliders(game, jx, F, jz, 0.41, 0.6, 0.04, 12);
   vols.add({ kind: 'jar', x: jx, z: jz, r: 0.23, y0: F + 0.06, level: F + 0.68, local: true, murk: 0.3 });
   const dip = lathe([[0.0001, 0], [0.05, 0], [0.075, 0.04], [0.078, 0.045], [0.072, 0.044], [0.048, 0.006], [0.0001, 0.006]], 16, Assets.pbr('plastic_glossy', { color: 0xe8c020, repeat: 0.3, side: THREE.DoubleSide }));
-  const handle = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.012, 0.022), dip.material as THREE.Material);
+  const handle = new THREE.Mesh(new RoundedBoxGeometry(0.16, 0.012, 0.022, 2, 0.005), dip.material as THREE.Material);
   handle.position.set(0.13, 0.04, 0); dip.add(handle);
   dip.position.set(jx - 0.05, F + 0.665, jz + 0.04); dip.name = 'float-dipper'; dip.userData.baseY = dip.position.y; root.add(dip);
   // ---- floor drain (real cast concrete drain cover photo)

@@ -221,11 +221,15 @@ export function buildSofa() {
   add(puff(new RoundedBoxGeometry(0.16, 0.36, 0.84, 3, 0.06), 0.012, 6), -0.93, 0.36, 0);
   add(puff(new RoundedBoxGeometry(0.16, 0.36, 0.84, 3, 0.06), 0.012, 7), 0.93, 0.36, 0);
   add(new RoundedBoxGeometry(1.86, 0.5, 0.12, 2, 0.04), 0, 0.48, -0.37);
-  const leg = new THREE.MeshStandardMaterial({ color: 0x281e18, roughness: 0.5 });
+  // turned walnut feet with brass ferrules
+  const leg = Assets.pbr('wood_planks_old', { color: 0x4a3426, repeat: 0.2, roughness: 0.45 });
+  const ferrule = Assets.pbr('brass_gold', { repeat: 0.2 });
   for (const [x, z] of [[-0.85, 0.33], [0.85, 0.33], [-0.85, -0.33], [0.85, -0.33]]) {
-    const m = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.016, 0.07, 8), leg);
-    m.position.set(x, 0.035, z);
-    g.add(m);
+    const m = new THREE.Mesh(new THREE.LatheGeometry([[0.0001, 0.012], [0.017, 0.012], [0.019, 0.04], [0.023, 0.06], [0.024, 0.07], [0.0001, 0.07]].map(([r, y]) => new THREE.Vector2(r, y)), 16), leg);
+    const f = new THREE.Mesh(new THREE.CylinderGeometry(0.0172, 0.0168, 0.012, 16), ferrule);
+    m.position.set(x, 0, z); f.position.set(x, 0.006, z);
+    m.castShadow = f.castShadow = true;
+    g.add(m, f);
   }
   g.position.set(0, 0, -3.22);
   return g;
@@ -244,7 +248,7 @@ export function buildTable() {
   m.position.y = 0.364;
   m.castShadow = m.receiveShadow = true;
   g.add(m);
-  const legM = new THREE.MeshStandardMaterial({ color: 0x281e18, roughness: 0.42, metalness: 0.3 });
+  const legM = Assets.pbr('aluminium_scratched', { color: 0x3a3028, repeat: 0.2, roughness: 0.38 });
   for (const [x, z] of [[-0.41, 0.2], [0.41, 0.2], [-0.41, -0.2], [0.41, -0.2]]) {
     const l = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.009, 0.35, 8), legM);
     l.position.set(x, 0.175, z);
@@ -470,7 +474,7 @@ export function buildShellChair(color = '#d08a2a') {
   const shell = new THREE.Mesh(geo, mat);
   shell.castShadow = shell.receiveShadow = true;
   g.add(shell);
-  const legM = new THREE.MeshStandardMaterial({ color: 0x2a211a, roughness: 0.45, metalness: 0.4 });
+  const legM = Assets.pbr('aluminium_scratched', { color: 0x3a3028, repeat: 0.2, roughness: 0.4 });
   for (const [x, z] of [[-0.15, 0.13], [0.15, 0.13], [-0.15, -0.13], [0.15, -0.13]]) {
     const top = new THREE.Vector3(x * 0.8, 0.43, z * 0.8), bot = new THREE.Vector3(x * 1.45, 0, z * 1.45);
     const len = top.distanceTo(bot);
