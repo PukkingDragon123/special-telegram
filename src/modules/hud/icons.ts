@@ -45,20 +45,26 @@ export class IconBaker {
     return null;
   }
 
-  /** bake at most one icon per frame (cheap: one 112² render + readback) */
+  private busy = false;
+
+  /** bake at most one icon at a time (one 112² render + async readback, no GPU stall) */
   update(now: number) {
+    if (this.busy) return;
     for (const [key, p] of this.pending) {
       if (now < p.at) continue;
-      const url = this.bake(p.e);
+      this.busy = true;
       p.tries++;
-      if (url) { this.cache.set(key, url); this.pending.delete(key); this.listeners.forEach((f) => f()); }
-      else if (p.tries > 6) this.pending.delete(key);
-      else p.at = now + 0.8 * p.tries;
+      this.bake(p.e).then((url) => {
+        this.busy = false;
+        if (url) { this.cache.set(key, url); this.pending.delete(key); this.listeners.forEach((f) => f()); }
+        else if (p.tries > 6) this.pending.delete(key);
+        else p.at = now + 0.8 * p.tries;
+      }, () => { this.busy = false; p.at = now + 2; });
       break;
     }
   }
 
-  private bake(e: Ent): string | null {
+  private async bake(e: Ent): Promise<string | null> {
     const def = this.game.items.defOf(e);
     const renderer = this.game.engine?.renderer;
     if (!def || !renderer) return null;
@@ -91,6 +97,7 @@ export class IconBaker {
     const prevTone = renderer.toneMapping;
     const prevShadow = renderer.shadowMap.autoUpdate;
     let url: string | null = null;
+    let read: Promise<unknown> | null = null;
     try {
       renderer.shadowMap.autoUpdate = false;
       renderer.toneMapping = THREE.NoToneMapping;
@@ -98,7 +105,22 @@ export class IconBaker {
       renderer.setClearColor(0x000000, 0);
       renderer.clear(true, true, false);
       renderer.render(this.scene, this.cam);
-      renderer.readRenderTargetPixels(this.rt, 0, 0, SIZE, SIZE, this.px);
+      read = (renderer as any).readRenderTargetPixelsAsync
+        ? (renderer as any).readRenderTargetPixelsAsync(this.rt, 0, 0, SIZE, SIZE, this.px)
+        : Promise.resolve(renderer.readRenderTargetPixels(this.rt, 0, 0, SIZE, SIZE, this.px));
+    } catch { read = null; }
+    finally {
+      renderer.setRenderTarget(prevRT);
+      renderer.setClearColor(prevClear, prevAlpha);
+      renderer.toneMapping = prevTone;
+      renderer.shadowMap.autoUpdate = prevShadow;
+      this.scene.remove(holder);
+      this.scene.environment = null;
+      disposeTree(obj);
+    }
+    if (!read) return null;
+    try {
+      await read;
       const ctx = this.canvas.getContext('2d')!;
       const img = ctx.createImageData(SIZE, SIZE);
       // flip Y (GL origin is bottom-left)
@@ -110,15 +132,6 @@ export class IconBaker {
       for (let i = 3; i < img.data.length; i += 16) if (img.data[i] > 8) { any = true; break; }
       if (any) { ctx.clearRect(0, 0, SIZE, SIZE); ctx.putImageData(img, 0, 0); url = this.canvas.toDataURL('image/png'); }
     } catch { url = null; }
-    finally {
-      renderer.setRenderTarget(prevRT);
-      renderer.setClearColor(prevClear, prevAlpha);
-      renderer.toneMapping = prevTone;
-      renderer.shadowMap.autoUpdate = prevShadow;
-      this.scene.remove(holder);
-      this.scene.environment = null;
-      disposeTree(obj);
-    }
     return url;
   }
 

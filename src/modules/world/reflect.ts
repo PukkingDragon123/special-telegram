@@ -41,13 +41,20 @@ export class PlanarReflection {
   private _rot = new THREE.Matrix4(); private _plane = new THREE.Plane(); private _clip = new THREE.Vector4(); private _q = new THREE.Vector4();
   private _bias = new THREE.Matrix4().set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1);
 
+  /** internal render size (postfx), so a 4K window doesn't get a full-size reflection */
+  sizeFrom: (() => { w: number; h: number } | null) | null = null;
+  /** governor: render the reflection every n-th frame under load */
+  everyFrom: (() => number) | null = null;
+
   update(scene: THREE.Scene, camera: THREE.PerspectiveCamera, dt: number) {
     const R = this.renderer;
     // keep every light on the reflection layer (same light setup → same programs)
     this.sweep -= dt;
     if (this.sweep <= 0) { this.sweep = 1; scene.traverse((o) => { if ((o as any).isLight) o.layers.enable(REFL_LAYER); }); }
-    if (this.frame++ % this.every !== 0) return;
-    R.getDrawingBufferSize(this.size);
+    const every = Math.max(this.every, this.everyFrom?.() ?? 1);
+    if (this.frame++ % every !== 0) return;
+    const rs = this.sizeFrom?.();
+    if (rs && rs.w > 0) this.size.set(rs.w, rs.h); else R.getDrawingBufferSize(this.size);
     const w = Math.max(16, Math.floor(this.size.x * this.scale)), h = Math.max(16, Math.floor(this.size.y * this.scale));
     if (this.rt.width !== w || this.rt.height !== h) this.rt.setSize(w, h);
 
@@ -123,6 +130,9 @@ export function installReflection(game: { engine: { renderer: THREE.WebGLRendere
   const refl = new PlanarReflection(game.engine.renderer, q === 'ultra' ? 0.6 : q === 'high' ? 0.5 : 0.38, 1);
   for (const m of meshes) if (m.group === 'base' && (m.kind === 'world' || m.kind === 'sign' || m.kind === 'cut')) m.mesh.layers.enable(REFL_LAYER);
   for (const o of extra) PlanarReflection.tag(o);
+  const eng: any = game.engine;
+  refl.sizeFrom = () => eng.post?.renderSize ?? null;
+  refl.everyFrom = () => eng.reflectEvery ?? 1;
   const prev = scene.onBeforeRender;
   let lastFrame = -1, lastT = performance.now();
   scene.onBeforeRender = function (renderer, sc, camera, rt) {

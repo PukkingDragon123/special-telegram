@@ -503,7 +503,7 @@ export class CasinoScene implements SceneDef {
             const a = P[0], y = a.root.rotation.y;
             const f = V(-Math.sin(y), 0, -Math.cos(y)), r = V(-f.z, 0, f.x);
             const out = n > 1 && a.root.position.x < 0 ? -1 : 1;   // P[0] is the leftmost guy: his left shoulder
-            this.camera.position.copy(a.root.position).addScaledVector(f, -0.9 + q * 0.12).addScaledVector(r, 0.4 * out).add(V(0, 1.8 - q * 0.05, 0));
+            this.camera.position.copy(a.root.position).addScaledVector(f, -1.02 + q * 0.12).addScaledVector(r, 0.42 * out).add(V(0, 1.86 - q * 0.05, 0));
             this.look.set(0, 0.95, -0.4);
             this.aim(38);
             this.focus.set(0, 1.0, -0.6);
@@ -523,7 +523,7 @@ export class CasinoScene implements SceneDef {
           play('crowd_cheer', { vol: 1 }); play('slot_win', { vol: 0.7 }); play('bass_boom', { vol: 0.5 });
           P.forEach((a) => { anim(a, 'casino_cheer', true, 0.12); this.expr(a, 'laugh'); });
           this.extras.forEach((a, i) => { if (a !== this.dealer && a !== this.croupier && a !== W && i < 4) anim(a, 'celebrate'); });
-          this.chips.burst(V(0, TABLE_Y + 0.15, -0.2), 70, 4.6, 2.2);   // behind the lens: they arc over it into the shot
+          this.chips.burst(V(0, TABLE_Y + 0.15, -0.45), 70, 4.6, 2.2);   // behind the lens: they arc over it into the shot
           cine.crash(0.6, 1.1, 0.9);
           this.dof = 0;
           this.sub(CINE_LINES.win, 2.8);
@@ -538,9 +538,9 @@ export class CasinoScene implements SceneDef {
         // worm's-eye from the felt: chips explode past the lens
         cam: (k) => {
           const c = this.center();
-          this.camera.position.set(lerp(-0.12, 0.12, k), TABLE_Y + 0.14 + k * 0.05, 0.08);
-          this.look.set(c.x, 1.58, c.z);
-          this.aim(58);
+          this.camera.position.set(lerp(-0.14, 0.14, k), TABLE_Y + 0.15 + k * 0.05, -0.22);
+          this.look.set(c.x, 1.5, c.z);
+          this.aim(60);
         },
       },
       {

@@ -6,11 +6,12 @@ import { lifeTex } from './tex';
 import { Assets } from '../../core/assets';
 import { F } from '../../core/fonts';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { libModel } from '../world/lib';
 import { eggGeoLying, eggShellMat } from '../cooking/realfood';
 
 /* ============================================================================================
- * life item kinds: dog_food (real product bag photo), garland (พวงมาลัย, real photo),
+ * life item kinds: dog_food (real product bag photo), garland (พวงมาลัย, braided jasmine buds + rose tassel),
  * flashlight (ไฟฉาย — shines at ghosts; a real spot light at night), amulet (เหรียญพระ —
  * ghosts keep their distance). Shops may stock them; the homeless man gifts some.
  * Ritual (src/modules/ritual): incense (ธูป 3 ดอก), red_soda (น้ำแดงใส่หลอด), boiled_eggs (ไข่ต้ม),
@@ -47,6 +48,96 @@ function bagGeo(w: number, h: number, d: number) {
   return g;
 }
 
+// ------------------------------------------------------------------ พวงมาลัย (jasmine garland)
+
+let garlandGeo: { buds: THREE.BufferGeometry; petals: THREE.BufferGeometry; ribbon: THREE.BufferGeometry; leaves: THREE.BufferGeometry } | null = null;
+/**
+ * A real Thai offering garland: a lying loop braided from ~260 jasmine buds (cream with green-tipped tops),
+ * three bands of red rose petals / orange marigold, and a tassel at the front: a rose bud of layered petal
+ * cones over a short bud strand and two folded green ribbon tails. Built once (vertex colours, 3 draw calls).
+ */
+function garlandModel(): THREE.Group {
+  if (!garlandGeo) {
+    const R = 0.072, tubeR = 0.017;
+    const bud = new THREE.SphereGeometry(1, 6, 4).scale(0.0055, 0.011, 0.0055);
+    const buds: THREE.BufferGeometry[] = [], petals: THREE.BufferGeometry[] = [];
+    const col = (g: THREE.BufferGeometry, c: THREE.Color) => {
+      const n = g.getAttribute('position').count, a = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; }
+      g.setAttribute('color', new THREE.BufferAttribute(a, 3));
+      return g;
+    };
+    let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
+    const N = 52, RING = 5;
+    for (let i = 0; i < N; i++) {
+      const a = (i / N) * Math.PI * 2;
+      const band = [0, Math.round(N / 3), Math.round((2 * N) / 3)].some((b) => Math.abs(i - b) <= 1);
+      for (let j = 0; j < RING; j++) {
+        const b = (j / RING) * Math.PI * 2 + i * 0.6;   // braided twist
+        const cx = Math.cos(a) * (R + Math.cos(b) * tubeR), cz = Math.sin(a) * (R + Math.cos(b) * tubeR), cy = 0.018 + Math.sin(b) * tubeR;
+        // bud axis points outward from the strand core
+        const out = new THREE.Vector3(Math.cos(a) * Math.cos(b), Math.sin(b), Math.sin(a) * Math.cos(b)).normalize();
+        q.setFromUnitVectors(new THREE.Vector3(0, 1, 0), out);
+        q.multiply(new THREE.Quaternion().setFromEuler(e.set((rnd() - 0.5) * 0.5, rnd() * 6, (rnd() - 0.5) * 0.5)));
+        m.compose(new THREE.Vector3(cx, cy, cz), q, new THREE.Vector3(1, 0.85 + rnd() * 0.3, 1));
+        if (band) {
+          const petal = new THREE.SphereGeometry(1, 5, 3, 0, Math.PI * 2, 0, Math.PI / 2).scale(0.009, 0.006, 0.007);
+          const c = i < N / 2 ? new THREE.Color(0xb3121f).multiplyScalar(0.85 + rnd() * 0.3) : new THREE.Color(0xf08a12).multiplyScalar(0.9 + rnd() * 0.2);
+          petals.push(col(petal.applyMatrix4(m), c));
+        } else {
+          const tip = rnd() < 0.25;
+          const c = tip ? new THREE.Color(0xd8e2b0) : new THREE.Color(0xf7f4e8).multiplyScalar(0.92 + rnd() * 0.08);
+          buds.push(col(bud.clone().applyMatrix4(m), c));
+        }
+      }
+    }
+    // tassel (front, +z): a short hanging strand of buds + a rose bud of layered petal cones
+    const tx = 0, tz = R + tubeR + 0.004;
+    for (let k = 0; k < 9; k++) {
+      m.compose(new THREE.Vector3(tx + (rnd() - 0.5) * 0.004, 0.012 - k * 0.0, tz + 0.012 + k * 0.009), new THREE.Quaternion().setFromEuler(e.set(Math.PI / 2 + (rnd() - 0.5) * 0.4, 0, rnd())), new THREE.Vector3(1, 1, 1));
+      buds.push(col(bud.clone().applyMatrix4(m), new THREE.Color(0xf7f4e8)));
+    }
+    for (let k = 0; k < 4; k++) {
+      const cone = new THREE.ConeGeometry(0.014 - k * 0.0025, 0.018, 9, 1, true).rotateX(Math.PI);
+      cone.translate(0, 0.012 + k * 0.002, 0).rotateY(k * 0.7);
+      cone.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2 - 0.3)).translate(tx, 0.016, tz + 0.1);
+      petals.push(col(cone, new THREE.Color(0xa80e1c).multiplyScalar(0.8 + k * 0.08)));
+    }
+    // two folded ribbon tails (thin, slightly curled strips) + small leaves at the knot
+    const ribbon: THREE.BufferGeometry[] = [], leaves: THREE.BufferGeometry[] = [];
+    for (const side of [-1, 1]) {
+      const r = new THREE.PlaneGeometry(0.012, 0.075, 1, 6);
+      const p = r.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < p.count; i++) { const y = p.getY(i); p.setZ(i, Math.sin((y + 0.0375) * 30) * 0.004); }
+      r.computeVertexNormals();
+      r.translate(0, -0.0375, 0).rotateX(-Math.PI / 2 + 0.25).rotateY(side * 0.35).translate(tx + side * 0.006, 0.006, tz + 0.115);
+      ribbon.push(r);
+    }
+    for (let k = 0; k < 3; k++) {
+      const l = new THREE.SphereGeometry(1, 6, 3).scale(0.006, 0.0015, 0.016);
+      l.rotateY((k - 1) * 0.9).translate(tx + (k - 1) * 0.008, 0.02, tz + 0.09);
+      leaves.push(l);
+    }
+    const mg = (gs: THREE.BufferGeometry[]) => {
+      const list = gs.map((g) => { const x = g.index ? g.toNonIndexed() : g; for (const k of Object.keys(x.attributes)) if (!['position', 'normal', 'color'].includes(k)) x.deleteAttribute(k); return x; });
+      const out = mergeGeometries(list, false) ?? list[0];
+      return out;
+    };
+    garlandGeo = { buds: mg(buds), petals: mg(petals), ribbon: mg(ribbon), leaves: mg(leaves) };
+  }
+  const g = new THREE.Group();
+  const budMat = mats.get('garland:buds') ?? (() => { const mm = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, emissive: 0x302c22, emissiveIntensity: 0.15 }); mats.set('garland:buds', mm); return mm; })();
+  const petalMat = mats.get('garland:petals') ?? (() => { const mm = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, side: THREE.DoubleSide }); mats.set('garland:petals', mm); return mm; })();
+  const ribMat = mats.get('garland:ribbon') ?? (() => { const mm = new THREE.MeshStandardMaterial({ color: 0x1f8a3c, roughness: 0.35, metalness: 0.15, side: THREE.DoubleSide }); mats.set('garland:ribbon', mm); return mm; })();
+  for (const [geo, mat] of [[garlandGeo.buds, budMat], [garlandGeo.petals, petalMat], [garlandGeo.ribbon, ribMat], [garlandGeo.leaves, plain('#3f7a2a', 0.5)]] as [THREE.BufferGeometry, THREE.Material][]) {
+    const me = new THREE.Mesh(geo, mat);
+    me.castShadow = true; me.receiveShadow = true;
+    g.add(me);
+  }
+  return g;
+}
+
 export function defineLifeItems(game: Game) {
   const I = game.items;
   if (!I.def('dog_food')) I.define({
@@ -66,22 +157,7 @@ export function defineLifeItems(game: Game) {
 
   if (!I.def('garland')) I.define({
     kind: 'garland', name: tl('พวงมาลัย', 'jasmine garland'), weight: 0.08, carry: 'hand', tags: ['offering'], price: 20,
-    build: () => {
-      const g = new THREE.Group();
-      // loop of jasmine buds (photo texture) + rose head + ribbon tassel
-      const loop = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.016, 6, 18), photoMat('garland_jasmine.jpg', '#f2efe4', { roughness: 0.8 }));
-      loop.rotation.x = Math.PI / 2;
-      loop.position.y = 0.02;
-      g.add(loop);
-      const rose = new THREE.Mesh(new THREE.IcosahedronGeometry(0.022, 1), photoMat('garland_rose.jpg', '#c02a3a', { roughness: 0.7 }));
-      rose.position.set(0, 0.03, 0.08);
-      g.add(rose);
-      const rib = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.07, 0.003), plain('#2e8b3a', 0.5));
-      rib.position.set(0, 0.0, 0.1);
-      rib.rotation.x = 0.4;
-      g.add(rib);
-      return g;
-    },
+    build: () => garlandModel(),
     hold: { pos: [0, 0, 0], rot: [0.6, 0, 0], scale: 1.2 },
   });
 

@@ -302,7 +302,13 @@ function frame(game: Game, dt: number) {
 
 export default defineModule({
   id: 'world',
-  init(game) { startPreload(game); preloadHdris(); preloadRealProps(); },
+  init(game) {
+    // the ~100 MB world download starts once the first scene (menu) is up, so it doesn't fight the boot
+    let go = false;
+    const start = () => { if (go) return; go = true; startPreload(game); preloadHdris(); preloadRealProps(); };
+    game.events.on('scene:entered', () => setTimeout(start, 300));
+    setTimeout(start, 15000);
+  },
   async buildWorld(game) { await buildWorld(game); },
   frame,
   hostUpdate(game, dt) { if (S && S.game === game && game.g.scene === 'world') S.weather.host(dt); },

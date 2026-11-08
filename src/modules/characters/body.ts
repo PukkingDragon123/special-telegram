@@ -772,13 +772,14 @@ function buildApron(c: Ctx) {
   const cols = hi ? 8 : 4;
   const ys = hi ? [1.31, 1.24, 1.16, 1.08, 1.0, 0.92, 0.84, 0.76, 0.66, 0.56] : [1.31, 1.12, 0.96, 0.8, 0.56];
   // loose tops (chef jackets, auntie blouses) are shells standing off the body: clear them or the bib sinks inside
-  const clear = s.top.loose >= 0.018 && s.top.sleeve !== 'none' ? 0.014 + s.top.loose : 0.012;
+  const looseTop = s.top.loose >= 0.018 && s.top.sleeve !== 'none';
+  const clear = looseTop ? 0.014 + s.top.loose : 0.012;
+  const surf = (y: number, x: number) => { const th = Math.atan2(x, 0.12); return c.torsoC(y) + c.torsoR(y, th) * Math.cos(th); };
   const front = (y: number, x: number) => {
-    if (y > 0.86) {
-      const th = Math.atan2(x, 0.12);
-      return c.torsoC(y) + c.torsoR(y, th) * Math.cos(th) + clear;
-    }
-    return 0.125 + s.build * 0.05 - Math.abs(x) * 0.15;
+    let z = y > 0.86 ? surf(y, x) + clear : 0.125 + s.build * 0.05 - Math.abs(x) * 0.15;
+    // a loose top drapes straight down from the chest to its hem: keep the apron in front of it
+    if (looseTop && y > s.top.hem - 0.06) z = Math.max(z, lerp(z, surf(1.29, x) * 0.97 + clear, smooth(s.top.hem - 0.06, s.top.hem + 0.02, y)));
+    return z;
   };
   const halfW = (y: number) => (y > 1.12 ? lerp(0.1, 0.13, smooth(1.31, 1.12, y)) : 0.17 + s.build * 0.04);
   const grid: number[][] = [], gridB: number[][] = [];
@@ -822,6 +823,13 @@ function buildWaistApron(c: Ctx) {
     const top = front(0.85, x);
     return lerp(top, 0.13 + s.build * 0.05 - Math.abs(x) * 0.2, smooth(0.84, 0.6, y));
   };
+  const frontW = (y: number, x: number) => {
+    const z = front(y, x);
+    if (!(s.top.loose >= 0.018 && s.top.hem < 0.9) || y < s.top.hem - 0.06) return z;
+    const th = Math.atan2(x, 0.12);
+    const drape = c.torsoC(1.29) + c.torsoR(1.29, th) * Math.cos(th) * 0.97 + clear;
+    return Math.max(z, lerp(z, drape, smooth(s.top.hem - 0.06, s.top.hem + 0.02, y)));
+  };
   const halfW = (y: number) => lerp(0.2 + s.build * 0.05, 0.215 + s.build * 0.05, smooth(0.98, 0.6, y));
   const grid: number[][] = [], gridB: number[][] = [];
   for (let i = 0; i < ys.length; i++) {
@@ -831,7 +839,7 @@ function buildWaistApron(c: Ctx) {
       const x = lerp(-halfW(y), halfW(y), j / cols);
       // gentle vertical folds below the waist
       const fold = Math.sin((j / cols) * Math.PI * 5) * 0.006 * smooth(0.9, 0.6, y);
-      const p: V3 = [x, y, front(y, x) + fold];
+      const p: V3 = [x, y, frontW(y, x) + fold];
       const k = smooth(0.86, 0.62, y) * 0.85;
       const ts = clamp01(0.5 + x / 0.2);
       const w: W = k > 0 ? [B.hips, 1 - k, B.thigh_l, k * ts, B.thigh_r, k * (1 - ts)] : wb(B.hips);

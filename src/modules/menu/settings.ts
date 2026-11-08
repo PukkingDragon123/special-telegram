@@ -1,5 +1,6 @@
 import type { Game } from '../../game/game';
 import type { Quality } from '../../core/postfx';
+import type { QualityMode } from '../../core/engine';
 import { Sound } from '../../core/audio';
 import { Input } from '../../core/input';
 
@@ -19,7 +20,7 @@ export function applySettings(s: Settings) {
   Input.sensitivity = BASE_SENS * s.sens;
 }
 export function setQuality(game: Game, q: Quality) { game.engine.setQuality(q); }
-export const QUALITIES: { q: Quality; th: string; en: string }[] = [
-  { q: 'low', th: 'ประหยัด', en: 'LOW' }, { q: 'medium', th: 'กลางๆ', en: 'MEDIUM' }, { q: 'high', th: 'สวย', en: 'HIGH' }, { q: 'ultra', th: 'สวยสุดๆ', en: 'ULTRA' },
+export const QUALITIES: { q: QualityMode; th: string; en: string }[] = [
+  { q: 'auto', th: 'อัตโนมัติ', en: 'AUTO' }, { q: 'low', th: 'ประหยัด', en: 'LOW' }, { q: 'medium', th: 'กลางๆ', en: 'MEDIUM' }, { q: 'high', th: 'สวย', en: 'HIGH' }, { q: 'ultra', th: 'สวยสุดๆ', en: 'ULTRA' },
 ];
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));

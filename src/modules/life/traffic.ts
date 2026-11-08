@@ -806,7 +806,7 @@ export function icecreamSidecar(): { geo: THREE.BufferGeometry; mat: THREE.Mater
     for (const [cx, cy, col] of [[188, 108, '#fff7e8'], [204, 102, '#9ad27a'], [196, 88, '#f6c3d0']] as [number, number, string][]) { x.fillStyle = col; x.beginPath(); x.arc(cx, cy, 15, 0, Math.PI * 2); x.fill(); }
     x.fillStyle = '#c4231f'; x.textBaseline = 'middle';
     x.font = '900 58px "Noto Sans Thai Looped", sans-serif'; x.fillText('ไอติมกะทิ', 236, 82);
-    x.fillStyle = '#1d4f8f'; x.font = '700 30px "Noto Sans Thai Looped", sans-serif'; x.fillText('สูตรโบราณ · 10 บาท', 240, 140);
+    x.fillStyle = '#1d4f8f'; x.font = '700 26px "Noto Sans Thai Looped", sans-serif'; x.fillText('สูตรโบราณ · 10 บาท', 238, 140);
     x.fillStyle = '#ffffff'; x.font = '800 26px "Noto Sans Thai Looped", sans-serif'; x.fillText('COCONUT ICE CREAM', 160, 209);
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
     return new THREE.MeshStandardMaterial({ map: t, roughness: 0.38, metalness: 0.02 });

@@ -65,7 +65,8 @@ function img(name: string): HTMLImageElement {
   }
   return im;
 }
-export function preloadUi(names: string[]) { for (const n of names) for (const v of ['', '_hover', '_pressed', '_disabled']) img(n + v); }
+/** preload sticker art; `variants` also fetches _hover/_pressed/_disabled (only for art that has them) */
+export function preloadUi(names: string[], variants = false) { for (const n of names) for (const v of variants ? ['', '_hover', '_pressed', '_disabled'] : ['']) img(n + v); }
 
 export class Sticker {
   el: HTMLDivElement;

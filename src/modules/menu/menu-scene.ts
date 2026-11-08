@@ -862,8 +862,8 @@ export class MenuScene implements SceneDef {
     add('s_title', { lines: L('ตั้งค่า', 'SETTINGS', 70), anchor: 'c', x: 0, y: -250, passive: true, tilt: -2 });
     add('s_q', { lines: L('ความสวยของภาพ', 'GRAPHICS QUALITY', 30), anchor: 'c', x: 0, y: -165, passive: true });
     QUALITIES.forEach((q, i) => {
-      const on = g.engine.quality === q.q;
-      add('s_q' + i, { lines: L(q.th, q.en, 34), style: on ? GOLD : COVER, anchor: 'c', x: (i - 1.5) * 165, y: -100, tilt: (i % 2 ? 3 : -3), onClick: () => { g.engine.setQuality(q.q); this.uiKey = ''; sfx.play('menu_toggle'); } });
+      const on = (g.engine as any).qualityMode === q.q;
+      add('s_q' + i, { lines: L(q.th, q.en, 34), style: on ? GOLD : COVER, anchor: 'c', x: (i - (QUALITIES.length - 1) / 2) * 150, y: -100, tilt: (i % 2 ? 3 : -3), onClick: () => { g.engine.setQuality(q.q); this.uiKey = ''; sfx.play('menu_toggle'); } });
     });
     const meter = (key: string, label: string, en: string, y: number, val: number, set: (v: number) => void) => {
       add(key + '_l', { lines: L(label, en, 30), anchor: 'c', x: 0, y, passive: true });

@@ -401,8 +401,17 @@ function buildLookGeometry(t: BodyTemplate, spec: BodySpec, lod: Lod): THREE.Buf
     const G1 = new Geo();
     buildBodyExtras(G1, spec, lod, t.torsoR, t.torsoC, t.sk);
     const [a1, b1] = G1.buildSplit();
-    if (a1) parts.push(remapGeo(a1, t.map, t.yOf)!);
-    if (b1) acc.push(remapGeo(b1, t.map, t.yOf)!);
+    // aprons / towels / scarves lie over the clothes: give them the torso's build inflation (_FAT ≈ 1 on the
+    // trunk, ~0.6 on the neck) so a chubby body never pushes its shirt through them
+    const fatUp = (g: THREE.BufferGeometry | null) => {
+      if (!g) return g;
+      const P = g.attributes.position as THREE.BufferAttribute, F = g.attributes.afat as THREE.BufferAttribute;
+      const yNeck = t.yOf(1.4);
+      for (let i = 0; i < P.count; i++) F.setX(i, P.getY(i) > yNeck ? 0.6 : 1);
+      return g;
+    };
+    if (a1) parts.push(fatUp(remapGeo(a1, t.map, t.yOf))!);
+    if (b1) acc.push(fatUp(remapGeo(b1, t.map, t.yOf))!);
     // chef jacket: real 3D cloth-knot buttons sitting on the jacket shell (skinned like the cloth under them)
     const ts = topShell(spec);
     if (spec.top.pattern === 'chef' && ts && t.geos[ts]) { const bg = chefButtons(t, t.geos[ts]); if (bg) acc.push(bg); }
