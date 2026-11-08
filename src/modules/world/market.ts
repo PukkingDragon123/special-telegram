@@ -39,7 +39,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
   // a texture full of black blotches
   // smooth trowelled concrete (fine hairlines, no big cracks); vertex AO just under the puddle threshold so the
   // world shader never paints rain puddles under the roof — the damp patches by the drains are decals
-  w.mat('concrete_road', { autoDirt: false, ao: 0.82 });
+  w.mat('concrete_road', { autoDirt: false, ao: 0.82, tint: [1.32, 1.3, 1.26] });
   flat(w, M.x0, M.z0, M.x1, M.z1, y0, 8);
   c.phys.box([(M.x0 + M.x1) / 2, y0 / 2, (M.z0 + M.z1) / 2], [M.x1 - M.x0, y0, M.z1 - M.z0]);
   w.mat('grate', { uv: 'face', autoDirt: false, group: 'detail' });
@@ -100,7 +100,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     w.quad(M.x1 + 0.6, eave, zb - 0.6, M.x0 - 0.6, eave, zb - 0.6, M.x0 - 0.6, ridge, zm, M.x1 + 0.6, ridge, zm);
     // undersides: galvanised sheet lit by the bounce off the floor and the skylights (a little self-light so the
     // roof never reads as a black void from below)
-    w.mat('roof_galv', { tint: 0x8e8c88, ao: 0.8, uv: 'world', emis: EMIS.store.i, emisK: 0.025 });
+    w.mat('roof_galv', { tint: 0x6c6a66, ao: 0.72, uv: 'world', emis: EMIS.store.i, emisK: 0.012 });
     w.quad(M.x1 + 0.6, eave - 0.02, za + 0.6, M.x0 - 0.6, eave - 0.02, za + 0.6, M.x0 - 0.6, ridge - 0.02, zm, M.x1 + 0.6, ridge - 0.02, zm);
     w.quad(M.x0 - 0.6, eave - 0.02, zb - 0.6, M.x1 + 0.6, eave - 0.02, zb - 0.6, M.x1 + 0.6, ridge - 0.02, zm, M.x0 - 0.6, ridge - 0.02, zm);
     // fibreglass skylight strips (lighter), a raised ridge vent

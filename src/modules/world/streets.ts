@@ -165,8 +165,24 @@ export function buildStreets(c: Ctx) {
   curbPaintS(c, -20, -4, 'curb_rw');
   curbPaintS(c, 34, 50, 'curb_wy');
   // soi sidewalks
-  sidewalk(c, -6, SOI.zN, SOI.x0, MAIN.swN0, 'tile_chain', [{ side: 'x1', curb: 'curb' }]);
-  sidewalk(c, SOI.x1, SOI.zN, 6, MAIN.swN0, 'tile_circles', [{ side: 'x0', curb: 'curb' }]);
+  // every shophouse owner paves their own frontage in Bangkok: segments of 6–16 m with different tiles (one tile for
+  // the whole 160 m soi read as an obvious repeating texture)
+  {
+    const SOI_TILES = ['tile_chain', 'tile_circles', 'tile_redband', 'tile_redhex', 'pavers_inter', 'pavers_square', 'terrazzo', 'concrete_old', 'tile_chain', 'footpath'];
+    const segRng = new RNG(4471);
+    for (const [xa, xb, edge] of [[-6, SOI.x0, 'x1'], [SOI.x1, 6, 'x0']] as const) {
+      let z = MAIN.swN0, last = '';
+      while (z > SOI.zN + 0.01) {
+        const len = Math.min(z - SOI.zN, segRng.range(6, 16));
+        const z0 = z - len < SOI.zN + 3 ? SOI.zN : z - len;
+        let tile = segRng.pick(SOI_TILES);
+        if (tile === last) tile = SOI_TILES[(SOI_TILES.indexOf(tile) + 3) % SOI_TILES.length];
+        last = tile;
+        sidewalk(c, xa, z0, xb, z, tile, [{ side: edge, curb: 'curb' }]);
+        z = z0;
+      }
+    }
+  }
   curbPaintSoi(c, -1, 0, -18, 'curb_rw');
   curbPaintSoi(c, 1, 0, -18, 'curb_rw');
   curbPaintSoi(c, 1, -40, -78, 'curb_wy');      // market loading
