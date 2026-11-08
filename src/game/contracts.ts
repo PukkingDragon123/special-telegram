@@ -17,6 +17,8 @@ export interface Look {
   height: number;
   /** 0 = skinny … 1 = chubby */
   build: number;
+  /** optional extra physique variety (all 0..1, 0.5 = average; missing = average) */
+  physique?: { muscle?: number; shoulders?: number; belly?: number; legs?: number; head?: number };
   /** skin colour hex '#c69472' */
   skin: string;
   /** face texture id (public/assets/textures/faces/manifest.json) */
@@ -35,7 +37,16 @@ export type AnimName =
   | 'slap' | 'get_slapped' | 'highfive' | 'think' | 'scream_run' | 'drunk' | 'celebrate' | 'dance'
   | 'eat' | 'drink' | 'cook_stir' | 'chop' | 'wash' | 'wipe' | 'point' | 'wave' | 'talk' | 'angry'
   | 'push_cart' | 'sad' | 'tug' | 'give' | 'pray' | 'carry_heavy' | 'fall' | 'jenga_pull' | 'stand_cool'
-  | 'casino_cheer' | 'casino_despair' | 'wake_up' | 'shrug' | 'count_coins';
+  | 'casino_cheer' | 'casino_despair' | 'wake_up' | 'shrug' | 'count_coins'
+  /** cinematic hero poses (manga-style "standing" poses; hold pose + slow breathing while looping) */
+  | 'cine_point' | 'cine_twist' | 'cine_lean' | 'cine_menace' | 'cine_cross' | 'cine_hair'
+  /** stretch-yawn after waking, look around, nod, laugh, facepalm */
+  | 'stretch' | 'look_around' | 'nod' | 'laugh' | 'facepalm';
+
+/** Animated facial expressions (blending brows / eyelids / mouth); blinking and talk mouth-flap are automatic. */
+export type Expression =
+  | 'neutral' | 'happy' | 'laugh' | 'smug' | 'angry' | 'shocked' | 'scared' | 'sad'
+  | 'determined' | 'disgust' | 'wink' | 'sleepy' | 'drunk' | 'pain';
 
 export type FaceVariant = 'neutral' | 'think' | 'drunk' | 'sleep' | 'shock' | 'scream';
 
@@ -61,8 +72,12 @@ export interface CharacterRig {
   /** Current horizontal speed in m/s → idle / walk / run blend (unless a one-shot or pose overrides). */
   setMove(speed: number): void;
   setCarry(pose: CarryPose): void;
-  /** Static face texture swap (faces never animate). */
+  /** Face variant (mapped onto an animated expression). */
   setFace(v: FaceVariant): void;
+  /** Blend to an animated facial expression; `hold` seconds then back to the base (omitted = stays). */
+  setExpression?(e: Expression, opts?: { weight?: number; hold?: number; fade?: number }): void;
+  /** Mouth flap while speaking (dialogue / speech bubbles). */
+  setTalking?(on: boolean): void;
   /** Turn head toward a world point (or null). */
   lookAt(p: THREE.Vector3 | null): void;
   /** Object3D that follows a body part; parent carried items to it. */
