@@ -41,7 +41,9 @@ export type AnimName =
   /** cinematic hero poses (manga-style "standing" poses; hold pose + slow breathing while looping) */
   | 'cine_point' | 'cine_twist' | 'cine_lean' | 'cine_menace' | 'cine_cross' | 'cine_hair'
   /** stretch-yawn after waking, look around, nod, laugh, facepalm */
-  | 'stretch' | 'look_around' | 'nod' | 'laugh' | 'facepalm';
+  | 'stretch' | 'look_around' | 'nod' | 'laugh' | 'facepalm'
+  /** two-person: firm handshake (right hand forward, pumps twice); tiptoe sneaking walk; lecturing finger-wag */
+  | 'handshake' | 'sneak' | 'lecture';
 
 /** Animated facial expressions (blending brows / eyelids / mouth); blinking and talk mouth-flap are automatic. */
 export type Expression =

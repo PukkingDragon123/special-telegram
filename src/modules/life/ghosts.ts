@@ -364,7 +364,7 @@ export class Ghosts {
     gg.luckTipDay = (gg.day ?? 1) + 1;
     this.game.say(g.id, line('ghost_pret_thanks'), { duration: 3 });
     sfx(this.game, 'merit', g.p, { vol: 0.8 });
-    this.game.popup([g.p[0], g.p[1] + 3.6, g.p[2]], 'ได้บุญ +1', { font: '"Charmonman"', size: 64, weight: 700, color: '#ffe9a8', stroke: '#3a2a08', strokeWidth: 7 });
+    this.game.popup([g.p[0], g.p[1] + 3.6, g.p[2]], 'ได้บุญ +1', { font: '"Noto Serif Thai"', size: 64, weight: 800, color: '#ffe9a8', stroke: '#3a2a08', strokeWidth: 7 });
     g.st = 'flee';
     this.game.events.emit('life:merit', { player: pl.id, merit: merit[pl.id] });
   }

@@ -350,7 +350,8 @@ export class Traffic {
     if (!lane.soi) return null;
     const day = this.game.g.day ?? 1;
     const r = h01(this.seed, day, lane.id, i, 99);
-    if (hour >= 9.5 && hour < 17 && r < 0.09) return h01(this.seed, day, i, 98) < 0.55 ? 'icecream' : 'junk';
+    // the procedural junk-buyer loudspeaker truck was removed (looked cheap): only the ice-cream cart passes
+    if (hour >= 9.5 && hour < 17 && r < 0.05) return 'icecream';
     return null;
   }
 

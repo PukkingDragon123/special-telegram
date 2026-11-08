@@ -94,6 +94,7 @@ export default defineModule({
     session = new DialogueSession(game);
     fx = new QuestFX(game);
     (game as any).questsRecipeFx = true;
+    (game as any).questTalking = () => !!session?.active;
 
     const rt: QuestRuntime = {
       start: (id) => host?.start(id) ?? false,

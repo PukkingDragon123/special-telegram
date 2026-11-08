@@ -8,6 +8,7 @@ import { Quests, QuestDef, QuestState, TalkTarget, LocalTalkers } from './api';
 import { questAvailable, questState, sourceText } from './runtime';
 import { entityTarget, headOfTarget } from './targets';
 import { textOf } from './session';
+import { hud } from '../hud/api';
 
 /* ============================================================================================
  * Quest visuals (all local):
@@ -164,9 +165,39 @@ export class QuestFX {
     return typeof v === 'string' ? { th: v } : v;
   }
 
+  /** quest ids currently mirrored into the screen HUD */
+  private hudIds = new Set<string>();
+
+  /** Screen HUD (module hud): active quests become objectives with the on-screen marker. */
+  private syncHud(): boolean {
+    const h = hud(this.game);
+    if (!h) return false;
+    const act = this.activeQuests();
+    const now = new Set<string>();
+    for (const a of act) {
+      const id = 'quest:' + a.def.id;
+      now.add(id);
+      const step = a.def.steps[a.st.step];
+      h.setObjective({
+        id, priority: 10 + (a.def.order ?? 50) / 100,
+        text: a.def.title, sub: this.stepText(a.def, a.st),
+        target: () => {
+          let w: [number, number, number] | null = null;
+          try { w = step?.where?.(this.game) ?? null; } catch { w = null; }
+          if (!w && step?.at) { const t = this.targetOfRole(step.at); const hh = t ? headOfTarget(t) : null; if (hh) w = [hh.x, hh.y + 0.35, hh.z]; }
+          return w ? new THREE.Vector3(w[0], w[1], w[2]) : null;
+        },
+      });
+    }
+    for (const id of this.hudIds) if (!now.has(id)) h.clearObjective(id, true);
+    this.hudIds = now;
+    return true;
+  }
+
   private updateNote(play: boolean) {
     const n = this.note;
     if (!n) return;
+    if (this.syncHud()) { n.group.visible = false; return; }
     const act = this.activeQuests();
     const sig = act.map((a) => a.def.id + ':' + a.st.step + ':' + this.stepText(a.def, a.st).th).join('|');
     if (sig !== n.sig) {
@@ -211,6 +242,7 @@ export class QuestFX {
   private updatePointer(play: boolean) {
     const P = this.pointer;
     if (!P) return;
+    if (hud(this.game)) { P.group.visible = false; return; }
     let target: THREE.Vector3 | null = null;
     for (const a of this.activeQuests()) {
       const step = a.def.steps[a.st.step];

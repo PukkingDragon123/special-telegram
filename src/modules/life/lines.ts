@@ -8,7 +8,7 @@ import { Assets } from '../../core/assets';
  * ========================================================================================== */
 
 export const L: Record<string, TL[]> = {
-  dog_thief: [tl('เฮ้ย! หมาขโมยกิน!', 'hey! the dog stole it!'), tl('ไอ้ตูบบบ! ของกูวว!', 'doggo! that was mine!'), tl('หมาาา! คืนมาาา!', 'give it back!')],
+  dog_thief: [tl('เฮ้ย! หมาขโมยกิน!', 'hey! the dog stole it!'), tl('ไอ้ตูบบบ! ของกูวว!', 'doggo! that was mine!'), tl('หมาาา! คืนมาาา!', 'give it back!'), tl('ไอ้หมาเวร! คืนหมูกูมา!', 'damn dog! give my pork back!'), tl('เชี่ยยย! หมาแดกหมดแล้ว!', 'shiiit! the dog ate it all!')],
   dog_fed: [tl('โฮ่ง! ♥', 'woof! ♥'), tl('งั่ม งั่ม งั่ม', 'nom nom nom'), tl('(กระดิกหางรัวๆ)', '(tail wagging wildly)')],
   dog_adopted: [tl('ได้น้องหมาแล้ว! ไอ้หมูสับ ♥', 'you adopted the dog!')],
   dog_beg: [tl('งื้ดดด…', 'whimper…'), tl('(ทำตาปริบๆ)', '(puppy eyes)'), tl('หงิงๆ', 'whine')],
@@ -31,7 +31,7 @@ export const L: Record<string, TL[]> = {
     tl('ลูกค้าคือพระเจ้า แต่ป้าข้างบ้านคือซีอีโอ', 'customers are gods, but the auntie next door is the CEO'),
     tl('เห็นมอไซค์ไม่มีหัวอย่าโบกนะ มันไม่จอด', 'if you see a headless rider, don\'t wave. it won\'t stop'),
   ],
-  homeless_ignored: [tl('เชอะ… เดินผ่านเฉยเลย', 'hmph… just walked past'), tl('ใจดำ… เหมือนกะทะไหม้', 'heart as black as a burnt wok'), tl('เดี๋ยวหมาก็ขโมยหมูสับหรอก', 'the dog will steal your pork, you\'ll see'), tl('ไม่เป็นไร… ลุงชินแล้ว', 'it\'s fine… i\'m used to it')],
+  homeless_ignored: [tl('เชอะ… เดินผ่านเฉยเลย', 'hmph… just walked past'), tl('ใจดำ… เหมือนกะทะไหม้', 'heart as black as a burnt wok'), tl('เดี๋ยวหมาก็ขโมยหมูสับหรอก', 'the dog will steal your pork, you\'ll see'), tl('ไม่เป็นไร… ลุงชินแล้ว', 'it\'s fine… i\'m used to it'), tl('ใจดำชิบหาย…', 'cold-hearted as hell…'), tl('เดินผ่านเฉยเลย ไอ้เวร', 'just walked past, the jerk')],
   homeless_broke: [tl('ไม่มีตังค์เหมือนกันเหรอ… งั้นเรามาจนด้วยกัน', 'broke too? let\'s be broke together')],
   homeless_luck: [tl('เมื่อวานหลานใจดีกับลุง วันนี้ต้องขายดีแน่ๆ', 'you were kind yesterday — today will sell well')],
 
@@ -41,20 +41,20 @@ export const L: Record<string, TL[]> = {
   ghost_krasue: [tl('คิกๆๆ…', 'hee hee hee…'), tl('หมูสดๆ… หอมจัง…', 'raw pork… smells good…')],
   ghost_tani: [tl('ฮือๆๆ…', 'sob…'), tl('มาหาข้าใต้ต้นกล้วยสิ…', 'come to me under the banana tree…')],
   ghost_moto: [tl('บรื้นนนนนน!!', 'VROOOM!!')],
-  ghost_flee: [tl('กรี๊ดดด! ผีหลอก!', 'aaah! ghost!'), tl('ผีๆๆๆ! วิ่ง!', 'ghost! run!'), tl('แม่จ๋าาา!', 'mommy!')],
+  ghost_flee: [tl('กรี๊ดดด! ผีหลอก!', 'aaah! ghost!'), tl('ผีๆๆๆ! วิ่ง!', 'ghost! run!'), tl('แม่จ๋าาา!', 'mommy!'), tl('เชี่ยยย! ผีจริงๆ ด้วย!', 'holy shit! a real ghost!'), tl('ห่าเอ๊ย! หนีเร็ว!', 'hell! run!')],
   pray: [tl('สาธุ… ไปสู่สุคติเถิด', 'sadhu… rest in peace'), tl('ขอขมาครับ ไม่ได้ตั้งใจลบหลู่', 'forgive us, no offence meant'), tl('นะโม ตัสสะ…', 'namo tassa…')],
-  ghost_stole: [tl('อ้าว! ใครเอาหมูไป!?', 'who took the pork!?'), tl('ของหายไปไหน… ขนลุกเลย', 'where did it go… goosebumps')],
+  ghost_stole: [tl('อ้าว! ใครเอาหมูไป!?', 'who took the pork!?'), tl('ของหายไปไหน… ขนลุกเลย', 'where did it go… goosebumps'), tl('ใครแดกหมูกูไปวะ!?', 'who the hell ate my pork!?')],
 
-  crowd_laugh: [tl('555555', 'lol'), tl('ฮ่าๆๆๆ', 'haha'), tl('ตบแรงจัด!', 'what a slap!'), tl('อุ๊ยตาย!', 'oh my!')],
-  crowd_gossip: [tl('ได้ข่าวว่า…', 'i heard that…'), tl('จริงดิ!?', 'no way!?'), tl('ตายแล้ว…', 'oh dear…'), tl('ลูกสาวบ้านโน้นน่ะ…', 'that family\'s daughter…'), tl('หวยงวดนี้ออกอะไร', 'what number will win this draw?')],
-  crowd_greet: [tl('กินข้าวยัง?', 'eaten yet?'), tl('ไปไหนมา?', 'where you been?'), tl('ร้อนจังวันนี้', 'so hot today')],
+  crowd_laugh: [tl('555555', 'lol'), tl('ฮ่าๆๆๆ', 'haha'), tl('ตบแรงจัด!', 'what a slap!'), tl('อุ๊ยตาย!', 'oh my!'), tl('เชี่ย ตลกสัส 5555', 'damn that\'s hilarious lol'), tl('โคตรฮาาา', 'so freaking funny')],
+  crowd_gossip: [tl('ได้ข่าวว่า…', 'i heard that…'), tl('จริงดิ!?', 'no way!?'), tl('ตายแล้ว…', 'oh dear…'), tl('ลูกสาวบ้านโน้นน่ะ…', 'that family\'s daughter…'), tl('หวยงวดนี้ออกอะไร', 'what number will win this draw?'), tl('ผัวบ้านโน้นแม่งเมาทุกคืน', 'that guy over there gets wasted every night'), tl('ราคาหมูขึ้นอีกแล้ว ห่าเอ๊ย', 'pork went up again, damn it'), tl('เจ้าหนี้มาทวงอีกแล้วว่ะ', 'the loan shark came again')],
+  crowd_greet: [tl('กินข้าวยัง?', 'eaten yet?'), tl('ไปไหนมา?', 'where you been?'), tl('ร้อนจังวันนี้', 'so hot today'), tl('ร้อนชิบหายเลยวันนี้', 'hot as hell today'), tl('ไง ยังไม่ตายอีกเหรอมึง 555', 'hey, not dead yet? lol')],
   lottery: [tl('ลอตเตอรี่จ้า! ใบละแปดสิบ!', 'lottery! 80 a ticket!'), tl('เลขสวยๆ จ้า งวดนี้รวยแน่!', 'pretty numbers! rich this draw!'), tl('ซื้อไว้ก่อน รวยไม่รู้ตัว!', 'buy now, get rich!')],
   icecream: [tl('ไอติมกะทิจ้า!', 'coconut ice cream!')],
   junk: [tl('รับซื้อ ตู้เย็น ทีวี เครื่องซักผ้า แอร์เก่า คอมพิวเตอร์เสีย…', 'buying old fridges, TVs, washing machines…'), tl('ของเก่า ขายได้ รับซื้อทุกชนิด…', 'old stuff, we buy everything…')],
   karaoke: [tl('♪ คืนนี้… ขอให้ได้ร้องเพลง… ♪', '♪ tonight… let me sing… ♪'), tl('♪ อ้ายยย… คิดฮอดดด… ♪', '♪ i miss you… ♪'), tl('♪ ลา ลา ล้า… (เพี้ยน) ♪', '♪ la la laa… (off-key) ♪'), tl('เพลงต่อไป! ใครจะร้องงง!', 'next song! who\'s singing!')],
-  horn_angry: [tl('หลบหน่อยยย!', 'move it!'), tl('ยืนกลางถนนทำไม!', 'why stand in the road!'), tl('ไอ้บ้า! จะตายเหรอ!', 'you crazy!?'), tl('ปี๊นนน!', 'beeeep!')],
+  horn_angry: [tl('หลบหน่อยยย!', 'move it!'), tl('ยืนกลางถนนทำไม!', 'why stand in the road!'), tl('ไอ้บ้า! จะตายเหรอ!', 'you crazy!?'), tl('ปี๊นนน!', 'beeeep!'), tl('ไอ้ควาย! หลบดิ!', 'move it, you idiot!'), tl('เชี่ย! ตาบอดเหรอ!', 'damn! are you blind!'), tl('แม่ง ยืนขวางทำห่าอะไร!', 'why the hell are you blocking the road!')],
   monk_give: [tl('(พนมมือไหว้)', '(wai)')],
-  moto_taxi: [tl('ไปไหนครับพี่?', 'where to, bro?'), tl('รุก! กินสองตัว!', 'jump! double capture!'), tl('ฮ่า! แพ้อีกแล้ว', 'ha! you lost again')],
+  moto_taxi: [tl('ไปไหนครับพี่?', 'where to, bro?'), tl('รุก! กินสองตัว!', 'jump! double capture!'), tl('ฮ่า! แพ้อีกแล้ว', 'ha! you lost again'), tl('เชี่ย แพ้อีกแล้ว แม่ง', 'damn, lost again'), tl('ไปไหนพี่ เร็วๆ เดี๋ยวฝนตกแม่ง', 'where to? hurry, it\'s gonna rain, dammit')],
 };
 
 export function line(key: string, i?: number): TL {
