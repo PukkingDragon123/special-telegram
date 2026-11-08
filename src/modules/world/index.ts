@@ -297,6 +297,7 @@ function dispose() {
 }
 
 const _cam = new THREE.Vector3();
+const _lastCull = new THREE.Vector3(1e9, 0, 0);
 function frame(game: Game, dt: number) {
   if (!S || S.game.scene !== game.scene || !game.scene) return;
   U.uTime.value += dt;
@@ -316,8 +317,11 @@ function frame(game: Game, dt: number) {
   // tiny instanced details (pegs, fruit piles, shelf goods …) registered by any module
   DetailCull.scale = game.engine.quality === 'low' ? 0.65 : game.engine.quality === 'medium' ? 0.85 : game.engine.quality === 'ultra' ? 1.3 : 1;
   DetailCull.update(cam, dt);
-  // distance-cull small detail meshes
-  if ((S.frameN++ & 7) === 0) {
+  // distance-cull small detail meshes — every 8 frames, and immediately when the camera jumped (teleport, respawn,
+  // cutscene cut): otherwise whole house rows stayed hidden for 8 frames after a cut (visible pop-in)
+  const jumped = _lastCull.distanceToSquared(_cam) > 64;
+  if ((S.frameN++ & 7) === 0 || jumped) {
+    _lastCull.copy(_cam);
     const far = game.engine.quality === 'low' ? 60 : game.engine.quality === 'medium' ? 80 : 110;
     for (const m of S.details) {
       const bs = m.geometry.boundingSphere!;
