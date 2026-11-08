@@ -236,7 +236,7 @@ export class CasinoScene implements SceneDef {
       const s = SLOTS_POS[idx];
       if (!s) continue;
       const p = V(s.p[0] + Math.sin(s.yaw) * 0.95, 0, s.p[2] + Math.cos(s.yaw) * 0.95);
-      const a = this.addActor(look(arch, seed), p, s.yaw + Math.PI, 'sit');
+      const a = this.addActor(look(arch, seed), p, s.yaw, 'sit');   // facing the machine (they used to sit with their backs to it)
       a.rig.setPosture?.('sit');
       a.rig.seat = 0.66;
     }
@@ -486,17 +486,18 @@ export class CasinoScene implements SceneDef {
           if (k > 0.95) once('ace', () => cine.snap(0.75, 0.4));
         },
         cam: this.cuts([
-          // over the shoulder of the first guy: the dealer's hands, slow push
+          // over the OUTER shoulder of the end guy (away from his mates): the dealer's hands, slow push
           [0, (q) => {
             const a = P[0], y = a.root.rotation.y;
             const f = V(-Math.sin(y), 0, -Math.cos(y)), r = V(-f.z, 0, f.x);
-            this.camera.position.copy(a.root.position).addScaledVector(f, -0.62).addScaledVector(r, 0.3).add(V(0, 1.66 - q * 0.04, 0));
-            this.look.set(0, 0.92, -0.3);
-            this.aim(40);
-            this.focus.set(0, TABLE_Y, -0.2);
+            const out = n > 1 && a.root.position.x < 0 ? -1 : 1;   // P[0] is the leftmost guy: his left shoulder
+            this.camera.position.copy(a.root.position).addScaledVector(f, -0.9 + q * 0.12).addScaledVector(r, 0.4 * out).add(V(0, 1.8 - q * 0.05, 0));
+            this.look.set(0, 0.95, -0.4);
+            this.aim(38);
+            this.focus.set(0, 1.0, -0.6);
           }],
-          // overhead on the felt
-          [0.32, this.shot(V(0.05, 2.45, 0.4), V(0.05, 2.15, 0.34), V(0.0, TABLE_Y, 0.15), V(0.0, TABLE_Y, 0.14), 40, 36, 0.12)],
+          // overhead on the felt: the cards dead centre
+          [0.32, this.shot(V(0.03, 1.5, 0.02), V(0.0, 1.3, -0.04), V(-0.01, TABLE_Y, -0.09), V(-0.01, TABLE_Y, -0.1), 34, 30, 0.12)],
           // card-level extreme close-up
           [0.58, this.shot(V(0.42, 0.9, 0.42), V(0.3, 0.86, 0.3), V(0.0, 0.8, -0.1), V(0.03, 0.79, -0.1), 30, 26)],
         ]),
@@ -510,7 +511,7 @@ export class CasinoScene implements SceneDef {
           play('crowd_cheer', { vol: 1 }); play('slot_win', { vol: 0.7 }); play('bass_boom', { vol: 0.5 });
           P.forEach((a) => { anim(a, 'casino_cheer', true, 0.12); this.expr(a, 'laugh'); });
           this.extras.forEach((a, i) => { if (a !== this.dealer && a !== this.croupier && a !== W && i < 4) anim(a, 'celebrate'); });
-          this.chips.burst(V(0, TABLE_Y + 0.15, 0.2), 70, 4.6, 2.2);
+          this.chips.burst(V(0, TABLE_Y + 0.15, -0.2), 70, 4.6, 2.2);   // behind the lens: they arc over it into the shot
           cine.crash(0.6, 1.1, 0.9);
           this.dof = 0;
           this.sub(CINE_LINES.win, 2.8);
@@ -525,9 +526,9 @@ export class CasinoScene implements SceneDef {
         // worm's-eye from the felt: chips explode past the lens
         cam: (k) => {
           const c = this.center();
-          this.camera.position.set(lerp(-0.12, 0.12, k), TABLE_Y + 0.17 + k * 0.05, 0.02);
-          this.look.set(c.x, 1.5, c.z);
-          this.aim(56);
+          this.camera.position.set(lerp(-0.12, 0.12, k), TABLE_Y + 0.14 + k * 0.05, 0.08);
+          this.look.set(c.x, 1.58, c.z);
+          this.aim(58);
         },
       },
       {
@@ -659,9 +660,9 @@ export class CasinoScene implements SceneDef {
             const xs = P.map((a) => a.root.position.x);
             const x0 = Math.min(...xs), x1 = Math.max(...xs);
             const x = lerp(x0, x1, q);
-            this.camera.position.set(x + 0.15, 1.5, R.z + 0.32);
-            this.look.set(x, 1.52, R.z + 1.08);
-            this.aim(n > 1 ? 44 : 36);
+            this.camera.position.set(x + 0.15, 1.48, R.z + 0.15);
+            this.look.set(x, 1.5, R.z + 1.08);
+            this.aim(n > 1 ? 46 : 42);
           }],
           // the ball slowing down
           [0.64, this.shot(V(wc.x + 0.55, wc.y + 0.36, wc.z + 0.45), V(wc.x + 0.42, wc.y + 0.3, wc.z + 0.36), wc.clone().add(V(0.15, 0, 0.12)), wc.clone().add(V(0.18, 0, 0.14)), 30, 28)],

@@ -104,7 +104,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
     // main-road crossings (nav.ts): no kerb bike rows across them
     if (z > -1 && z < 27 && [40, -80, 96].some((cx) => Math.abs(x - cx) < 1.0 + r)) return true;
     if (Math.abs(z - 24.0) < 0.65 + r) return true;
-    if (x > OFFICE.plazaX0 && x < OFFICE.plazaX1 + 1 && Math.abs(z + 4.5) < 0.6 + r) return true;
+    if (x > OFFICE.plazaX0 && x < OFFICE.plazaX1 + 1 && Math.abs(z + 1.9) < 0.5 + r) return true;
     if (Math.abs(z - cz) < 0.5 + r && Math.abs(x) > 3) return true;
     if (x > -48 && x < -38 && z > -1 && z < 27) return true;   // overpass stairs
     return false;

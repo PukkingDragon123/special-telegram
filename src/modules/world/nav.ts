@@ -259,10 +259,9 @@ export function buildNav(zones: Zone[]): Nav {
   for (const z of [-204, -226, -248]) { const l = nav.line(-3.5, z, -102, z, 7); nav.link(l[0], nav.nearestNode(0, z)); }
   // --- market aisles (the stall islands of market.ts sit at x 8.2 + 4.6k, 4 m wide with 0.6 m slits — the only
   //     north–south aisles are along the west and east walls; east–west aisles run between the island rows)
-  const mx0 = MARKET.x0 + 1.1, mx1 = MARKET.x1 - 0.5;
+  const mx0 = MARKET.x0 + 1.1;
   nav.line(mx0, MARKET.z1 - 2, mx0, MARKET.z0 + 2, 4);
-  nav.line(mx1, MARKET.z1 - 2, mx1, MARKET.z0 + 2, 4);
-  for (const z of [-46.4, -64.4, -74.5]) { const l = nav.line(mx0, z, mx1, z, 4); void l; nav.link(nav.nearestNode(mx0, z), nav.nearestNode(mx0, z + 2)); nav.link(nav.nearestNode(mx1, z), nav.nearestNode(mx1, z + 2)); }
+  for (const [z, xe] of [[-46.4, 47.5], [-55, 12], [-64.4, 47.5], [-74.5, 47.5]]) { nav.line(mx0, z, xe, z, 4); nav.link(nav.nearestNode(mx0, z), nav.nearestNode(mx0, z + 2)); }
   for (const z of [-55, -72]) nav.link(nav.nearestNode(ex, z), nav.nearestNode(mx0, z));
   nav.link(nav.nearestNode(ex, -44), nav.nearestNode(mx0, -44));
   // --- shop fronts & anchors (attach to nearest walk node)
@@ -285,18 +284,18 @@ export function buildNav(zones: Zone[]): Nav {
   nav.link(nav.nearestNode(TEMPLE.gateX, -154), nav.nearestNode(ANCHORS.temple_gate.p[0], ANCHORS.temple_gate.p[2]));
   for (const x of [20, 50, 80]) nav.link(nav.nearestNode(x, -154), nav.nearestNode(x, cz), true);
   // --- office plaza
-  const op = nav.line(OFFICE.plazaX0 + 2, -4.5, OFFICE.plazaX1 - 1, -4.5, 6);
-  for (const x of [-60, -45, -30]) nav.link(nav.nearestNode(x, -4.5), nav.nearestNode(x, nz));
+  // plaza walk between the palm planters (z −6…−3.6) and the main-road sidewalk; links clear of the bus shelter (x −32…−28)
+  const op = nav.line(OFFICE.plazaX0 + 2, -1.9, OFFICE.plazaX1 - 1, -1.9, 6);
+  for (const x of [-60, -45, -36]) nav.link(nav.nearestNode(x, -1.9), nav.nearestNode(x, nz));
   nav.attach(-45, -8.5, 6);
   void op;
   // --- wholesale front + parking
-  nav.line(WHOLESALE.x0, 28.3, WHOLESALE.x1 - 2, 28.3, 6);
+  nav.line(WHOLESALE.x0 + 4, 28.3, WHOLESALE.x1 - 2, 28.3, 6);   // x 29–33 is the last south-row shop front
   att('wholesale_door', 6);
   nav.link(nav.nearestNode(ANCHORS.wholesale_door.p[0], ANCHORS.wholesale_door.p[2]), nav.add(ANCHORS.wholesale_counter.p[0], ANCHORS.wholesale_counter.p[2]));
   for (const x of [36, 50, 70]) nav.link(nav.nearestNode(x, 28.3), nav.nearestNode(x, sz));   // x 29–33 is the last south-row shop front
   const pk = nav.line(97, sz, 97, 80, 6);
-  nav.line(86, 50, 110, 50, 6); nav.line(86, 70, 110, 70, 6);
-  nav.link(nav.nearestNode(97, 50), nav.nearestNode(86, 50)); nav.link(nav.nearestNode(97, 70), nav.nearestNode(86, 70));
+  // (the old cross-lines at z 50 / 70 ran through the parked pickup rows at x 84.5–89.5 and 104.5–109.5: drive aisle only)
   void pk;
   return nav;
 }

@@ -61,7 +61,7 @@ const LINE_W = 1.0;
 /** NDC width the wrap width maps to (compact: the old 1.3 read as a wall of text) */
 const LINE_NDC = 0.8;
 /** answer cards: on-screen size relative to the original design */
-const CARD_K = 0.7;
+const CARD_K = 0.78;
 
 function roundRect(w: number, h: number, r: number) {
   const s = new THREE.Shape();

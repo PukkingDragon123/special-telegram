@@ -18,7 +18,9 @@ export const R = {
   neck: { x: 320, y: 560, w: 192, h: 64 },
   hand: { x: 320, y: 624, w: 192, h: 96 },
   foot: { x: 512, y: 512, w: 192, h: 160 },
-  hair: { x: 704, y: 400, w: 320, h: 272 },
+  // procedural hair only (not in the GLB UVs): kept right of the leg strip — the old x 704 overlapped the
+  // bottom-right corner of `leg` (ankles), so the hair print bled onto everyone's ankles / trouser hems
+  hair: { x: 800, y: 400, w: 224, h: 272 },
   skirt: { x: 0, y: 720, w: 400, h: 200 },
   apron: { x: 400, y: 720, w: 128, h: 200 },
   hat: { x: 528, y: 672, w: 256, h: 128 },

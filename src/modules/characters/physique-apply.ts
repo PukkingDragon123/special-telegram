@@ -179,7 +179,7 @@ export function applyPhysique(rigAny: unknown, look: Look) {
   const bel = (ph.belly - 0.5) * 2;
   const mk = m > 0 ? 1 : 0.55;
   st.amp.set(
-    bel > 0 ? bel * (fem ? 0.06 : 0.078) : bel * 0.016,
+    bel > 0 ? bel * (fem ? 0.07 : 0.1) : bel * 0.016,
     m * mk * (fem ? 0.007 : 0.011),
     m * mk * (fem ? 0.008 : 0.013),
     m * mk * (fem ? 0.009 : 0.011),

@@ -91,16 +91,16 @@ export class Crowd {
     this.nearCap = q === 'low' ? 6 : q === 'medium' ? 10 : q === 'ultra' ? 20 : 15;
     this.fullFaces = q === 'high' || q === 'ultra';
     const k = 1 / qmul();
-    // sidewalk paths (from the map plan: soi sidewalks ±4.8, main-road sidewalks z≈3.6 / 24, market aisles, temple, canal, rural road)
+    // sidewalk paths (walking lanes kept clear by world/dressing: soi ±4.6, main road z 3.55 / 23.6, market aisles between the stall islands, temple, canal, rural road)
     this.paths = [
-      mkPath(0, [[-4.9, 1], [-4.9, -157]], 4.6 * k, 'soi', 1.6),
-      mkPath(1, [[4.9, 1], [4.9, -19], [6.3, -21], [6.3, -27], [4.9, -29], [4.9, -157]], 4.8 * k, 'soi', 1.4),
-      mkPath(2, [[-128, 3.6], [-3.8, 3.6]], 3.8 * k, 'mainroad', 2.2),
-      mkPath(3, [[3.8, 3.6], [128, 3.6]], 4 * k, 'mainroad', 2.2),
-      mkPath(4, [[-128, 24.2], [128, 24.2]], 6 * k, 'mainroad', 2.4),
-      mkPath(5, [[7, -50], [48, -50]], 4.5 * k, 'market', 1.4),
-      mkPath(6, [[7, -58], [48, -58]], 4.5 * k, 'market', 1.4),
-      mkPath(7, [[7, -66], [48, -66]], 5 * k, 'market', 1.4),
+      mkPath(0, [[-4.6, 1], [-4.6, -157]], 4.6 * k, 'soi', 0.8),
+      mkPath(1, [[4.6, 1], [4.6, -19], [6.3, -21], [6.3, -27], [4.6, -29], [4.6, -157]], 4.8 * k, 'soi', 0.8),
+      mkPath(2, [[-128, 3.55], [-3.8, 3.55]], 3.8 * k, 'mainroad', 0.8),
+      mkPath(3, [[3.8, 3.55], [128, 3.55]], 4 * k, 'mainroad', 0.8),
+      mkPath(4, [[-128, 23.6], [128, 23.6]], 6 * k, 'mainroad', 1.2),
+      mkPath(5, [[7, -46.4], [48, -46.4]], 4.5 * k, 'market', 1.0),
+      mkPath(6, [[7, -64.4], [48, -64.4]], 4.5 * k, 'market', 1.0),
+      mkPath(7, [[7, -74.5], [48, -74.5]], 5 * k, 'market', 1.0),
       mkPath(8, [[-60, -4], [-30, -4], [-22, 2.6]], 6 * k, 'office', 3),
       mkPath(9, [[6.5, -154.5], [22, -154.5], [22, -150]], 14 * k, 'temple', 2),
       mkPath(10, [[-120, -163.5], [120, -163.5]], 16 * k, 'canal', 1.5),

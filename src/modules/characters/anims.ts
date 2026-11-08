@@ -607,7 +607,7 @@ def('cine_point', { loop: true, dur: 4, fade: 0.32, posture: 'stand', expr: 'det
   pb.legSA(L, 20, 12, 22, -4); pb.legSA(R, -16, 13, 5, 8);
   pb.spine(-6 * e, 14 * e, 2); pb.chest(-9 * e, 30 * e, 3);
   pb.neck(-4, -6 * e, 0); pb.head(-9 * e, -12 * e, 7 * e);
-  pb.arm(R, 94, -6, -10, 3, 4, 0); pb.hand(R, 'point');
+  pb.arm(R, 76, -4, -10, 3, 6, 0); pb.hand(R, 'point');
   pb.arm(L, 24, 72, -45, 104, 10, 0); pb.hand(L, 'flat');
   pb.clav(-1, 6, 10); pb.clav(1, -2, 0);
   holdBreath(c);
@@ -644,7 +644,7 @@ def('cine_menace', { loop: true, dur: 4, fade: 0.42, posture: 'stand', expr: 'me
   const pb = c.pb, e = snapIn(c.t), t = c.t + c.rnd * 5;
   // hunched, knees deep, turned side-on, glaring up from under the brows
   pb.hips(-0.04, -0.1 * e, -0.02, 16 * e, -38 * e, 0);
-  pb.legSA(L, 28, 15, 56, -10); pb.legSA(R, -22, 15, 36, 12);
+  pb.legSA(L, 30, 15, 58, -10); pb.legSA(R, -17, 15, 8, 16);
   pb.spine(12 * e, 18 * e, -6); pb.chest(10 * e, 22 * e, -8);
   pb.neck(-6, 10, 0); pb.head(-18 * e, 16 * e, 9 + 1.5 * sin(t * 0.9));
   pb.arm(R, 36, -18, 30, 42, 22, 0); pb.hand(R, 'claw');
@@ -747,7 +747,7 @@ def('handshake', { loop: false, dur: 2.2, fade: 0.2, expr: 'happy', pose: (c) =>
   const out = env(k, 0.04, 0.26, 0.82, 0.98);
   const grip = env(k, 0.24, 0.3, 0.8, 0.86);
   const pump = sin(sm(0.32, 0.74, k) * Math.PI * 4) * env(k, 0.3, 0.36, 0.7, 0.76);
-  pb.arm(R, lerp(12, 56, out) + 9 * pump, lerp(10, -6, out), lerp(0, 72, out), lerp(14, 34, out) - 6 * pump, lerp(0, -6, out) + 6 * pump, 0);
+  pb.arm(R, lerp(12, 62, out) + 9 * pump, lerp(10, -6, out), lerp(0, 72, out), lerp(14, 34, out) - 6 * pump, lerp(0, -6, out) + 6 * pump, 0);
   pb.hand(R, grip > 0.5 ? 'grip' : 'flat');
   pb.add(B.spine, 5 * out, 0, 0); pb.add(B.chest, 4 * out, -6 * out, 0);
   pb.head(4 * out + 3 * pump, -3 * out, 0);

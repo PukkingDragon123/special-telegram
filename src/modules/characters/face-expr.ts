@@ -27,11 +27,11 @@ const NAMES = {
 /** expression → parameters. Extra internal keys: think, scream, yawn, chew, menace, cool */
 const TABLE: Record<string, P> = {
   neutral: {},
-  happy: { smile: 0.7, cheek: 0.45, squint: 0.3, browUp: 0.12, open: 0.06, teeth: 0.55 },
-  laugh: { smile: 1, cheek: 0.9, squint: 0.65, lid: 0.22, browUp: 0.3, browIn: 0.25, open: 0.45, wide: 0.35, teeth: 1, tongue: 0.6 },
+  happy: { smile: 0.9, cheek: 0.6, squint: 0.35, browUp: 0.15, open: 0.14, teeth: 0.9, wide: 0.2 },
+  laugh: { smile: 1, cheek: 1, squint: 0.7, lid: 0.3, browUp: 0.35, browIn: 0.3, open: 0.55, wide: 0.4, teeth: 1, tongue: 0.6 },
   smug: { smileL: 0.75, smileR: 0.1, shiftX: 0.18, lid: 0.38, browUpR: 0.45, browUpL: -0.15, cheek: 0.2, squintL: 0.25 },
   angry: { browIn: -1, browUp: -0.45, squint: 0.45, lid: -0.15, smile: -0.45, open: 0.1, teeth: 0.9, sneer: 0.45, wide: 0.25 },
-  shocked: { browUp: 1, browIn: 0.35, lid: -0.75, open: 0.62, wide: -0.3, teeth: 0.35, tongue: 0.3 },
+  shocked: { browUp: 1, browIn: 0.4, lid: -0.85, open: 0.75, wide: -0.3, teeth: 0.45, tongue: 0.3 },
   scared: { browIn: 1, browUp: 0.65, lid: -0.5, open: 0.32, wide: 0.55, smile: -0.35, teeth: 0.8 },
   sad: { browIn: 1, browUp: -0.15, lid: 0.32, smile: -0.65, gazeY: -0.45, wide: -0.1 },
   determined: { browIn: -0.55, browUp: -0.25, squint: 0.38, smile: -0.12, wide: -0.12, lid: 0.08 },
@@ -318,11 +318,11 @@ export const FACE_EXPR_WARP = /* glsl */`
     float toC = s == 0 ? -1.0 : 1.0;                       // image direction towards the nose
     float g = gk2(f, vec2(ex, 0.372), vec2(0.105, 0.075)) * (1.0 - smoothstep(0.395, 0.445, f.y));
     float tilt = clamp((f.x - ex) * toC / 0.075, -1.0, 1.0); // +1 inner end, -1 outer end
-    d.y += g * (up * 0.03 + inn * 0.026 * (0.55 + 0.45 * tilt));
-    d.x += g * min(inn, 0.0) * 0.01 * toC;                  // knit: brows pull together
+    d.y += g * (up * 0.05 + inn * 0.042 * (0.55 + 0.45 * tilt));
+    d.x += g * min(inn, 0.0) * 0.015 * toC;                  // knit: brows pull together
   }
   // ---------- eyes: iris look, wide open
-  eyeShift = vec2(gazeX * 0.013, -gazeY * 0.008);
+  eyeShift = vec2(gazeX * 0.016, -gazeY * 0.01);
   for (int s = 0; s < 2; s++) {
     float ex = s == 0 ? 0.64 : 0.36;
     float lid = s == 0 ? lidL : lidR;
@@ -330,11 +330,11 @@ export const FACE_EXPR_WARP = /* glsl */`
     float m = 1.0 - smoothstep(0.55, 1.15, length(q));
     d -= eyeShift * m;
     float wide = max(-lid, 0.0);
-    d.y -= (f.y - 0.442) * wide * 0.32 * (1.0 - smoothstep(0.7, 1.6, length(q)));
+    d.y -= (f.y - 0.442) * wide * 0.45 * (1.0 - smoothstep(0.7, 1.6, length(q)));
   }
   // ---------- cheeks & nose
-  d.y += cheek * 0.014 * (gk2(f, vec2(0.62, 0.575), vec2(0.075, 0.07)) + gk2(f, vec2(0.38, 0.575), vec2(0.075, 0.07)));
-  d.y += sneer * 0.012 * (gk2(f, vec2(0.535, 0.655), vec2(0.045, 0.045)) + gk2(f, vec2(0.465, 0.655), vec2(0.045, 0.045)));
+  d.y += cheek * 0.024 * (gk2(f, vec2(0.62, 0.575), vec2(0.075, 0.07)) + gk2(f, vec2(0.38, 0.575), vec2(0.075, 0.07)));
+  d.y += sneer * 0.02 * (gk2(f, vec2(0.535, 0.655), vec2(0.045, 0.045)) + gk2(f, vec2(0.465, 0.655), vec2(0.045, 0.045)));
   // ---------- mouth
   float my = 0.732;
   float cx = 0.5 + shiftX * 0.02;
@@ -342,9 +342,9 @@ export const FACE_EXPR_WARP = /* glsl */`
   for (int s = 0; s < 2; s++) {
     float side = s == 0 ? 1.0 : -1.0;
     float sm2 = s == 0 ? smileL : smileR;
-    float g = gk2(f, vec2(cx + side * 0.1, my + 0.004), vec2(0.06, 0.048));
-    d.y += g * sm2 * 0.028;
-    d.x -= g * side * max(sm2, 0.0) * 0.014;
+    float g = gk2(f, vec2(cx + side * 0.1, my + 0.004), vec2(0.072, 0.056));
+    d.y += g * sm2 * 0.046;
+    d.x -= g * side * max(sm2, 0.0) * 0.022;
   }
   float gM = gk2(f, vec2(cx, my), vec2(0.16, 0.075));
   d.x += (f.x - cx) * gM * (mWide < 0.0 ? -mWide * 0.42 : -mWide * 0.2);
@@ -352,28 +352,31 @@ export const FACE_EXPR_WARP = /* glsl */`
   // jaw drop: lower lip & chin slide down, upper lip lifts a little
   float wq = (f.x - cx) / (0.135 * (1.0 + 0.25 * mWide));
   float wx = exp(-wq * wq);
-  float gap = mOpen * 0.085 * wx;
-  float upLift = mOpen * 0.012 * wx + sneer * 0.006 * wx;
+  float gap = mOpen * 0.12 * wx;
+  float upLift = mOpen * 0.018 * wx + sneer * 0.01 * wx;
   float below = smoothstep(my - 0.004, my + 0.004, f.y);
   float chinFade = 1.0 - smoothstep(0.86, 0.99, f.y);
   d.y -= below * gap * chinFade;
   d.y += (1.0 - below) * upLift * smoothstep(0.6, my, f.y);
   fd = f + d;
   // ---------- mouth interior (between the moved lips)
-  float hw = 0.082 * (1.0 + 0.32 * mWide) + 0.006 * (smileL + smileR);
+  float hw = 0.09 * (1.0 + 0.32 * mWide) + 0.01 * (smileL + smileR);
   float top = my - upLift, bot = my + gap;
   float hh = max((bot - top) * 0.5, 1e-4);
   vec2 mq = vec2((f.x - cx) / hw, (f.y - (top + bot) * 0.5) / hh);
   float ell = dot(mq, mq);
   mouthIn = (1.0 - smoothstep(0.78, 1.0, ell)) * smoothstep(0.004, 0.012, gap);
   float vy = (f.y - top) / max(bot - top, 1e-4);             // 0 top .. 1 bottom
-  vec3 cav = mix(vec3(0.16, 0.05, 0.05), vec3(0.03, 0.008, 0.01), smoothstep(0.0, 0.6, vy) * (1.0 - smoothstep(0.75, 1.0, vy) * 0.5));
-  float tTop = smoothstep(0.0, 0.03, 0.022 * teeth - (f.y - top)) * step(0.001, teeth);
-  float tBot = smoothstep(0.0, 0.02, 0.012 * teeth * step(0.35, mOpen) - (bot - f.y));
-  float teethGap = 0.75 + 0.25 * smoothstep(0.0, 0.25, abs(fract((f.x - cx) / 0.021 + 0.5) - 0.5));
-  vec3 toothC = vec3(0.6, 0.56, 0.48) * teethGap * (0.65 + 0.35 * (1.0 - abs(mq.x)));
-  float tng = tongue * smoothstep(0.55, 0.85, vy) * (1.0 - smoothstep(0.6, 1.0, abs(mq.x)));
-  mouthCol = mix(cav, vec3(0.42, 0.12, 0.12), tng);
+  float rim = smoothstep(0.35, 0.95, ell);                    // inner lip edge
+  vec3 cav = mix(vec3(0.075, 0.018, 0.018), vec3(0.22, 0.06, 0.055), rim);
+  // upper teeth: a clean band under the upper lip (tooth gaps, darker towards the corners)
+  float th = min(0.032 * teeth, (bot - top) * 0.55);
+  float tTop = (1.0 - smoothstep(th - 0.004, th, f.y - top)) * step(0.001, teeth) * (1.0 - smoothstep(0.62, 0.95, abs(mq.x)));
+  float tBot = (1.0 - smoothstep(0.012 - 0.003, 0.012, bot - f.y)) * step(0.4, mOpen) * teeth * (1.0 - smoothstep(0.45, 0.8, abs(mq.x)));
+  float gapT = smoothstep(0.08, 0.3, abs(fract((f.x - cx) / 0.019 + 0.5) - 0.5));
+  vec3 toothC = vec3(0.78, 0.75, 0.68) * mix(0.55, 1.0, gapT) * (0.55 + 0.45 * (1.0 - abs(mq.x))) * mix(1.0, 0.75, smoothstep(0.0, max(th, 1e-3), f.y - top));
+  float tng = tongue * smoothstep(0.5, 0.82, vy) * (1.0 - smoothstep(0.55, 0.95, abs(mq.x)));
+  mouthCol = mix(cav, vec3(0.5, 0.16, 0.15), tng * 0.85);
   mouthCol = mix(mouthCol, toothC, max(tTop, tBot * (1.0 - tng)));
   // ---------- eyelids (upper lid slides down over the eye, lower lid rises in a squint)
   lidCover = 0.0; lidSrc = f; lashK = 0.0;

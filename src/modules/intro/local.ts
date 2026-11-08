@@ -466,6 +466,8 @@ export class IntroLocal {
     if (!pl || !game.scene || game.g.scene !== 'world') return;
     if (this.wakeOn) this.wakeT += Math.min(raw, 0.1);
     this.cine.late(raw);
+    // safety: if something else grabbed the camera mid-wake, never leave the screen black
+    if (this.wakeOn && !this.cine.active && this.wakeT > 0.3) this.endWake();
     if (this.cine.active) return;
     // hangover wobble after getting up
     const post = game.engine.post;

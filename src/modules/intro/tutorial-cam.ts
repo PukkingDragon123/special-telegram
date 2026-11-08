@@ -271,7 +271,7 @@ export function subject(game: Game, id: number | null | undefined, out?: Subject
   const pl = game.player;
   if (id === game.localPlayerId && pl) {
     o.pos.copy(pl.pos);
-    o.yaw = pl.yaw;
+    o.yaw = (pl as any).bodyYaw ?? pl.yaw;   // third-person view: the body turns on its own
   } else {
     const obj = game.views.objectOf(id);
     const e = game.state.get(id);

@@ -198,7 +198,7 @@ export function buildCasino(): CasinoSet {
   // ---------------------------------------------------------------- lights
   const hemi = new THREE.HemisphereLight(0xffe2b8, 0x3a0d0a, 1.1);
   root.add(hemi);
-  const key = new THREE.SpotLight(0xffd7a0, 200, 14, 0.62, 0.55, 1.4);
+  const key = new THREE.SpotLight(0xffd7a0, 150, 14, 0.62, 0.55, 1.4);   // 200 blew out shirts, cards and chips
   key.position.set(0.2, H - 0.4, 0.4);
   key.target.position.set(0, TABLE_Y, 0.15);
   key.castShadow = true;
@@ -278,7 +278,8 @@ function buildCardTable(teak: THREE.Material) {
   shape.absellipse(0, 0.55, 1.35, 1.3, 0, Math.PI, true);
   const felt = Assets.pbr('felt_casino_green', { repeat: 2.2, color: '#6f7d6c' });
   const top = new THREE.ExtrudeGeometry(shape, { depth: 0.04, bevelEnabled: true, bevelSize: 0.01, bevelThickness: 0.01, bevelSegments: 1, curveSegments: 36 });
-  top.rotateX(-Math.PI / 2).translate(0, TABLE_Y - 0.04, 0);
+  // felt surface exactly at TABLE_Y (extrude depth 0.04 + 0.01 bevel): cards, bet rings and chips sat 1 cm under it
+  top.rotateX(-Math.PI / 2).translate(0, TABLE_Y - 0.05, 0);
   g.add(mesh(top, felt));
   const skirt = new THREE.ExtrudeGeometry(shape, { depth: 0.66, bevelEnabled: false, curveSegments: 36 });
   skirt.scale(0.92, 0.92, 1).rotateX(-Math.PI / 2).translate(0, 0.06, 0);
@@ -486,7 +487,7 @@ export function makeGlass(kind: 'wine' | 'beer'): THREE.Group {
   } else {
     g.add(new THREE.Mesh(lathe([[0.03, 0], [0.033, 0.005], [0.04, 0.16], [0.0, 0.16]].slice(0, 3) as any, 16), glass));
     g.add(new THREE.Mesh(lathe([[0.0, 0.004], [0.031, 0.006], [0.037, 0.12], [0.0, 0.12]], 16), new THREE.MeshStandardMaterial({ color: 0xc8860c, roughness: 0.15, transparent: true, opacity: 0.85 })));
-    g.add(new THREE.Mesh(lathe([[0.0, 0.12], [0.037, 0.12], [0.039, 0.145], [0.0, 0.15]], 16), new THREE.MeshStandardMaterial({ color: 0xfff6e2, roughness: 0.9 })));
+    g.add(new THREE.Mesh(lathe([[0.0, 0.12], [0.037, 0.12], [0.039, 0.145], [0.0, 0.15]], 16), new THREE.MeshStandardMaterial({ color: 0xd9d1c2, roughness: 0.95 })));
   }
   return g;
 }

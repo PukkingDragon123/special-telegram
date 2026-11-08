@@ -22,9 +22,9 @@ export type { GpuTier } from './perf';
 const QKEY = 'hp.qualityMode';
 const BUDGET: Record<Quality, { dpr: number; startMP: number; minMP: number; maxSS: number }> = {
   low: { dpr: 1, startMP: 0.95, minMP: 0.45, maxSS: 1 },
-  medium: { dpr: 1.25, startMP: 1.6, minMP: 0.6, maxSS: 1 },
-  high: { dpr: 2, startMP: 2.6, minMP: 0.85, maxSS: 1 },
-  ultra: { dpr: 2, startMP: 8.3, minMP: 1.4, maxSS: 2 },
+  medium: { dpr: 1.25, startMP: 1.6, minMP: 0.8, maxSS: 1 },
+  high: { dpr: 2, startMP: 2.6, minMP: 1.2, maxSS: 1 },
+  ultra: { dpr: 2, startMP: 8.3, minMP: 2.0, maxSS: 2 },
 };
 
 /**
@@ -96,6 +96,8 @@ export class Engine {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.setClearColor(0x0b0906, 1);
+    // draw-call / triangle counters cover the whole frame (scene + shadows + reflection + post), reset per frame
+    this.renderer.info.autoReset = false;
     this.canvas = this.renderer.domElement;
     this.canvas.tabIndex = 0;
     container.appendChild(this.canvas);
@@ -124,6 +126,8 @@ export class Engine {
     // window resizes are applied at the start of the next frame, right before it renders (see step())
     window.addEventListener('resize', () => { this.resizePending = true; });
     document.addEventListener('visibilitychange', () => this.onVisibility());
+    window.addEventListener('keydown', (e) => { if (e.code === 'F9') this.perfHud(!this.hudEl); });
+    if (params.has('perf')) this.perfHud(true);
     this.applyResize();
   }
 
@@ -133,7 +137,7 @@ export class Engine {
    *  low     ≤ 0.95 MP, no AO / shafts / grain / reflections — fast
    *  medium  ≤ 1.6 MP, no CA, no sharpening, env-map reflections
    *  high    ≤ 2.6 MP to start (1080p native), planar reflections, AO; the governor climbs to native when the
-   *          GPU has headroom and drops (to ≥ 0.85 MP) when the frame time is over budget
+   *          GPU has headroom and drops (to ≥ 1.2 MP) when the frame time is over budget
    *  ultra   supersampled (≤ 8.3 MP) with a tent downsample
    * `q` may be 'auto' (pick from the GPU, may step down at runtime). Explicit choices are saved.
    */
@@ -310,6 +314,7 @@ export class Engine {
     const sm = this.renderer.shadowMap;
     if (this.shadowEvery > 1) { sm.autoUpdate = false; sm.needsUpdate = this.frame % this.shadowEvery === 0; }
     else if (!sm.autoUpdate) sm.autoUpdate = true;
+    this.renderer.info.reset();
     this.gpuTimer?.begin();
     this.post.render(raw);
     this.gpuTimer?.end();
@@ -318,6 +323,7 @@ export class Engine {
     this.cpuMs += (cpu - this.cpuMs) * 0.1;
     if (this.gpuTimer) { const g = this.gpuTimer.poll(); if (g >= 0) this.gpuMs = this.gpuMs < 0 ? g : this.gpuMs + (g - this.gpuMs) * 0.1; }
     this.adapt(interval, cpu);
+    this.updateHud(raw);
   }
 
   /**
@@ -369,6 +375,24 @@ export class Engine {
       if (this.renderScale > 0.97 && this.renderScale < 1.03) this.renderScale = 1;
       this.resizePending = true; this.gov.changed('scale-up');
     }
+  }
+
+  private hudEl: HTMLDivElement | null = null;
+  private hudT = 0;
+  /** Tiny perf readout (top-left): ?perf, or `__hp.engine.perfHud(true)` / F9 in game builds. */
+  perfHud(on: boolean) {
+    if (!on) { this.hudEl?.remove(); this.hudEl = null; return; }
+    if (this.hudEl) return;
+    const d = (this.hudEl = document.createElement('div'));
+    d.style.cssText = 'position:fixed;left:6px;top:6px;z-index:99;font:11px/1.35 ui-monospace,monospace;color:#e8ffe0;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:4px;pointer-events:none;white-space:pre';
+    document.body.appendChild(d);
+  }
+  private updateHud(raw: number) {
+    if (!this.hudEl || (this.hudT += raw) < 0.5) return;
+    this.hudT = 0;
+    const p = this.perfInfo(), i = this.renderer.info.render;
+    this.hudEl.textContent = `${p.fps} fps · ${p.refreshHz} Hz${p.divider > 1 ? ' ÷' + p.divider : ''} · ${p.quality}${p.mode === 'auto' ? ' (auto)' : ''}\n`
+      + `render ${p.internal} (×${p.scale}) · shadows 1/${p.shadowEvery}\ncpu ${p.cpuMs} ms · gpu ${p.gpuMs < 0 ? 'n/a' : p.gpuMs + ' ms'} · ${i.calls} calls · ${(i.triangles / 1e6).toFixed(2)} M tris\n${p.gpu.name.slice(0, 64)}`;
   }
 
   /** Debug / HUD: what the governor is doing. */

@@ -198,8 +198,9 @@ export class MenuScene implements SceneDef {
 
   private setupCamera() {
     const a = innerWidth / innerHeight;
-    // keep ≥ 40° horizontal on narrow screens
-    const vfov = a < 1 ? THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(20.5)) / a)) : ALBUM_CAM.fov;
+    // narrower than 16:9 (4:3, 16:10, portrait): keep the 16:9 horizontal framing so nobody is cut off
+    const REF_A = 16 / 9;
+    const vfov = a < REF_A ? THREE.MathUtils.radToDeg(2 * Math.atan((Math.tan(THREE.MathUtils.degToRad(ALBUM_CAM.fov) / 2) * REF_A) / a)) : ALBUM_CAM.fov;
     for (const c of [this.camera, this.refCam]) {
       c.fov = vfov;
       c.aspect = a;
@@ -407,6 +408,8 @@ export class MenuScene implements SceneDef {
     const s = this.slots[i];
     const h = s.rig?.height ?? 1.72;
     const P = SLOTS[i].pos;
+    // free seat: the little "waiting…" note hovers just above the empty seat
+    if (!s.occupied) return new THREE.Vector3(P.x, i === 1 ? 1.25 : 0.95, P.z);
     switch (i) {
       case 0: return new THREE.Vector3(P.x - 0.12, 1.28, P.z + 0.05);
       case 1: return new THREE.Vector3(P.x - 0.4, 1.5, P.z);   // beside his head, clear of G1's reaching hands

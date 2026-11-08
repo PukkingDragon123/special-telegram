@@ -114,6 +114,8 @@ function templateData(t: BodyTemplate): TData {
 const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion(), _q4 = new THREE.Quaternion();
 const _m4 = new THREE.Matrix4(), _w1 = new THREE.Vector3(), _w2 = new THREE.Vector3(), _w3 = new THREE.Vector3(), _w4 = new THREE.Vector3(), _w5 = new THREE.Vector3();
 const _qa = new THREE.Quaternion(), _qb = new THREE.Quaternion();
+const IK_T = [new THREE.Vector3(), new THREE.Vector3()];   // foot targets (never used as scratch)
+const _ikT = new THREE.Vector3();
 const warned = new Set<string>();
 const GRIP2 = (() => { const a = new Float32Array(HS_N * 2); const g = [0.55, 0.62, 0.7, 0.76, 0.82, 0]; a.set(g, 0); a.set(g, HS_N); return a; })();
 const D2 = Math.PI / 180;
@@ -420,6 +422,8 @@ export class Rig implements CharacterRig {
         // softer cel banding on the scanned relief. Ink mask MUST stay 1: the ink mask is written to the scene alpha and
         // alpha 0 comes out of the post chain as black (the black blotches that covered half of every face)
         setInk(f, 1, 0.3);
+        // the scan sits almost on the photo-projected head under it: win the depth test (no z-fighting seams/double mouths)
+        f.polygonOffset = true; f.polygonOffsetFactor = -1; f.polygonOffsetUnits = -4;
         this.faceMat = f;
       }
       const fm = new THREE.SkinnedMesh(t.faceMask, this.faceMat);
@@ -1025,7 +1029,7 @@ export class Rig implements CharacterRig {
     // the character is really moving the way its legs say? (scripted root motion / walking in place → no locking)
     const coherent = Math.abs(this.rSpeed - this.speed) < 0.9;
     const legs: [string, string, string][] = [['thigh_l', 'calf_l', 'foot_l'], ['thigh_r', 'calf_r', 'foot_r']];
-    const targets: THREE.Vector3[] = [_w4, _w5];
+    const targets = IK_T;
     let drop = 0;
     for (let s = 0; s < 2; s++) {
       const f = this.feet[s];
@@ -1077,7 +1081,8 @@ export class Rig implements CharacterRig {
   }
 
   /** analytic two-bone IK in template model space; keeps the foot's orientation */
-  private solve2(ia: number, ib: number, ic: number, T: THREE.Vector3) {
+  private solve2(ia: number, ib: number, ic: number, target: THREE.Vector3) {
+    const T = _ikT.copy(target);
     const a = this.Fp[ia], b = this.Fp[ib], c = this.Fp[ic];
     const lab = b.distanceTo(a), lcb = c.distanceTo(b);
     if (lab < 1e-4 || lcb < 1e-4) return;
