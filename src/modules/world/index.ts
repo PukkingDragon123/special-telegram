@@ -233,8 +233,16 @@ async function buildWorld(game: Game) {
 }
 
 /** After the first GPU upload, drop the CPU-side pixel copies of the big textures (~350 MB at high):
- *  texture-array data and the 4096² atlas canvases. The GPU textures stay alive (never disposed). */
+ *  texture-array data and the 4096² atlas canvases.
+ *  BLACK-WORLD FIX: when the WebGL context is lost and restored (GPU driver reset / TDR, laptop GPU switch,
+ *  memory pressure — and constantly on software GL), three.js re-uploads every texture from its CPU copy.
+ *  With the copies gone the texture arrays came back as zeros → every building, road and wall rendered BLACK
+ *  for the rest of the session. Now:
+ *   - texture arrays: re-decoded from the (HTTP-cached) layer images on 'webglcontextrestored'
+ *   - atlases: the pixels move into an ImageBitmap (outside the JS heap) instead of being discarded, so a
+ *     re-upload still has data. */
 let released = false;
+let restoreHooked = false;
 function releaseCpuCopies(game: Game, assets: any) {
   if (released) return;
   released = true;
@@ -250,9 +258,33 @@ function releaseCpuCopies(game: Game, assets: any) {
       if (!a?.tex) continue;
       R.initTexture(a.tex);
       const cv = a.canvas ?? a.tex.image;
-      if (cv && 'width' in cv) { cv.width = 1; cv.height = 1; }
+      if (!cv || !('width' in cv) || typeof createImageBitmap !== 'function') continue;
+      // keep the pixels as an ImageBitmap (flip baked in, three can't flip bitmaps), then shrink the canvas
+      createImageBitmap(cv, { imageOrientation: a.tex.flipY ? 'flipY' : 'from-image', premultiplyAlpha: a.tex.premultiplyAlpha ? 'premultiply' : 'none', colorSpaceConversion: 'none' } as any)
+        .then((bmp) => { a.tex.image = bmp; a.tex.flipY = false; if (cv !== bmp) { cv.width = 1; cv.height = 1; } })
+        .catch(() => { /* keep the canvas: a restore can still re-upload it */ });
     }
   } catch (e) { console.warn('[world] release', e); }
+  if (!restoreHooked) {
+    restoreHooked = true;
+    R.domElement.addEventListener('webglcontextrestored', () => { restoreWorldTextures(game).catch((e) => console.warn('[world] restore', e)); }, false);
+  }
+}
+
+/** context restored: refill the world texture arrays (their CPU copies were released) and re-upload */
+async function restoreWorldTextures(game: Game) {
+  if (!preload) return;
+  const assets = await preload;
+  const tex = assets.tex;
+  if (!tex?.alb || (tex.alb.image as any).data) return;
+  console.warn('[world] context restored → reloading the world texture arrays');
+  const worldMan = await Assets.jsonSafe<any>('textures/world/manifest.json', null);
+  const fresh = await loadWorldTextures((tex.alb.image as any).width, worldMan);
+  for (const [dst, src] of [[tex.alb, fresh.alb], [tex.nra, fresh.nra]] as const) {
+    (dst.image as any).data = (src.image as any).data;
+    dst.needsUpdate = true;
+    dst.onUpdate = () => { dst.onUpdate = null; (dst.image as any).data = null; };
+  }
 }
 
 function dispose() {

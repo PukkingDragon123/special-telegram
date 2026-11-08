@@ -93,7 +93,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     w.quad(M.x1 + 0.6, eave, zb - 0.6, M.x0 - 0.6, eave, zb - 0.6, M.x0 - 0.6, ridge, zm, M.x1 + 0.6, ridge, zm);
     // undersides: galvanised sheet lit by the bounce off the floor and the skylights (a little self-light so the
     // roof never reads as a black void from below)
-    w.mat('roof_galv', { tint: 0xc4c2bc, ao: 0.9, uv: 'world', emis: EMIS.store.i, emisK: 0.09 });
+    w.mat('roof_galv', { tint: 0xa8a6a0, ao: 0.85, uv: 'world', emis: EMIS.store.i, emisK: 0.045 });
     w.quad(M.x1 + 0.6, eave - 0.02, za + 0.6, M.x0 - 0.6, eave - 0.02, za + 0.6, M.x0 - 0.6, ridge - 0.02, zm, M.x1 + 0.6, ridge - 0.02, zm);
     w.quad(M.x0 - 0.6, eave - 0.02, zb - 0.6, M.x1 + 0.6, eave - 0.02, zb - 0.6, M.x1 + 0.6, ridge - 0.02, zm, M.x0 - 0.6, ridge - 0.02, zm);
     // fibreglass skylight strips (lighter), a raised ridge vent

@@ -596,7 +596,10 @@ export class RealProps {
     const cam = game.camera;
     if (!cam || !this.batches.length) return;
     this.frameN++;
-    if (!this.released && this.frameN > 2) { this.released = true; this.releaseCpuTextures(game); }
+    // NOTE: the CPU copies are KEPT. Releasing them (closing the ImageBitmaps) saved memory but made every
+    // library model lose its textures after a WebGL context loss/restore (three re-uploads from the CPU copy).
+    // ?releaseTex opts back in for memory experiments.
+    if (!this.released && this.frameN > 2) { this.released = true; if (new URLSearchParams(location.search).has('releaseTex')) this.releaseCpuTextures(game); }
     // new day: the shopkeepers tidy everything back home overnight
     const day = (game.g as any).day ?? 0;
     if (this.day !== day) { if (this.day >= 0) this.resetAll(); this.day = day; }
