@@ -8,6 +8,7 @@ import { canvasMat, mat, photo, photoMat, signTex, CardStyle, CardAtlas } from '
 import { buildShape } from './items';
 import { libModel, libInstanced } from '../world/lib';
 import { rbox, tube, lathe, packRow, tagRail } from './kit';
+import { packCell, packMaterial } from './packs';
 import { realPropObject } from '../world/realprops';
 import { PileBatch } from '../world/realprops-market';
 
@@ -105,16 +106,6 @@ const glass = () => mat('fx:glass', () => new THREE.MeshStandardMaterial({ color
 
 function plane(w: number, h: number) { return new THREE.PlaneGeometry(w, h).translate(0, h / 2, 0); }
 
-/** A photo panel (real shop interior photo) as a slightly curved card (no flat lazy quad). */
-function photoPanel(key: string, w: number, h: number, curve = 0.06) {
-  const g = new THREE.PlaneGeometry(w, h, 8, 2);
-  const p = g.getAttribute('position') as THREE.BufferAttribute;
-  for (let i = 0; i < p.count; i++) { const x = p.getX(i) / (w / 2); p.setZ(i, -curve * x * x); }
-  g.computeVertexNormals();
-  g.translate(0, h / 2, 0);
-  return { g, m: photoMat(key, { rough: 0.8 }) };
-}
-
 /** Price card placeholder: positioned like a mesh, baked into the shop's card atlas mesh later. */
 function card(atlas: CardAtlas, style: CardStyle, st: StockDef, name: string, w: number, seed: number) {
   const ar = style === 'star' ? 1 : style === 'card' ? 320 / 448 : 192 / 512;
@@ -179,6 +170,64 @@ const STALL_STYLE: Record<string, { tarp: number; sheet: number; backdrop: strin
   egg_stall: { tarp: 0xd9a12a, sheet: 0xe8e0d0, backdrop: 'egg_display', decor: ['heap_eggs'], sign: 'ไข่สด ของแห้ง' },
 };
 
+/** what each functional stall keeps on its back shelf (pile keys from realprops-market PILES) */
+const STALL_BACK: Record<string, string[]> = {
+  auntie_stall: ['heap_garlic', 'heap_shallot', 'heap_chili', 'heap_lime', 'heap_onion', 'heap_tomato'],
+  butcher_stall: ['pork_table', 'heap_garlic', 'heap_chili', 'pork_table'],
+  veg_stall: ['heap_beans', 'heap_basil', 'heap_onion', 'heap_tomato', 'heap_lime', 'heap_chili'],
+  egg_stall: ['heap_eggs', 'heap_eggs', 'heap_garlic', 'heap_eggs', 'heap_shallot', 'heap_eggs'],
+};
+const CRATE_COLS = [0x2f62b8, 0xc42a22, 0x2a9a4a, 0xe8b820, 0x2f62b8, 0xe8508a];
+
+/**
+ * The back of a market stall (local frame of the stall: z = into the stall). A plank shelf on angle-steel legs
+ * (two levels) holding plastic crates heaped with real produce, rice sacks + a stacked crate tower on the floor,
+ * and a canvas curtain on a bamboo rail behind it all — the stall reads as a deep, busy shop, not a photo.
+ */
+function backDisplay(B: Batch, root: THREE.Object3D, fr: Frame, sid: string, st: { tarp: number; sheet: number }, z: number, W: number, piles: PileBatch) {
+  const legs = flat(0x55585c, 0.6, 0.5);
+  const plank = pbr('wood_planks_old');
+  const D = 0.5, H1 = 0.55, H2 = 1.05, L = W - 0.1;
+  for (const x of [-L / 2 + 0.04, L / 2 - 0.04, 0]) for (const dz of [-D / 2 + 0.04, D / 2 - 0.04]) B.add(tube([0, 0, 0], [0, H2 + 0.03, 0], 0.018, 8), legs, fr, x, 0, z + dz);
+  for (const y of [H1, H2]) B.add(rbox(L, 0.035, D, 0.008, 1.2), plank, fr, 0, y, z);
+  // crates on both levels, each heaped with produce
+  const keys = STALL_BACK[sid] ?? STALL_BACK.auntie_stall;
+  const n = Math.max(3, Math.floor(L / 0.52));
+  const crates: THREE.Matrix4[] = [], cols: number[] = [];
+  for (const [li, y] of [H1 + 0.035, H2 + 0.035].entries()) {
+    for (let i = 0; i < n; i++) {
+      const x = -L / 2 + (L / n) * (i + 0.5);
+      const yaw = fr.yaw + Math.sin(i * 2.1 + li) * 0.08;
+      crates.push(new THREE.Matrix4().makeRotationY(yaw).setPosition(fr.at(x, y, z)));
+      cols.push(CRATE_COLS[(i + li * 2 + sid.length) % CRATE_COLS.length]);
+      const key = keys[(i + li * 3) % keys.length];
+      if (PileBatch.has(key)) piles.add(key, fr.at(x, y + 0.2, z), fr.yaw, 0.2, 0.15, sid.length * 13 + i * 5 + li * 31);
+    }
+  }
+  root.add(libInstanced('plastic_crate_02', crates, { colors: cols, cull: 34 }));
+  // floor: a rice sack pair + a crate tower at the end
+  const sacks = [new THREE.Matrix4().makeRotationY(fr.yaw + 0.2).setPosition(fr.at(-L / 2 + 0.3, 0, z + 0.55)), new THREE.Matrix4().makeRotationY(fr.yaw - 0.15).multiply(new THREE.Matrix4().makeTranslation(0, 0.16, 0)).setPosition(fr.at(-L / 2 + 0.34, 0.16, z + 0.56))];
+  root.add(libInstanced('rice_sack', sacks, { cull: 34 }));
+  const tower: THREE.Matrix4[] = [], tc: number[] = [];
+  for (let k = 0; k < 4; k++) { tower.push(new THREE.Matrix4().makeRotationY(fr.yaw + (k % 2) * 0.06).setPosition(fr.at(L / 2 + 0.2, k * 0.25, z + 0.45))); tc.push(CRATE_COLS[(k + 1) % CRATE_COLS.length]); }
+  root.add(libInstanced('plastic_crate_02', tower, { colors: tc, cull: 34 }));
+  // canvas curtain on a bamboo rail (gentle folds), 0.35 m behind the shelf
+  const cz = z + D / 2 + 0.35, ch = 2.15;
+  const cur = new THREE.PlaneGeometry(W + 0.4, ch, 24, 4);
+  { const p = cur.getAttribute('position') as THREE.BufferAttribute; for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i); p.setZ(i, Math.sin(x * 7.5) * 0.045 * (0.6 + 0.4 * (0.5 - y / ch))); } cur.computeVertexNormals(); }
+  cur.translate(0, ch / 2 + 0.05, 0).rotateY(Math.PI);
+  B.add(cur, mat('curtain:' + st.tarp, () => { const m = Assets.pbr('canvas_tarp', { repeat: 2, color: st.tarp, fallback: st.tarp }).clone(); m.side = THREE.DoubleSide; m.color.multiplyScalar(0.8); return m; }), fr, 0, 0, cz, 0);
+  B.add(new THREE.CylinderGeometry(0.025, 0.025, W + 0.6, 8).rotateZ(Math.PI / 2), pbr('bamboo_poles', undefined, 0xb89a62), fr, 0, ch + 0.1, cz);
+  // plastic bags of chillies / garlic hanging from the shelf's top rail
+  for (let i = 0; i < 5; i++) {
+    const x = -L / 2 + 0.25 + i * (L - 0.5) / 4;
+    B.add(tube([0, H2 + 0.6, 0], [0, H2 + 0.38, 0], 0.003, 4), legs, fr, x, 0, z - D / 2 + 0.05);
+    const bag = lathe([[0.0001, 0], [0.05, 0.01], [0.065, 0.06], [0.06, 0.13], [0.03, 0.17], [0.012, 0.2], [0.0001, 0.21]], 10);
+    B.add(bag, mat('hangbag:' + (i % 3), () => new THREE.MeshStandardMaterial({ color: [0xd8231a, 0xe8dcc8, 0x3a8a2a][i % 3], roughness: 0.35, metalness: 0, transparent: true, opacity: 0.92 })), fr, x, H2 + 0.17, z - D / 2 + 0.05);
+  }
+  B.add(tube([-L / 2, H2 + 0.6, 0], [L / 2, H2 + 0.6, 0], 0.012, 8), legs, fr, 0, 0, z - D / 2 + 0.05);
+}
+
 function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string>): ShopFix {
   const root = new THREE.Group(); root.name = 'shop:' + s.id;
   const B = new Batch();
@@ -229,10 +278,10 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
     root.add(bk);
     piles.add(key, fr.at(x, 0.06, bz), fr.yaw, 0.25, 0.19, s.id.length * 7 + i);   // real produce heaped in it
   });
+  // back display behind the keeper (real 3D, no photo): a 2-level plank shelf on steel legs stocked with
+  // crates of produce, sacks on the floor, and a hanging canvas curtain closing the stall off
+  backDisplay(B, root, fr, s.id, st, zc + D / 2 + 1.2, W, piles);
   piles.flush(root);
-  // backdrop: a real photo of the neighbouring stall (depth + density behind the keeper)
-  const bd = photoPanel(st.backdrop, 3.2, 2.0, 0.12);
-  B.add(bd.g, bd.m, fr, 0, 0.15, zc + D / 2 + 1.35, 0);
   B.flush(root);
   // spring scale hanging from the canopy (real model) + a rubber-keyed calculator on the table
   const scale = realPropObject('hanging_scale');
@@ -337,6 +386,119 @@ const HOUSE_STYLE: Record<string, { wall: string; side: string; hang?: string[];
   gas_shop: { wall: 'gas_row', side: 'gas_row', table: 0x4a4a48, counterTop: 0x6a6a66 },
 };
 
+const ROOM_STYLE: Record<string, { wall: number; tile: number; ceil: number }> = {
+  plastic_shop: { wall: 0xdfe9d8, tile: 0xf2f2ee, ceil: 0xf4f2ea },
+  kitchen_shop: { wall: 0xf0e2c4, tile: 0xe8eef2, ceil: 0xf6f2e8 },
+  gas_shop: { wall: 0xd8e2ea, tile: 0xe6e6e2, ceil: 0xf2f2ee },
+};
+
+/** a Thai wall calendar (gold-red header, big month grid) painted once */
+function calendarMat() {
+  return mat('shop-calendar', () => {
+    const cv = document.createElement('canvas'); cv.width = 256; cv.height = 360;
+    const x = cv.getContext('2d')!;
+    x.fillStyle = '#fbf8f0'; x.fillRect(0, 0, 256, 360);
+    const g = x.createLinearGradient(0, 0, 0, 120); g.addColorStop(0, '#c8141a'); g.addColorStop(1, '#8a0c10');
+    x.fillStyle = g; x.fillRect(0, 0, 256, 120);
+    x.fillStyle = '#f7c84a'; x.beginPath(); x.arc(128, 56, 34, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#8a0c10'; x.font = `900 30px ${F.heavy}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('福', 128, 58);
+    x.fillStyle = '#ffe9a8'; x.font = `800 16px ${F.ui}`; x.fillText('ร้านเจริญ ขอบคุณลูกค้า', 128, 104);
+    x.fillStyle = '#c8141a'; x.font = `900 26px ${F.heavy}`; x.fillText('พฤศจิกายน', 128, 146);
+    x.font = `700 15px ${F.ui}`;
+    for (let i = 0; i < 35; i++) {
+      const cx = 22 + (i % 7) * 35, cy = 182 + Math.floor(i / 7) * 34, d = i - 2;
+      if (d < 1 || d > 30) continue;
+      x.fillStyle = i % 7 === 0 ? '#c8141a' : '#2a2420'; x.fillText(String(d), cx, cy);
+    }
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.8, side: THREE.DoubleSide });
+  });
+}
+
+/**
+ * The shop's ROOM: a full interior instead of photo panels — plastered side walls, a half-tiled back wall,
+ * a painted ceiling slab with two fluorescent fittings that really light the room (world light pool, on by day),
+ * a ceiling fan, two slotted-steel racks along the back wall full of goods, a wall clock, a Thai calendar and the
+ * red shrine shelf with a lucky cat, garland and candles over the counter, a real cash register on the counter.
+ */
+function shopRoom(game: Game, B: Batch, root: THREE.Object3D, fr: Frame, sid: string, sw: { w: number; off: number; h: number }, zFront: number,
+  dress: { rack: Good[] }, put: (id: string, x: number, y: number, z: number, yaw: number, color?: number, rx?: number) => void) {
+  const st = ROOM_STYLE[sid] ?? ROOM_STYLE.plastic_shop;
+  const ceilY = sw.h + 0.12;
+  const zBack = zFront + 4.95;
+  const halfW = sw.w / 2 - 0.04;
+  const depth = zBack - (zFront + 0.02);
+  const zMid = (zBack + zFront) / 2;
+  const wallM = pbr('plaster_painted_clean', st.wall, st.wall);
+  const tileM = pbr('tiles_wall_white_dirty', st.tile, st.tile);
+  // side walls (inside faces), full height
+  for (const side of [-1, 1]) B.add(mbox(0.04, ceilY, depth, 1.6), wallM, fr, sw.off + side * halfW, 0, zMid);
+  // back wall: tiles up to 1.25 m, plaster above, a skirting strip
+  B.add(mbox(sw.w - 0.08, 1.25, 0.04, 0.6), tileM, fr, sw.off, 0, zBack);
+  B.add(mbox(sw.w - 0.08, ceilY - 1.25, 0.04, 1.6), wallM, fr, sw.off, 1.25, zBack + 0.004);
+  B.add(rbox(sw.w - 0.1, 0.03, 0.02, 0.006, 1), pbr('metal_painted_chipped', 0x8a7a62, 0x8a7a62), fr, sw.off, 1.24, zBack - 0.025);
+  // ceiling slab (painted underside) + a cornice line
+  B.add(mbox(sw.w - 0.04, 0.06, depth + 0.04, 1.6), pbr('plaster_painted_clean', st.ceil, st.ceil), fr, sw.off, ceilY, zMid);
+  // two fluorescent fittings (batten + diffuser tube) and their light
+  const fitM = pbr('metal_painted_chipped', 0xf2f2f0, 0xf2f2f0);
+  for (const fz of [zFront + 1.4, zFront + 3.5]) {
+    B.add(rbox(1.26, 0.05, 0.12, 0.012, 1), fitM, fr, sw.off, ceilY - 0.05, fz);
+    B.add(new THREE.CylinderGeometry(0.016, 0.016, 1.18, 10).rotateZ(Math.PI / 2), glow(0xf3fbff, 2.4), fr, sw.off, ceilY - 0.075, fz);
+    const lp = (game.world as any)?.addLightPoint?.(fr.at(sw.off, ceilY - 0.25, fz), 0xeef6ff, 9, 7.5, 0);
+    if (lp) { lp.day = 0.85; lp.kind = 'store'; }
+  }
+  const fan = libModel('ceiling_fan'); fan.position.copy(fr.at(sw.off - 1.2, ceilY - 0.52, zFront + 2.45)); fan.rotation.y = fr.yaw; root.add(fan);
+  // two racks along the back wall, facing the street, full of goods
+  const rackLen = Math.min(2.4, (sw.w - 1.0) / 2);
+  for (const side of [-1, 1]) {
+    const xc = sw.off + side * (rackLen / 2 + 0.25);
+    const ys = backRack(B, fr, xc, zBack - 0.3, rackLen, 2.05, 4);
+    ys.forEach((y, li) => {
+      const row = dress.rack[(li + (side > 0 ? 2 : 0)) % dress.rack.length];
+      const n = Math.max(1, Math.floor((rackLen - 0.1) / row.w));
+      for (let i = 0; i < n; i++) {
+        const xx = xc - rackLen / 2 + 0.05 + row.w * (i + 0.5);
+        for (let k = 0; k < (row.stack ?? 1); k++) put(row.id, xx, y + k * (row.h ?? 0.1), zBack - 0.32, Math.sin(i * 2.7 + li) * 0.12, row.colors ? row.colors[(i + li + k) % row.colors.length] : undefined);
+      }
+    });
+  }
+  // wall clock (left wall) + calendar (right wall) + shrine shelf over the counter corner
+  const clock = libModel('wall_clock'); clock.position.copy(fr.at(sw.off - halfW + 0.03, 2.35, zFront + 2.2)); clock.rotation.y = fr.yaw + Math.PI / 2; root.add(clock);
+  B.add(plane(0.36, 0.5), calendarMat(), fr, sw.off + halfW - 0.025, 1.55, zFront + 2.0, -Math.PI / 2);
+  const shX = sw.off + halfW - 0.4, shZ = zBack - 0.22, shY = 2.15;
+  const red = pbr('wood_painted_weathered', 0xb81c1c, 0xb81c1c);
+  B.add(rbox(0.62, 0.03, 0.32, 0.008, 1), red, fr, shX, shY, shZ);
+  B.add(rbox(0.62, 0.32, 0.02, 0.006, 1), red, fr, shX, shY, shZ + 0.15);
+  for (const dx of [-0.29, 0.29]) B.add(rbox(0.03, 0.32, 0.32, 0.006, 1), red, fr, shX + dx, shY, shZ);
+  B.add(rbox(0.66, 0.035, 0.34, 0.008, 1), pbr('metal_painted_chipped', 0xd8a838, 0xd8a838), fr, shX, shY + 0.32, shZ);
+  const cat = libModel('lucky_cat_gold'); cat.position.copy(fr.at(shX, shY + 0.03, shZ + 0.02)); cat.rotation.y = fr.yaw; root.add(cat);
+  for (const dx of [-0.2, 0.2]) {
+    B.add(new THREE.CylinderGeometry(0.012, 0.012, 0.09, 8).translate(0, 0.045, 0), flat(0xc8141a, 0.5), fr, shX + dx, shY + 0.03, shZ - 0.05);
+    B.add(new THREE.SphereGeometry(0.008, 6, 4).scale(1, 1.8, 1).translate(0, 0.105, 0), glow(0xffb040, 3), fr, shX + dx, shY + 0.03, shZ - 0.05);
+  }
+  B.add(new THREE.TorusGeometry(0.07, 0.016, 6, 16).rotateX(Math.PI / 2), mat('garland-orange', () => new THREE.MeshStandardMaterial({ color: 0xf0a020, roughness: 0.7 })), fr, shX - 0.12, shY + 0.045, shZ + 0.02);
+  const sp = (game.world as any)?.addLightPoint?.(fr.at(shX, shY + 0.2, shZ - 0.15), 0xff9a40, 1.2, 1.6, 0.12);
+  if (sp) sp.day = 0.6;
+}
+
+/** slotted-steel rack along the BACK wall (long axis = local x), faces the street (−z). Returns deck tops. */
+function backRack(B: Batch, fr: Frame, xc: number, z: number, len: number, h: number, levels: number) {
+  const ang = pbr('metal_painted_chipped', 0x7a8288, 0x7a8288);
+  const deck = pbr('galvanized_steel', 0xcfd2d2, 0xb8bcbc);
+  const d = 0.48;
+  for (const dx of [-len / 2 + 0.02, len / 2 - 0.02]) for (const dz of [-d / 2 + 0.02, d / 2 - 0.02]) B.add(rbox(0.035, h, 0.035, 0.004, 0.5), ang, fr, xc + dx, 0, z + dz);
+  const ys: number[] = [];
+  for (let i = 0; i < levels; i++) {
+    const y = 0.12 + (i * (h - 0.25)) / (levels - 1);
+    B.add(rbox(len, 0.012, d, 0.003, 1), deck, fr, xc, y, z);
+    B.add(rbox(len, 0.035, 0.012, 0.003, 1), deck, fr, xc, y - 0.025, z - d / 2 + 0.006);
+    ys.push(y + 0.012);
+  }
+  B.add(tube([-len / 2 + 0.03, 0.15, 0], [len / 2 - 0.03, h - 0.1, 0], 0.006, 5), ang, fr, xc, 0, z + d / 2 - 0.02);
+  B.add(tube([len / 2 - 0.03, 0.15, 0], [-len / 2 + 0.03, h - 0.1, 0], 0.006, 5), ang, fr, xc, 0, z + d / 2 - 0.02);
+  return ys;
+}
+
 function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string>): ShopFix {
   const root = new THREE.Group(); root.name = 'shop:' + s.id;
   const B = new Batch();
@@ -345,9 +507,6 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
   const zFront = -1.2; // facade line (anchors are 1 m inside, the facade is at ±6)
   // floor tiles inside (in case the world interior is plain) — thin, slightly above the slab
   B.add(mbox(sw.w - 0.3, 0.012, 4.6, 1.5), pbr('tiles_floor_ceramic'), fr, sw.off, 0.0, zFront + 2.4);
-  // back wall photo panel + two side racks with photos (real shop interiors)
-  const back = photoPanel(hs.wall, Math.min(sw.w - 0.6, 6.5), 2.6, 0.18);
-  B.add(back.g, back.m, fr, sw.off, 0.1, zFront + 4.7, 0);
   const dress = SHOP_DRESS[s.id] ?? SHOP_DRESS.plastic_shop;
   const goods = new Map<string, { m: THREE.Matrix4[]; c: number[] }>();
   const put = (id: string, x: number, y: number, z: number, yaw: number, color?: number, rx = 0) => {
@@ -358,9 +517,6 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
   };
   for (const side of [-1, 1]) {
     const x = sw.off + side * (sw.w / 2 - 0.42);
-    // the real interior photo stays as the far wall behind the racks (depth), racks + goods are 3D
-    const p = photoPanel(hs.side, 2.6, 2.3, 0.05);
-    B.add(p.g, p.m, fr, x + side * 0.4, 0.2, zFront + 3.0, -side * Math.PI / 2);
     for (let k = 0; k < 3; k++) {
       const z = zFront + 1.85 + k * 0.98;
       const lv = steelRack(B, fr, x, z, 0.5, 0.94, 2.0, 4, side);
@@ -379,6 +535,8 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     const xx = sw.off + (i % 2 ? 1 : -1) * (0.5 + (i >> 1) * 0.55), zz = zFront + 4.1 - (i % 3) * 0.12;
     for (let st = 0; st < (f.stack ?? 1); st++) put(f.id, xx, st * (f.h ?? 0.1), zz, i * 0.7, f.colors ? f.colors[(i + st) % f.colors.length] : undefined);
   });
+  // ---- the room: plastered side walls, tiled back wall, painted ceiling, lights, back shelving + Thai shop details
+  shopRoom(game, B, root, fr, s.id, sw, zFront, dress, put);
   // stepped display tables left & right of the entrance aisle
   const slots: Slot[] = [];
   const cards = new Map<string, number>();
@@ -406,8 +564,10 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
   B.add(rbox(0.32, 0.09, 0.24, 0.012, 1), pbr('metal_painted_chipped', 0x2a5a9a, 0x2a5a9a), fr, cx + 0.3, 0.86, cz);
   B.add(rbox(0.33, 0.03, 0.25, 0.01, 1), pbr('metal_painted_chipped', 0x2a5a9a, 0x2a5a9a), fr, cx + 0.3, 0.95, cz);
   B.add(tube([-0.06, 0.985, 0], [0.06, 0.985, 0], 0.006, 6), pbr('aluminium_scratched'), fr, cx + 0.3, 0, cz);
-  B.add(rbox(0.13, 0.02, 0.16, 0.006, 1), flat(0x2c2c2e, 0.45), fr, cx - 0.25, 0.86, cz - 0.05, 0.3);
-  B.add(plane(0.11, 0.14).rotateX(-Math.PI / 2).translate(0, 0.0205, 0), photoMat('calculator'), fr, cx - 0.25, 0.86, cz - 0.05, 0.3);
+  B.add(rbox(0.13, 0.02, 0.16, 0.006, 1), flat(0x2c2c2e, 0.45), fr, cx - 0.02, 0.86, cz - 0.08, 0.3);
+  B.add(plane(0.11, 0.14).rotateX(-Math.PI / 2).translate(0, 0.0205, 0), photoMat('calculator'), fr, cx - 0.02, 0.86, cz - 0.08, 0.3);
+  // ---- a real cash register on the counter
+  const reg = libModel('CashRegister_01'); reg.scale.setScalar(0.62); reg.position.copy(fr.at(cx - 0.42, 0.86, cz + 0.06)); reg.rotation.y = fr.back; root.add(reg);
   // hanging goods at the facade (real product cut-outs)
   B.add(tube([-sw.w / 2 + 0.3, 2.6, 0], [sw.w / 2 - 0.3, 2.6, 0], 0.006, 6), pbr('aluminium_scratched'), fr, sw.off, 0, zFront + 0.18);
   dress.hang.forEach((hg, i) => {
@@ -416,8 +576,6 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
     B.add(tube([0, 2.6, 0], [0, 2.6 - (hg.drop ?? 0.1), 0], 0.004, 5), pbr('aluminium_scratched'), fr, x, 0, zFront + 0.18);
     put(hg.id, x, 2.6 - (hg.drop ?? 0.1) - (hg.h ?? 0.2), zFront + 0.18, hg.rx ? 0 : i * 0.9, hg.colors ? hg.colors[i % hg.colors.length] : undefined, hg.rx ?? 0);
   });
-  // a long fluorescent tube inside
-  B.add(new THREE.CylinderGeometry(0.018, 0.018, 1.2, 6).rotateZ(Math.PI / 2), glow(0xf3fbff, 1.8), fr, sw.off, 2.75, zFront + 2.2);
   B.flush(root);
   for (const [id, e] of goods) root.add(libInstanced(id, e.m, { colors: e.c, cull: 32 }));
   // keeper stool (real moulded Thai stool)
@@ -552,10 +710,13 @@ function gondola(B: Batch, fr: Frame, x: number, z0: number, len: number, photos
       const pw = shape === 'cup' ? 0.095 : shape === 'box' ? 0.12 : 0.13;
       const phh = shape === 'cup' ? 0.1 : shape === 'box' ? 0.18 : 0.21;
       const n = Math.floor((len - 0.12) / (pw + 0.008));
-      const band = 3 - li;                                            // photo rows top → bottom
-      const g = packRow({ u0: 0.02, u1: 0.98, v0: band / 4 + 0.015, v1: (band + 1) / 4 - 0.015, n, w: pw, h: phh, d: shape === 'cup' ? pw : 0.06, shape, x0: -(len - 0.12) / 2, y: 0, z: 0, seed: seed + li * 13 + side, deep: 1 });
+      // every pack its own (fictional) product: runs of 2–4 facings of the same item, like a real planogram
+      const base = seed * 5 + li * 11 + (side > 0 ? 37 : 0);
+      const g = packRow({ u0: 0, u1: 1, v0: 0, v1: 1, n, w: pw, h: phh, d: shape === 'cup' ? pw : 0.06, shape, x0: -(len - 0.12) / 2, y: 0, z: 0, seed: seed + li * 13 + side, deep: 1,
+        cellUV: (i) => packCell(shape, base + Math.floor(i / (2 + ((base + i) % 3)))) });
       g.rotateY(side * Math.PI / 2);
-      B.add(g, photoMat(ph, { rough: 0.55 }), fr, x + side * 0.05, y + (li === 0 ? 0.012 : 0.02), zc, 0);
+      B.add(g, packMaterial(), fr, x + side * 0.05, y + (li === 0 ? 0.012 : 0.02), zc, 0);
+      void ph;
     });
   }
 }
@@ -591,8 +752,9 @@ function drinksCooler(B: Batch, root: THREE.Object3D, fr: Frame, x: number, zc: 
     B.add(rbox(0.012, 0.26, len - 0.06, 0.004, 1), pbr('plastic_glossy', 0x1e8a4a, 0x1e8a4a), fr, x + 0.004, 1.82, zc); }
   B.add(rbox(0.012, 0.02, len - 0.12, 0.004, 1), glow(0xf3fff6, 1.6), fr, x + 0.09, 1.76, zc);     // interior LED strip
   // lit interior back + shelves with bottles
-  const fp = photoPanel('seven_fridge', len - 0.1, 1.62, 0.0);
-  B.add(fp.g, mat('fridgephoto', () => photoMat('seven_fridge', { emissive: 0.32 }).clone()), fr, x + 0.7, 0.16, zc, -Math.PI / 2);
+  // lit white interior (back + LED columns) — the bottles in front are real 3D
+  B.add(plane(len - 0.1, 1.62).translate(0, 0.16, 0), mat('cooler-back', () => new THREE.MeshStandardMaterial({ color: 0xf4f8fa, emissive: new THREE.Color(0xe8f4ff), emissiveIntensity: 0.55, roughness: 0.4 })), fr, x + 0.7, 0, zc, -Math.PI / 2);
+  for (let k = 0; k <= 4; k++) B.add(rbox(0.02, 1.6, 0.025, 0.004, 1), glow(0xeef8ff, 1.4), fr, x + 0.68, 0.17, zc - len / 2 + 0.06 + k * ((len - 0.12) / 4));
   const ids = ['bottle_beer_chang', 'bottle_beer_leo', 'bottle_beer_singha', 'bottle_fanta_red'];
   const mats: Record<string, THREE.Matrix4[]> = {};
   const shelfY = [0.17, 0.58, 0.99, 1.4];
@@ -645,25 +807,45 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
   B.add(rbox(0.045, 0.02, 0.004, 0.002, 1), glow(0xff2a1a, 2.4), ctr, -0.2, 1.135, 0.69);
   // salapao steamer: stainless cabinet, glass front with the real buns photo behind it, domed vent lid
   B.add(rbox(0.5, 0.42, 0.42, 0.02, 1), pbr('aluminium_scratched', 0xe0e0e0, 0xbcbcbc), ctr, 1.0, 1.005, 0.85);
-  B.add(plane(0.42, 0.32).translate(0, 0.05, 0), photoMat('salapao', { emissive: 0.25 }), ctr, 1.0, 1.005, 0.64 + 0.008, Math.PI);
+  // steamer inside: two lit trays of 3D salapao buns (soft white domes with a pinched top)
+  for (const [ti, ty] of [0.07, 0.24].entries()) {
+    B.add(rbox(0.44, 0.012, 0.36, 0.004, 1), pbr('aluminium_scratched', 0xe0e0e0, 0xbcbcbc), ctr, 1.0, 1.005 + ty, 0.85);
+    for (let i = 0; i < 6; i++) {
+      const bun = new THREE.SphereGeometry(0.045, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, 0.85, 1);
+      B.add(bun, mat('salapao-bun', () => new THREE.MeshStandardMaterial({ color: 0xf6f0e2, roughness: 0.75, emissive: new THREE.Color(0x3a3020), emissiveIntensity: 0.25 })), ctr, 0.87 + (i % 3) * 0.13, 1.017 + ty, 0.78 + Math.floor(i / 3) * 0.13 + ti * 0.02);
+    }
+  }
+  B.add(rbox(0.46, 0.008, 0.38, 0.003, 1), glow(0xfff2d8, 0.9), ctr, 1.0, 1.4, 0.85);
   B.add(plane(0.44, 0.34).translate(0, 0.04, 0), glass(), ctr, 1.0, 1.005, 0.635, Math.PI);
   B.add(lathe([[0.2, 0], [0.19, 0.03], [0.12, 0.07], [0.03, 0.08], [0, 0.08]], 16).scale(1.15, 1, 0.95), pbr('aluminium_scratched', 0xe0e0e0, 0xbcbcbc), ctr, 1.0, 1.425, 0.85);
   // impulse rack by the till: gum / sweets on a small wire stand
   B.add(rbox(0.32, 0.36, 0.2, 0.01, 1), pbr('metal_painted_chipped', 0x303032, 0x303032), ctr, 0.35, 1.005, 0.62);
   for (const [li, y] of [0.1, 0.22].entries()) {
-    const g = packRow({ u0: 0.05, u1: 0.95, v0: 0.05 + li * 0.25, v1: 0.27 + li * 0.25, n: 5, w: 0.05, h: 0.08, d: 0.025, shape: 'box', x0: -0.14, y: 0, z: 0, seed: 77 + li });
+    const g = packRow({ u0: 0, u1: 1, v0: 0, v1: 1, n: 5, w: 0.05, h: 0.08, d: 0.025, shape: 'box', x0: -0.14, y: 0, z: 0, seed: 77 + li, cellUV: (i) => packCell('box', 3 + li * 5 + i) });
     g.rotateY(Math.PI);
-    B.add(g, photoMat('seven_snacks2', { rough: 0.5 }), ctr, 0.35, 1.005 + y, 0.53, 0);
+    B.add(g, packMaterial(), ctr, 0.35, 1.005 + y, 0.53, 0);
   }
   // back shelf behind the clerk: a real bottle wall (cups/bottles cut from the real photo) on a laminate unit
   const back = pbr('plastic_rough', 0xece9e2, 0xece9e2);
   C.add(rbox(3.0, 2.0, 0.42, 0.02, 1), back, ctr, 0, 0, 2.55, Math.PI / 2 * 0);
+  const wall: Record<string, THREE.Matrix4[]> = {};
+  const WALL_IDS = ['bottle_light_soy', 'bottle_dark_soy', 'bottle_oyster_sauce', 'bottle_fish_sauce_tiparos', 'bottle_golden_mountain', 'bottle_fish_sauce_squid', 'bottle_beer_leo', 'bottle_beer_singha'];
   for (const [li, y] of [0.5, 0.95, 1.4].entries()) {
     B.add(rbox(2.9, 0.025, 0.36, 0.006, 1), back, ctr, 0, y, 2.38);
-    const g = packRow({ u0: 0.02, u1: 0.98, v0: li === 0 ? 0.05 : li === 1 ? 0.33 : 0.66, v1: li === 0 ? 0.32 : li === 1 ? 0.62 : 0.95, n: 24, w: 0.09, h: 0.2, d: 0.09, shape: 'cup', x0: -1.4, y: 0, z: 0, seed: 31 + li });
-    g.rotateY(Math.PI);
-    B.add(g, photoMat('seven_bottles', { rough: 0.3 }), ctr, 0, y + 0.025, 2.3, 0);
+    if (li === 2) {
+      // top shelf: cup noodles (package atlas) in runs
+      const g = packRow({ u0: 0, u1: 1, v0: 0, v1: 1, n: 26, w: 0.095, h: 0.1, d: 0.095, shape: 'cup', x0: -1.4, y: 0, z: 0, seed: 31 + li, cellUV: (i) => packCell('cup', Math.floor(i / 3)) });
+      g.rotateY(Math.PI);
+      B.add(g, packMaterial(), ctr, 0, y + 0.025, 2.3, 0);
+      continue;
+    }
+    // sauces & beer: real bottles, 2 deep, grouped by kind
+    for (let i = 0; i < 30; i++) for (const dz of [2.3, 2.42]) {
+      const id = WALL_IDS[(Math.floor(i / 4) + li * 3) % WALL_IDS.length];
+      (wall[id] ??= []).push(new THREE.Matrix4().makeRotationY(ctr.yaw + Math.PI + Math.sin(i * 1.7) * 0.25).setPosition(ctr.at(-1.38 + i * 0.094, y + 0.025, dz)));
+    }
   }
+  for (const [id, m] of Object.entries(wall)) root.add(libInstanced(id, m, { shadow: false, cull: 30 }));
   // ---- gondolas: 2 double-sided runs between the door and the counter (door frame: x = right, z = forward)
   const slots: Slot[] = [];
   const cards = new Map<string, number>();
@@ -752,10 +934,11 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
   // pallet racks: perforated blue uprights (2 frames per bay with bracing), orange step beams, wooden
   // pallets (slats + blocks) loaded with real cardboard cartons (library model, instanced)
   const rackRows = [7, 10.5, 14];
+  const allRows = [7, 10.5, 14, 17.5];   // the 4th row (back) is stock-only decoration
   const rackLen = 10;
   const blue = pbr('metal_painted_chipped', 0x1f4fa8, 0x1f4fa8), orange = pbr('metal_painted_chipped', 0xe8681e, 0xe8681e), wood = pbr('wood_planks_old');
   const cartons: THREE.Matrix4[] = [];
-  for (const rz of rackRows) {
+  for (const rz of allRows) {
     for (let i = 0; i <= 4; i++) {
       const ux = -1 + i * (rackLen / 4);
       for (const dz of [-0.5, 0.5]) B.add(rbox(0.09, 3.6, 0.07, 0.008, 0.5), blue, door, ux, 0, rz + dz);
@@ -770,7 +953,7 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
         for (const dz of [-0.42, 0, 0.42]) B.add(rbox(1.2, 0.022, 0.1, 0.004, 1), wood, door, px, y, rz + dz);
         for (const dx of [-0.55, 0, 0.55]) for (const dz of [-0.42, 0, 0.42]) B.add(rbox(0.1, 0.078, 0.1, 0.006, 1), wood, door, px + dx, y + 0.022, rz + dz);
         for (let k = 0; k < 5; k++) B.add(rbox(0.1, 0.022, 1.0, 0.004, 1), wood, door, px - 0.5 + k * 0.25, y + 0.1, rz);
-        if (y === 0) continue;   // ground level: the buyable bulk stock stands here
+        if (y === 0 && rz !== 17.5) continue;   // ground level: the buyable bulk stock stands here (front rows)
         // 2×2×2 cartons per pallet
         for (let cx2 = 0; cx2 < 2; cx2++) for (let cz2 = 0; cz2 < 2; cz2++) for (let cy2 = 0; cy2 < 2; cy2++) {
           if ((i + cx2 + cz2 * 2 + cy2 + rz) % 7 === 0) continue;
@@ -780,10 +963,17 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
       }
     }
   }
-  root.add(libInstanced('cardboard_box_01', cartons, { shadow: true }));
-  // far wall photo: a real Makro aisle (depth illusion)
-  const aisle = photoPanel('makro_aisle', 14, 6, 0.3);
-  B.add(aisle.g, aisle.m, door, 4, 0, 19);
+  root.add(libInstanced('cardboard_box_01', cartons, { shadow: true, cull: 45 }));
+  // back wall (painted corrugated sheet on a block plinth) with the store's painted slogan + high-bay lamps
+  B.add(mbox(26, 1.0, 0.2, 1.2), pbr('cement_block_wall', 0xd8d4cc, 0xd8d4cc), door, 3, 0, 19.6);
+  B.add(mbox(26, 3.8, 0.08, 2), pbr('corrugated_painted', 0xdfe6ea, 0xdfe6ea), door, 3, 1.0, 19.62);
+  { const sign = new THREE.Mesh(plane(9, 1.2), canvasMat(signTex('mk-wall', [{ text: 'แม็กโคร่ง · ขายส่ง ถูกทั้งโกดัง', size: 92, color: '#c8141a' }], 'card_board', 1600, 220), { rough: 0.7 }));
+    sign.position.copy(door.at(3, 3.6, 19.5)); sign.rotation.y = door.yaw + Math.PI; root.add(sign); }
+  for (const lz of [5, 10, 15]) for (const lx of [-0.5, 4, 8.5]) {
+    const lamp = libModel('hanging_industrial_lamp'); lamp.position.copy(door.at(lx, 3.0, lz)); root.add(lamp);
+    const lp = (game.world as any)?.addLightPoint?.(door.at(lx, 2.9, lz), 0xf2f6ff, 12, 11, 0);
+    if (lp) { lp.day = 0.9; lp.kind = 'store'; }
+  }
   B.flush(root);
   // stock: on the pallets (lowest level) of the 3 rows, both faces
   const slots: Slot[] = [];
@@ -804,7 +994,7 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
   bakeCards(root, atlas, cards);
   const colliders: any[] = [];
   for (let lane = 0; lane < 3; lane++) colliders.push(game.physics.addBox(ctr.arr(lane * 3.2, 0.45, 0.75), [2.6, 0.9, 0.8], ctr.yaw));
-  for (const rz of rackRows) for (let i = 0; i <= 4; i++) colliders.push(game.physics.addBox(door.arr(-1 + i * (rackLen / 4), 1.8, rz), [0.1, 3.6, 1.1], door.yaw));
+  for (const rz of allRows) for (let i = 0; i <= 4; i++) colliders.push(game.physics.addBox(door.arr(-1 + i * (rackLen / 4), 1.8, rz), [0.1, 3.6, 1.1], door.yaw));
   const c1 = door.at(-10, 0, -0.5), c2 = door.at(16, 0, 22);
   const { shut, sign } = makeShutter(game, root, door, 0, 5.2, 3.2, -0.2, (game.g.day ?? 1) < s.day ? (s.lockedNote?.th ?? 'ปิด') : (s.closedNote?.th ?? 'ปิด'));
   return {

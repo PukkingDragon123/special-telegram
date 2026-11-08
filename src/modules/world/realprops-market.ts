@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { DetailCull, splitByGrid } from '../../core/detailcull';
 import { ClothSpots, type V3 } from '../cloth/api';
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.js';
 import { Assets } from '../../core/assets';
 import { F } from '../../core/fonts';
 import { RNG } from '../../core/rng';
@@ -289,9 +290,124 @@ const PILES: Record<string, { id: string; s: [number, number, number]; tint?: [n
   heap_lime: { id: 'lime', s: [1, 1, 1], per: 600 },
   heap_lychee: { id: 'lychee', s: [1, 1, 1], per: 700 },
   heap_tomato: { id: 'lime', s: [1.1, 0.95, 1.1], tint: [2.4, 0.5, 0.3], per: 450 },
+  heap_marigold: { id: 'lime', s: [0.95, 0.75, 0.95], tint: [2.6, 1.25, 0.12], per: 560 },
+  heap_dried_chili: { id: 'lime', s: [0.24, 0.24, 1.0], tint: [1.25, 0.16, 0.1], per: 1700 },
+  heap_mango: { id: 'lime', s: [1.6, 1.25, 2.1], tint: [2.3, 1.7, 0.35], per: 160 },
+  heap_eggplant: { id: 'lime', s: [0.75, 0.75, 1.9], tint: [0.55, 0.3, 0.75], per: 320 },
+  heap_cabbage: { id: 'onion', s: [2.4, 2.0, 2.4], tint: [0.85, 1.25, 0.65], per: 50 },
 };
 /** produce kind (market goods) → pile key */
-export const KIND_PILE: Record<string, string> = { chili: 'heap_chili', lime: 'heap_lime', veg: 'heap_beans', fruit: 'heap_lychee', herbs: 'heap_basil', garlic: 'heap_garlic', egg: 'heap_eggs', meat: 'pork_table', banana: 'bananas', onion: 'heap_onion', tomato: 'heap_tomato' };
+export const KIND_PILE: Record<string, string> = { chili: 'heap_chili', lime: 'heap_lime', veg: 'heap_beans', fruit: 'heap_lychee', herbs: 'heap_basil', garlic: 'heap_garlic', egg: 'heap_eggs', meat: 'pork_table', banana: 'bananas', onion: 'heap_onion', tomato: 'heap_tomato', flowers: 'heap_marigold', dried: 'heap_dried_chili', mango: 'heap_mango', eggplant: 'heap_eggplant', cabbage: 'heap_cabbage' };
+
+// ------------------------------------------------------------------ seafood on ice (instanced, decor stalls)
+let fishGeo: THREE.BufferGeometry | null = null, shrimpGeo: THREE.BufferGeometry | null = null;
+/** a whole fish (pla too / tilapia-ish): spindle body flattened sideways, forked tail, dark back → silver belly */
+function fishGeometry() {
+  if (fishGeo) return fishGeo;
+  const L = 0.26, R = 0.038;
+  const pts: THREE.Vector2[] = [];
+  for (let i = 0; i <= 10; i++) { const t = i / 10; pts.push(new THREE.Vector2(Math.max(0.0005, R * Math.sin(Math.PI * Math.pow(t, 0.8)) * (1 - 0.25 * t)), t * L - L / 2)); }
+  const body = new THREE.LatheGeometry(pts, 10).rotateZ(-Math.PI / 2).scale(1, 1, 0.45);   // long axis = x, flat in z
+  const tail = new THREE.BufferGeometry();
+  tail.setAttribute('position', new THREE.Float32BufferAttribute([L / 2 - 0.01, 0, 0, L / 2 + 0.06, 0.04, 0, L / 2 + 0.045, 0, 0, L / 2 - 0.01, 0, 0, L / 2 + 0.045, 0, 0, L / 2 + 0.06, -0.04, 0], 3));
+  tail.computeVertexNormals();
+  const parts = [body.toNonIndexed(), tail];
+  for (const g of parts) { g.deleteAttribute('uv'); g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(g.getAttribute('position').count * 2), 2)); }
+  const g = mergeGeometries(parts, false)!;
+  // vertex colour: dark olive back (+y) → silver belly
+  const p = g.getAttribute('position') as THREE.BufferAttribute;
+  const col = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) { const k = THREE.MathUtils.clamp(p.getY(i) / R * 0.5 + 0.5, 0, 1); col[i * 3] = 0.78 - 0.5 * k; col[i * 3 + 1] = 0.8 - 0.46 * k; col[i * 3 + 2] = 0.8 - 0.5 * k; }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  g.rotateX(Math.PI / 2);   // lying on its side on the ice
+  g.translate(0, 0.012, 0);
+  return (fishGeo = g);
+}
+/** a prawn: curled tube, orange-grey */
+function shrimpGeometry() {
+  if (shrimpGeo) return shrimpGeo;
+  const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(-0.04, 0, 0), new THREE.Vector3(-0.015, 0.012, 0.012), new THREE.Vector3(0.015, 0.012, 0.012), new THREE.Vector3(0.035, 0.002, -0.01), new THREE.Vector3(0.03, -0.004, -0.03)]);
+  const g = new THREE.TubeGeometry(curve, 8, 0.009, 6, false);
+  const p = g.getAttribute('position') as THREE.BufferAttribute;
+  for (let i = 0; i < p.count; i++) { const t = (p.getX(i) + 0.04) / 0.08; p.setY(i, p.getY(i) * (1.2 - t * 0.5)); }
+  g.computeVertexNormals();
+  g.translate(0, 0.012, 0);
+  return (shrimpGeo = g);
+}
+
+/** fish & prawns laid out on crushed-ice trays across the decorative market stalls (one batch, instanced). */
+export class SeafoodBatch {
+  private fish: THREE.Matrix4[] = [];
+  private shrimp: THREE.Matrix4[] = [];
+  private ice: THREE.BufferGeometry[] = [];
+  private trays: THREE.BufferGeometry[] = [];
+  /** a styrofoam tray (w × d) with crushed ice, centred at p, facing yaw; kind = fish | shrimp | squid */
+  add(kind: 'fish' | 'shrimp', p: THREE.Vector3, yaw: number, w: number, d: number, seed: number) {
+    const r = (k: number) => { const v = Math.sin(seed * 71.3 + k * 12.9898) * 43758.5453; return v - Math.floor(v); };
+    const q = new THREE.Quaternion().setFromAxisAngle(_UP, yaw);
+    // tray (white styrofoam, rounded) + ice bed (lumpy, glossy)
+    const tray = new RoundedBoxGeometry(w, 0.07, d, 2, 0.012).translate(0, 0.035, 0);
+    tray.applyQuaternion(q).translate(p.x, p.y, p.z);
+    this.trays.push(tray.toNonIndexed());
+    const ice = new THREE.PlaneGeometry(w - 0.05, d - 0.05, 10, 8).rotateX(-Math.PI / 2);
+    const ip = ice.getAttribute('position') as THREE.BufferAttribute;
+    for (let i = 0; i < ip.count; i++) { const x = ip.getX(i), z = ip.getZ(i); ip.setY(i, 0.055 + 0.018 * Math.abs(Math.sin(x * 61 + seed) * Math.cos(z * 53 + seed * 2)) + 0.012 * (1 - Math.abs(x) / w) ); }
+    ice.computeVertexNormals();
+    ice.applyQuaternion(q).translate(p.x, p.y, p.z);
+    this.ice.push(ice.toNonIndexed());
+    // the catch
+    const n = kind === 'fish' ? Math.max(3, Math.round(w / 0.1)) : Math.max(8, Math.round((w * d) / 0.006));
+    for (let k = 0; k < n; k++) {
+      const lx = (r(k) - 0.5) * (w - 0.14), lz = (r(k + 40) - 0.5) * (d - 0.1);
+      const off = new THREE.Vector3(lx, 0.06 + (kind === 'shrimp' ? r(k + 9) * 0.02 : 0), lz).applyQuaternion(q);
+      const rq = new THREE.Quaternion().setFromAxisAngle(_UP, yaw + (kind === 'fish' ? (r(k + 3) - 0.5) * 0.5 + (k % 2) * Math.PI : r(k + 3) * 6.28));
+      const sc = kind === 'fish' ? 0.85 + r(k + 7) * 0.35 : 0.8 + r(k + 7) * 0.4;
+      (kind === 'fish' ? this.fish : this.shrimp).push(new THREE.Matrix4().compose(p.clone().add(off), rq, new THREE.Vector3(sc, sc, sc)));
+    }
+  }
+  flush(parent: THREE.Object3D) {
+    if (this.trays.length) {
+      const m = new THREE.Mesh(mergeGeometries(this.trays, false)!, new THREE.MeshStandardMaterial({ color: 0xf4f4f0, roughness: 0.85 }));
+      m.castShadow = false; m.receiveShadow = true; m.name = 'seafood:trays';
+      parent.add(m);
+      const ice = new THREE.Mesh(mergeGeometries(this.ice, false)!, new THREE.MeshStandardMaterial({ color: 0xe8f4fa, roughness: 0.12, metalness: 0.05, emissive: new THREE.Color(0x203038), emissiveIntensity: 0.3 }));
+      ice.receiveShadow = true; ice.name = 'seafood:ice';
+      parent.add(ice);
+    }
+    const inst = (geo: THREE.BufferGeometry, mats: THREE.Matrix4[], mat: THREE.Material, name: string) => {
+      if (!mats.length) return;
+      const im = new THREE.InstancedMesh(geo, mat, mats.length);
+      mats.forEach((M, i) => im.setMatrixAt(i, M));
+      im.castShadow = false; im.receiveShadow = true; im.name = name;
+      for (const part of splitByGrid(im, 10)) { parent.add(part); DetailCull.add(part, 30); }
+    };
+    inst(fishGeometry(), this.fish, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.28, metalness: 0.55 }), 'seafood:fish');
+    inst(shrimpGeometry(), this.shrimp, new THREE.MeshStandardMaterial({ color: 0xd9825a, roughness: 0.4, metalness: 0.05 }), 'seafood:shrimp');
+    this.fish = []; this.shrimp = []; this.ice = []; this.trays = [];
+  }
+}
+
+/** pile pieces are tiny and there are thousands: a decimated copy (≈30 % of the vertices, uvs kept), made once */
+const pileGeoCache = new Map<string, THREE.BufferGeometry>();
+function pileGeo(g: THREE.BufferGeometry): THREE.BufferGeometry {
+  let out = pileGeoCache.get(g.uuid);
+  if (out) return out;
+  out = g;
+  try {
+    const n = g.getAttribute('position').count;
+    const tris = (g.index ? g.index.count : n) / 3;
+    if (tris > 160) {
+      const src = g.clone();
+      for (const k of Object.keys(src.attributes)) if (!['position', 'normal', 'uv'].includes(k)) src.deleteAttribute(k);
+      const merged = mergeVertices(src).getAttribute('position').count;   // the modifier works on welded vertices
+      const s = new SimplifyModifier().modify(src, Math.floor(merged * 0.68));
+      const t2 = (s.index ? s.index.count : s.getAttribute('position').count) / 3;
+      if (t2 >= 24 && t2 < tris) { s.computeVertexNormals(); s.computeBoundingSphere(); out = s; }
+    }
+  } catch { out = g; }
+  pileGeoCache.set(g.uuid, out);
+  return out;
+}
 
 export class PileBatch {
   private inst = new Map<string, { id: string; tint?: [number, number, number]; m: THREE.Matrix4[] }>();
@@ -347,7 +463,7 @@ export class PileBatch {
         for (const part of mdl.parts) {
           let mat = part.mat;
           if (e.tint) { const c = (part.mat as THREE.MeshStandardMaterial).clone(); c.color.multiply(new THREE.Color(e.tint[0], e.tint[1], e.tint[2])); mat = c; }
-          const im = new THREE.InstancedMesh(part.geom, mat, mats.length);
+          const im = new THREE.InstancedMesh(pileGeo(part.geom), mat, mats.length);
           mats.forEach((M, i) => im.setMatrixAt(i, M));
           // fruit/veg in piles: no shadow casting, split per 10 m cell, hidden beyond ~38 m
           im.castShadow = false; im.receiveShadow = true;

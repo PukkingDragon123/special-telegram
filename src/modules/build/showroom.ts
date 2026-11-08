@@ -214,10 +214,15 @@ function priceStand(name: string, price: number, low: boolean) {
 export class DisplayColliders {
   private cols: { c: any; i: number }[] = [];
   private t = 0;
+  /** static display copies of every piece, shown while the shop is NOT stocked (locked day / after hours), so the
+   *  showroom never shows price stands on an empty floor */
+  private statics: { obj: THREE.Object3D; i: number }[] = [];
+  private staticRoot: THREE.Group | null = null;
   constructor(private game: Game) {}
   init(slots: Showroom['slots']) {
     this.clear();
     const g = this.game;
+    this.buildStatics(slots);
     if (!g.physics) return;
     slots.forEach((s, i) => {
       const f = footprintOf(s.stock);
@@ -227,15 +232,44 @@ export class DisplayColliders {
       this.cols.push({ c, i });
     });
   }
+  private buildStatics(slots: Showroom['slots']) {
+    const g = this.game;
+    if (!g.scene) return;
+    const root = (this.staticRoot = new THREE.Group());
+    root.name = 'build:showroom-static';
+    slots.forEach((s, i) => {
+      const def = g.items.def(s.stock);
+      if (!def) return;
+      try {
+        const fake: any = { id: -1000 - i, t: 'item', k: s.stock, p: [...s.p], data: def.data?.() ?? {} };
+        const o = def.build(fake, g);
+        def.refresh?.(o, fake, g);
+        o.position.set(s.p[0], s.p[1], s.p[2]); o.rotation.y = s.yaw;
+        o.traverse((m: any) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+        o.visible = false;
+        root.add(o);
+        this.statics.push({ obj: o, i });
+      } catch (e) { console.warn('[showroom] static display', s.stock, e); }
+    });
+    g.scene.add(root);
+  }
   update(dt: number) {
     this.t -= dt;
-    if (this.t > 0 || !this.cols.length) return;
+    if (this.t > 0 || (!this.cols.length && !this.statics.length)) return;
     this.t = 0.4;
     const filled = new Set<number>();
     for (const e of this.game.state.all('item')) if (e.disp && e.shop === STORE.id && e.holder == null && e.ss != null) filled.add(e.ss);
-    for (const { c, i } of this.cols) { const on = filled.has(i); if (c.isEnabled() !== on) c.setEnabled(on); }
+    const shop = this.game.state.find('shop', (e) => e.sid === STORE.id);
+    const stocked = !!shop?.open;
+    const shown = new Set<number>();
+    for (const { obj, i } of this.statics) { const on = !stocked && !filled.has(i); if (obj.visible !== on) obj.visible = on; if (on) shown.add(i); }
+    for (const { c, i } of this.cols) { const on = filled.has(i) || shown.has(i); if (c.isEnabled() !== on) c.setEnabled(on); }
   }
-  clear() { for (const { c } of this.cols) { try { c.setEnabled(false); } catch {} } this.cols = []; }
+  clear() {
+    for (const { c } of this.cols) { try { c.setEnabled(false); } catch {} }
+    this.cols = [];
+    this.staticRoot?.removeFromParent(); this.staticRoot = null; this.statics = [];
+  }
 }
 
 /** HOST: move the shop's keeper entity to the new counter spot */

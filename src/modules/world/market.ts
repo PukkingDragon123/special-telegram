@@ -7,7 +7,7 @@ import { flat, groundDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
 import { EMIS } from './mats';
 import { MARKET } from './layout';
-import { WindCloth, dressMarketStalls, PileBatch, KIND_PILE } from './realprops-market';
+import { WindCloth, dressMarketStalls, PileBatch, KIND_PILE, SeafoodBatch } from './realprops-market';
 
 /**
  * FRESH MARKET (ตลาดสด) — steel-post shed with corrugated gable roofs + fibreglass skylights,
@@ -35,15 +35,18 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
   const free = (r: R4) => !reserved.some((q) => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]);
 
   // ---------------------------------------------------------------- floor + drains + puddles
-  w.mat('concrete_wet', { autoDirt: false, ao: 0.9 });
+  // floor: hosed-down concrete (clean, light) — the wet look comes from a few sheen patches by the drains, not from
+  // a texture full of black blotches
+  w.mat('concrete_old', { autoDirt: false, ao: 1 });
   flat(w, M.x0, M.z0, M.x1, M.z1, y0, 8);
   c.phys.box([(M.x0 + M.x1) / 2, y0 / 2, (M.z0 + M.z1) / 2], [M.x1 - M.x0, y0, M.z1 - M.z0]);
   w.mat('grate', { uv: 'face', autoDirt: false, group: 'detail' });
   for (const z of [-46.2, -63.7]) for (let x = 8; x < 48; x += 1) w.quad(x, y0 + 0.004, z + 0.15, x + 1, y0 + 0.004, z + 0.15, x + 1, y0 + 0.004, z - 0.15, x, y0 + 0.004, z - 0.15, [0, 0, 1, 0.3]);
   const D = c.decals;
-  if (D) for (let i = 0; i < 40; i++) {
+  if (D) for (let i = 0; i < 16; i++) {
     const k = rng.int(0, 3);
-    groundDecal(w, D.cell('decal_puddles', k % 2, k >> 1, 2, 2), rng.range(8, 48), y0 + 0.006, rng.range(-78, -42), rng.range(0.8, 2.4), rng.range(0.6, 1.6), rng.range(0, 6), { wet: 1, alpha: rng.range(0.6, 0.95) });
+    const z = rng.pick([-46.2, -63.7]) + rng.range(-0.9, 0.9);
+    groundDecal(w, D.cell('decal_puddles', k % 2, k >> 1, 2, 2), rng.range(8, 48), y0 + 0.006, z, rng.range(0.7, 1.6), rng.range(0.4, 0.9), rng.range(0, 6), { wet: 1, alpha: rng.range(0.35, 0.55) });
   }
 
   // ---------------------------------------------------------------- structure: posts, trusses, roofs
@@ -88,8 +91,9 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     // south slope (faces +z)
     w.quad(M.x0 - 0.6, eave, za + 0.6, M.x1 + 0.6, eave, za + 0.6, M.x1 + 0.6, ridge, zm, M.x0 - 0.6, ridge, zm);
     w.quad(M.x1 + 0.6, eave, zb - 0.6, M.x0 - 0.6, eave, zb - 0.6, M.x0 - 0.6, ridge, zm, M.x1 + 0.6, ridge, zm);
-    // undersides (dark)
-    w.mat('roof_galv', { tint: 0x8a8884, ao: 0.55, uv: 'world' });
+    // undersides: galvanised sheet lit by the bounce off the floor and the skylights (a little self-light so the
+    // roof never reads as a black void from below)
+    w.mat('roof_galv', { tint: 0xc4c2bc, ao: 0.9, uv: 'world', emis: EMIS.store.i, emisK: 0.09 });
     w.quad(M.x1 + 0.6, eave - 0.02, za + 0.6, M.x0 - 0.6, eave - 0.02, za + 0.6, M.x0 - 0.6, ridge - 0.02, zm, M.x1 + 0.6, ridge - 0.02, zm);
     w.quad(M.x0 - 0.6, eave - 0.02, zb - 0.6, M.x1 + 0.6, eave - 0.02, zb - 0.6, M.x1 + 0.6, ridge - 0.02, zm, M.x0 - 0.6, ridge - 0.02, zm);
     // fibreglass skylight strips (lighter), a raised ridge vent
@@ -99,6 +103,12 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     for (let x = M.x0 + 2; x < M.x1 - 2; x += 7.2) {
       w.quad(x, ys(t0) + 0.01, zs(t0, za + 0.6), x + 3, ys(t0) + 0.01, zs(t0, za + 0.6), x + 3, ys(t1) + 0.01, zs(t1, za + 0.6), x, ys(t1) + 0.01, zs(t1, za + 0.6));
       w.quad(x + 3, ys(t0) + 0.01, zs(t0, zb - 0.6), x, ys(t0) + 0.01, zs(t0, zb - 0.6), x, ys(t1) + 0.01, zs(t1, zb - 0.6), x + 3, ys(t1) + 0.01, zs(t1, zb - 0.6));
+    }
+    // the same skylights seen from BELOW: translucent fibreglass glowing with daylight
+    w.mat('roof_fibre', { tint: 0xfff6dc, uv: 'world', emis: EMIS.store.i, emisK: 0.75 });
+    for (let x = M.x0 + 2; x < M.x1 - 2; x += 7.2) {
+      w.quad(x + 3, ys(t0) - 0.035, zs(t0, za + 0.6), x, ys(t0) - 0.035, zs(t0, za + 0.6), x, ys(t1) - 0.035, zs(t1, za + 0.6), x + 3, ys(t1) - 0.035, zs(t1, za + 0.6));
+      w.quad(x, ys(t0) - 0.035, zs(t0, zb - 0.6), x + 3, ys(t0) - 0.035, zs(t0, zb - 0.6), x + 3, ys(t1) - 0.035, zs(t1, zb - 0.6), x, ys(t1) - 0.035, zs(t1, zb - 0.6));
     }
     w.mat('roof_galv', { uv: 'world' });
     w.box(M.x0 - 0.6, ridge - 0.05, zm - 0.5, M.x1 + 0.6, ridge + 0.45, zm + 0.5, PY | PZ | NZ);
@@ -146,7 +156,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     addIsland(x, -73.2, x + 4, -67.4);            // back-to-back block
     if (x > 25) addIsland(x, -56.6, x + 4, -53.4); // centre east of the egg stall
   }
-  const goods = ['chili', 'lime', 'veg', 'fruit', 'fish', 'herbs', 'dried', 'flowers', 'banana', 'garlic', 'shrimp', 'egg', 'meat', 'rice'];
+  const goods = ['chili', 'lime', 'veg', 'fruit', 'fish', 'herbs', 'dried', 'flowers', 'banana', 'garlic', 'shrimp', 'egg', 'meat', 'rice', 'tomato', 'onion', 'mango', 'eggplant', 'cabbage'];
   const cloth = new WindCloth();
   for (const isl of islands) stall(c, isl.r, y0, rng, goods, cloth);
 
@@ -158,7 +168,8 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     w.tube([x - 0.4, eave - 1.3, z, x - 0.4, eave - 0.05, z], 0.005, 3);
   }
   w.setGroup('base');
-  for (let x = 12; x < 48; x += 12) for (const z of [-46, -63.5]) c.lights.add({ p: new THREE.Vector3(x, eave - 1.5, z), color: new THREE.Color(0xe8f6ff), intensity: 16, range: 12, glow: 0.7, kind: 'tube', day: 0.3 });
+  // the market runs its tubes all day (it is dim under the roof): pool lights over every aisle, on by day
+  for (let x = 10; x < 48; x += 9) for (const z of [-46.2, -55, -63.7, -74.5]) c.lights.add({ p: new THREE.Vector3(x, eave - 1.5, z), color: new THREE.Color(0xeef6ff), intensity: 14, range: 11, glow: 0.6, kind: 'tube', day: 0.9 });
 
   // crates / styrofoam boxes / baskets stacked along the walls
   w.setGroup('detail');
@@ -205,12 +216,15 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
       w.box(a - 0.02, top, b - 0.02, cc + 0.02, top + 0.006, d + 0.02, PY);
     }
     c.phys.box([(a + cc) / 2, top / 2, (b + d) / 2], [cc - a, top, d - b]);
-    // goods: trays/baskets with real produce photos (or tinted fill)
+    // goods: the whole top is covered — 2–3 rows of baskets / trays / ice trays, two kinds per table in runs
     w.setGroup('detail');
-    const kind = rng.pick(goods);
-    for (let x = a + 0.35; x < cc - 0.3; x += rng.range(0.55, 0.8)) {
-      const z = (b + d) / 2 + rng.range(-0.15, 0.15);
-      produce(c, kind, x, top, z, rng);
+    const k1 = rng.pick(goods), k2 = rng.pick(goods);
+    const depth = d - b;
+    const rows = depth > 1.5 ? 3 : depth > 0.95 ? 2 : 1;
+    for (let rI = 0; rI < rows; rI++) {
+      const z = b + depth * ((rI + 0.5) / rows) + rng.range(-0.04, 0.04);
+      let i = 0;
+      for (let x = a + 0.3; x < cc - 0.25; x += rng.range(0.44, 0.56), i++) produce(c, (Math.floor(i / 2) + rI) % 2 ? k2 : k1, x, top, z, rng);
     }
     // crates under the table
     for (let x = a + 0.4; x < cc - 0.3; x += 0.7) if (rng.chance(0.6)) c.props.real.add('lib:plastic_crate_02', x, y0, (b + d) / 2, rng.range(-0.2, 0.2), { color: rng.pick(PLASTIC_COLORS) });
@@ -248,13 +262,23 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
 /** a tray / basket / heap of goods with a real produce photo on top when available */
 /** real produce piles of the decor stalls (flushed once by the market builder) */
 let marketPiles: PileBatch | null = null;
+let marketSea: SeafoodBatch | null = null;
 export function flushMarketPiles(c: ShopCtx) {
+  if (marketSea) { const g = new THREE.Group(); g.name = 'decor-seafood'; marketSea.flush(g); c.props.real.addObject(g); marketSea = null; }
   if (!marketPiles) return;
   const g = new THREE.Group(); g.name = 'decor-piles';
   marketPiles.flush(g); c.props.real.addObject(g); marketPiles = null;
 }
 export function produce(c: ShopCtx, kind: string, x: number, y: number, z: number, rng: RNG) {
   const w = c.w;
+  // seafood: styrofoam trays of crushed ice with real 3D fish / prawns (instanced for the whole market)
+  if (kind === 'fish' || kind === 'shrimp') {
+    marketSea ??= new SeafoodBatch();
+    marketSea.add(kind, new THREE.Vector3(x, y, z), rng.range(-0.15, 0.15), 0.42, 0.32, Math.floor(x * 37 + z * 11));
+    return;
+  }
+  // rice / dried goods: open sacks and a bamboo tray heaped with dried chillies
+  if (kind === 'rice') { c.props.real.add('lib:rice_sack', x, y, z, rng.range(-0.4, 0.4), { phys: 'none' }); return; }
   const ph = c.signs?.any('produce:' + kind, rng) ?? c.signs?.any('produce', rng) ?? null;
   // container: real library models — wicker basket, Thai plastic market basket, or a กระด้ง bamboo tray
   const container = rng.pick(['basket', 'tray', 'bowl']);

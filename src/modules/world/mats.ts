@@ -888,18 +888,25 @@ uniform float uWet; varying vec4 vExt; varying vec3 vDWPos;
 uniform sampler2D uRefl; uniform mat4 uReflMat; uniform float uReflOn;`)
       .replace('#include <color_fragment>', `diffuseColor.rgb *= vColor.rgb; diffuseColor.a *= vColor.a;
 float dWet = clamp(vExt.x, 0.0, 1.0);
-diffuseColor.rgb *= mix(1.0, 0.55, dWet);`)
-      .replace('#include <roughnessmap_fragment>', `float roughnessFactor = mix(vExt.y > 0.0 ? vExt.y : roughness, 0.04, dWet);`)
+// wet decals (puddles): the atlas texel is only the SHAPE (black blob) — never draw it as black paint. A puddle is
+// a thin film over the ground: a slightly darker, glossy wet-concrete tone, half see-through, that picks up the
+// sky / env reflection; with planar reflections on, the mirror image takes over below.
+diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.30, 0.295, 0.28) * vColor.rgb, dWet);
+diffuseColor.a *= mix(1.0, 0.62, dWet);`)
+      .replace('#include <roughnessmap_fragment>', `float roughnessFactor = mix(vExt.y > 0.0 ? vExt.y : roughness, uReflOn > 0.5 ? 0.04 : 0.14, dWet);`)
       .replace('#include <lights_fragment_maps>', `#include <lights_fragment_maps>
 #if defined( RE_IndirectSpecular )
 if (uReflOn > 0.5 && dWet > 0.01) {
   vec4 rp = uReflMat * vec4(vDWPos, 1.0);
   vec2 ruv = rp.xy / rp.w + inverseTransformDirection(normal, viewMatrix).xz * 0.02;
   radiance = mix(radiance, textureLod(uRefl, ruv, 0.5).rgb, dWet);
+} else if (dWet > 0.01) {
+  // no planar mirror (low / medium): keep a soft sky sheen so the film never goes black under a roof
+  radiance = max(radiance, irradiance * 0.45 * dWet);
 }
 #endif`);
   };
-  m.customProgramCacheKey = () => 'world-decal-v2';
+  m.customProgramCacheKey = () => 'world-decal-v3';
   return m;
 }
 
