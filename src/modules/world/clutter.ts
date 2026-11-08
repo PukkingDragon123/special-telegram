@@ -55,6 +55,20 @@ const _q = new THREE.Quaternion(), _up = new THREE.Vector3(0, 1, 0);
 export function buildClutter(game: Game, real: RealProps, anchors: Record<string, AnchorPt>): Stats {
   const rng = new RNG(SEED);
   const stats: Stats = { placed: 0, tries: 0, kinds: {} };
+  // scooter paint variants (ModelDef.hueVar: instance colour = hue shift, saturation ×, value × of the red Wave panels)
+  const PAINTS: [number, number, number, number][] = [
+    [0, 1, 1, 3],          // stock red
+    [0.6, 1.05, 0.85, 3],  // blue
+    [0, 0.0, 0.22, 3],     // black
+    [0, 0.05, 1.6, 2],     // white
+    [0, 0.0, 0.75, 2],     // silver / grey
+    [0.36, 0.8, 0.55, 1],  // dark green
+    [0.97, 1, 0.55, 1],    // maroon
+    [0.08, 1, 1.15, 1],    // orange
+    [0.75, 0.6, 0.6, 1],   // purple
+  ];
+  const paintW = PAINTS.reduce((a, p) => a + p[3], 0);
+  const bikePaint = () => { let r = rng.range(0, paintW); for (const p of PAINTS) { r -= p[3]; if (r <= 0) return new THREE.Color(p[0], p[1], p[2]); } return new THREE.Color(0, 1, 1); };
   // RealProps ids first (same batch as the props agent's copies of a model), else the library id
   const pid = (id: string) => (MODELS[id] ? id : MODELS['lib:' + id] ? 'lib:' + id : null);
   const sizeOf = (id: string): [number, number, number] => libEntry(id)?.size_m ?? OTHER_SIZE[id] ?? [0.4, 0.4, 0.4];
@@ -65,7 +79,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   // forward (+Z, origin on the ground, ~1.8 m); the caller's colliders and phys 'none' stay. Opt out with ?noscooterswap.
   if (MODELS['lib:scooter_wave'] && !new URLSearchParams(location.search).has('noscooterswap')) {
     let i = 0;
-    for (const p of real.placements) if (p.id === 'scooter') { p.id = 'lib:scooter_wave'; i++; p.color = null; stats.kinds['scooter → library'] = i; }
+    for (const p of real.placements) if (p.id === 'scooter') { p.id = 'lib:scooter_wave'; i++; p.color = bikePaint(); stats.kinds['scooter → library'] = i; }
   }
 
   // ---------------------------------------------------------------- occupancy: everything placed before me
@@ -87,8 +101,13 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
     else if (/_spot$|bus_stop|moto_taxi|temple_gate|canal_bridge/.test(n)) r = 2.6;
     keep.push([a.p[0], a.p[2], r]);
   }
+  // the whole frontage of every gameplay shop on the soi stays clear (customers walk in there), not just a
+  // circle around its anchor: band |z - az| < 4.6 on that side of the soi
+  const fronts: [number, number][] = [];
+  for (const [n, a] of Object.entries(anchors)) if (/(_shop|_store|^restaurant_unit|^furniture_backdoor)$/.test(n) || /_shop$|_store$/.test(n)) fronts.push([a.p[0], a.p[2]]);
   const cz = (CROAD.sw0 + CROAD.sw1) / 2;
   const blocked = (x: number, z: number, r: number) => {
+    for (const [fx, fz] of fronts) if (Math.abs(fx) > 5 && Math.abs(fx) < 9 && Math.sign(fx) === Math.sign(x) && Math.abs(x) > 2.4 && Math.abs(x) < Math.abs(fx) + 1 && Math.abs(z - fz) < 4.6 + r) return true;
     if (x < MAP_BOUNDS.minX + 3 || x > MAP_BOUNDS.maxX - 3 || z < MAP_BOUNDS.minZ + 3 || z > MAP_BOUNDS.maxZ - 3) return true;
     if (x > MARKET.x0 - 0.3 - r && x < MARKET.x1 + 0.3 + r && z > MARKET.z0 - 0.3 - r && z < MARKET.z1 + 0.3 + r) return true;
     for (const [kx, kz, kr] of keep) if (Math.hypot(x - kx, z - kz) < kr + r) return true;
@@ -283,7 +302,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       // main road: nose to the shop, tail toward the kerb (6 m sidewalk only)
       if (f.depth < 2) return;
       const [x, z] = f.at(A(t), 1.12);
-      putLong(rng.pick(BIKES), x, z, f.out + Math.PI + rng.range(-0.18, 0.18));
+      putLong(rng.pick(BIKES), x, z, f.out + Math.PI + rng.range(-0.18, 0.18), { color: bikePaint() });
     };
 
     switch (ground) {
@@ -300,7 +319,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
         if (rng.chance(0.4)) leanSign(rng.pick(['signbox_coffee', 'signbox_chicken_rice', 'signbox_barber']), rng.range(0.3, 0.7));
         if (rng.chance(0.45)) trash(side, rng.int(1, 3));
         if (rng.chance(0.35)) plants(rng.int(1, 2));
-        if (rng.chance(0.55)) { scooterIn(0.35); scooterIn(0.65); }
+        if (rng.chance(0.4)) scooterIn(rng.chance(0.5) ? 0.35 : 0.65);
         break;
       }
       case 'eatery': {
@@ -328,27 +347,27 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   // Thailand drives on the left: bikes on the west edge face north, on the east edge face south. Soi traffic lanes are
   // at x ±1.75 (1.4 m wide), so a scooter centred at |x| 3.05 (0.73 m wide) stays clear of them.
   for (const sx of [-1, 1]) {
-    let z = -9 - rng.range(0, 4);
+    let z = -9 - rng.range(0, 8);
     while (z > -147) {
-      const n = rng.int(2, 6);
+      const n = rng.int(1, 3);
       for (let k = 0; k < n && z > -147; k++) {
-        putLong(rng.pick(BIKES), sx * 3.05 + rng.range(-0.06, 0.06), z, (sx < 0 ? Math.PI : 0) + sx * rng.range(0.04, 0.16), { y: 0 });
-        z -= 2.0 + rng.range(0, 0.35);
+        putLong(rng.pick(BIKES), sx * 3.05 + rng.range(-0.1, 0.1), z, (sx < 0 ? Math.PI : 0) + sx * rng.range(0.02, 0.22), { y: 0, color: bikePaint() });
+        z -= 2.1 + rng.range(0, 0.8);
       }
-      z -= rng.range(6, 16);
+      z -= rng.range(12, 28);
     }
   }
   // ---------------------------------------------------------------- main road north sidewalk: perpendicular rows at the kerb
   for (let x = -124; x < 124;) {
-    const n = rng.int(2, 6);
-    for (let k = 0; k < n; k++, x += 0.86 + rng.range(0, 0.12)) {
+    const n = rng.int(1, 4);
+    for (let k = 0; k < n; k++, x += 0.92 + rng.range(0, 0.35)) {
       if (Math.abs(x) < 8 || POLES_MAIN_N.some(([px]) => Math.abs(px - x) < 0.7)) continue;
-      putLong(rng.pick(BIKES), x, 4.95, Math.PI + rng.range(-0.15, 0.15));
+      putLong(rng.pick(BIKES), x, 4.95, Math.PI + rng.range(-0.22, 0.22), { color: bikePaint() });
     }
-    x += rng.range(9, 22);
+    x += rng.range(14, 34);
   }
   // main road south sidewalk (4 m, nav at z 24): a few parallel at the kerb
-  for (let x = -122; x < 124; x += rng.range(9, 22)) if (!POLES_MAIN_S.some(([px]) => Math.abs(px - x) < 1.5)) putLong(rng.pick(BIKES), x, 22.5, (rng.chance(0.5) ? 1 : -1) * Math.PI / 2 + rng.range(-0.08, 0.08));
+  for (let x = -122; x < 124; x += rng.range(14, 30)) if (!POLES_MAIN_S.some(([px]) => Math.abs(px - x) < 1.5)) putLong(rng.pick(BIKES), x, 22.5, (rng.chance(0.5) ? 1 : -1) * Math.PI / 2 + rng.range(-0.08, 0.08), { color: bikePaint() });
 
   // ---------------------------------------------------------------- tuk-tuks: waiting at the soi mouth, the office plaza, the temple
   putLong('tuktuk', -20, 5.15, -Math.PI / 2 + 0.05);

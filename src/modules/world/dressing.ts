@@ -46,12 +46,19 @@ export function buildStreetLife(c: Ctx) {
   // Rows sit against the shop fronts at 25° to the kerb (x-extent ≈ 1 m: |x| 5.0…6.0) so the walking lane next to the
   // pole line (|x| 4.15…5.0, nav + crowd walkers) stays clear — the old 70° rows reached x 4.6 and pedestrians walked
   // straight through them.
+  // Real sois: a few bikes in small clusters with gaps, never in front of an open shop / door (the old rows put a
+  // bike every metre along the whole street — dozens of identical scooters — and 7 across the furniture store).
+  const SHOP_FRONTS = ['plastic_shop', 'gas_shop', 'kitchen_shop', 'convenience_store', 'furniture_store', 'restaurant_unit', 'furniture_backdoor']
+    .map((n) => A[n]).filter(Boolean).map((a) => [a!.p[0], a!.p[2]] as [number, number]);
+  const frontOk = (x: number, z: number) => !SHOP_FRONTS.some(([fx, fz]) => Math.sign(fx) === Math.sign(x) && Math.abs(z - fz) < 4.8);
   const bikeRow = (x: number, z0: number, z1: number, _yaw: number, gap = 1.0) => {
     const sx = Math.sign(x), bx = sx * 5.5;
-    for (let z = z0; z > z1; z -= gap + rng.range(0, 0.3)) {
-      if (!okT(bx, z) || rng.chance(0.2)) { z -= rng.range(0.5, 3); continue; }
-      const yaw = -sx * 0.44 + rng.range(-0.08, 0.08);
-      w.put(P.motorbike(rng.pick(BIKE_COLS)), bx + rng.range(-0.05, 0.05), SW_H, z, yaw, 1, { rz: 0.08 });
+    let run = 0;
+    for (let z = z0; z > z1; z -= gap + rng.range(0.25, 0.9)) {
+      if (!okT(bx, z) || !frontOk(bx, z) || rng.chance(0.35) || run >= rng.int(2, 3)) { run = 0; z -= rng.range(2.5, 7); continue; }
+      run++;
+      const yaw = -sx * (0.36 + rng.range(-0.1, 0.14));
+      w.put(P.motorbike(rng.pick(BIKE_COLS)), bx + rng.range(-0.12, 0.12), SW_H, z, yaw, 1, { rz: 0.08 });
       c.phys.box([bx, 0.6, z], [0.4, 1.0, 1.4], yaw);
     }
   };
@@ -66,8 +73,8 @@ export function buildStreetLife(c: Ctx) {
     if (Math.abs(x) < 8) continue;
     const z = rng.chance(0.5) ? 1.0 : 25.0;
     if (!okT(x, z)) continue;
-    const n = rng.int(1, 4);
-    for (let k = 0; k < n; k++) { const xx = x + k * 0.85; w.put(P.motorbike(rng.pick(BIKE_COLS)), xx, SW_H, z, (z < 10 ? 0 : Math.PI) + rng.range(-0.25, 0.25), 1, { rz: 0.08 }); c.phys.box([xx, 0.6, z], [0.4, 1.0, 1.4]); }
+    const n = rng.int(1, 2);
+    for (let k = 0; k < n; k++) { const xx = x + k * (0.95 + rng.range(0, 0.4)); w.put(P.motorbike(rng.pick(BIKE_COLS)), xx, SW_H, z, (z < 10 ? 0 : Math.PI) + rng.range(-0.25, 0.25), 1, { rz: 0.08 }); c.phys.box([xx, 0.6, z], [0.4, 1.0, 1.4]); }
   }
   // licence plates (real-photo cut-outs, img/signs/plate_*) — local z offset lz: + front / − back
   const plate = (x: number, y: number, z: number, yaw: number, lz: number, cat: string, pw = 0.34, ph = 0.15) => {
@@ -87,8 +94,7 @@ export function buildStreetLife(c: Ctx) {
   // a parked pickup in the soi (half on the curb) + one on the canal road
   pickupAt(0xd8d8d4, 2.4, -109.3, Math.PI + 0.02);   // clear of the crossing at z −113.5
   c.phys.box([2.4, 0.9, -109.3], [1.9, 1.8, 5]);
-  pickupAt(0x2a4a7a, -2.4, -128, 0.03);
-  c.phys.box([-2.4, 0.9, -128], [1.9, 1.8, 5]);
+  // (the second soi pickup at x −2.4, z −128 stood in the traffic lane — removed)
   pickupAt(0xa02020, 40, (CROAD.z0 + CROAD.z1) / 2 - 1, Math.PI / 2);
 
   // ---------------------------------------------------------------- trash bags at poles, bins, crates

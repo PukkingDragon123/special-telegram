@@ -209,6 +209,7 @@ export class Atmosphere {
   sunScale = 1;
   fillScale = 1;
   exposure = 1;
+  private onRestore: (() => void) | null = null;
   cover = 0.45;
 
   constructor(private game: Game) {
@@ -256,6 +257,10 @@ export class Atmosphere {
     });
     this.envScene.add(new THREE.Mesh(new THREE.SphereGeometry(10, 48, 24), this.envMat));
     this.pmrem = new THREE.PMREMGenerator(game.engine.renderer);
+    // context loss wipes every render target, including the baked environment (PMREM): without a rebake the IBL
+    // stays black after a restore and every shaded surface / window reflection goes dark for the rest of the session
+    this.onRestore = () => { this.envKey = ''; this.envTimer = 0; };
+    game.engine.renderer.domElement.addEventListener('webglcontextrestored', this.onRestore, false);
     (window as any).__atmo = this;
   }
 
@@ -449,6 +454,7 @@ export class Atmosphere {
     this.game.engine.post.exposure = 1;
     this.envRT?.dispose();
     this.pmrem.dispose();
+    if (this.onRestore) this.game.engine.renderer.domElement.removeEventListener('webglcontextrestored', this.onRestore, false);
     this.skyMat.dispose();
     this.envMat.dispose();
   }
