@@ -569,12 +569,13 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
   // ---- a real cash register on the counter
   const reg = libModel('CashRegister_01'); reg.scale.setScalar(0.62); reg.position.copy(fr.at(cx - 0.42, 0.86, cz + 0.06)); reg.rotation.y = fr.back; root.add(reg);
   // hanging goods at the facade (real product cut-outs)
-  B.add(tube([-sw.w / 2 + 0.3, 2.6, 0], [sw.w / 2 - 0.3, 2.6, 0], 0.006, 6), pbr('aluminium_scratched'), fr, sw.off, 0, zFront + 0.18);
+  // (the rail sits 0.4 m inside the shutter line so hanging goods never poke through a closed shutter)
+  B.add(tube([-sw.w / 2 + 0.3, 2.6, 0], [sw.w / 2 - 0.3, 2.6, 0], 0.006, 6), pbr('aluminium_scratched'), fr, sw.off, 0, zFront + 0.4);
   dress.hang.forEach((hg, i) => {
     const n = dress.hang.length;
     const x = sw.off + (i - (n - 1) / 2) * Math.min(0.75, (sw.w - 0.8) / n);
-    B.add(tube([0, 2.6, 0], [0, 2.6 - (hg.drop ?? 0.1), 0], 0.004, 5), pbr('aluminium_scratched'), fr, x, 0, zFront + 0.18);
-    put(hg.id, x, 2.6 - (hg.drop ?? 0.1) - (hg.h ?? 0.2), zFront + 0.18, hg.rx ? 0 : i * 0.9, hg.colors ? hg.colors[i % hg.colors.length] : undefined, hg.rx ?? 0);
+    B.add(tube([0, 2.6, 0], [0, 2.6 - (hg.drop ?? 0.1), 0], 0.004, 5), pbr('aluminium_scratched'), fr, x, 0, zFront + 0.4);
+    put(hg.id, x, 2.6 - (hg.drop ?? 0.1) - (hg.h ?? 0.2), zFront + 0.4, hg.rx ? 0 : i * 0.9, hg.colors ? hg.colors[i % hg.colors.length] : undefined, hg.rx ?? 0);
   });
   B.flush(root);
   for (const [id, e] of goods) root.add(libInstanced(id, e.m, { colors: e.c, cull: 32 }));
