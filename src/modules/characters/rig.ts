@@ -5,7 +5,7 @@ import { buildBody, bodySpec, shapeKey, BodySpec, Lod, headScale, HEAD_TOP } fro
 import { buildHairAndHead, hairThickAt } from './hair';
 import { Pose, PoseBuilder, blendPose, getQ, ARM_L, ARM_R, sm } from './pose';
 import { ANIMS, AnimCtx, AnimDef, FIDGETS, Posture } from './anims';
-import { paintAtlas, repaintFace, lookKey, accessoryPalette } from './atlas';
+import { paintAtlasJob, repaintFace, lookKey, accessoryPalette } from './atlas';
 import { faceEntry } from './defs';
 
 /* ============================================================================================
@@ -20,8 +20,10 @@ export const RigWorld = {
   frame: 0,
   shadowDist: 24,
   lodDist: 26,
-  /** ms of atlas painting allowed per frame */
-  budgetMs: 9,
+  /** ms of atlas painting allowed per frame (paints are time-sliced into garment-layer steps) */
+  budgetMs: 2.5,
+  /** atlas painting stats (perf HUD / profiling): paints done, total ms, worst single step, last frame ms */
+  atlasStats: { paints: 0, ms: 0, maxStep: 0, frameMs: 0, upgrades: 0, stages: {} as Record<string, { n: number; ms: number; max: number }> },
   rigs: new Set<any>(),
   /** idle characters near the camera sometimes glance at it (turn off for cutscenes that frame their own looks) */
   ambientCam: true,
@@ -53,10 +55,22 @@ function releaseGeo(key: string) {
   if (--e.refs <= 0) { e.geo.dispose(); geoCache.delete(key); }
 }
 
-interface AtlasEntry { tex: THREE.CanvasTexture; cv: HTMLCanvasElement; refs: number; painted: boolean; look: Look; variant: FaceVariant; size: number; at?: THREE.Object3D; mtex?: THREE.CanvasTexture }
+interface AtlasEntry {
+  tex: THREE.CanvasTexture; cv: HTMLCanvasElement; refs: number; painted: boolean; look: Look; variant: FaceVariant;
+  /** requested resolution */ size: number;
+  /** resolution currently painted (progressive: far characters get a 256² atlas first) */ cur: number;
+  at?: THREE.Object3D; mtex?: THREE.CanvasTexture;
+  /** paint in progress (time-sliced) */ job?: Generator<string, HTMLCanvasElement, void>; jobSize?: number;
+  /** high priority (player / close-up rigs) */ prio?: boolean;
+  queued?: boolean;
+  /** a face photo arrived while a paint job was running → repaint the face on the finished canvas */
+  faceDirty?: boolean;
+}
 const atlasCache = new Map<string, AtlasEntry>();
 const queue: AtlasEntry[] = [];
 const PLACEHOLDER = (() => { const c = document.createElement('canvas'); c.width = c.height = 4; return c; })();
+/** atlases for characters beyond this distance start at LOW_RES and are upgraded when someone gets close */
+const FAR_PAINT = 13, LOW_RES = 256, UPGRADE_DIST = 11;
 
 function atlasKey(look: Look, size: number, v: FaceVariant) { return lookKey(look) + '|' + size + '|' + v; }
 
@@ -72,9 +86,10 @@ function acquireAtlas(look: Look, size: number, v: FaceVariant, sync = false, at
     tex.flipY = false;
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = 4;
-    e = { tex, cv: ph, refs: 0, painted: false, look: JSON.parse(JSON.stringify(look)), variant: v, size };
+    e = { tex, cv: ph, refs: 0, painted: false, look: JSON.parse(JSON.stringify(look)), variant: v, size, cur: 0, prio: sync };
     atlasCache.set(key, e);
-    if (sync) paintEntry(e); else queue.push(e);
+    if (sync) { runJobSync(e, size); }
+    else { e.queued = true; queue.push(e); }
   }
   if (at && !e.at) e.at = at;
   e.refs++;
@@ -86,55 +101,113 @@ function releaseAtlas(key: string) {
   if (--e.refs <= 0) {
     e.tex.dispose();
     e.mtex?.dispose();
+    e.job = undefined;
     atlasCache.delete(key);
     const qi = queue.indexOf(e);
     if (qi >= 0) queue.splice(qi, 1);
+    if (active === e) active = null;
   }
 }
 
-function paintEntry(e: AtlasEntry) {
-  if (e.painted) return;
-  const onFace = () => { if (!atlasCache.has(atlasKey(e.look, e.size, e.variant))) return; repaintFace(e.cv, e.look, e.variant); e.tex.needsUpdate = true; };
-  // variants reuse the neutral atlas when it is already painted
+/** Start painting `e` at resolution `res`: a cheap copy+face repaint when the neutral atlas of the same look
+ *  already exists, otherwise a resumable paint job (atlas.ts paintAtlasJob). Returns true when already done. */
+function beginPaint(e: AtlasEntry, res: number): boolean {
+  const onFace = () => {
+    if (!atlasCache.has(atlasKey(e.look, e.size, e.variant))) return;
+    if (e.job) { e.faceDirty = true; return; }
+    repaintFace(e.cv, e.look, e.variant); e.tex.needsUpdate = true;
+  };
+  // variants reuse the neutral atlas when it is already painted (at whatever resolution it has now)
   const base = e.variant !== 'neutral' ? atlasCache.get(atlasKey(e.look, e.size, 'neutral')) : null;
-  let cv: HTMLCanvasElement;
-  if (base?.painted) {
-    cv = document.createElement('canvas');
-    cv.width = cv.height = e.size;
+  if (base?.painted && base.cur >= Math.min(res, base.size)) {
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = base.cv.width;
     cv.getContext('2d', { willReadFrequently: true })!.drawImage(base.cv, 0, 0);
     repaintFace(cv, e.look, e.variant, onFace);
-  } else cv = paintAtlas(e.look, e.size, e.variant, onFace);
+    (cv as any).__skinMask = (base.cv as any).__skinMask;
+    finishPaint(e, cv, base.cur);
+    return true;
+  }
+  e.job = paintAtlasJob(e.look, res, e.variant, onFace);
+  e.jobSize = res;
+  return false;
+}
+
+function finishPaint(e: AtlasEntry, cv: HTMLCanvasElement, res: number) {
   e.cv = cv;
+  e.job = undefined;
+  if (e.faceDirty) { e.faceDirty = false; repaintFace(cv, e.look, e.variant); }
   // skin mask (photo-real skin shading in rigglb.ts)
-  const mk: HTMLCanvasElement | undefined = (cv as any).__skinMask ?? (base?.cv as any)?.__skinMask;
+  const mk: HTMLCanvasElement | undefined = (cv as any).__skinMask;
   if (mk) {
-    (cv as any).__skinMask = mk;
     if (!e.mtex) { e.mtex = new THREE.CanvasTexture(mk); e.mtex.flipY = false; e.mtex.colorSpace = THREE.NoColorSpace; }
     else { e.mtex.image = mk; e.mtex.needsUpdate = true; }
   }
-  // the GPU texture was allocated at the placeholder size (immutable storage) → re-create it
+  // the GPU texture was allocated at the previous size (immutable storage) → re-create it
   e.tex.dispose();
   e.tex.image = cv;
   e.tex.needsUpdate = true;
   e.painted = true;
+  e.cur = res;
+  RigWorld.atlasStats.paints++;
 }
 
-/** Paint queued atlases within the per-frame budget (call every frame). */
+function runJobSync(e: AtlasEntry, res: number) {
+  try {
+    if (beginPaint(e, res)) return;
+    for (;;) { const r = e.job!.next(); if (r.done) { finishPaint(e, r.value, res); return; } }
+  } catch (err) { console.error('[characters] atlas paint failed', err); e.painted = true; e.job = undefined; }
+}
+
+let active: AtlasEntry | null = null;
+let upgradeScan = 0;
 const _qp = new THREE.Vector3();
+function distOf(e: AtlasEntry) { return e.at ? e.at.getWorldPosition(_qp).distanceTo(RigWorld.cam) : 1e3; }
+
+/** Paint queued atlases, time-sliced: at most RigWorld.budgetMs per frame (at least one step), nearest
+ *  character first, far characters at 256² first and upgraded to full resolution when approached. */
 export function processAtlasQueue() {
-  if (!queue.length) return;
-  const t0 = performance.now();
-  while (queue.length && performance.now() - t0 < RigWorld.budgetMs) {
-    // nearest character first
-    let bi = 0, bd = Infinity;
-    for (let i = 0; i < queue.length; i++) {
-      const o = queue[i].at;
-      const d = o ? o.getWorldPosition(_qp).distanceToSquared(RigWorld.cam) : 1e6 + i;
-      if (d < bd) { bd = d; bi = i; }
-    }
-    const e = queue.splice(bi, 1)[0];
-    try { paintEntry(e); } catch (err) { console.error('[characters] atlas paint failed', err); e.painted = true; }
+  const st = RigWorld.atlasStats;
+  // every ~half second: queue full-res upgrades for low-res atlases whose owner came close
+  if (++upgradeScan >= 30) {
+    upgradeScan = 0;
+    for (const e of atlasCache.values()) if (e.painted && !e.queued && e.cur < e.size && distOf(e) < UPGRADE_DIST) { e.queued = true; queue.push(e); st.upgrades++; }
   }
+  if (!queue.length && !active) { st.frameMs = 0; return; }
+  const t0 = performance.now();
+  let steps = 0;
+  // player / close-up atlases get a bigger slice so they never sit as blank mannequins for long
+  const budget = (active?.prio || queue.some((q) => q.prio)) ? Math.max(RigWorld.budgetMs, 10) : RigWorld.budgetMs;
+  while (steps === 0 || performance.now() - t0 < budget) {
+    if (!active) {
+      if (!queue.length) break;
+      // priority first, then the nearest character
+      let bi = 0, bd = Infinity;
+      for (let i = 0; i < queue.length; i++) {
+        const d = (queue[i].prio ? -1e6 : 0) + (queue[i].at ? distOf(queue[i]) : 1e3 + i);
+        if (d < bd) { bd = d; bi = i; }
+      }
+      const e = queue.splice(bi, 1)[0];
+      e.queued = false;
+      const res = !e.painted && !e.prio && e.size > LOW_RES && distOf(e) > FAR_PAINT ? LOW_RES : e.size;
+      try { if (beginPaint(e, res)) { steps++; continue; } } catch (err) { console.error('[characters] atlas paint failed', err); e.painted = true; steps++; continue; }
+      active = e;
+    }
+    const s0 = performance.now();
+    try {
+      const r = active.job!.next();
+      const dt = performance.now() - s0;
+      const nm = (r.done ? 'mask' : r.value) + '@' + (active.jobSize ?? active.size);
+      const rec = st.stages[nm] ?? (st.stages[nm] = { n: 0, ms: 0, max: 0 });
+      rec.n++; rec.ms += dt; if (dt > rec.max) rec.max = dt;
+      if (r.done) { finishPaint(active, r.value, active.jobSize ?? active.size); active = null; }
+    } catch (err) { console.error('[characters] atlas paint failed', err); active.painted = true; active.job = undefined; active = null; }
+    const dt = performance.now() - s0;
+    if (dt > st.maxStep) st.maxStep = dt;
+    steps++;
+  }
+  st.frameMs = performance.now() - t0;
+  st.ms += st.frameMs;
 }
 export function atlasQueueLength() { return queue.length; }
 void PLACEHOLDER;

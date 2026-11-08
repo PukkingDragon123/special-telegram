@@ -253,54 +253,76 @@ function paper(ctx: CanvasRenderingContext2D, w: number, h: number, base = '#efe
 }
 
 /** stripes along a lathe: alternating white / black slices of a radius profile, axis = local y */
-function stripedLathe(prof: number[], len: number, segs = 12, first = 0) {
-  const g = new THREE.Group();
-  const white = plain('#f1ede3', 0.38), black = plain('#1d1b19', 0.4);
-  const step = len / (prof.length - 1);
-  for (let k = 0; k < prof.length - 1; k++) {
-    const pts = [new THREE.Vector2(Math.max(1e-4, prof[k]), 0), new THREE.Vector2(Math.max(1e-4, prof[k + 1]), step)];
-    if (k === 0) pts.unshift(new THREE.Vector2(1e-4, 0));
-    if (k === prof.length - 2) pts.push(new THREE.Vector2(1e-4, step));
-    const m = new THREE.Mesh(new THREE.LatheGeometry(pts, segs), (k + first) % 2 ? black : white);
-    m.position.y = k * step;
-    m.castShadow = true;
-    g.add(m);
+/** glossy painted-plaster zebra skin: wavy, irregular black bands across v (around a lathe they ring the limb) */
+let zebraMat: THREE.MeshPhysicalMaterial | null = null;
+function zebraSkin() {
+  if (zebraMat) return zebraMat;
+  const c = document.createElement('canvas'); c.width = 256; c.height = 512;
+  const x = c.getContext('2d')!;
+  x.fillStyle = '#f3efe4'; x.fillRect(0, 0, 256, 512);
+  x.fillStyle = '#1b1917';
+  let seed = 3; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let y = 12; y < 512; y += 50 + rnd() * 14) {
+    const th = 20 + rnd() * 9, ph = rnd() * 6, amp = 5 + rnd() * 7;
+    x.beginPath();
+    for (let u = 0; u <= 256; u += 8) x.lineTo(u, y + Math.sin(u / 40 + ph) * amp);
+    for (let u = 256; u >= 0; u -= 8) x.lineTo(u, y + th * (0.6 + 0.4 * Math.sin(u / 25 + ph * 2)) + Math.sin(u / 40 + ph) * amp);
+    x.closePath(); x.fill();
   }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  zebraMat = new THREE.MeshPhysicalMaterial({ map: t, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25 });
+  return zebraMat;
+}
+
+/** smooth lathe (Catmull-Rom profile) with v running along the axis, stripes repeating every ~stripe metres */
+function smoothLathe(prof: number[], len: number, segs = 20, vRepeat = 1) {
+  const pts = prof.map((r, i) => new THREE.Vector3(Math.max(1e-4, r), (i / (prof.length - 1)) * len, 0));
+  const curve = new THREE.CatmullRomCurve3(pts);
+  const sm = curve.getPoints(Math.max(8, prof.length * 4)).map((p) => new THREE.Vector2(Math.max(1e-4, p.x), p.y));
+  sm.unshift(new THREE.Vector2(1e-4, 0)); sm.push(new THREE.Vector2(1e-4, len));
+  const g = new THREE.LatheGeometry(sm, segs);
+  const uv = g.getAttribute('uv') as THREE.BufferAttribute, pos = g.getAttribute('position');
+  for (let i = 0; i < uv.count; i++) uv.setY(i, (pos.getY(i) / len) * vRepeat);
   return g;
 }
 
-/** a painted plaster ม้าลาย (zebra) offering figurine, ~h metres tall, facing +z, origin at the hooves */
+/** a painted plaster ม้าลาย (zebra) offering figurine, ~h metres tall, facing +z, origin at the base */
 export function zebraFigurine(h = 0.26): THREE.Group {
-  const s = h / 0.62;
+  const s = h / 0.66;
   const z = new THREE.Group();
-  const body = stripedLathe([0.03, 0.072, 0.09, 0.095, 0.093, 0.08, 0.036], 0.36, 14);
-  body.rotation.x = Math.PI / 2; body.position.set(0, 0.36, -0.18);
-  z.add(body);
-  for (const lz of [-0.13, 0.13]) for (const lx of [-0.045, 0.045]) {
-    const leg = stripedLathe([0.019, 0.017, 0.02, 0.021, 0.024, 0.03], 0.3, 8, 1);
-    leg.position.set(lx, 0, lz);
-    z.add(leg);
+  const skin = zebraSkin(), black = plain('#1b1917', 0.35), white = plain('#f3efe4', 0.35);
+  const add = (g: THREE.BufferGeometry, m: THREE.Material, p: [number, number, number], r: [number, number, number] = [0, 0, 0]) => {
+    const me = new THREE.Mesh(g, m); me.position.set(...p); me.rotation.set(...r); z.add(me); return me;
+  };
+  // painted base plinth (green, gold edge) — the figurines stand on one at every spirit house
+  add(new RoundedBoxGeometry(0.17, 0.035, 0.42, 3, 0.01).translate(0, 0.0175, 0), plain('#2f6a3a', 0.45), [0, 0, 0]);
+  add(new RoundedBoxGeometry(0.176, 0.008, 0.426, 2, 0.003).translate(0, 0.016, 0), plain('#c9a043', 0.35, 0.6), [0, 0, 0]);
+  const B = 0.04;
+  // barrel body (lying along z), neck, head
+  add(smoothLathe([0.03, 0.07, 0.088, 0.094, 0.092, 0.082, 0.045], 0.36, 24, 1.1), skin, [0, B + 0.34, -0.18], [Math.PI / 2, 0, 0]);
+  add(smoothLathe([0.05, 0.046, 0.041, 0.037], 0.2, 18, 0.9), skin, [0, B + 0.39, 0.13], [0.5, 0, 0]);
+  add(smoothLathe([0.042, 0.04, 0.034, 0.027, 0.022], 0.15, 18, 0.7), skin, [0, B + 0.54, 0.19], [Math.PI / 2 + 0.45, 0, 0]);
+  // muzzle (black), eyes, ears
+  add(new THREE.SphereGeometry(0.024, 12, 8).scale(1, 0.9, 1.1), black, [0, B + 0.485, 0.315]);
+  for (const sx of [-1, 1]) {
+    add(new THREE.SphereGeometry(0.008, 8, 6), black, [sx * 0.03, B + 0.575, 0.225]);
+    const ear = add(new THREE.ConeGeometry(0.013, 0.055, 8), white, [sx * 0.022, B + 0.63, 0.19], [-0.3, 0, sx * 0.25]);
+    ear.add(new THREE.Mesh(new THREE.ConeGeometry(0.007, 0.03, 6).translate(0, 0.006, 0.004), black));
   }
-  const neck = stripedLathe([0.046, 0.043, 0.04, 0.036], 0.18, 10);
-  neck.position.set(0, 0.4, 0.15); neck.rotation.x = 0.42;
-  z.add(neck);
-  const head = stripedLathe([0.04, 0.036, 0.032, 0.026], 0.12, 10);
-  head.position.set(0, 0.56, 0.2); head.rotation.x = Math.PI / 2 + 0.35;
-  z.add(head);
-  const mane = new THREE.Mesh(new RoundedBoxGeometry(0.016, 0.2, 0.05, 2, 0.006), plain('#1d1b19', 0.5));
-  mane.position.set(0, 0.52, 0.15); mane.rotation.x = 0.42;
-  z.add(mane);
-  for (const ex of [-0.02, 0.02]) {
-    const ear = new THREE.Mesh(new THREE.ConeGeometry(0.012, 0.05, 6), plain('#f1ede3', 0.4));
-    ear.position.set(ex, 0.62, 0.2);
-    z.add(ear);
+  // legs (tapered, stripes ring them) + black hooves
+  for (const lz of [-0.13, 0.12]) for (const lx of [-0.045, 0.045]) {
+    add(smoothLathe([0.022, 0.018, 0.019, 0.022, 0.026, 0.032], 0.3, 14, 0.8), skin, [lx, B + 0.02, lz]);
+    add(new THREE.CylinderGeometry(0.02, 0.023, 0.025, 12).translate(0, 0.0125, 0), black, [lx, B, lz]);
   }
-  const tail = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0.4, -0.18), new THREE.Vector3(0, 0.33, -0.23), new THREE.Vector3(0, 0.22, -0.24)]), 8, 0.007, 5), plain('#1d1b19', 0.5));
-  z.add(tail);
-  // a red ribbon (offering bow) round the neck
-  const bow = new THREE.Mesh(new THREE.TorusGeometry(0.047, 0.008, 6, 18), plain('#c8102e', 0.55));
-  bow.position.set(0, 0.47, 0.17); bow.rotation.x = Math.PI / 2 - 0.42;
-  z.add(bow);
+  // upright mane (black brush with white tips) along the neck, tail with a black tuft
+  const mane = new THREE.Mesh(new RoundedBoxGeometry(0.014, 0.21, 0.045, 2, 0.006), black);
+  mane.position.set(0, B + 0.5, 0.135); mane.rotation.x = 0.5; z.add(mane);
+  const tailCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, B + 0.39, -0.2), new THREE.Vector3(0, B + 0.33, -0.24), new THREE.Vector3(0.01, B + 0.22, -0.25)]);
+  add(new THREE.TubeGeometry(tailCurve, 10, 0.006, 6), white, [0, 0, 0]);
+  add(new THREE.SphereGeometry(0.014, 8, 6).scale(0.8, 1.8, 0.8), black, [0.01, B + 0.2, -0.25]);
+  // a red ribbon bow (offering) round the neck
+  add(new THREE.TorusGeometry(0.05, 0.008, 6, 20), plain('#c8102e', 0.55), [0, B + 0.46, 0.165], [Math.PI / 2 - 0.5, 0, 0]);
+  add(new THREE.SphereGeometry(0.014, 8, 6).scale(1.4, 0.8, 0.6), plain('#c8102e', 0.55), [0, B + 0.43, 0.215]);
   z.scale.setScalar(s);
   z.traverse((o: any) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   return z;

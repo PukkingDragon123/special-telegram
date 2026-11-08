@@ -55,7 +55,7 @@ export class IntroHost {
   private ask: { kind: string; to: number; n: number; until: number; cb: (i: number) => void } | null = null;
   private custWaitT = 0;
   private served = false;
-  private lesson: LessonHost;
+  readonly lesson: LessonHost;
   private worldReady = false;
 
   constructor(private game: Game) {
@@ -77,6 +77,7 @@ export class IntroHost {
       cine: (k, d) => this.cine(k, d),
     });
     this.lesson.onDone = (dish) => { this.g.introDish = dish?.id ?? null; this.go('customer'); };
+    (game as any).tutorialHost = this;   // debugging / tests
   }
 
   get g() { return this.game.g as any; }

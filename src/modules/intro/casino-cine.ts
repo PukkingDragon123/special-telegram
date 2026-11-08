@@ -258,7 +258,8 @@ export class ScreenFX {
     // duotone "standing pose" grade: purple shadows / gold highlights
     this.tint = layer('background:linear-gradient(160deg,#5b1a8a 0%,#b0308e 45%,#e6a43a 100%);mix-blend-mode:color;');
     // sepia freeze (backdrop filter → real sepia of the frame; colour layer as a fallback)
-    this.sepia = layer('backdrop-filter:sepia(1) contrast(1.15) brightness(0.92);-webkit-backdrop-filter:sepia(1) contrast(1.15) brightness(0.92);background:rgba(120,82,40,0.18);');
+    // sepia freeze: hue/saturation of old photo brown over the frame's own luminosity
+    this.sepia = layer('background:#9a7344;mix-blend-mode:color;');
     this.lines = document.createElement('canvas');
     this.lines.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;opacity:0;';
     r.appendChild(this.lines);
@@ -294,7 +295,7 @@ export class ScreenFX {
     this.tintOn = ease(this.tintOn, this.tintTarget, 10);
     this.tint.style.opacity = this.tintOn.toFixed(3);
     this.sepiaOn = this.sepiaTarget > this.sepiaOn ? this.sepiaTarget : ease(this.sepiaOn, this.sepiaTarget, 6);
-    this.sepia.style.opacity = this.sepiaOn.toFixed(3);
+    this.sepia.style.opacity = (this.sepiaOn * 0.88).toFixed(3);
     this.linesOn = ease(this.linesOn, this.linesTarget, 14);
     this.lines.style.opacity = (this.linesOn * 0.85).toFixed(3);
     if (this.linesOn > 0.02) {

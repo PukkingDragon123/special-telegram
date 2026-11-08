@@ -427,7 +427,19 @@ export function buildTakeaway() {
 
 export function buildPlasticBag() {
   const g = G();
-  g.add(mesh(gc('pbag', () => dent(lathe([[0.0001, 0], [0.07, 0.004], [0.09, 0.05], [0.085, 0.14], [0.06, 0.2], [0.04, 0.23], [0.05, 0.26]], 14, { wobble: 0.15, freq: 18, seed: 4 }), 0.006, 25, 3)), M.bagClear(0xffffff, 0.45)));
+  // crinkled thin-film body gathered at the neck, the two handles tied in a knot with their ears sticking up
+  g.add(mesh(gc('pbag', () => dent(lathe([[0.0001, 0], [0.07, 0.004], [0.092, 0.04], [0.094, 0.11], [0.078, 0.17], [0.042, 0.215], [0.02, 0.232]], 16, { wobble: 0.16, freq: 18, seed: 4 }), 0.006, 25, 3)), M.bagClear(0xffffff, 0.45)));
+  g.add(mesh(gc('pbagKnot', () => {
+    const knot = new THREE.SphereGeometry(0.016, 8, 6).scale(1.2, 0.8, 1).translate(0, 0.238, 0);
+    const ear = (side: number) => {
+      const e = new THREE.ConeGeometry(0.017, 0.055, 6, 1, true).scale(1, 1, 0.25);
+      const p = e.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < p.count; i++) p.setX(i, p.getX(i) + Math.sin(p.getY(i) * 40) * 0.003);
+      e.computeVertexNormals();
+      return e.rotateZ(side * 0.7).translate(side * 0.024, 0.255, 0);
+    };
+    return merge([knot, ear(-1), ear(1)]);
+  }), M.bagClear(0xffffff, 0.55)));
   return g;
 }
 

@@ -773,7 +773,8 @@ function buildApron(c: Ctx) {
   const ys = hi ? [1.31, 1.24, 1.16, 1.08, 1.0, 0.92, 0.84, 0.76, 0.66, 0.56] : [1.31, 1.12, 0.96, 0.8, 0.56];
   // loose tops (chef jackets, auntie blouses) are shells standing off the body: clear them or the bib sinks inside
   const looseTop = s.top.loose >= 0.018 && s.top.sleeve !== 'none';
-  const clear = looseTop ? 0.014 + s.top.loose : 0.012;
+  // the clothing shells stand off the skin by roughly their looseness (+ seam thickness)
+  const clear = 0.016 + Math.max(0.006, s.top.loose);
   const surf = (y: number, x: number) => { const th = Math.atan2(x, 0.12); return c.torsoC(y) + c.torsoR(y, th) * Math.cos(th); };
   const front = (y: number, x: number) => {
     let z = y > 0.86 ? surf(y, x) + clear : 0.125 + s.build * 0.05 - Math.abs(x) * 0.15;

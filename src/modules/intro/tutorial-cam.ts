@@ -249,23 +249,49 @@ export class CineCam {
     if (this.st >= s.dur) { this.prev = { p: P.p.clone(), look: P.look.clone(), fov: P.fov, roll: P.roll }; this.next(); }
   }
 
-  /** Keep the lens out of walls: cast from the subject (look point) toward the camera. */
+  /**
+   * Keep the lens out of walls: cast from the pivot (subject) toward the camera. When the wanted spot is
+   * badly blocked (a cart or a shutter right behind the subject), swing the camera around the pivot to
+   * the first side with room (remembered for the rest of the shot so it doesn't flip-flop), else pull in.
+   */
+  private alt: { si: number; ang: number; up: number } = { si: -1, ang: 0, up: 0 };
   private collide(pose: Pose) {
     const phys = this.game.physics;
     if (!phys) return;
     const from = pose.pivot ?? pose.look;
-    const dir = _a.subVectors(pose.p, from);
-    const len = dir.length();
+    const dir0 = _a.subVectors(pose.p, from);
+    const len = dir0.length();
     if (len < 0.05) return;
-    dir.multiplyScalar(1 / len);
-    // start a little in front of the subject so their own collider/props don't count
+    dir0.multiplyScalar(1 / len);
     const s0 = Math.min(0.3, len * 0.3);
-    const start = _b.copy(from).addScaledVector(dir, s0);
-    const hit = phys.raycast(start, dir, len - s0, G.STATIC);
-    if (hit) {
-      const keep = Math.max(0.22, s0 + hit.toi - 0.18);
-      pose.p.copy(from).addScaledVector(dir, keep);
+    const free = (dir: THREE.Vector3) => {
+      const start = _b.copy(from).addScaledVector(dir, s0);
+      const hit = phys.raycast(start, dir, len - s0, G.STATIC);
+      return hit ? s0 + hit.toi - 0.18 : len;
+    };
+    if (this.alt.si !== this.si) this.alt = { si: this.si, ang: 0, up: 0 };
+    const tryDir = (ang: number, up: number) => {
+      const d = dir0.clone().applyAxisAngle(UP, ang);
+      if (up) { d.y += up; d.normalize(); }
+      return d;
+    };
+    let dir = tryDir(this.alt.ang, this.alt.up);
+    let room = free(dir);
+    if (room < len * 0.6 && len > 0.9) {
+      // search once for a better angle; keep it for the shot
+      let best = { ang: this.alt.ang, up: this.alt.up, room };
+      for (const [ang, up] of [[0, 0], [0.6, 0], [-0.6, 0], [1.2, 0], [-1.2, 0], [0, 0.55], [0.8, 0.45], [-0.8, 0.45], [1.9, 0.2], [-1.9, 0.2]]) {
+        const r = free(tryDir(ang, up));
+        if (r > best.room + 0.05) best = { ang, up, room: r };
+        if (r >= len * 0.95) break;
+      }
+      this.alt.ang = best.ang; this.alt.up = best.up;
+      dir = tryDir(best.ang, best.up);
+      room = best.room;
     }
+    const keep = Math.max(0.22, Math.min(len, room));
+    pose.p.copy(from).addScaledVector(dir, keep);
+    // if we swung around the pivot, look at the same subject point
   }
 
   /** Skip input polled by the caller (local.ts) → stop with a quick blend. */

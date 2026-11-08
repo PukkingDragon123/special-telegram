@@ -89,6 +89,52 @@ function towelTex() {
   }, { dirs: ['textures/props/', 'gen/cooking/'] });
 }
 
+/** polished-but-used stainless for the cart body (the dented/greasy maps, but properly metallic + reflective) */
+let _bodySteel: THREE.MeshStandardMaterial | null = null;
+function cartBodySteel() {
+  if (!_bodySteel) {
+    const m = (M.steelDent() as THREE.MeshStandardMaterial).clone();
+    m.metalness = 1; m.roughness = 0.4; m.color.set(0xf0f3f6); m.envMapIntensity = 1.3;
+    _bodySteel = m;
+  }
+  return _bodySteel;
+}
+
+/** printed vinyl signs of the cart (canvas, redrawn once the fonts are ready) */
+function cartSignMat(kind: 'panel' | 'header') {
+  return cachedMat('cartSign:' + kind, () => {
+    const c = document.createElement('canvas');
+    c.width = 1024; c.height = kind === 'panel' ? 360 : 128;
+    const x = c.getContext('2d')!;
+    const draw = () => {
+      const W = c.width, H = c.height;
+      if (kind === 'panel') {
+        const gr = x.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#d6201f'); gr.addColorStop(1, '#a3120f');
+        x.fillStyle = gr; x.fillRect(0, 0, W, H);
+        x.fillStyle = '#ffd23a'; x.fillRect(0, H - 54, W, 54); x.fillRect(0, 0, W, 10);
+        x.textAlign = 'center'; x.textBaseline = 'middle';
+        x.lineWidth = 14; x.strokeStyle = '#6a0806'; x.fillStyle = '#fff6d8';
+        x.font = '900 150px "Noto Sans Thai Looped", sans-serif';
+        x.strokeText('อาหารตามสั่ง', W / 2, 128); x.fillText('อาหารตามสั่ง', W / 2, 128);
+        x.fillStyle = '#ffe680'; x.font = '700 50px "Noto Sans Thai Looped", sans-serif';
+        x.fillText('ข้าวผัด · กะเพรา · ผัดซีอิ๊ว · ไข่ดาว', W / 2, 250);
+        x.fillStyle = '#8a0c0a'; x.font = '800 34px "Noto Sans Thai Looped", sans-serif';
+        x.fillText('จานละ 40–60 บาท  ·  อร่อย สะอาด รวดเร็ว', W / 2, H - 27);
+      } else {
+        x.fillStyle = '#ffd23a'; x.fillRect(0, 0, W, H);
+        x.fillStyle = '#c4161c'; x.fillRect(0, 0, W, 12); x.fillRect(0, H - 12, W, 12);
+        x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#b3120f';
+        x.font = '900 82px "Noto Sans Thai Looped", sans-serif';
+        x.fillText('อาหารตามสั่ง', W / 2, H / 2 + 2);
+      }
+    };
+    draw();
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+    (document as any).fonts?.ready?.then(() => { draw(); t.needsUpdate = true; });
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.45, metalness: 0, side: kind === 'header' ? THREE.FrontSide : THREE.FrontSide, polygonOffset: true, polygonOffsetFactor: -2 });
+  });
+}
+
 export function buildCartModel() {
   const root = new THREE.Group();
   root.name = 'cart';
@@ -128,7 +174,23 @@ export function buildCartModel() {
     p.push(rbox(0.2, 0.012, 0.07, 0.004, 0.5).translate(0.66, CART.top + 0.006, -0.28));
     return merge(p);
   });
-  root.add(mesh(steel, M.steelDent()));
+  root.add(mesh(steel, cartBodySteel()));
+  // ---- printed signs (customer side panel + roof header): the cart reads as an อาหารตามสั่ง cart from the street
+  { const w = B.x1 - B.x0, h = B.y1 - B.y0;
+    const panel = mesh(gc('cartSignPanel', () => new THREE.PlaneGeometry(w * 0.92, h * 0.62).rotateY(Math.PI).translate(0, B.y0 + h * 0.52, B.z0 - 0.0075)), cartSignMat('panel'));
+    root.add(panel);
+    const header = mesh(gc('cartSignHeader', () => merge([
+      rbox(1.44, 0.2, 0.02, 0.006, 0.5).translate(0, 1.8, -0.375),
+    ])), cartBodySteel());
+    root.add(header);
+    const face = mesh(gc('cartSignHeaderFace', () => merge([
+      new THREE.PlaneGeometry(1.4, 0.17).rotateY(Math.PI).translate(0, 1.8, -0.386),
+      new THREE.PlaneGeometry(1.4, 0.17).translate(0, 1.8, -0.364),
+    ])), cartSignMat('header'));
+    noRaycast(face);
+    root.add(face);
+    // two short chains from the roof beam
+    root.add(mesh(gc('cartSignChains', () => merge([bar([-0.6, 1.9, -0.375], [-0.6, 1.965, -0.375], 0.004, 5), bar([0.6, 1.9, -0.375], [0.6, 1.965, -0.375], 0.004, 5)])), M.steel())); }
   // ---- tube frame: glass box edges, roof poles, handle — merged
   const frame = gc('cartFrame', () => {
     const p: THREE.BufferGeometry[] = [];

@@ -188,8 +188,10 @@ export class CasinoScene implements SceneDef {
 
   // ------------------------------------------------------------------ cast
 
-  private addActor(look: any, p: THREE.Vector3, yaw: number, anim = 'idle', extra = true): Actor {
-    const rig = this.game.chars.create(look, { castShadow: true } as any);
+  private addActor(look: any, p: THREE.Vector3, yaw: number, anim = 'idle', extra = true, hero = false): Actor {
+    // heroes (players + staff in close-ups): 'high' paints their atlas synchronously, so they never show the
+    // unpainted skin-coloured placeholder ("naked mannequin") for the first seconds or after a face swap
+    const rig = this.game.chars.create(look, { castShadow: true, ...(hero ? { lod: 'high' } : {}) } as any);
     const root = new THREE.Group();
     root.add(rig.root);
     root.position.copy(p);
@@ -221,7 +223,7 @@ export class CasinoScene implements SceneDef {
     pls.forEach((pl: Ent, i: number) => {
       const slot = pl.slot ?? i;
       const base = pl.look ?? chars.playerLook(slot);
-      const a = this.addActor(suitLook(base, slot), this.walkStart(i, n), Math.PI, 'idle', false);
+      const a = this.addActor(suitLook(base, slot), this.walkStart(i, n), Math.PI, 'idle', false, true);
       a.pid = pl.id; a.slot = slot;
       a.speed = 1.25;
       this.players.push(a);
@@ -229,8 +231,8 @@ export class CasinoScene implements SceneDef {
     const look = (arch: string, seed: number, over: any = {}) => ({ ...chars.randomLook(arch, seed), ...over });
     // dealer & croupier: dove-grey shirts (pure white blew out under the table spot), black slacks
     const staff = { top: { id: 'dress_shirt', color: '#c4beb2' }, bottom: { id: 'slacks', color: '#1d1d1f' }, shoes: { id: 'leather', color: '#1a1512' }, acc: [] };
-    this.dealer = this.addActor(look('office_worker_f', 11, staff), V(0, 0, -1.05), Math.PI);
-    this.croupier = this.addActor(look('office_worker_m', 23, staff), V(ROULETTE.x + 0.3, 0, ROULETTE.z - 1.0), Math.PI);
+    this.dealer = this.addActor(look('office_worker_f', 11, staff), V(0, 0, -1.05), Math.PI, 'idle', true, true);
+    this.croupier = this.addActor(look('office_worker_m', 23, staff), V(ROULETTE.x + 0.3, 0, ROULETTE.z - 1.0), Math.PI, 'idle', true, true);
     // onlookers behind the players (well clear of the camera orbit around the table)
     this.addActor(look('karaoke_uncle', 5), V(-2.7, 0, 2.9), yawTo(2.7, -3.3), 'idle');
     this.addActor(look('auntie_vendor', 9, { top: { id: 'shirt_satin', color: '#a8202e' } }), V(2.6, 0, 3.0), yawTo(-2.6, -3.4), 'idle');

@@ -53,6 +53,7 @@ export class IntroLocal {
   private objIds = new Set<string>();
   private custSub = '';
   private skipHold = 0;
+  private skipAllHold = 0;
   // first-day objectives after the intro
   private day: { id: string; o: HudObjective; done: () => boolean }[] = [];
   private dayT = 0;
@@ -150,7 +151,10 @@ export class IntroLocal {
     if (prev === 'customer') this.clearObj('tut_serve', true);
     if (prev === 'go_market') this.clearObj('tut_market', true);
     switch (step) {
-      case 'sneak': this.setObj({ id: 'tut_steal', text: SNEAK.obj, sub: SNEAK.sub, target: () => this.cartPos(1.1), priority: 0 }); break;
+      case 'sneak':
+        this.setObj({ id: 'tut_steal', text: SNEAK.obj, sub: SNEAK.sub, target: () => this.cartPos(1.1), priority: 0 });
+        setTimeout(() => this.game.interact.hintOnce('intro.skipall', 'กดค้าง [Backspace] ข้ามบทเรียน · hold [Backspace] to skip the tutorial', 6), 6000);
+        break;
       case 'pay': this.paidSeen = -1; break;
       case 'lesson': this.setObj({ id: 'tut_lesson', text: LESSON.obj, priority: 0 }); break;
       case 'customer': this.custSub = ''; break;
@@ -246,6 +250,11 @@ export class IntroLocal {
       this.skipHold = Input.isDown('Space') ? this.skipHold + dt : 0;
       if (this.skipHold > 0.8) { this.skipHold = 0; this.cine.skip(); }
     }
+    // hold Backspace to skip the whole tutorial (host decides; everyone jumps to the first day)
+    if (isIntroActive(g.introStep) && g.introStep !== 'casino') {
+      this.skipAllHold = Input.isDown('Backspace') ? this.skipAllHold + dt : 0;
+      if (this.skipAllHold > 1.2) { this.skipAllHold = -999; this.cine.stop(0.3); if (this.wakeOn) this.endWake(); game.intent('intro.skip', {}); }
+    }
     this.tickTorch(dt);
   }
 
@@ -284,6 +293,7 @@ export class IntroLocal {
     const g: any = game.g;
     const post = game.engine.post;
     let cardShown = false;
+    let toOld: ((k: number) => Pose | null) | null = null;
     const pov: Shot = {
       dur: WAKE_T.up, ease: linear, noCollide: true, drift: 0, hideSelf: true,
       pose: (_k, t) => {
@@ -305,7 +315,10 @@ export class IntroLocal {
       { dur: WAKE_T.look - WAKE_T.stretch, pose: orbit(game, id, { r: 2.5, h: 1.45, az0: 0.75, az1: 0.2, lookY: 1.1, fov: 40, fov1: 36 }), focus: () => subject(game, id)?.head ?? null },
       {
         dur: WAKE_T.end - WAKE_T.look, drift: 1.2,
-        pose: (k) => (g.introOld && game.state.get(g.introOld) ? ots(game, id, g.introOld, { side: 1, back: 1.0, push: 0.45, fov: 44, fov1: 34, lift: 0.18 })(k) : fixed(V(), () => this.cartPos(1))(k)),
+        pose: (k) => {
+          if (!toOld && g.introOld && game.state.get(g.introOld)) toOld = ots(game, id, g.introOld, { side: 1, back: 1.35, push: 0.5, fov: 42, fov1: 32, lift: 0.28 });
+          return toOld ? toOld(k) : fixed(() => game.player!.pos.clone().add(V(0, 1.9, 0)), () => this.cartPos(1))(k);
+        },
         focus: () => this.entHead(g.introOld) ?? this.cartPos(1),
       },
     ];

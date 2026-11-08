@@ -371,7 +371,9 @@ export function lookKey(look: Look) {
   return JSON.stringify([look.sex, Math.round((look.build ?? 0.4) * 8), look.skin, look.face, look.hair, look.top, look.bottom, look.shoes, [...(look.acc ?? [])].sort(), (look as any).arch ?? '']);
 }
 
-export function paintAtlas(look: Look, size: number, variant: FaceVariant, onFaceReady?: () => void): HTMLCanvasElement {
+/** Paint a character atlas in small resumable steps (one garment layer per step) so the caller can
+ *  time-slice it across frames (rig.ts processAtlasQueue). Same result as paintAtlas(). */
+export function* paintAtlasJob(look: Look, size: number, variant: FaceVariant, onFaceReady?: () => void): Generator<string, HTMLCanvasElement, void> {
   const cv = document.createElement('canvas');
   cv.width = cv.height = size;
   // CPU-backed canvas: predictable paint cost (no per-blend-mode GPU shader compiles), cheap readbacks for face tinting
@@ -380,19 +382,28 @@ export function paintAtlas(look: Look, size: number, variant: FaceVariant, onFac
   const spec = bodySpec(look);
   const skin = look.skin || '#c69472';
   const r = new RNG(hashStr(lookKey(look)));
-  paintSkin(P, look, spec, skin);
+  // the bare-skin layer (photo pores, form shading, AO) only depends on skin tone / sex / build: paint it once per
+  // combination and blit it (the most expensive layer: ~16 full-region overlay composites)
+  const sk = yield* skinLayer(size, skin, spec);
+  P.g.drawImage(sk, 0, 0, ATLAS, ATLAS);
+  yield 'skin';
   paintFace(P, look, skin, variant, onFaceReady);
   paintScalp(P, look, skin);
+  yield 'face';
   const MS = 128;
   const snap = document.createElement('canvas'); snap.width = snap.height = MS;
   const sg = snap.getContext('2d', { willReadFrequently: true })!;
   sg.drawImage(cv, 0, 0, MS, MS);
   paintBottom(P, look, spec, skin, r);
+  yield 'bottom';
   paintTop(P, look, spec, skin, r);
+  yield 'top';
   paintShoes(P, look, spec, skin);
   paintAcc(P, look, spec, skin, r);
+  yield 'acc';
   paintHair(P, look, r);
   paintGrime(P, look, spec, r);
+  yield 'hair';
   // skin mask: wherever the finished atlas still equals the skin-only paint
   const fin = document.createElement('canvas'); fin.width = fin.height = MS;
   const fg = fin.getContext('2d', { willReadFrequently: true })!;
@@ -408,6 +419,31 @@ export function paintAtlas(look: Look, size: number, variant: FaceVariant, onFac
   return cv;
 }
 
+const skinLayers = new Map<string, HTMLCanvasElement>();
+function* skinLayer(size: number, skin: string, spec: BodySpec): Generator<string, HTMLCanvasElement, void> {
+  // build only shifts a belly AO blob: three buckets are plenty and keep the cache hit rate high
+  const sp = { ...spec, build: Math.round(spec.build * 2) / 2 };
+  const key = `${size}|${skin}|${sp.sex}|${sp.build}`;
+  let cv = skinLayers.get(key);
+  if (cv) { skinLayers.delete(key); skinLayers.set(key, cv); return cv; } // LRU touch
+  cv = document.createElement('canvas');
+  cv.width = cv.height = size;
+  cv.getContext('2d', { willReadFrequently: true });
+  yield* paintSkinSteps(new Painter(cv, size), sp, skin);
+  skinLayers.set(key, cv);
+  // keep ~12 MB of skin layers at most
+  let bytes = 0;
+  for (const c of skinLayers.values()) bytes += c.width * c.height * 4;
+  for (const k of skinLayers.keys()) { if (bytes <= 12e6 || skinLayers.size <= 2) break; const c = skinLayers.get(k)!; bytes -= c.width * c.height * 4; skinLayers.delete(k); }
+  return cv;
+}
+
+/** Paint a character atlas synchronously (all steps at once). */
+export function paintAtlas(look: Look, size: number, variant: FaceVariant, onFaceReady?: () => void): HTMLCanvasElement {
+  const it = paintAtlasJob(look, size, variant, onFaceReady);
+  for (;;) { const r = it.next(); if (r.done) return r.value; }
+}
+
 /** Repaint only the face rect of an existing atlas canvas (face variant swap / photo arrival). */
 export function repaintFace(cv: HTMLCanvasElement, look: Look, variant: FaceVariant, onFaceReady?: () => void) {
   const P = new Painter(cv, cv.width);
@@ -418,16 +454,18 @@ function hashStr(s: string) { let h = 2166136261; for (let i = 0; i < s.length; 
 
 // ------------------------------------------------------------------ skin
 
-function paintSkin(P: Painter, look: Look, spec: BodySpec, skin: string) {
+function* paintSkinSteps(P: Painter, spec: BodySpec, skin: string): Generator<string, void, void> {
   const g = P.g;
   g.fillStyle = skin;
   g.fillRect(0, 0, ATLAS, ATLAS);
   const dark = shade(skin, 0.62);
   const AO = (reg: Region, s: number, t: number, rs: number, rt: number, a: number, wrap = false) => P.blob(reg, s, t, rs, rt, rgbHex(shade(skin, 0.55)), a, wrap);
-  // real skin photo detail (pores, fine lines) on every bare-skin region
-  for (const rn of ['torso', 'leg', 'arm', 'neck', 'hand', 'foot', 'scalp', 'ear'] as const) P.fabric(rn, R[rn], 0, 0, 1, 1, 'skin', '#808080', { mode: 'overlay', contrast: 0.22, noFill: true });
-  // body form shading (zero-mean-ish noise + AO)
-  for (const reg of [R.torso, R.leg, R.arm, R.neck, R.hand, R.foot, R.scalp, R.ear]) P.noise(reg, 0.16, 0, 0, 1, 1, 0.6);
+  // real skin photo detail (pores, fine lines) + body form noise on every bare-skin region (one region per step)
+  for (const rn of ['torso', 'leg', 'arm', 'neck', 'hand', 'foot', 'scalp', 'ear'] as const) {
+    P.fabric(rn, R[rn], 0, 0, 1, 1, 'skin', '#808080', { mode: 'overlay', contrast: 0.22, noFill: true });
+    P.noise(R[rn], 0.16, 0, 0, 1, 1, 0.6);
+    if (rn === 'torso' || rn === 'leg' || rn === 'arm') yield 'skin-' + rn;
+  }
   // torso: armpits, under chest, navel, back crease, crotch
   const tc = torsoT(1.3), ta = torsoT(1.36);
   AO(R.torso, 0.25, ta, 0.06, 0.08, 0.5); AO(R.torso, 0.75, ta, 0.06, 0.08, 0.5);
@@ -461,7 +499,6 @@ function paintSkin(P: Painter, look: Look, spec: BodySpec, skin: string) {
   // ears
   P.blob(R.ear, 0.55, 0.5, 0.25, 0.3, rgbHex(shade(skin, 0.6)), 0.55);
   P.blob(R.ear, 0.85, 0.5, 0.2, 0.5, rgbHex(shade(skin, 1.1, 1)), 0.3);
-  void look;
 }
 
 function rgbHex(c: string) {
