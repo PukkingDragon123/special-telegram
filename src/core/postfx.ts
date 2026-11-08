@@ -4,7 +4,7 @@ import {
   SMAAEffect, SMAAPreset, ChromaticAberrationEffect, DepthOfFieldEffect, Effect, BlendFunction, EffectAttribute,
 } from 'postprocessing';
 import { N8AOPostPass } from 'n8ao';
-import { InkEdgePass, InkEffect, InkSettings, CEL, installMaterialPatch, updateInkHulls, InkParams, LOOK_STYLE } from './ink';
+import { InkEdgePass, InkEffect, InkSettings, CEL, installMaterialPatch, updateInkHulls, InkParams, LOOK_STYLE, SAFE_HEAD } from './ink';
 
 export type Quality = 'low' | 'medium' | 'high' | 'ultra';
 
@@ -330,6 +330,15 @@ export class PostFX {
       halfRes: true, depthAwareUpsampling: true, gammaCorrection: false, color: new THREE.Color(0x0e0907), screenSpaceRadius: false,
     });
     this.composer.addPass(this.ao);
+    // N8AO auto-detects transparent materials and then re-renders the scene twice per frame (transparent objects
+    // only) — with shadowMap.autoUpdate on, each of those renders also re-rendered (and emptied) every shadow map.
+    // The main RenderPass already produced this frame's shadows: freeze them while the AO pass runs.
+    const aoRender = this.ao.render.bind(this.ao);
+    this.ao.render = (r: THREE.WebGLRenderer, inputBuffer: any, outputBuffer: any, dt?: number, mask?: boolean) => {
+      const sm = r.shadowMap, au = sm.autoUpdate, nu = sm.needsUpdate;
+      sm.autoUpdate = false; sm.needsUpdate = false;
+      try { aoRender(r, inputBuffer, outputBuffer, dt, mask); } finally { sm.autoUpdate = au; sm.needsUpdate = nu; }
+    };
 
     this.dof = new DepthOfFieldEffect(camera, { focusDistance: 0.02, focalLength: 0.05, bokehScale: 3.0, height: 480 });
     this.dofPass = new EffectPass(camera, this.dof);
@@ -338,6 +347,16 @@ export class PostFX {
 
     this.ink = new InkEffect(this.inkPass.target.texture);
     this.bloom = new BloomEffect({ mipmapBlur: true, intensity: 0.55, luminanceThreshold: 0.88, luminanceSmoothing: 0.22, radius: 0.68 });
+    // bloom input guard: whatever wrote a NaN / Inf pixel (custom ShaderMaterials aren't patched), the mip blur
+    // must never spread it into a flashing black square
+    {
+      const lm: any = (this.bloom as any).luminanceMaterial;
+      const key = 'vec4 texel=texture2D(inputBuffer,vUv);';
+      if (lm?.fragmentShader?.includes(key)) {
+        lm.fragmentShader = lm.fragmentShader.replace('varying vec2 vUv;', SAFE_HEAD + 'varying vec2 vUv;').replace(key, key + 'texel.rgb=hpSafeColor(texel.rgb);');
+        lm.needsUpdate = true;
+      }
+    }
     // realistic: ACES filmic (photographic contrast + highlight roll-off); anime: AgX (flatter, cel-friendly)
     this.tone = new ToneMappingEffect({ mode: LOOK_STYLE === 'anime' ? ToneMappingMode.AGX : ToneMappingMode.ACES_FILMIC });
     this.grade = new GradeEffect();

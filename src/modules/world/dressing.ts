@@ -42,21 +42,26 @@ export function buildStreetLife(c: Ctx) {
   const okT = (x: number, z: number, r = 0.6) => ok(x, z, r) && !(tables && Math.hypot(x - tables.p[0], z - tables.p[2]) < (tables.r ?? 3.6) + 0.5);
 
   w.setGroup('detail');
-  // ---------------------------------------------------------------- parked motorbikes (rows, slanted, on sidewalks)
-  const bikeRow = (x: number, z0: number, z1: number, yaw: number, gap = 0.82) => {
-    for (let z = z0; z > z1; z -= gap + rng.range(0, 0.4)) {
-      if (!okT(x, z) || rng.chance(0.25)) { z -= rng.range(0.5, 3); continue; }
-      w.put(P.motorbike(rng.pick(BIKE_COLS)), x + rng.range(-0.15, 0.15), SW_H, z, yaw + rng.range(-0.2, 0.2), 1, { rz: 0.08 });
-      c.phys.box([x, 0.6, z], [0.4, 1.0, 1.4], yaw);
+  // ---------------------------------------------------------------- parked motorbikes (echelon rows on the soi sidewalks)
+  // Rows sit against the shop fronts at 25° to the kerb (x-extent ≈ 1 m: |x| 5.0…6.0) so the walking lane next to the
+  // pole line (|x| 4.15…5.0, nav + crowd walkers) stays clear — the old 70° rows reached x 4.6 and pedestrians walked
+  // straight through them.
+  const bikeRow = (x: number, z0: number, z1: number, _yaw: number, gap = 1.0) => {
+    const sx = Math.sign(x), bx = sx * 5.5;
+    for (let z = z0; z > z1; z -= gap + rng.range(0, 0.3)) {
+      if (!okT(bx, z) || rng.chance(0.2)) { z -= rng.range(0.5, 3); continue; }
+      const yaw = -sx * 0.44 + rng.range(-0.08, 0.08);
+      w.put(P.motorbike(rng.pick(BIKE_COLS)), bx + rng.range(-0.05, 0.05), SW_H, z, yaw, 1, { rz: 0.08 });
+      c.phys.box([bx, 0.6, z], [0.4, 1.0, 1.4], yaw);
     }
   };
-  bikeRow(-5.3, -3, -16, Math.PI / 2 + 0.35);
-  bikeRow(-5.3, -34, -40, Math.PI / 2 + 0.35);
-  bikeRow(-5.3, -50, -54, Math.PI / 2 + 0.35);
-  bikeRow(-5.4, -56, -74, Math.PI / 2 + 0.4);   // apartment
-  bikeRow(-5.3, -100, -144, Math.PI / 2 + 0.35);
-  bikeRow(5.3, -84, -136, -Math.PI / 2 + 0.35);
-  bikeRow(5.3, -39, -40.5, -Math.PI / 2 + 0.35);
+  bikeRow(-5.3, -3, -16, 0);
+  bikeRow(-5.3, -34, -40, 0);
+  bikeRow(-5.3, -50, -54, 0);
+  bikeRow(-5.4, -56, -74, 0);   // apartment
+  bikeRow(-5.3, -100, -144, 0);
+  bikeRow(5.3, -84, -136, 0);
+  bikeRow(5.3, -39, -40.5, 0);
   for (let x = -120; x < 125; x += rng.range(4, 14)) {
     if (Math.abs(x) < 8) continue;
     const z = rng.chance(0.5) ? 1.0 : 25.0;
@@ -96,7 +101,7 @@ export function buildStreetLife(c: Ctx) {
   }
   for (let i = 0; i < 40; i++) {
     const side = rng.chance(0.5) ? -1 : 1;
-    const x = side * rng.range(5.3, 5.8), z = rng.range(-150, -2);
+    const x = side * rng.range(5.45, 5.8), z = rng.range(-150, -2);
     if (!okT(x, z, 0.8)) continue;
     const t = rng.int(0, 4);
     if (t === 0) for (let k = 0; k < rng.int(1, 3); k++) w.put(P.crate(rng.pick(PLASTIC_COLORS)), x, SW_H + k * 0.254, z, rng.range(-0.2, 0.2));
@@ -123,22 +128,23 @@ export function buildStreetLife(c: Ctx) {
     }
     // a proper table with its condiment caddy, tissues, spoons, jug & glasses, stools around it
     const steel = rng.chance(0.4);
-    const tx = x + (Math.abs(x) < 7 ? -Math.sign(x) * 0.15 : rng.range(-0.8, 0.8)), tz = z + (Math.abs(x) < 7 ? rng.pick([-1.5, 1.5]) : 1.3), ty = rng.range(-0.2, 0.2);
+    const soi = Math.abs(x) < 7;
+    const tx = soi ? Math.sign(x) * 5.4 : x + rng.range(-0.8, 0.8), tz = z + (Math.abs(x) < 7 ? rng.pick([-1.5, 1.5]) : 1.3), ty = rng.range(-0.2, 0.2);
     P.real.add(steel ? 'steel_table' : 'thai_table', tx, SW_H, tz, ty, steel ? {} : { color: rng.pick([0xe8e4dc, 0x2a62b8, 0xc0302a]) });
     tableSetting(P.real, tx, SW_H + (steel ? propHeight('steel_table', STEEL_TABLE.H) : propHeight('thai_table', THAI_TABLE.H)), tz, ty, rng, steel);
     const sc = rng.pick(PLASTIC_COLORS);
     for (const [lx, lz] of [[0.68, 0], [-0.68, 0], [0, 0.55], [0, -0.55]] as [number, number][]) {
-      if (!rng.chance(0.75)) continue;
+      if (!rng.chance(0.75) || (soi && lx !== 0)) continue;   // soi: stools only at the ends (walking lane stays clear)
       const c0 = Math.cos(ty), s0 = Math.sin(ty);
       P.real.add('thai_stool', tx + lx * c0 + lz * s0 + rng.range(-0.05, 0.05), SW_H, tz - lx * s0 + lz * c0 + rng.range(-0.05, 0.05), rng.range(0, 6), { color: rng.chance(0.8) ? sc : rng.pick(PLASTIC_COLORS) });
     }
     c.phys.box([x, 0.75, z], [1.6, 1.5, 1.0], yaw);
     c.lights.add({ p: new THREE.Vector3(x, SW_H + 2.0, z), color: new THREE.Color(0xfff0d0), intensity: 5, range: 6, glow: 0.35, kind: 'custom' });
   };
-  foodStall(-5.0, -10, Math.PI / 2);
-  foodStall(5.0, -44.5, -Math.PI / 2);
-  foodStall(-5.0, -95, Math.PI / 2);
-  foodStall(5.0, -140, -Math.PI / 2);
+  foodStall(-5.5, -10, Math.PI / 2);
+  foodStall(5.5, -44.5, -Math.PI / 2);
+  foodStall(-5.5, -95, Math.PI / 2);
+  foodStall(5.5, -140, -Math.PI / 2);
   foodStall(20, 3.2, 0);
   foodStall(-60, 24.6, Math.PI);
   foodStall(64, 3.2, 0);

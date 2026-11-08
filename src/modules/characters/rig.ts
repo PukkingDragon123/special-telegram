@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { AnimName, AttachPoint, CarryPose, CharacterRig, FaceVariant, Look } from '../../game/contracts';
+import type { AnimName, AttachPoint, CarryPose, CharacterRig, Expression, FaceVariant, Look } from '../../game/contracts';
 import { B, NB, PARENT, REF_H, RestSkel, restSkel, restDir } from './skel';
 import { buildBody, bodySpec, shapeKey, BodySpec, Lod, headScale, HEAD_TOP } from './body';
 import { buildHairAndHead, hairThickAt } from './hair';
@@ -23,6 +23,10 @@ export const RigWorld = {
   /** ms of atlas painting allowed per frame */
   budgetMs: 9,
   rigs: new Set<any>(),
+  /** idle characters near the camera sometimes glance at it (turn off for cutscenes that frame their own looks) */
+  ambientCam: true,
+  /** ground height for foot IK (set by the world/physics: game.physics.groundY); null = flat at the character's root */
+  groundAt: null as null | ((x: number, z: number, y: number) => number),
 };
 
 // ------------------------------------------------------------------ shared caches
@@ -294,6 +298,16 @@ export class ProcRig implements CharacterRig {
     m.castShadow = this.opts.castShadow !== false;
     m.receiveShadow = true;
     m.raycast = () => {};
+    // first person: hide the head for the camera draws only (shadows keep it)
+    m.onBeforeRender = (renderer: THREE.WebGLRenderer) => {
+      if (this.mode !== 'fp') return;
+      const f = renderer.info.render.frame;
+      if (this.fpFrame === f) return;
+      this.fpFrame = f;
+      this.bones[B.head].scale.setScalar(1e-4); this.bones[B.head].updateMatrixWorld(true);
+      this.skeleton.update();
+    };
+    m.onAfterRender = () => { if (this.mode === 'fp') { this.bones[B.head].scale.setScalar(1); this.bones[B.head].updateMatrixWorld(true); } };
     this.inner.add(m);
     return m;
   }
@@ -312,14 +326,7 @@ export class ProcRig implements CharacterRig {
     const ms = [this.meshHi, this.meshLo].filter(Boolean) as THREE.SkinnedMesh[];
     let mats: THREE.Material | THREE.Material[];
     if (this.mode === 'sil') mats = [silMat, silMat];
-    else if (this.mode === 'fp') {
-      if (!this.fpMats) {
-        const a = this.mat.clone(); a.name = 'char-atlas-fp'; a.colorWrite = false; a.depthWrite = false;
-        const b = accessoryMaterial().clone(); b.colorWrite = false; b.depthWrite = false;
-        this.fpMats = [a, b];
-      }
-      mats = this.fpMats;
-    } else mats = [this.mat, accessoryMaterial()];
+    else mats = [this.mat, accessoryMaterial()];
     for (const m of ms) m.material = mats;
   }
 
@@ -333,8 +340,8 @@ export class ProcRig implements CharacterRig {
   }
 
   play(anim: AnimName, opts: { loop?: boolean; speed?: number; fade?: number; onEnd?: () => void } = {}) {
-    const d = ANIMS[anim];
-    if (!d) { console.warn('[characters] unknown anim', anim); return; }
+    let d = ANIMS[anim];
+    if (!d) { console.warn('[characters] unknown anim', anim); if (this.cur.name === 'idle') return; anim = 'idle'; d = ANIMS.idle; }
     const loop = opts.loop ?? d.loop;
     if (this.cur.name === anim && loop && this.cur.loop && !this.cur.ended) { this.cur.speed = opts.speed ?? 1; this.cur.onEnd = opts.onEnd; return; }
     if (this.cur.loop && !this.cur.ended && !loop) this.resume = this.cur.name;
@@ -356,6 +363,15 @@ export class ProcRig implements CharacterRig {
   attach(point: AttachPoint): THREE.Object3D { return this.attachPts.get(point) ?? this.attachPts.get('hand_r')!; }
   setSilhouette(on: boolean) { this.mode = on ? 'sil' : this.mode === 'sil' ? 'normal' : this.mode; this.applyMaterials(); }
   setFirstPerson(on: boolean) { this.mode = on ? 'fp' : this.mode === 'fp' ? 'normal' : this.mode; this.applyMaterials(); }
+  private fpFrame = -1;
+  /** procedural fallback rig: expressions map onto the static face variants */
+  setExpression(e: Expression) {
+    const v: FaceVariant | null = e === 'shocked' || e === 'scared' || e === 'pain' ? 'shock' : e === 'sleepy' ? 'sleep' : e === 'drunk' ? 'drunk' : null;
+    this.setFace(v as any);
+  }
+  setTalking(_on: boolean) { /* static faces */ }
+  /** eye midpoint (world) */
+  eyeWorld(out = new THREE.Vector3()) { this.root.updateWorldMatrix(true, false); return out.set(0, this.headHeight - 0.12 * (this.height / 1.7), 0.08).applyMatrix4(this.root.matrixWorld); }
 
   // ---------------------------------------------------------------- extras (not in the contract)
 

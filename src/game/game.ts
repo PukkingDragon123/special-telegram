@@ -114,9 +114,20 @@ export class Game {
     };
     for (const m of mods) visit(m, []);
     this.modules = out;
+    // Modules start in dependency order exactly as before, but a module only waits for its own deps' async init
+    // (manifests, GLBs, sounds) instead of every module before it — independent loads overlap (faster boot).
+    const done = new Map<string, Promise<void>>();
+    const times: Record<string, number> = {};
     for (const m of out) {
-      try { await m.init?.(this); } catch (e) { console.error(`[module ${m.id}] init failed`, e); }
+      const deps = (m.deps ?? []).map((d) => done.get(d)).filter(Boolean) as Promise<void>[];
+      if (deps.length) await Promise.all(deps);
+      const t0 = performance.now();
+      let p: Promise<void>;
+      try { p = Promise.resolve(m.init?.(this)); } catch (e) { p = Promise.reject(e); }
+      done.set(m.id, p.then(() => { times[m.id] = Math.round(performance.now() - t0); }, (e) => { console.error(`[module ${m.id}] init failed`, e); }));
     }
+    await Promise.all(done.values());
+    (window as any).__hpInitTimes = times;
     console.info('[modules]', out.map((m) => m.id).join(', '));
   }
 

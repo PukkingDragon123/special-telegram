@@ -125,6 +125,12 @@ function expand(fs: string, chunk: string, edit: (s: string) => string) {
   return fs.replace(inc, edit((THREE.ShaderChunk as any)[chunk] as string));
 }
 
+/** finite, non-negative, ≤ 30000 (half-float max is 65504; additive blending must not reach Inf). On IEEE
+ *  min/max NaN maps to 0; the explicit isnan() covers drivers that propagate it. */
+export const SAFE_HEAD = /* glsl */ `
+vec3 hpSafeColor(vec3 c) { c = min(max(c, vec3(0.0)), vec3(30000.0)); return any(isnan(c)) ? vec3(0.0) : c; }
+`;
+
 function patchShader(m: any, sh: any) {
   if (sh.__ink) return;
   sh.__ink = true;
@@ -137,7 +143,10 @@ function patchShader(m: any, sh: any) {
   const u = matUniforms(m);
   sh.uniforms.uInkMask = u.uInkMask;
   if (fs.includes('#include <opaque_fragment>')) {
-    fs = fs.replace('#include <opaque_fragment>', '#include <opaque_fragment>\n#ifdef OPAQUE\ngl_FragColor.a = uInkMask;\n#endif');
+    // + NaN / overflow guard: a single non-finite pixel (zero-length normal, pow(<0), a /0 in a custom chunk) or
+    //   one above the half-float range (Inf) explodes through the bloom mip chain into flashing black blocks
+    fs = fs.replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor.rgb = hpSafeColor(gl_FragColor.rgb);\n#ifdef OPAQUE\ngl_FragColor.a = uInkMask;\n#endif');
+    fs = fs.replace('#include <common>', '#include <common>\n' + SAFE_HEAD);
   }
   if (lit) {
     sh.uniforms.uCelK = CEL.uCelK;

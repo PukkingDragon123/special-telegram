@@ -39,7 +39,7 @@ class OverlaySys {
         border-radius:4px;font:600 .9em ${F.tech};background:rgba(0,0,0,.35)}
       .hp-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0d0a07;
         color:#f2e6cf;transition:opacity .8s;pointer-events:auto}
-      .hp-loading h1{font:400 clamp(48px,9vw,120px)/1 ${F.bubbly};margin:0;color:#fff;
+      .hp-loading h1{font:900 clamp(48px,9vw,120px)/1 ${F.heavy};margin:0;color:#fff;
         -webkit-text-stroke:3px #2f7d32;paint-order:stroke fill;text-shadow:0 6px 0 #1b4d1e,0 10px 24px rgba(0,0,0,.6)}
       .hp-loading p{font:400 16px ${F.body};opacity:.75;margin-top:18px}
       .hp-loading .bar{width:min(320px,60vw);height:4px;background:rgba(255,255,255,.12);border-radius:3px;margin-top:22px;overflow:hidden}

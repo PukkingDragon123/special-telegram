@@ -17,7 +17,7 @@ import { asset } from '../core/util';
  *   const t = text3d('กะเพราหมูสับ', { font: 'talk', size: 0.05, color: 0xfff1d6 });
  *   scene.add(t); t.reveal = 0; … t.reveal++ (each glyph pops in)
  *
- * Faces are looped Thai only (ไทยมีหัว). TTF subsets live in public/assets/gen/text3d/.
+ * Faces are looped Thai only (ไทยมีหัว), Noto Sans Thai Looped for all speech / UI. TTF subsets live in public/assets/gen/text3d/.
  */
 export type Font3D = 'talk' | 'heavy' | 'ui' | 'bubbly' | 'display' | 'hand' | 'news';
 
@@ -36,10 +36,20 @@ export interface Text3DAnim {
   wobble?: number;
   /** per-glyph jitter amplitude, em (shouts) */
   shake?: number;
+  /** travelling idle wave through the landed line, em (default 0) */
+  wave?: number;
+  /** squash & stretch on pop-in / landing (default 1, 0 = rigid) */
+  squash?: number;
+  /** emissive flash as each glyph lands (default 0.45) */
+  glint?: number;
+  /** vanish burns away with a glowing noise edge instead of only shrinking (default true) */
+  dissolve?: boolean;
 }
 
 export interface Text3DOpts {
-  /** looped Thai faces only: talk=Krub (default), heavy=K2D, ui=IBM Plex Sans Thai Looped, bubbly=Kodchasan, display=Chonburi, hand=Itim, news=Taviraj */
+  /** looped Thai faces only (clean Noto Sans Thai Looped weights for everything people read):
+   *  talk = Noto ExtraBold (default), heavy = Noto Black, ui = Noto SemiBold, hand = Noto SemiBold (no handwriting any more),
+   *  bubbly = Kodchasan, display = Chonburi, news = Taviraj */
   font?: Font3D;
   /** letter height in metres (height of a Thai consonant, default 0.12) */
   size?: number;
@@ -532,20 +542,33 @@ attribute vec4 aGlyph;
 uniform float uT3dTime;
 uniform vec4 uT3dA;   // pop, vanish, wobble, shake
 uniform vec4 uT3dB;   // rise, drift, spin, bevel colour mix
+uniform vec4 uT3dC;   // wave, squash, glint, dissolve
 varying float vT3dFace;
-mat3 t3dR; float t3dS; vec3 t3dO;
+varying float vT3dGlint;
+varying float vT3dKv;
+varying vec2 vT3dP;
+mat3 t3dR; vec3 t3dSc; vec3 t3dO;
 float t3dBack(float t){ float s = 2.2; t -= 1.0; return 1.0 + (s + 1.0) * t * t * t + s * t * t; }
 void t3dSetup(){
   float seed = fract(sin(aGlyph.x * 12.9898 + aGlyph.y * 78.233) * 43758.5453);
   float ka = clamp((uT3dTime - aGlyph.z) / uT3dA.x, 0.0, 1.0);
   float kv = clamp((uT3dTime - aGlyph.w) / uT3dA.y, 0.0, 1.0);
+  float tl = uT3dTime - aGlyph.z - uT3dA.x;   // seconds since the glyph landed (< 0 while it pops in)
   float pa = 1.0 - ka;
   float sv = kv * kv * (3.0 - 2.0 * kv);
-  t3dS = max(0.0, ka >= 1.0 ? 1.0 : t3dBack(ka)) * (1.0 - sv);
+  float dis = uT3dC.w;
+  float s = max(0.0, ka >= 1.0 ? 1.0 : t3dBack(ka)) * (1.0 - sv * mix(1.0, 0.4, dis));
+  // squash & stretch: stretched tall while it flies in, squashed flat when it lands, then settles
+  float st = sin(ka * 3.14159) * pa * 0.6;
+  float lk = clamp(tl / 0.34, 0.0, 1.0);
+  float land = tl >= 0.0 ? -sin(lk * 3.14159) * (1.0 - lk) * 0.32 : 0.0;
+  float sy = max(0.3, 1.0 + (st + land) * uT3dC.y + sv * 0.35 * dis);
+  float sx = inversesqrt(sy);
+  t3dSc = vec3(s * sx, s * sy, s * sx);
   float az = (seed - 0.5) * 1.3 * pa * pa * uT3dB.z + (seed - 0.5) * 1.6 * sv;
   float ax = -1.25 * pa * pa * uT3dB.z;
   float t = uT3dTime;
-  vec3 off = vec3((seed - 0.5) * 0.4 * sv, -uT3dB.x * pa * pa + uT3dB.y * sv, 0.0);
+  vec3 off = vec3((seed - 0.5) * 0.4 * sv, -uT3dB.x * pa * pa + uT3dB.y * sv * (1.0 + 0.6 * dis), 0.0);
   if (uT3dA.z > 0.0) {
     off.y += sin(t * 2.1 + aGlyph.x * 2.3) * uT3dA.z;
     off.x += cos(t * 1.7 + aGlyph.x * 1.9) * uT3dA.z * 0.35;
@@ -556,9 +579,19 @@ void t3dSetup(){
     off.y += cos(t * 53.0 + seed * 31.0) * uT3dA.w;
     az += sin(t * 39.0 + seed * 17.0) * uT3dA.w * 1.6;
   }
-  float cz = cos(az), sz = sin(az), cx = cos(ax), sx = sin(ax);
+  if (uT3dC.x > 0.0) {
+    // a slow travelling wave through the line once the glyph has landed
+    float w = smoothstep(0.0, 0.7, tl);
+    float ph = t * 2.4 - aGlyph.x * 1.35;
+    off.y += sin(ph) * uT3dC.x * w;
+    az += cos(ph) * uT3dC.x * 0.8 * w;
+  }
+  vT3dGlint = uT3dC.z * (tl < 0.0 ? ka * ka : exp(-tl * 6.5));
+  vT3dKv = kv * dis;
+  vT3dP = position.xy + vec2(seed * 7.0, seed * 3.0);
+  float cz = cos(az), sz = sin(az), cx = cos(ax), sx2 = sin(ax);
   mat3 rz = mat3(cz, sz, 0.0, -sz, cz, 0.0, 0.0, 0.0, 1.0);
-  mat3 rx = mat3(1.0, 0.0, 0.0, 0.0, cx, sx, 0.0, -sx, cx);
+  mat3 rx = mat3(1.0, 0.0, 0.0, 0.0, cx, sx2, 0.0, -sx2, cx);
   t3dR = rz * rx;
   t3dO = off;
 }
@@ -570,21 +603,39 @@ function patchVert(src: string, lit: boolean, xray: boolean) {
     s = s.replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>
       t3dSetup(); vT3dFace = objectNormal.z > 0.97 ? 1.0 : smoothstep(0.25, 0.5, objectNormal.z) * uT3dB.w; objectNormal = t3dR * objectNormal;`);
     s = s.replace('#include <begin_vertex>', `#include <begin_vertex>
-      transformed = vec3(aGlyph.xy, 0.0) + t3dR * (transformed * t3dS) + t3dO;`);
+      transformed = vec3(aGlyph.xy, 0.0) + t3dR * (transformed * t3dSc) + t3dO;`);
   } else {
     s = s.replace('#include <begin_vertex>', `t3dSetup();
       #include <begin_vertex>
-      transformed = vec3(aGlyph.xy, 0.0) + t3dR * (transformed * t3dS) + t3dO;`);
+      transformed = vec3(aGlyph.xy, 0.0) + t3dR * (transformed * t3dSc) + t3dO;`);
   }
   if (xray) s = s.replace('#include <project_vertex>', `#include <project_vertex>
       gl_Position.z = gl_Position.z * 0.02 - 0.98 * gl_Position.w;`);
   return s;
 }
 
+const FRAG_NOISE = /* glsl */ `
+varying float vT3dGlint; varying float vT3dKv; varying vec2 vT3dP;
+float t3dH(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float t3dN(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(t3dH(i), t3dH(i + vec2(1.0, 0.0)), f.x), mix(t3dH(i + vec2(0.0, 1.0)), t3dH(i + vec2(1.0, 1.0)), f.x), f.y); }
+float t3dEdge = 0.0;
+`;
+/** dissolve: noise burn-away while vanishing, with a hot glowing rim along the burning edge */
+const FRAG_DISSOLVE = /* glsl */ `
+  if (vT3dKv > 0.0) {
+    float t3dNz = t3dN(vT3dP * 9.0) * 0.68 + t3dN(vT3dP * 23.0) * 0.32;
+    float t3dTh = vT3dKv * 1.25 - 0.12;
+    if (t3dNz < t3dTh) discard;
+    t3dEdge = 1.0 - smoothstep(0.0, 0.09, t3dNz - t3dTh);
+  }
+`;
+
 function patchFrag(src: string) {
-  return `uniform vec3 uT3dSide; uniform vec4 uT3dRim; uniform float uT3dKey; varying float vT3dFace;\n` + src
+  return `uniform vec3 uT3dSide; uniform vec4 uT3dRim; uniform float uT3dKey; varying float vT3dFace;\n` + FRAG_NOISE + src
+    .replace('#include <clipping_planes_fragment>', FRAG_DISSOLVE + '\n#include <clipping_planes_fragment>')
     .replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( mix( uT3dSide, diffuse, vT3dFace ), opacity );')
-    .replace('vec3 totalEmissiveRadiance = emissive;', 'vec3 totalEmissiveRadiance = emissive * mix( 0.3, 1.0, vT3dFace );')
+    .replace('vec3 totalEmissiveRadiance = emissive;', 'vec3 totalEmissiveRadiance = emissive * mix( 0.3, 1.0, vT3dFace ) + diffuse * vT3dGlint * 1.3 + vec3( 1.0, 0.7, 0.36 ) * t3dEdge * 2.6;')
     .replace('#include <opaque_fragment>', `{
         vec3 t3dV = normalize( vViewPosition );
         outgoingLight += uT3dRim.rgb * uT3dRim.a * pow( 1.0 - clamp( dot( normal, t3dV ), 0.0, 1.0 ), 2.0 );
@@ -602,7 +653,7 @@ const looks = new Map<string, LookMats>();
 
 interface LookKey {
   color: number; side: number; metal: number; rough: number; emis: number; opacity: number; xray: boolean;
-  rim: number; rimS: number; key: number; shadow: number; bevelFace: boolean; a: number[]; b: number[];
+  rim: number; rimS: number; key: number; shadow: number; bevelFace: boolean; a: number[]; b: number[]; c: number[];
 }
 
 function lookOf(k: LookKey): LookMats {
@@ -620,6 +671,7 @@ function lookOf(k: LookKey): LookMats {
     uT3dTime: U_TIME,
     uT3dA: { value: new THREE.Vector4(...k.a) },
     uT3dB: { value: new THREE.Vector4(...k.b) },
+    uT3dC: { value: new THREE.Vector4(...k.c) },
     uT3dSide: { value: new THREE.Color(k.side) },
     uT3dRim: { value: new THREE.Vector4(...new THREE.Color(k.rim).toArray(), k.rimS) },
     uT3dKey: { value: k.key },
@@ -643,7 +695,7 @@ function lookOf(k: LookKey): LookMats {
     shadow.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, uni);
       sh.vertexShader = patchVert(sh.vertexShader, false, xray).replace('t3dSetup();', 't3dSetup(); vT3dFace = normal.z > 0.97 ? 1.0 : 0.0;');
-      sh.fragmentShader = 'varying float vT3dFace;\n' + sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n diffuseColor.a *= mix( 0.12, 1.0, vT3dFace );');
+      sh.fragmentShader = 'varying float vT3dFace; varying float vT3dKv;\n' + sh.fragmentShader.replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\n diffuseColor.a *= mix( 0.12, 1.0, vT3dFace ) * ( 1.0 - vT3dKv );');
     };
     shadow.customProgramCacheKey = () => `t3dShadow${xray ? 'x' : ''}`;
   }
@@ -782,6 +834,7 @@ export class Text3D extends THREE.Group {
       key: o.keyLight ?? 0.45, shadow: o.shadow ?? 0, bevelFace: !!o.bevelFace,
       a: [a.pop ?? 0.32, a.vanish ?? 0.28, a.wobble ?? 0, a.shake ?? 0],
       b: [a.rise ?? 0.35, a.drift ?? 0.5, a.spin ?? 1, o.bevelFace ? 0.9 : 0.35],
+      c: [a.wave ?? 0, a.squash ?? 1, a.glint ?? 0.45, a.dissolve === false ? 0 : 1],
     });
   }
 

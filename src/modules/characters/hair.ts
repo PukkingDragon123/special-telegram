@@ -102,7 +102,7 @@ function buildHair(c: HCtx, id: string, hat: AccSpec | null) {
   const st = hairStyle(id);
   const { G, hi, hs } = c;
   const J = hi ? 18 : 10, K = hi ? 7 : 4;
-  const underHat = hat && hat.kind !== 'straw' ? (hat.kind === 'helmet' ? 0.13 : 0.12) : 9;
+  const underHat = hat && hat.kind !== 'straw' ? (hat.kind === 'helmet' ? 0.13 : hat.kind === 'skullcap' ? 0.1 : 0.12) : 9;
   const nz = st.noise;
   const hairW = (ry: number): W => headWeights(ry);
   const minA = st.minA ?? 0;
@@ -175,7 +175,7 @@ function buildHair(c: HCtx, id: string, hat: AccSpec | null) {
     G.triOut(idx[j][K], lip[j], idx[j + 1][K], down); G.triOut(idx[j + 1][K], lip[j], lip[j + 1], down);
   }
   // curtain (long hair hanging below the hairline)
-  if (st.curtain && (!hat || hat.kind === 'straw' || hat.kind === 'bucket' || hat.kind === 'cap' || hat.kind === 'cap_back')) {
+  if (st.curtain && (!hat || ['straw', 'bucket', 'cap', 'cap_back', 'toque', 'skullcap'].includes(hat.kind))) {
     const gap = st.gap ?? 60;
     const ci: number[] = [];
     for (let j = 0; j <= J; j++) if ((Math.abs(cols[j]) * 180) / Math.PI >= gap) ci.push(j);
@@ -265,7 +265,8 @@ const hexRGB = (h: string): V3 => { const n = parseInt(h.replace('#', ''), 16); 
 
 function buildAcc(c: HCtx, a: AccSpec, hairId: string, hat: AccSpec | null) {
   switch (a.kind) {
-    case 'cap': case 'cap_back': case 'bucket': case 'helmet': case 'police_cap': buildHat(c, a, hairId); break;
+    case 'cap': case 'cap_back': case 'bucket': case 'helmet': case 'police_cap': case 'skullcap': buildHat(c, a, hairId); break;
+    case 'toque': buildToque(c, hairId); break;
     case 'straw': buildStraw(c); break;
     case 'headband': if (!hat || hat.kind === 'straw') buildBand(c, hairId); break;
     case 'mask': buildMask(c); break;
@@ -281,19 +282,20 @@ function buildHat(c: HCtx, a: AccSpec, hairId: string) {
   const { G, hs, Hd, hi } = c;
   const J = hi ? 16 : 10, K = hi ? 4 : 3;
   const back = a.kind === 'cap_back';
-  const helmet = a.kind === 'helmet', bucket = a.kind === 'bucket', police = a.kind === 'police_cap';
+  const helmet = a.kind === 'helmet', bucket = a.kind === 'bucket', police = a.kind === 'police_cap', skull = a.kind === 'skullcap';
   const lift = hairId === 'afro' ? 0.08 : 0; // perched on top of the afro
-  const sc = helmet ? 1.18 : 1.04;
+  const sc = helmet ? 1.18 : skull ? 1.012 : 1.04;
   const bandRy = (thDeg: number) => {
     const t = back ? 180 - thDeg : thDeg;
     if (helmet) return t < 50 ? 0.165 : t < 100 ? lerp(0.165, 0.085, (t - 50) / 50) : lerp(0.085, 0.07, (t - 100) / 80);
     if (bucket) return lerp(0.15, 0.115, smooth(0, 180, thDeg));
     if (police) return lerp(0.158, 0.135, smooth(0, 180, thDeg));
+    if (skull) return thDeg < 70 ? lerp(0.168, 0.15, thDeg / 70) : lerp(0.15, 0.1, smooth(70, 170, thDeg));
     return lerp(0.162, 0.118, smooth(0, 180, t));
   };
   const grid: number[][] = [];
   const pos: V3[][] = [];
-  const crownY = (HEAD_TOP + (police ? 0.035 : bucket ? 0.022 : helmet ? 0.03 : 0.014) + lift) * hs;
+  const crownY = (HEAD_TOP + (police ? 0.035 : bucket ? 0.022 : helmet ? 0.03 : skull ? 0.011 : 0.014) + lift) * hs;
   for (let j = 0; j <= J; j++) {
     const th = -Math.PI + (2 * Math.PI * j) / J;
     const ad = (Math.abs(th) * 180) / Math.PI;
@@ -356,6 +358,82 @@ function buildHat(c: HCtx, a: AccSpec, hairId: string) {
   } else if (helmet) {
     brim(-0.9, 0.9, (t) => 0.03 * Math.sin(t * Math.PI) + 0.004, 0.006);
   }
+}
+
+/** tall pleated chef's toque: a band fitted round the head (like the caps), then a pleated crown that
+ *  puffs out as it rises and a soft, slightly domed top. UVs: crown s 0..0.66 (t 0 top → 0.84), band
+ *  t 0.84..1, top disc in s 0.68..1 (atlas.ts paintAcc 'toque'). */
+function buildToque(c: HCtx, hairId: string) {
+  const { G, hs, Hd, hi } = c;
+  const J = hi ? 48 : 16;
+  const lift = hairId === 'afro' ? 0.07 : 0;
+  const PLEATS = 24;
+  const bandRy = (ad: number) => lerp(0.158, 0.122, smooth(0, 180, ad)) + lift;
+  const w = wb(B.head);
+  // per column: band bottom radius / height
+  const base: { th: number; r: number; y: number; cz: number }[] = [];
+  for (let j = 0; j <= J; j++) {
+    const th = -Math.PI + (2 * Math.PI * j) / J;
+    const ad = (Math.abs(th) * 180) / Math.PI;
+    const ry = bandRy(ad) * hs;
+    const hry = Math.min(ry - lift * hs, HEAD_TOP * hs - 0.004);
+    const hp = headPt(c, th, Math.max(0.02 * hs, hry));
+    const hc = headAt(th, hry / hs, hs);
+    const ht = Math.max(0.006, hairThickAt(hairId, ad, hry / hs) * (hairId === 'afro' ? 1 : 0.35));
+    const r = (Math.hypot(hp.p[0] - Hd[0], hp.p[2] - (Hd[2] + hc.cz)) + ht + 0.007) * 1.03;
+    base.push({ th, r, y: Hd[1] + ry, cz: Hd[2] + hc.cz });
+  }
+  // rows: [height above band bottom (m, unscaled), radius factor, pleat depth, t]
+  const top = (HEAD_TOP + 0.2 + lift) * hs;
+  const rows: [number, number, number, number][] = [
+    [0, 1, 0, 1], [0.036, 1.005, 0, 0.84], [0.04, 1.01, 0.15, 0.82], [0.075, 1.06, 0.55, 0.62],
+    [0.115, 1.14, 0.85, 0.42], [0.155, 1.22, 1, 0.22], [0.19, 1.27, 1, 0.07], [0.205, 1.26, 0.8, 0.0],
+  ];
+  const grid: number[][] = [];
+  const P: V3[][] = [];
+  for (let j = 0; j <= J; j++) {
+    const b = base[j];
+    const col: number[] = [], pc: V3[] = [];
+    for (const [h, rf, pd, t] of rows) {
+      // the crown rises to a level top even though the band dips at the back
+      const k = h / 0.205;
+      const y = lerp(b.y + h * hs, top, Math.pow(k, 1.6));
+      const pleat = 1 + pd * 0.03 * Math.cos(b.th * PLEATS);
+      const r = b.r * rf * pleat;
+      const cz = lerp(b.cz, Hd[2] - 0.01 * hs, k);
+      const p: V3 = [Hd[0] + Math.sin(b.th) * r, y, cz + Math.cos(b.th) * r];
+      const n = v3norm([Math.sin(b.th), h > 0.17 ? 0.6 : -0.05 + k * 0.3, Math.cos(b.th)]);
+      const [u, v] = ruv(R.hat, (j / J) * 0.66, t);
+      col.push(G.v(p, n, u, v, w)); pc.push(p);
+    }
+    grid.push(col); P.push(pc);
+  }
+  const K = rows.length - 1;
+  for (let j = 0; j < J; j++) for (let k = 0; k < K; k++) {
+    const th = -Math.PI + (2 * Math.PI * (j + 0.5)) / J;
+    const out: V3 = v3norm([Math.sin(th), k >= K - 1 ? 0.8 : 0.1, Math.cos(th)]);
+    G.triOut(grid[j][k], grid[j][k + 1], grid[j + 1][k], out); G.triOut(grid[j + 1][k], grid[j][k + 1], grid[j + 1][k + 1], out);
+  }
+  // soft domed top: two inner rings + centre
+  const rimR = P.map((pc) => Math.hypot(pc[K][0] - Hd[0], pc[K][2] - (Hd[2] - 0.01 * hs)));
+  const ctrZ = Hd[2] - 0.01 * hs;
+  const ring = (f: number, dy: number) => P.map((pc, j) => {
+    const th = base[j].th, r = rimR[j] * f;
+    const p: V3 = [Hd[0] + Math.sin(th) * r, top + dy * hs, ctrZ + Math.cos(th) * r];
+    const [u, v] = ruv(R.hat, 0.84 + Math.sin(th) * 0.15 * f, 0.5 + Math.cos(th) * 0.47 * f);
+    return G.v(p, v3norm([Math.sin(th) * f, 1, Math.cos(th) * f]), u, v, w);
+  });
+  const r0 = P.map((pc, j) => { const th = base[j].th; const [u, v] = ruv(R.hat, 0.84 + Math.sin(th) * 0.15, 0.5 + Math.cos(th) * 0.47); return G.v(pc[K], v3norm([Math.sin(th), 0.8, Math.cos(th)]), u, v, w); });
+  const r1 = ring(0.72, 0.012), r2 = ring(0.36, 0.018);
+  const [uc, vc] = ruv(R.hat, 0.84, 0.5);
+  const ci = G.v([Hd[0], top + 0.02 * hs, ctrZ], [0, 1, 0], uc, vc, w);
+  for (let j = 0; j < J; j++) {
+    for (const [a, b] of [[r0, r1], [r1, r2]]) { G.triOut(a[j], b[j], a[j + 1], [0, 1, 0]); G.triOut(a[j + 1], b[j], b[j + 1], [0, 1, 0]); }
+    G.triOut(r2[j], ci, r2[j + 1], [0, 1, 0]);
+  }
+  // inside of the band (seen from below)
+  const inner = base.map((b, j) => { const p: V3 = [Hd[0] + Math.sin(b.th) * (b.r - 0.004), b.y + 0.004, b.cz + Math.cos(b.th) * (b.r - 0.004)]; const [u, v] = ruv(R.hat, (j / J) * 0.66, 0.97); return G.v(p, v3norm([-Math.sin(b.th), -1, -Math.cos(b.th)]), u, v, w); });
+  for (let j = 0; j < J; j++) { const down: V3 = [0, -1, 0]; G.triOut(grid[j][0], inner[j], grid[j + 1][0], down); G.triOut(grid[j + 1][0], inner[j], inner[j + 1], down); }
 }
 
 function buildStraw(c: HCtx) {

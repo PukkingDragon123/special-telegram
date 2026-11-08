@@ -186,16 +186,19 @@ export class Nav implements NavGraph {
   }
 }
 
+/** soi crossing lines (zebras + casual); world dressing keeps these lanes clear of parked vehicles */
+export const SOI_CROSSINGS = [-4, -20.5, -33, -46, -57, -70, -84, -100, -116, -132, -150];
+
 /** Build the whole graph for the map. */
 export function buildNav(zones: Zone[]): Nav {
   const nav = new Nav(zones);
-  const wx = SOI.x0 - 1.25, ex = SOI.x1 + 1.25; // sidewalk centre lines (±4.75)
+  const wx = SOI.x0 - 1.1, ex = SOI.x1 + 1.1; // walking lanes (±4.6) between the pole line (±3.95) and the parked bikes (±5…6)
   const nz = 3.0, sz = 24.0;
   // --- soi sidewalks
   const W = nav.line(wx, 1.5, wx, -157, 5.5);
   const E = nav.line(ex, 1.5, ex, -157, 5.5);
   // --- soi crossings (zebras + casual)
-  for (const z of [-4, -20.5, -33, -46, -57, -70, -84, -100, -116, -132, -150]) nav.link(nav.nearestNode(wx, z), nav.nearestNode(ex, z), true);
+  for (const z of SOI_CROSSINGS) nav.link(nav.nearestNode(wx, z), nav.nearestNode(ex, z), true);
   // --- main road sidewalks
   const MN_W = nav.line(MAIN.x0 + 2, nz, wx, nz, 6);
   const MN_E = nav.line(ex, nz, MAIN.x1 - 2, nz, 6);

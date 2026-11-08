@@ -5,6 +5,8 @@ import { B, NB, RestSkel, restSkel } from './skel';
 import { BodySpec, Lod, buildBodyExtras, setHeadModel, isTube } from './body';
 import { buildHairAndHead, setFitHooks } from './hair';
 import { EYE_Y } from './layout';
+import { applyPhysique } from './physique-apply';
+import type { Look } from '../../game/contracts';
 
 /* ============================================================================================
  * Sculpted, rigged bodies (Quaternius CC0 "Universal Base Characters", processed by
@@ -51,7 +53,11 @@ export interface BodyTemplate {
   headModel: { table: number[][]; top: number; scale: number };
 }
 
-export const TEMPLATES: { m: BodyTemplate | null; f: BodyTemplate | null } = { m: null, f: null };
+export const TEMPLATES: { m: BodyTemplate | null; f: BodyTemplate | null; onRigBuild?: (rig: unknown, look: Look) => void } = {
+  m: null, f: null,
+  /** called by Rig.build() after every (re)build: physique proportions + soft-tissue shader (physique-apply.ts) */
+  onRigBuild: applyPhysique,
+};
 
 const MY_TO_GLB: Record<number, string> = {
   [B.hips]: 'pelvis', [B.spine]: 'spine_01', [B.chest]: 'spine_03', [B.neck]: 'neck_01', [B.head]: 'Head',
@@ -296,7 +302,7 @@ export function bottomShell(spec: BodySpec): string | null {
 const cache = new Map<string, { geo: THREE.BufferGeometry; refs: number }>();
 
 export function lookGeometryKey(t: BodyTemplate, spec: BodySpec, lod: Lod) {
-  return [t.sex, lod, topShell(spec), sleeveShell(spec), bottomShell(spec), spec.shoe.kind, spec.hair, spec.acc.map((a) => a.kind).sort().join('+'), spec.top.collar].join('|');
+  return [t.sex, lod, topShell(spec), sleeveShell(spec), bottomShell(spec), spec.shoe.kind, spec.hair, spec.acc.map((a) => a.kind).sort().join('+'), spec.top.collar, spec.top.pattern === 'chef' ? 'chefbtn' : ''].join('|');
 }
 
 export function acquireLookGeometry(t: BodyTemplate, spec: BodySpec, lod: Lod): { key: string; geo: THREE.BufferGeometry } {
@@ -320,6 +326,70 @@ function remapGeo(g: THREE.BufferGeometry | null, map: number[], yOf?: (y: numbe
   return g;
 }
 
+/** Two columns × five rows of domed buttons, placed where atlas.ts paints them (torso UV s = 0.5 ± 0.052,
+ *  reference heights 1.39 … 1.09): the nearest outward shell vertex gives the surface point, normal and skin
+ *  weights (template bone indices, so no remap). */
+function chefButtons(t: BodyTemplate, shell: THREE.BufferGeometry): THREE.BufferGeometry | null {
+  const P = shell.attributes.position as THREE.BufferAttribute, N = shell.attributes.normal as THREE.BufferAttribute;
+  const SI = shell.attributes.skinIndex as THREE.BufferAttribute, SWt = shell.attributes.skinWeight as THREE.BufferAttribute;
+  const G = new Geo();
+  G.color = [0.93, 0.92, 0.89];
+  const [bu, bv] = [((3 % 4) + 0.5) / 4, (Math.floor(3 / 4) + 0.5) / 4]; // palette swatch: matte
+  let placed = 0;
+  for (let i = 0; i < 5; i++) {
+    const y = t.yOf(1.39 - i * 0.075);
+    for (const s of [0.448, 0.552]) {
+      const th = (s - 0.5) * Math.PI * 2;
+      let best = -1, bestR = -1;
+      for (let k = 0; k < P.count; k++) {
+        const py = P.getY(k);
+        if (Math.abs(py - y) > 0.012) continue;
+        const px = P.getX(k), pz = P.getZ(k);
+        if (pz < 0) continue;
+        const a = Math.atan2(px, pz + 0.01);
+        if (Math.abs(a - th) > 0.07) continue;
+        const r = Math.hypot(px, pz + 0.01) - Math.abs(a - th) * 0.05 - Math.abs(py - y) * 0.5;
+        if (r > bestR) { bestR = r; best = k; }
+      }
+      if (best < 0) continue;
+      const c: V3 = [P.getX(best), P.getY(best), P.getZ(best)];
+      let n: V3 = [N.getX(best), N.getY(best), N.getZ(best)];
+      const nl = Math.hypot(n[0], n[1], n[2]) || 1;
+      n = [n[0] / nl, n[1] / nl, n[2] / nl];
+      if (n[2] < 0.2) n = [Math.sin(th), 0, Math.cos(th)];
+      const w: number[] = [];
+      for (let q = 0; q < 4; q++) w.push(SI.getComponent(best, q), SWt.getComponent(best, q));
+      // local frame on the surface
+      const up: V3 = [0, 1, 0];
+      const sx = norm3(cross3(up, n)), sy = cross3(n, sx);
+      const R0 = 0.0062, H = 0.0032, M = 10;
+      const base = add3(c, mul3(n, 0.0018));
+      const top = G.v(add3(base, mul3(n, H)), n, bu, bv, w);
+      const ring1: number[] = [], ring2: number[] = [];
+      for (let m = 0; m < M; m++) {
+        const a = (m / M) * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a);
+        const d = add3(mul3(sx, ca), mul3(sy, sa));
+        ring1.push(G.v(add3(add3(base, mul3(d, R0 * 0.62)), mul3(n, H * 0.82)), norm3(add3(n, mul3(d, 0.6))), bu, bv, w));
+        ring2.push(G.v(add3(base, mul3(d, R0)), norm3(add3(mul3(n, 0.35), d)), bu, bv, w));
+      }
+      for (let m = 0; m < M; m++) {
+        const m1 = (m + 1) % M;
+        G.triOut(top, ring1[m], ring1[m1], n, 1);
+        const out = add3(n, mul3(add3(sx, sy), 0));
+        G.triOut(ring1[m], ring2[m], ring1[m1], out, 1); G.triOut(ring1[m1], ring2[m], ring2[m1], out, 1);
+      }
+      placed++;
+    }
+  }
+  if (!placed) return null;
+  const [, b] = G.buildSplit();
+  return b;
+}
+const add3 = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const mul3 = (a: V3, k: number): V3 => [a[0] * k, a[1] * k, a[2] * k];
+const cross3 = (a: V3, b: V3): V3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const norm3 = (a: V3): V3 => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+
 function buildLookGeometry(t: BodyTemplate, spec: BodySpec, lod: Lod): THREE.BufferGeometry {
   const parts: THREE.BufferGeometry[] = [];
   const acc: THREE.BufferGeometry[] = [];
@@ -333,6 +403,9 @@ function buildLookGeometry(t: BodyTemplate, spec: BodySpec, lod: Lod): THREE.Buf
     const [a1, b1] = G1.buildSplit();
     if (a1) parts.push(remapGeo(a1, t.map, t.yOf)!);
     if (b1) acc.push(remapGeo(b1, t.map, t.yOf)!);
+    // chef jacket: real 3D cloth-knot buttons sitting on the jacket shell (skinned like the cloth under them)
+    const ts = topShell(spec);
+    if (spec.top.pattern === 'chef' && ts && t.geos[ts]) { const bg = chefButtons(t, t.geos[ts]); if (bg) acc.push(bg); }
   }
   // hair, hats, face/head accessories (fitted to the measured head)
   setHeadModel(t.headModel.table, t.headModel.top, t.headModel.scale);

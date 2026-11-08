@@ -6,11 +6,11 @@ import { Session, NetKind } from '../../net/session';
 import { Assets } from '../../core/assets';
 import { Sound } from '../../core/audio';
 import { Input } from '../../core/input';
-import { params, disposeObject, damp, asset } from '../../core/util';
+import { params, disposeObject, damp, asset, Ease } from '../../core/util';
 import { F } from '../../core/fonts';
 import { ALBUM_CAM, ALBUM_GRADE, SLOTS, buildBackdrop, buildRug, buildSofa, buildTable, buildJenga, buildPanton, buildShellChair, buildLights, JENGA_COLORS, Jenga } from './album';
 import { StickerUI, Sticker, plateCanvas, preloadUi } from './ui';
-import { COVER, DANGER, GOLD, DISABLED, HOVER, LetterStyle, albumText, loadImg, mulberry } from './lettering';
+import { COVER, DANGER, GOLD, DISABLED, HOVER, LetterStyle, albumText, loadImg, mulberry, MF, MW } from './lettering';
 import { sfx, musicKey } from './sfx';
 import { loadSettings, saveSettings, applySettings, QUALITIES } from './settings';
 import { CustomizeView } from './customize';
@@ -41,6 +41,8 @@ interface SlotView {
   block?: THREE.Mesh;
   /** frames left before the seat is fitted to the real pelvis (the sitting clip needs a few updates) */
   fit?: number;
+  /** seconds left of the pop-out (the friend left) */
+  out?: number;
 }
 
 /** Seat surface under each seated guy, in the local space of his chair (or the world, for the sofa).
@@ -111,7 +113,7 @@ export class MenuScene implements SceneDef {
     this.scene.add(this.camera);
     this.setupCamera();
     this.ui = new StickerUI();
-    preloadUi(['btn_host', 'btn_join', 'btn_start', 'btn_quit', 'btn_customize', 'title_hiaphat', 'tagline_roi_baht_sang_tua', 'label_waiting_friend', 'plate_room_code', 'plate_player_name']);
+    preloadUi(['plate_room_code', 'plate_player_name']);
     // ---- set
     this.backdrop = buildBackdrop(this.refCam);
     this.scene.add(this.backdrop.mesh);
@@ -160,8 +162,7 @@ export class MenuScene implements SceneDef {
     post.bloom.intensity = 0.4;
     Input.setWantLock(false);
     // ---- static stickers
-    this.stickers.title = this.ui.add({ img: 'title_hiaphat', imgVariants: false, anchor: 'b', x: 0, y: 178, width: 500, passive: true, delay: 0.25, z: 2 });
-    this.stickers.tagline = this.ui.add({ img: 'tagline_roi_baht_sang_tua', imgVariants: false, anchor: 'b', x: 0, y: 44, width: 215, passive: true, delay: 0.55, tilt: -1.5, z: 2 });
+    this.addTitle(0.25);
     // ---- input
     const cv = game.engine.canvas;
     const onMove = () => this.pick();
@@ -187,6 +188,12 @@ export class MenuScene implements SceneDef {
     Sound.music(musicKey('menu'));
     this.devParams();
     if (this.customizeOnEnter) setTimeout(() => this.openCustomize(true), 50);
+  }
+
+  /** the game title + tagline in the clean menu face (no pre-rendered hand lettering) */
+  private addTitle(delay: number) {
+    this.stickers.title = this.ui.add({ lines: [{ text: 'เฮียผัด!', size: 150, font: MF, weight: MW }], anchor: 'b', x: 0, y: 182, width: 470, passive: true, delay, z: 2 });
+    this.stickers.tagline = this.ui.add({ lines: [{ text: 'ร้อยบาทสร้างตัว', size: 50, font: MF, weight: MW }, { text: 'FROM 100 BAHT TO A REAL RESTAURANT', size: 15, font: MF, weight: MW, gap: -6, band: 0.8, spacing: 2 }], anchor: 'b', x: 0, y: 46, width: 230, passive: true, delay: delay + 0.3, tilt: -1.5, z: 2 });
   }
 
   private setupCamera() {
@@ -263,11 +270,22 @@ export class MenuScene implements SceneDef {
     this.syncSlots();
     for (const s of this.slots) {
       if (!s.rig) continue;
-      if (s.pop > 0) {
+      if (s.out !== undefined) {
+        // leave: quick anticipation stretch, then squash to nothing
+        s.out -= rdt;
+        const k = 1 - Math.max(0, s.out) / 0.42;
+        const g = k < 0.3 ? 1 + Math.sin(k / 0.3 * Math.PI) * 0.08 : Math.max(0, 1 - inBack((k - 0.3) / 0.7));
+        const sq = k < 0.3 ? 1 + k * 0.5 : 0.6;
+        s.rig.root.scale.set(g / Math.sqrt(sq), g * sq, g / Math.sqrt(sq));
+        if (s.out <= 0) { s.root.remove(s.rig.root); s.rig.dispose(); s.rig = null; s.block = undefined; s.out = undefined; continue; }
+      } else if (s.pop > 0) {
+        // join: grow out of the seat with an overshoot, then a couple of decaying squash-wobbles
         s.pop = Math.max(0, s.pop - rdt);
         const k = 1 - s.pop / 0.7;
-        const sq = k < 0.25 ? 1 - Math.sin(k / 0.25 * Math.PI) * 0.18 : 1 + Math.sin((k - 0.25) / 0.75 * Math.PI) * 0.12 * (1 - k);
-        s.rig.root.scale.set(1 / Math.sqrt(sq), sq, 1 / Math.sqrt(sq));
+        const grow = k < 0.45 ? Math.max(0.001, Ease.outBack(k / 0.45)) : 1;
+        const wob = Math.sin(k * Math.PI * 3) * 0.13 * (1 - k);
+        const sq = 1 + wob;
+        s.rig.root.scale.set(grow / Math.sqrt(sq), grow * sq, grow / Math.sqrt(sq));
       } else s.rig.root.scale.setScalar(1);
       s.rig.update(rdt);
       if (s.fit !== undefined && --s.fit <= 0) { s.fit = undefined; this.fitSeat(s); }
@@ -307,32 +325,24 @@ export class MenuScene implements SceneDef {
     for (const s of this.slots) {
       const p = ps.find((x) => x.slot === s.i);
       const occ = !!p;
-      const look: Look = p?.look ?? game.chars.playerLook(s.i);
-      const key = JSON.stringify(look) + '|' + occ;
-      if (key !== s.lookKey) {
-        const wasOcc = s.occupied;
-        const lookChanged = !s.rig || JSON.stringify(s.rig.look) !== JSON.stringify(look);
-        if (lookChanged) {
-          s.rig?.dispose();
-          if (s.rig) s.root.remove(s.rig.root);
-          s.rig = game.chars.create(look, { lod: 'high', castShadow: true });
-          s.root.add(s.rig.root);
-          const pose = SLOTS[s.i].pose;
-          s.rig.play(pose as any, { loop: true, fade: 0 });
-          if (SLOTS[s.i].seat) { (s.rig as any).seat = SLOTS[s.i].seat; s.rig.lookAt(TOWER_LOOK); s.fit = 3; }
-          s.rig.setMove(0);
-          if (s.i === 0) {
-            // G1 holds a blue block
-            const b = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.015, 0.025), new THREE.MeshStandardMaterial({ color: JENGA_COLORS[3], roughness: 0.5, map: Assets.texture('gen/menu/jenga_wood_grain.jpg', { srgb: true }) }));
-            b.rotation.set(0.3, 0.6, 0.2);
-            s.rig.attach('hand_r').add(b);
-            s.block = b;
-          }
+      const wasOcc = s.occupied;
+      if (!occ) {
+        // empty seat = empty space: nobody sits there until a friend actually joins
+        if (wasOcc && s.rig && s.out === undefined) this.popOut(s);
+        s.occupied = false;
+        s.lookKey = '';
+      } else {
+        const look: Look = p!.look ?? game.chars.playerLook(s.i);
+        const key = JSON.stringify(look);
+        if (key !== s.lookKey || s.out !== undefined) {
+          const lookChanged = !s.rig || s.out !== undefined || JSON.stringify(s.rig.look) !== JSON.stringify(look);
+          s.out = undefined;
+          // a new / changed outfit always grows in (behind the menu fade on the very first sync)
+          if (lookChanged) { this.makeRig(s, look); s.pop = 0.7; }
+          s.occupied = true;
+          s.lookKey = key;
+          if (!wasOcc && !this.firstSync) this.popSlot(s, true);
         }
-        s.rig!.setSilhouette(false);
-        s.occupied = occ;
-        s.lookKey = key;
-        if (!this.firstSync && occ !== wasOcc) this.popSlot(s, occ);
       }
       s.pid = p?.id ?? null;
       // ---- name tag / waiting label / ready marker
@@ -344,21 +354,52 @@ export class MenuScene implements SceneDef {
         this.ui.remove(s.tag); s.tag = null;
         const follow = () => this.project(this.tagAnchor(s.i));
         if (!p) {
-          if (online) s.tag = this.ui.add({ img: 'label_waiting_friend', imgVariants: false, width: 128, follow, passive: true, bob: 2.5, delay: 0.2 });
+          // small, quiet "waiting…" note floating over the free seat (online rooms only)
+          if (online) s.tag = this.ui.add({ lines: [{ text: 'รอเพื่อน…', size: 34, font: MF, weight: MW }, { text: 'FREE SEAT', size: 12, font: MF, weight: MW, gap: -5, band: 0.7, spacing: 2 }], style: DISABLED, width: 92, follow, passive: true, bob: 2.5, delay: 0.2, tilt: s.i % 2 ? 3 : -3 });
         } else {
-          const lines: any[] = [{ text: this.nameEdit && isMe ? (this.nameDraft || ' ') + '|' : p.name, size: 34, font: F.looped, weight: 900 }];
-          if (p.peer === hostPeer && online) lines.push({ text: 'หัวห้อง', size: 18, font: F.looped, weight: 800, gap: -6, band: 0.8, style: GOLD });
-          else if (isMe && !this.nameEdit) lines.push({ text: 'คลิกแก้ชื่อ', size: 15, font: F.looped, weight: 800, gap: -6, band: 0.7 });
-          s.tag = this.ui.add({ lines, follow, passive: !isMe, tilt: (s.i % 2 ? 2 : -2), onClick: isMe ? () => this.editName() : undefined, delay: this.firstSync ? 0.6 + s.i * 0.08 : 0 });
+          const lines: any[] = [{ text: this.nameEdit && isMe ? (this.nameDraft || ' ') + '|' : p.name, size: 34, font: MF, weight: MW }];
+          if (p.peer === hostPeer && online) lines.push({ text: 'หัวห้อง', size: 18, font: MF, weight: MW, gap: -6, band: 0.8, style: GOLD });
+          else if (isMe && !this.nameEdit) lines.push({ text: 'คลิกแก้ชื่อ', size: 15, font: MF, weight: MW, gap: -6, band: 0.7 });
+          s.tag = this.ui.add({ lines, follow, passive: !isMe, tilt: (s.i % 2 ? 2 : -2), onClick: isMe ? () => this.editName() : undefined, delay: this.firstSync ? 0.6 + s.i * 0.08 : 0.25 });
         }
       }
       const rdy = !!p?.ready && online;
       if (rdy !== !!s.ready) {
-        if (rdy) s.ready = this.ui.add({ lines: [{ text: 'พร้อม!', size: 26, font: F.looped, weight: 900 }], style: GOLD, follow: () => { const q = this.project(this.tagAnchor(s.i)); return q ? { ...q, y: q.y - 34 * this.ui.u } : null; }, passive: true, tilt: 8, bob: 1.5 });
+        if (rdy) s.ready = this.ui.add({ lines: [{ text: 'พร้อม!', size: 26, font: MF, weight: MW }], style: GOLD, follow: () => { const q = this.project(this.tagAnchor(s.i)); return q ? { ...q, y: q.y - 34 * this.ui.u } : null; }, passive: true, tilt: 8, bob: 1.5 });
         else { this.ui.remove(s.ready); s.ready = null; }
       }
     }
     this.firstSync = false;
+  }
+
+  /** (re)build a seat's character for a look, posed like the album cover */
+  private makeRig(s: SlotView, look: Look) {
+    if (s.rig) { s.root.remove(s.rig.root); s.rig.dispose(); }
+    s.block = undefined;
+    const rig = this.game.chars.create(look, { lod: 'high', castShadow: true });
+    s.rig = rig;
+    s.root.add(rig.root);
+    rig.play(SLOTS[s.i].pose as any, { loop: true, fade: 0 });
+    if (SLOTS[s.i].seat) { (rig as any).seat = SLOTS[s.i].seat; rig.lookAt(TOWER_LOOK); s.fit = 3; }
+    rig.setMove(0);
+    rig.setSilhouette(false);
+    rig.root.scale.setScalar(0.001);
+    if (s.i === 0) {
+      // G1 holds a blue block
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.015, 0.025), new THREE.MeshStandardMaterial({ color: JENGA_COLORS[3], roughness: 0.5, map: Assets.texture('gen/menu/jenga_wood_grain.jpg', { srgb: true }) }));
+      b.rotation.set(0.3, 0.6, 0.2);
+      rig.attach('hand_r').add(b);
+      s.block = b;
+    }
+  }
+
+  /** a friend left: the guy squashes down and pops out of existence (paper confetti puff) */
+  private popOut(s: SlotView) {
+    s.out = 0.42;
+    s.pop = 0;
+    const head = new THREE.Vector3(SLOTS[s.i].pos.x, s.i === 1 ? 1.5 : 1.0, SLOTS[s.i].pos.z);
+    this.burst(head, 26);
+    sfx.pop();
   }
 
   /** world point for a slot's name tag */
@@ -452,7 +493,7 @@ export class MenuScene implements SceneDef {
     a.scale.set((1 + this.hoverMe * 0.2) / Math.sqrt(sq), (1 + this.hoverMe * 0.2) * sq, 1 + this.hoverMe * 0.2);
     a.rotation.set(0, Math.sin(this.t * 1.3) * 0.45 + this.t * this.hoverMe * 4, rot + Math.sin(this.t * 2.1) * 0.08, 'ZYX');
     if (!this.arrowTag) {
-      this.arrowTag = this.ui.add({ lines: [{ text: 'คุณ', size: 30, font: F.looped, weight: 900 }], follow: () => { const p = this.project(this.arrow.position.clone().add(new THREE.Vector3(0, 0.13, 0))); return p; }, onClick: () => this.openCustomize(), bob: 0, tilt: -4, delay: 0.9 });
+      this.arrowTag = this.ui.add({ lines: [{ text: 'คุณ', size: 30, font: MF, weight: MW }], follow: () => { const p = this.project(this.arrow.position.clone().add(new THREE.Vector3(0, 0.13, 0))); return p; }, onClick: () => this.openCustomize(), bob: 0, tilt: -4, delay: 0.9 });
     }
     s.rig?.root.scale.multiplyScalar(1 + this.hoverMe * 0.025);
   }
@@ -484,8 +525,12 @@ export class MenuScene implements SceneDef {
     const rig = s.rig;
     const pel = rig?.root.getObjectByName('pelvis');
     if (!rig || !pel) return;
+    // measure at full size (the guy may still be popping in from scale ~0)
+    const sc = rig.root.scale.clone();
+    rig.root.scale.setScalar(1);
     rig.root.updateMatrixWorld(true);
     const p = pel.getWorldPosition(new THREE.Vector3());
+    rig.root.scale.copy(sc);
     const chair = this.chairs[s.i];
     const seatY = chair ? SEAT_LOCAL[s.i].y : SOFA_SEAT_Y;
     rig.root.position.y += seatY + PELVIS_ABOVE_SEAT - p.y;
@@ -574,7 +619,7 @@ export class MenuScene implements SceneDef {
     const want = this.paperHover && !this.reading && this.mode === 'album';
     if (want && !this.paperTag) {
       this.paperTag = this.ui.add({
-        lines: [{ text: 'ข่าวด่วน!', size: 30, font: F.looped, weight: 900 }, { text: 'คลิกอ่านหนังสือพิมพ์', size: 15, font: F.looped, weight: 800, gap: -6, band: 0.7 }],
+        lines: [{ text: 'ข่าวด่วน!', size: 30, font: MF, weight: MW }, { text: 'คลิกอ่านหนังสือพิมพ์', size: 15, font: MF, weight: MW, gap: -6, band: 0.7 }],
         style: DANGER, tilt: -4, passive: true, bob: 2,
         follow: () => { const g = this.paper; if (!g) return null; return this.project(new THREE.Vector3(g.position.x, g.position.y + 0.2, g.position.z)); },
       });
@@ -618,8 +663,7 @@ export class MenuScene implements SceneDef {
       post.setDOF(false);
       post.bloom.intensity = 0.4;
       Sound.music(musicKey('menu'));
-      this.stickers.title = this.ui.add({ img: 'title_hiaphat', imgVariants: false, anchor: 'b', x: 0, y: 178, width: 500, passive: true, delay: 0.15, z: 2 });
-      this.stickers.tagline = this.ui.add({ img: 'tagline_roi_baht_sang_tua', imgVariants: false, anchor: 'b', x: 0, y: 44, width: 215, passive: true, delay: 0.3, tilt: -1.5, z: 2 });
+      this.addTitle(0.15);
       this.uiKey = '';
       for (const s of this.slots) s.lookKey = '';
       const ms = this.mySlot();
@@ -654,8 +698,8 @@ export class MenuScene implements SceneDef {
     const g = this.game, s = g.session;
     const add = (k: string, o: any) => (this.stickers[k] = this.ui.add(o));
     const L = (text: string, en?: string, size = 54): any[] => {
-      const a: any[] = [{ text, size, font: F.looped, weight: 900 }];
-      if (en) a.push({ text: en, size: Math.round(size * 0.36), font: F.looped, weight: 900, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
+      const a: any[] = [{ text, size, font: MF, weight: MW }];
+      if (en) a.push({ text: en, size: Math.round(size * 0.36), font: MF, weight: MW, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
       return a;
     };
     const next = () => (g.scenes.has('casino') && !params.has('skipintro') ? 'casino' : 'world');
@@ -671,22 +715,22 @@ export class MenuScene implements SceneDef {
     try { hasSave = !!save?.has?.(); } catch {}
     if (!s.online) {
       if (this.sub === 'main') {
-        add('start', { img: 'btn_start', anchor: 'l', x: 150, y: -60, width: 230, tilt: -4, onClick: () => this.startGame(next()), delay: 0.35 });
+        add('start', { lines: L('เริ่มเลย!', 'START', 64), anchor: 'l', x: 150, y: -60, width: 230, tilt: -4, onClick: () => this.startGame(next()), delay: 0.35 });
         if (hasSave) add('continue', { lines: L('เล่นต่อ', 'CONTINUE', 44), anchor: 'l', x: 150, y: 58, tilt: 3, onClick: () => this.continueGame(), delay: 0.45 });
-        add('host', { img: 'btn_host', anchor: 'b', x: -350, y: 72, width: 200, tilt: -3, onClick: () => { this.sub = 'host'; this.uiKey = ''; }, delay: 0.5 });
-        add('join', { img: 'btn_join', anchor: 'b', x: 350, y: 72, width: 180, tilt: 3, onClick: () => this.openJoin(), delay: 0.55 });
+        add('host', { lines: L('สร้างห้อง', 'HOST', 60), anchor: 'b', x: -350, y: 72, width: 200, tilt: -3, onClick: () => { this.sub = 'host'; this.uiKey = ''; }, delay: 0.5 });
+        add('join', { lines: L('เข้าร่วม', 'JOIN', 60), anchor: 'b', x: 350, y: 72, width: 172, tilt: 3, onClick: () => this.openJoin(), delay: 0.55 });
       } else if (this.sub === 'host') {
         add('h_online', { lines: L('ออนไลน์', 'ONLINE · PEERJS', 46), anchor: 'b', x: -390, y: 150, tilt: -4, onClick: () => this.host('peer') });
         add('h_tabs', { lines: L('หลายแท็บ', 'BROWSER TABS (DEV)', 34), anchor: 'b', x: -300, y: 70, tilt: 2, onClick: () => this.host('tabs') });
         add('h_back', { lines: L('ยกเลิก', 'BACK', 28), anchor: 'b', x: -470, y: 60, tilt: -6, onClick: () => { this.sub = 'main'; this.uiKey = ''; sfx.close(); } });
-        add('join', { img: 'btn_join', anchor: 'b', x: 350, y: 72, width: 180, tilt: 3, onClick: () => this.openJoin() });
+        add('join', { lines: L('เข้าร่วม', 'JOIN', 60), anchor: 'b', x: 350, y: 72, width: 172, tilt: 3, onClick: () => this.openJoin() });
       } else if (this.sub === 'join') {
         add('code_cap', { lines: L('ใส่รหัสห้องของเพื่อน', 'ENTER YOUR FRIEND’S ROOM CODE', 26), anchor: 'r', x: 200, y: -128, passive: true, tilt: -2 });
         add('code', { paint: () => plateCanvas(this.code, { caret: true, placeholder: '•••••' }), anchor: 'r', x: 200, y: -50, width: 300, tilt: -2, onClick: () => this.focusCode() });
         add('j_go', { lines: L('เข้าเลย!', 'JOIN', 46), anchor: 'r', x: 245, y: 48, tilt: 3, disabled: this.code.length < 4, onClick: () => this.join('peer', this.code) });
         add('j_tabs', { lines: L('แท็บ', 'TABS (DEV)', 26), anchor: 'r', x: 110, y: 52, tilt: -5, disabled: this.code.length < 4, onClick: () => this.join('tabs', this.code) });
         add('j_back', { lines: L('ยกเลิก', 'BACK', 28), anchor: 'r', x: 200, y: 128, tilt: 2, onClick: () => { this.typing?.close(); this.typing = null; this.sub = 'main'; this.uiKey = ''; sfx.close(); } });
-        add('host', { img: 'btn_host', anchor: 'b', x: -350, y: 72, width: 200, tilt: -3, onClick: () => { this.typing?.close(); this.typing = null; this.sub = 'host'; this.uiKey = ''; } });
+        add('host', { lines: L('สร้างห้อง', 'HOST', 60), anchor: 'b', x: -350, y: 72, width: 200, tilt: -3, onClick: () => { this.typing?.close(); this.typing = null; this.sub = 'host'; this.uiKey = ''; } });
       }
       return;
     }
@@ -697,14 +741,14 @@ export class MenuScene implements SceneDef {
     if (s.isHost) {
       const others = g.players().filter((p) => p.id !== g.localPlayerId);
       const allReady = others.every((p) => p.ready);
-      add('start', { img: 'btn_start', anchor: 'l', x: 150, y: -60, width: 230, tilt: -4, onClick: () => this.startGame(next()) });
+      add('start', { lines: L('เริ่มเลย!', 'START', 64), anchor: 'l', x: 150, y: -60, width: 230, tilt: -4, onClick: () => this.startGame(next()) });
       add('start_cap', { lines: L(others.length === 0 ? 'รอเพื่อนก่อนก็ได้นะ' : allReady ? 'ทุกคนพร้อมแล้ว!' : 'เพื่อนยังไม่พร้อม', others.length === 0 ? 'or start alone' : allReady ? 'everyone is ready' : 'friends not ready yet', 24), style: allReady && others.length ? GOLD : COVER, anchor: 'l', x: 150, y: 30, passive: true, tilt: 2 });
     } else {
       const ready = !!g.me?.ready;
       add('ready', { lines: L(ready ? 'พร้อมแล้ว!' : 'พร้อม?', ready ? 'READY!' : 'CLICK WHEN READY', 50), style: ready ? GOLD : COVER, anchor: 'l', x: 150, y: -60, tilt: -4, onClick: () => { g.intent('menu.ready', { ready: !ready }); sfx.confirm(); } });
       add('wait_cap', { lines: L('รอหัวห้องกดเริ่ม…', 'WAITING FOR THE HOST', 24), anchor: 'l', x: 150, y: 30, passive: true, bob: 2, tilt: 2 });
     }
-    add('leave', { img: 'btn_quit', anchor: 'b', x: 350, y: 72, width: 120, tilt: 4, onClick: () => { sfx.close(); this.toLocal(); } });
+    add('leave', { lines: L('ออก', 'LEAVE', 60), anchor: 'b', x: 350, y: 72, width: 110, tilt: 4, onClick: () => { sfx.close(); this.toLocal(); } });
   }
 
   private onKey(e: KeyboardEvent) {
@@ -784,8 +828,8 @@ export class MenuScene implements SceneDef {
 
   private buildSettings(add: (k: string, o: any) => Sticker) {
     const L = (text: string, en?: string, size = 40): any[] => {
-      const a: any[] = [{ text, size, font: F.looped, weight: 900 }];
-      if (en) a.push({ text: en, size: Math.round(size * 0.38), font: F.looped, weight: 900, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
+      const a: any[] = [{ text, size, font: MF, weight: MW }];
+      if (en) a.push({ text: en, size: Math.round(size * 0.38), font: MF, weight: MW, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
       return a;
     };
     const g = this.game;
@@ -858,8 +902,8 @@ export class MenuScene implements SceneDef {
   toast(th: string, en?: string, style: LetterStyle = DANGER) {
     this.ui.remove(this.toastSt);
     clearTimeout(this.toastTimer);
-    const lines: any[] = [{ text: th, size: 46, font: F.looped, weight: 900 }];
-    if (en) lines.push({ text: en, size: 18, font: F.looped, weight: 900, gap: -6, band: 0.9, spacing: 1 });
+    const lines: any[] = [{ text: th, size: 46, font: MF, weight: MW }];
+    if (en) lines.push({ text: en, size: 18, font: MF, weight: MW, gap: -6, band: 0.9, spacing: 1 });
     this.toastSt = this.ui.add({ lines, style, anchor: 't', x: 0, y: 92, tilt: -2, passive: true, z: 5 });
     this.toastSt.shake = style === DANGER ? 0.6 : 0;
     if (style === DANGER) sfx.error(); else sfx.confirm();
@@ -907,6 +951,8 @@ export class MenuScene implements SceneDef {
 }
 
 // ------------------------------------------------------------------ helpers
+
+const inBack = (t: number, s = 1.70158) => (s + 1) * t * t * t - s * t * t;
 
 function errText(e: any, hosting: boolean): [string, string] {
   const m = String(e?.message ?? e ?? '');

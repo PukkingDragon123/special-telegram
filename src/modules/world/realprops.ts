@@ -63,6 +63,8 @@ export interface ModelDef {
   anchor?: 'bottom' | 'back' | 'top';
   /** env-map intensity */
   env?: number;
+  /** only the meshes under the glTF node whose name starts with this (Poly Haven packs variants side by side) */
+  node?: string;
 }
 
 const M = (file: string, d: Omit<ModelDef, 'file'>): ModelDef => ({ file, ...d });
@@ -285,9 +287,11 @@ async function loadGlb(def: ModelDef): Promise<Model | null> {
   const gltf = await loader.loadAsync(Assets.url(def.path ?? `gen/world/models/${def.file}/${def.file}.glb`));
   gltf.scene.updateMatrixWorld(true);
   const byMat = new Map<THREE.Material, THREE.BufferGeometry[]>();
+  const under = (o: THREE.Object3D) => { for (let p: THREE.Object3D | null = o; p; p = p.parent) if (p.name.startsWith(def.node!)) return true; return false; };
   gltf.scene.traverse((o) => {
     const mesh = o as THREE.Mesh;
     if (!mesh.isMesh) return;
+    if (def.node && !under(mesh)) return;
     const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     const g = floatGeom(mesh.geometry, mesh.matrixWorld);
     const list = byMat.get(mats[0]) ?? [];

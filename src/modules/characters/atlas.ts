@@ -352,7 +352,9 @@ class Painter {
     const g = this.g;
     const [x, y] = this.pt(reg, s, t);
     g.save(); g.translate(x, y); if (o.rot) g.rotate(o.rot); g.scale(1, o.sy ?? 1);
-    g.font = `${size}px ${font}, "Sarabun", sans-serif`; g.textAlign = o.align ?? 'center'; g.textBaseline = 'middle';
+    // `font` may carry a weight prefix ("800 \"Kodchasan\"") — CSS wants the weight before the size
+    const fw = /^(\d{3}) (.+)$/.exec(font);
+    g.font = fw ? `${fw[1]} ${size}px ${fw[2]}, "Noto Sans Thai Looped", sans-serif` : `${size}px ${font}, "Noto Sans Thai Looped", sans-serif`; g.textAlign = o.align ?? 'center'; g.textBaseline = 'middle';
     if (o.stroke) { g.strokeStyle = o.stroke; g.lineWidth = o.sw ?? 3; g.lineJoin = 'round'; g.strokeText(str, 0, 0); }
     g.fillStyle = color; g.fillText(str, 0, 0);
     g.restore();
@@ -361,7 +363,9 @@ class Painter {
 
 // ------------------------------------------------------------------ public: paint
 
-const LOOPED = { hand: '"Sriracha"', fun: '"Itim"', round: '"Mali"', block: '"Chonburi"', bubbly: '"Pattaya"', body: '"Noto Sans Thai Looped"' };
+/** print faces for painted garments (only the clean families the game ships: Noto Sans Thai Looped (variable),
+ *  Kodchasan 400–700, Chonburi; never the old handwriting faces) */
+const LOOPED = { hand: '700 "Kodchasan"', fun: '800 "Noto Sans Thai Looped"', round: '600 "Kodchasan"', block: '"Chonburi"', bubbly: '900 "Noto Sans Thai Looped"', body: '600 "Noto Sans Thai Looped"' };
 
 export function lookKey(look: Look) {
   return JSON.stringify([look.sex, Math.round((look.build ?? 0.4) * 8), look.skin, look.face, look.hair, look.top, look.bottom, look.shoes, [...(look.acc ?? [])].sort(), (look as any).arch ?? '']);
@@ -620,6 +624,21 @@ function baseBottomFabric(P: Painter, b: BottomSpec, rn: string, reg: Region, t0
     case 'elephant': P.fabric(rn, reg, 0, t0, 1, t1, 'linen', col, { contrast: 0.5, ppm }); paintElephants(P, rn, reg, t0, t1, c2, ppm, 0.11); break;
     case 'pleat': case 'plain_fabric': P.fabric(rn, reg, 0, t0, 1, t1, 'poplin', col, { contrast: 0.5, ppm }); break;
     case 'robe': P.fabric(rn, reg, 0, t0, 1, t1, 'linen', col, { contrast: 0.7, ppm }); break;
+    case 'chef_check': {
+      // classic chef "pepper" houndstooth: dark teeth on an off-white ground, ~2 cm repeat, twill on top
+      P.fill(reg, c2, 0, t0, 1, t1);
+      const [x, y, w, h] = P.rect(reg, 0, t0, 1, t1);
+      if (w > 0 && h > 0) {
+        const g = P.g; g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+        const pat = g.createPattern(houndstoothTile(col), 'repeat')!;
+        const pp = ppm ?? PPM[rn] ?? [500, 500];
+        const REP = 0.02;
+        pat.setTransform(new DOMMatrix().translate(x, y).scale((REP * pp[0]) / 32, (REP * pp[1]) / 32));
+        g.fillStyle = pat; g.fillRect(x, y, w, h); g.restore();
+      }
+      P.fabric(rn, reg, 0, t0, 1, t1, 'twill_beige', '#808080', { contrast: 0.32, ppm, noFill: true });
+      break;
+    }
     default: P.fabric(rn, reg, 0, t0, 1, t1, 'jersey', col, { contrast: 0.5, ppm });
   }
 }
@@ -768,6 +787,7 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
       break;
     }
     case 'school': case 'school_girl': break;
+    case 'chef': paintChefJacket(P, look, top, col, c2, neckF, tH, se, tSleeve, r); break;
     case 'rider': {
       P.band(T, torsoT(1.24), torsoT(1.21), '#d6d8d4', 1); P.band(A, armT(0.2), armT(0.23), '#d6d8d4', 1);
       for (const sd of [0.25, 0.75]) P.band(T, 0.15, tH, c2, 1, sd - 0.05, sd + 0.05);
@@ -888,6 +908,13 @@ function baseTopFabric(P: Painter, top: TopSpec, rn: string, reg: Region, t0: nu
     case 'sweeper': P.fabric(rn, reg, 0, t0, 1, t1, 'canvas', col, { contrast: 0.3 }); break;
     case 'elephant_tank': P.fabric(rn, reg, 0, t0, 1, t1, 'jersey', col, { contrast: 0.55 }); break;
     case 'robe': P.fabric(rn, reg, 0, t0, 1, t1, 'linen', col, { contrast: 0.75 }); break;
+    case 'chef': {
+      // heavy cotton drill: twill wale + a soft poplin grain, slightly brighter weave highlights on white
+      P.fabric(rn, reg, 0, t0, 1, t1, 'twill_beige', col, { contrast: lum(col) > 0.5 ? 0.28 : 0.42, scale: 0.55 });
+      P.fabric(rn, reg, 0, t0, 1, t1, 'poplin', col, { contrast: 0.18, noFill: true });
+      P.noise(reg, lum(col) > 0.5 ? 0.05 : 0.09, 0, t0, 1, t1);
+      break;
+    }
     default: P.fabric(rn, reg, 0, t0, 1, t1, 'jersey', col, { contrast: 0.5 });
   }
 }
@@ -1030,6 +1057,7 @@ function paintShoes(P: Painter, look: Look, spec: BodySpec, skin: string) {
       break;
     }
     case 'leather': case 'school': {
+      if (sh.id === 'chef_clogs') { paintClogs(P, col); break; }
       P.fabric('foot', F, 0, 0, 1, 1, 'leather', col, { contrast: 0.45 });
       P.band(F, 0, 1, '#2a1c14', 1, 0, 0.1); P.band(F, 0, 1, '#2a1c14', 1, 0.9, 1);
       P.blob(F, 0.5, 0.82, 0.12, 0.08, '#ffffff', 0.18); P.blob(F, 0.35, 0.3, 0.05, 0.15, '#ffffff', 0.1);
@@ -1122,6 +1150,65 @@ function paintAcc(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
         const g = P.g; g.fillStyle = '#f4f4f2'; g.fillRect(cx - 12, cy - 16, 24, 32); g.fillStyle = col; g.fillRect(cx - 12, cy - 16, 24, 7); g.fillStyle = '#c8b8a0'; g.fillRect(cx - 7, cy - 6, 9, 11);
         break;
       }
+      case 'toque': {
+        // tall pleated cotton toque: crown (s 0..0.66, t 0 = top → 1 = band), pleat shading, flat top (s 0.7..0.98)
+        const H = R.hat as Region;
+        P.fabric('hat', H, 0, 0, 1, 1, 'poplin', col, { contrast: 0.35, scale: 0.5 });
+        const n = 24;
+        for (let i = 0; i < n; i++) {
+          const s0 = (i / n) * 0.66;
+          P.band(H, 0, 0.84, shade(col, 0.86), 0.55, s0, s0 + 0.66 / n * 0.35);
+          P.line(H, [[s0, 0.02], [s0, 0.84]], shade(col, 0.72), 1.1, 0.55);
+          P.line(H, [[s0 + 0.66 / n * 0.55, 0.02], [s0 + 0.66 / n * 0.55, 0.84]], shade(col, 1.12), 1, 0.4);
+        }
+        P.blob(H, 0.33, 0.0, 0.5, 0.1, rgbHex(shade(col, 0.82)), 0.35);
+        P.band(H, 0.84, 1, shade(col, 0.97), 1, 0, 0.66);
+        P.line(H, [[0, 0.845], [0.66, 0.845]], shade(col, 0.7), 1.4, 0.7);
+        P.line(H, [[0, 0.985], [0.66, 0.985]], shade(col, 0.75), 1.2, 0.6, [3, 2]);
+        P.fabric('hat', H, 0.68, 0, 1, 1, 'poplin', col, { contrast: 0.3, scale: 0.5 });
+        for (let i = 0; i < 8; i++) P.line(H, [[0.84, 0.5], [0.84 + Math.cos(i * 0.785) * 0.13, 0.5 + Math.sin(i * 0.785) * 0.48]], shade(col, 0.8), 1, 0.45);
+        break;
+      }
+      case 'skullcap': {
+        // fitted chef skull cap: six-panel cotton crown with seams and a turned-up band
+        const H = R.hat as Region;
+        P.fabric('hat', H, 0, 0, 1, 1, 'twill_beige', col, { contrast: lum(col) > 0.5 ? 0.3 : 0.45, scale: 0.5 });
+        for (let i = 0; i < 6; i++) P.line(H, [[(i / 6) * 0.66, 0], [(i / 6) * 0.66, 0.78]], shade(col, lum(col) > 0.3 ? 0.68 : 1.6), 1.2, 0.7);
+        P.band(H, 0.78, 1, shade(col, 0.9), 1, 0, 0.66);
+        P.line(H, [[0, 0.79], [0.66, 0.79]], shade(col, lum(col) > 0.3 ? 0.62 : 1.7), 1.4, 0.8);
+        P.line(H, [[0, 0.93], [0.66, 0.93]], shade(col, lum(col) > 0.3 ? 0.75 : 1.5), 1, 0.6, [3, 2]);
+        P.dot(H, 0.33, 0.02, 3, shade(col, 0.8));
+        break;
+      }
+      case 'neckerchief': {
+        // folded cotton triangle scarf (shares the towel region): fine twill, folded-edge shading, little knot
+        const W = R.towel;
+        P.fabric('towel', W, 0, 0, 1, 1, 'poplin', col, { contrast: 0.45, scale: 0.7 });
+        P.fabric('towel', W, 0, 0, 1, 1, 'twill_beige', '#808080', { contrast: 0.22, noFill: true });
+        for (let i = 0; i < 5; i++) P.line(W, [[0, 0.2 + i * 0.15], [1, 0.25 + i * 0.15]], shade(col, 0.78), 1.4, 0.45);
+        P.band(W, 0, 0.12, shade(col, 0.84), 1); P.band(W, 0.88, 1, shade(col, 0.8), 1);
+        P.line(W, [[0, 0.06], [1, 0.06]], shade(col, 0.66), 1, 0.6, [2, 2]);
+        P.noise(W, 0.12);
+        break;
+      }
+      case 'apron_waist': {
+        // bistro waist apron: heavy cotton, pocket band, ties painted round the waist
+        const Ap = R.apron;
+        if (spec.acc.some((x) => x.kind === 'apron')) break;
+        P.fabric('apron', Ap, 0, 0, 1, 1, 'canvas', col, { contrast: lum(col) > 0.5 ? 0.25 : 0.4, scale: 0.8 });
+        P.fabric('apron', Ap, 0, 0, 1, 1, 'twill_beige', '#808080', { contrast: 0.25, noFill: true });
+        P.band(Ap, 0, 0.06, shade(col, 0.82), 1);
+        P.line(Ap, [[0.08, 0.3], [0.92, 0.3]], shade(col, lum(col) > 0.5 ? 0.7 : 1.6), 1.4, 0.7, [3, 2]);
+        P.line(Ap, [[0.08, 0.48], [0.92, 0.48]], shade(col, lum(col) > 0.5 ? 0.7 : 1.6), 1.4, 0.7, [3, 2]);
+        for (const x of [0.36, 0.64]) P.line(Ap, [[x, 0.3], [x, 0.48]], shade(col, lum(col) > 0.5 ? 0.7 : 1.6), 1.2, 0.7, [3, 2]);
+        P.band(Ap, 0.965, 1, shade(col, 0.85), 1);
+        for (let i = 0; i < 4; i++) P.blob(Ap, 0.2 + r.next() * 0.6, 0.55 + r.next() * 0.35, 0.03 + r.next() * 0.04, 0.02 + r.next() * 0.03, r.next() < 0.5 ? '#7a4a20' : '#a8742a', 0.12 + r.next() * 0.12);
+        // ties round the waist + bow at the back
+        P.band(T, torsoT(0.99), torsoT(0.965), col, 1, 0, 1);
+        P.line(T, [[0.0, torsoT(0.98)], [0.04, torsoT(0.9)]], col, 5, 1); P.line(T, [[1.0, torsoT(0.98)], [0.96, torsoT(0.9)]], col, 5, 1);
+        P.blob(T, 0.0, torsoT(0.98), 0.03, 0.03, rgbHex(shade(col, 0.8)), 0.8, true);
+        break;
+      }
       case 'sash': {
         const g = P.g; g.save(); P.clipRegion(T);
         g.strokeStyle = col; g.lineWidth = 26; g.globalAlpha = 0.95;
@@ -1134,6 +1221,96 @@ function paintAcc(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
     }
   }
   void skin;
+}
+
+// ------------------------------------------------------------------ chef whites
+
+/** double-breasted chef jacket details: overlap edge, two button columns with cloth-knot buttons, princess
+ *  seams, optional piping (color2), turn-back cuffs, chest embroidery, faint kitchen wear */
+function paintChefJacket(P: Painter, look: Look, top: TopSpec, col: string, c2: string, neckF: number, tH: number, se: number, tSleeve: number, r: RNG) {
+  const T = R.torso, A = R.arm;
+  const light = lum(col) > 0.5;
+  const pip = Math.abs(lum(col) - lum(c2)) > 0.15 ? c2 : null;
+  const edge = 0.575;
+  // the top panel (wearer's right) overlaps to the wearer's left: cast shadow strip, folded edge, highlight
+  P.band(T, neckF + 0.01, tH, shade(col, light ? 0.8 : 0.6), 0.45, edge, edge + 0.014);
+  P.line(T, [[edge, neckF + 0.008], [edge, tH]], shade(col, light ? 0.6 : 0.45), 1.8, 0.9);
+  P.line(T, [[edge - 0.007, neckF + 0.008], [edge - 0.007, tH]], light ? '#ffffff' : shade(col, 1.6), 1, light ? 0.6 : 0.35);
+  if (pip) { P.line(T, [[edge - 0.003, neckF + 0.004], [edge - 0.003, tH]], pip, 2.4, 1); P.band(T, tH - 0.012, tH, pip, 1, 0.42, edge); }
+  // princess seams + side seams
+  for (const sx of [0.38, 0.62, 0.13, 0.87]) {
+    const k = sx < 0.5 ? 1 : -1;
+    P.line(T, [[sx - k * 0.02, torsoT(1.43)], [sx, torsoT(1.3)], [sx + k * 0.012, torsoT(1.12)], [sx + k * 0.004, tH]], shade(col, light ? 0.78 : 0.6), 1.1, 0.5);
+    P.line(T, [[sx - k * 0.02 + 0.004, torsoT(1.43)], [sx + 0.004, torsoT(1.3)], [sx + k * 0.012 + 0.004, torsoT(1.12)], [sx + k * 0.004 + 0.004, tH]], light ? '#ffffff' : shade(col, 1.5), 0.8, 0.3);
+  }
+  // shoulder seams
+  for (const sx of [0.25, 0.75]) P.line(T, [[sx - 0.05, torsoT(1.47)], [sx + 0.05, torsoT(1.47)]], shade(col, light ? 0.75 : 0.6), 1, 0.45);
+  // two columns of cloth-knot buttons (5 rows): contact shadow, dome, knot cross, highlight
+  const btn = light ? '#fbfaf6' : '#f2f0ea';
+  for (let i = 0; i < 5; i++) {
+    const t = torsoT(1.39 - i * 0.075);
+    for (const sx of [0.448, 0.552]) {
+      P.blob(T, sx, t + 0.006, 0.012, 0.012, light ? '#6a6458' : '#000000', light ? 0.45 : 0.6);
+      P.dot(T, sx, t, 3.6, light ? '#d9d6cc' : '#cfcbc0');
+      P.dot(T, sx, t - 0.002, 2.9, btn, 'rgba(255,255,255,0.85)');
+      P.line(T, [[sx - 0.004, t - 0.002], [sx + 0.004, t - 0.002]], light ? '#b8b3a6' : '#9a958a', 0.7, 0.8);
+      P.line(T, [[sx, t - 0.006], [sx, t + 0.002]], light ? '#b8b3a6' : '#9a958a', 0.7, 0.8);
+    }
+  }
+  // chest embroidery on the wearer's left (beyond the overlap): shop name + chef's knife icon
+  const ink = light ? '#1f3a6a' : '#e2c27a';
+  P.text(T, 0.69, torsoT(1.355), 'เฮียผัด', '800 "Noto Sans Thai Looped"', 17, ink);
+  P.line(T, [[0.645, torsoT(1.317)], [0.735, torsoT(1.317)]], ink, 1.4, 0.9);
+  P.line(T, [[0.72, torsoT(1.317)], [0.745, torsoT(1.31)]], ink, 2.2, 0.9);
+  // sleeves: piping at the shoulder, turn-back cuffs
+  if (tSleeve > 0) {
+    if (top.sleeve === 'long') {
+      P.band(A, armT(se - 0.075), armT(se - 0.07), shade(col, light ? 0.72 : 0.55), 0.7);
+      P.band(A, armT(se - 0.07), tSleeve, shade(col, light ? 0.95 : 1.12), 1);
+      if (pip) P.band(A, armT(se - 0.074), armT(se - 0.066), pip, 1);
+    }
+    for (let i = 0; i < 4; i++) P.line(A, [[0.55 + i * 0.1, armT(0.3)], [0.6 + i * 0.08, armT(0.38)]], shade(col, light ? 0.8 : 0.6), 1.6, 0.35);
+  }
+  // collar piping (collar geometry: t = 0 top edge)
+  if (pip) P.band(R.collar, 0, 0.16, pip, 1);
+  P.line(R.collar, [[0, 0.9], [1, 0.9]], shade(col, light ? 0.75 : 0.6), 1, 0.6, [3, 2]);
+  // a working jacket: a few faint sauce / oil marks near the belly and cuffs
+  if (light) {
+    for (let i = 0; i < 6; i++) P.blob(T, 0.36 + r.next() * 0.28, torsoT(1.12) + r.next() * 0.18, 0.004 + r.next() * 0.008, 0.004 + r.next() * 0.008, r.next() < 0.5 ? '#c8783a' : '#b89a5a', 0.18 + r.next() * 0.16);
+    P.blob(A, 0.5, tSleeve - 0.02, 0.4, 0.03, '#b8a888', 0.18);
+  }
+  void look;
+}
+
+let hsTile: { col: string; cv: HTMLCanvasElement } | null = null;
+/** 32 px houndstooth repeat (8×8 cells) in `col` on transparent */
+function houndstoothTile(col: string) {
+  if (hsTile && hsTile.col === col) return hsTile.cv;
+  const rows = ['11110001', '11110011', '11110111', '11111110', '01110000', '00110000', '00010000', '10000000'];
+  const cv = document.createElement('canvas'); cv.width = cv.height = 32;
+  const g = cv.getContext('2d')!;
+  g.fillStyle = col;
+  rows.forEach((row, y) => [...row].forEach((c, x) => { if (c === '1') g.fillRect(x * 4, y * 4, 4, 4); }));
+  hsTile = { col, cv };
+  return cv;
+}
+
+/** glossy moulded kitchen clogs: one-piece upper, vent holes on the instep, chunky anti-slip sole */
+function paintClogs(P: Painter, col: string) {
+  const F = R.foot, S = R.sole;
+  P.fabric('foot', F, 0, 0, 1, 1, 'leather', col, { contrast: 0.22 });
+  // rounded toe box highlight + instep sheen
+  P.blob(F, 0.5, 0.86, 0.2, 0.1, '#ffffff', lum(col) > 0.5 ? 0.12 : 0.28);
+  P.blob(F, 0.5, 0.55, 0.08, 0.16, '#ffffff', lum(col) > 0.5 ? 0.08 : 0.16);
+  // vent holes
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) P.dot(F, 0.42 + j * 0.08, 0.5 + i * 0.07, 2, shade(col, lum(col) > 0.5 ? 0.6 : 0.35));
+  // thick sole band all round (s near 0/1) + heel
+  const sole = lum(col) > 0.5 ? '#cfcac0' : '#202022';
+  P.band(F, 0, 1, sole, 1, 0, 0.14); P.band(F, 0, 1, sole, 1, 0.86, 1);
+  P.band(F, 0, 1, shade(sole, 0.7), 1, 0.135, 0.15); P.band(F, 0, 1, shade(sole, 0.7), 1, 0.85, 0.865);
+  P.band(F, 0, 0.1, sole, 1, 0.15, 0.85);
+  P.fabric('sole', S, 0, 0, 1, 1, 'rubber', sole, { contrast: 0.4 });
+  for (let i = 0; i < 9; i++) P.line(S, [[0.1, 0.1 + i * 0.1], [0.9, 0.12 + i * 0.1]], shade(sole, 0.6), 2, 0.6);
 }
 
 // ------------------------------------------------------------------ hair texture

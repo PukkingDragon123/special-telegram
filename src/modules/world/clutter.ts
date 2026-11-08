@@ -6,6 +6,7 @@ import { MAP_BOUNDS } from '../../game/mapplan';
 import { G, groups } from '../../sim/physics';
 import { MODELS, type RealProps, type PlaceOpts } from './realprops';
 import { libEntry } from './lib';
+import { SOI_CROSSINGS } from './nav';
 import { PLASTIC_COLORS } from './props';
 import { ROWS, MARKET, ZEBRAS, OFFICE, CROAD, TEMPLE, POLES_MAIN_N, POLES_MAIN_S, groundHeight, type UnitSpec } from './layout';
 
@@ -92,7 +93,9 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       else if (z > -1 && z < 27 && Math.abs(x - zb.at) < zb.w / 2 + 1.0 + r) return true;
     }
     // nav walking lanes (src/modules/world/nav.ts): soi ±4.75, main road z 3 / 24, office plaza z -4.5, canal sidewalk
-    if (z > -157.5 && z < 2 && Math.abs(Math.abs(x) - 4.75) < 0.5 + r) return true;
+    if (z > -157.5 && z < 2 && Math.abs(Math.abs(x) - 4.6) < 0.45 + r) return true;
+    // soi crossing lanes: nothing parked across them (nav.ts SOI_CROSSINGS)
+    if (Math.abs(x) < 6.2 && SOI_CROSSINGS.some((zc) => Math.abs(z - zc) < 0.75 + r)) return true;
     if (Math.abs(x) > 3 && Math.abs(z - 3.0) < 0.65 + r) return true;
     if (Math.abs(z - 24.0) < 0.65 + r) return true;
     if (x > OFFICE.plazaX0 && x < OFFICE.plazaX1 + 1 && Math.abs(z + 4.5) < 0.6 + r) return true;

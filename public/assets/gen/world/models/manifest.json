@@ -1,4 +1,22 @@
 {
+ "anthurium_botany_01": {
+  "file": "anthurium_botany_01/anthurium_botany_01.glb",
+  "name": "Anthurium Botany 01",
+  "bytes": 88220,
+  "srcTris": 67152,
+  "tris": 3001,
+  "dims": [
+   2.806,
+   1.801,
+   0.507
+  ],
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/anthurium_botany_01"
+ },
  "bananas": {
   "file": "bananas/bananas.glb",
   "name": "Bananas",
@@ -67,6 +85,24 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/boombox"
  },
+ "calathea_orbifolia_01": {
+  "file": "calathea_orbifolia_01/calathea_orbifolia_01.glb",
+  "name": "Calathea Orbifolia 01",
+  "bytes": 81092,
+  "srcTris": 16688,
+  "tris": 3000,
+  "dims": [
+   2.492,
+   1.194,
+   0.424
+  ],
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/calathea_orbifolia_01"
+ },
  "can_rusted": {
   "file": "can_rusted/can_rusted.glb",
   "name": "Can Rusted",
@@ -130,7 +166,7 @@
    0.372
   ],
   "authors": [
-   "Aron \u0141yczek"
+   "Aron Łyczek"
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/ceramic_pot"
@@ -151,6 +187,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/cleaner_tin_01"
+ },
+ "compost_bags": {
+  "file": "compost_bags/compost_bags.glb",
+  "name": "Compost Bags",
+  "bytes": 135508,
+  "srcTris": 18708,
+  "tris": 3616,
+  "dims": [
+   1.847,
+   0.946,
+   0.768
+  ],
+  "authors": [
+   "James Ray Cock"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/compost_bags"
  },
  "concrete_road_barrier_02": {
   "file": "concrete_road_barrier_02/concrete_road_barrier_02.glb",
@@ -203,6 +256,23 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/dustpan"
  },
+ "exterior_aircon_unit": {
+  "file": "exterior_aircon_unit/exterior_aircon_unit.glb",
+  "name": "Exterior Aircon Unit",
+  "bytes": 409688,
+  "srcTris": 18986,
+  "tris": 4678,
+  "dims": [
+   1.8,
+   0.374,
+   0.928
+  ],
+  "authors": [
+   "Monsta3D"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/exterior_aircon_unit"
+ },
  "fire_hydrant": {
   "file": "fire_hydrant/fire_hydrant.glb",
   "name": "Fire Hydrant",
@@ -215,7 +285,7 @@
    0.799
   ],
   "authors": [
-   "Gon\u00e7alo Fel\u00edcio"
+   "Gonçalo Felício"
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/fire_hydrant"
@@ -271,6 +341,23 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/food_lychee_01"
  },
+ "garden_hose_wall_mounted_01": {
+  "file": "garden_hose_wall_mounted_01/garden_hose_wall_mounted_01.glb",
+  "name": "Garden Hose Wall Mounted 01",
+  "bytes": 156340,
+  "srcTris": 11684,
+  "tris": 6954,
+  "dims": [
+   0.467,
+   0.25,
+   0.557
+  ],
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/garden_hose_wall_mounted_01"
+ },
  "hand_truck": {
   "file": "hand_truck/hand_truck.glb",
   "name": "Hand Truck",
@@ -305,6 +392,58 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/industrial_pastic_container"
  },
+ "island_tree_02": {
+  "file": "island_tree_02/island_tree_02.glb",
+  "name": "Island Tree 02",
+  "bytes": 565368,
+  "srcTris": 1072213,
+  "tris": 9281,
+  "dims": [
+   8.486,
+   4.079,
+   3.409
+  ],
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/island_tree_02"
+ },
+ "korean_fire_extinguisher_01": {
+  "file": "korean_fire_extinguisher_01/korean_fire_extinguisher_01.glb",
+  "name": "Korean Fire Extinguisher 01",
+  "bytes": 204644,
+  "srcTris": 9913,
+  "tris": 3234,
+  "dims": [
+   0.28,
+   0.367,
+   0.659
+  ],
+  "authors": [
+   "UM JOORIN"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/korean_fire_extinguisher_01"
+ },
+ "ladder_sectioned_01": {
+  "file": "ladder_sectioned_01/ladder_sectioned_01.glb",
+  "name": "Ladder Sectioned 01",
+  "bytes": 113756,
+  "srcTris": 29140,
+  "tris": 3509,
+  "dims": [
+   0.662,
+   0.178,
+   2.135
+  ],
+  "authors": [
+   "MP"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/ladder_sectioned_01"
+ },
  "lightbulb_01": {
   "file": "lightbulb_01/lightbulb_01.glb",
   "name": "Lightbulb 01",
@@ -322,6 +461,23 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/lightbulb_01"
  },
+ "metal_jerrycan": {
+  "file": "metal_jerrycan/metal_jerrycan.glb",
+  "name": "Metal Jerrycan",
+  "bytes": 141776,
+  "srcTris": 20022,
+  "tris": 2999,
+  "dims": [
+   0.35,
+   0.172,
+   0.455
+  ],
+  "authors": [
+   "Sean Buckley"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/metal_jerrycan"
+ },
  "metal_stool_02": {
   "file": "metal_stool_02/metal_stool_02.glb",
   "name": "Metal Stool 02",
@@ -338,6 +494,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/metal_stool_02"
+ },
+ "metal_trash_can": {
+  "file": "metal_trash_can/metal_trash_can.glb",
+  "name": "Metal Trash Can",
+  "bytes": 279784,
+  "srcTris": 13960,
+  "tris": 3722,
+  "dims": [
+   1.847,
+   0.556,
+   0.906
+  ],
+  "authors": [
+   "GurJas Studios"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/metal_trash_can"
  },
  "multi_cleaner_5_litre": {
   "file": "multi_cleaner_5_litre/multi_cleaner_5_litre.glb",
@@ -373,6 +546,24 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/old_tyre"
  },
+ "pachira_aquatica_01": {
+  "file": "pachira_aquatica_01/pachira_aquatica_01.glb",
+  "name": "Pachira Aquatica 01",
+  "bytes": 179268,
+  "srcTris": 76914,
+  "tris": 2985,
+  "dims": [
+   6.869,
+   0.997,
+   1.904
+  ],
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/pachira_aquatica_01"
+ },
  "painted_wooden_bench": {
   "file": "painted_wooden_bench/painted_wooden_bench.glb",
   "name": "Painted Wooden Bench",
@@ -389,6 +580,57 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/painted_wooden_bench"
+ },
+ "painted_wooden_stool": {
+  "file": "painted_wooden_stool/painted_wooden_stool.glb",
+  "name": "Painted Wooden Stool",
+  "bytes": 90104,
+  "srcTris": 676,
+  "tris": 676,
+  "dims": [
+   0.385,
+   0.406,
+   0.579
+  ],
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/painted_wooden_stool"
+ },
+ "planter_box_02": {
+  "file": "planter_box_02/planter_box_02.glb",
+  "name": "Planter Box 02",
+  "bytes": 134232,
+  "srcTris": 10944,
+  "tris": 2998,
+  "dims": [
+   1.252,
+   0.467,
+   0.453
+  ],
+  "authors": [
+   "James Ray Cock"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/planter_box_02"
+ },
+ "planter_box_03": {
+  "file": "planter_box_03/planter_box_03.glb",
+  "name": "Planter Box 03",
+  "bytes": 139888,
+  "srcTris": 13112,
+  "tris": 2956,
+  "dims": [
+   0.914,
+   0.656,
+   0.855
+  ],
+  "authors": [
+   "James Ray Cock"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/planter_box_03"
  },
  "planter_pot_clay": {
   "file": "planter_pot_clay/planter_pot_clay.glb",
@@ -441,6 +683,23 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/plastic_broom"
  },
+ "plastic_crate_01": {
+  "file": "plastic_crate_01/plastic_crate_01.glb",
+  "name": "Plastic Crate 01",
+  "bytes": 278044,
+  "srcTris": 18320,
+  "tris": 10532,
+  "dims": [
+   0.298,
+   0.408,
+   0.264
+  ],
+  "authors": [
+   "PierreB3D"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/plastic_crate_01"
+ },
  "plastic_crate_02": {
   "file": "plastic_crate_02/plastic_crate_02.glb",
   "name": "Plastic Crate 02",
@@ -457,6 +716,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/plastic_crate_02"
+ },
+ "plastic_crate_03": {
+  "file": "plastic_crate_03/plastic_crate_03.glb",
+  "name": "Plastic Crate 03",
+  "bytes": 287300,
+  "srcTris": 21740,
+  "tris": 11926,
+  "dims": [
+   0.481,
+   0.265,
+   0.266
+  ],
+  "authors": [
+   "Pacific Penguin"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/plastic_crate_03"
  },
  "plastic_jerrycan": {
   "file": "plastic_jerrycan/plastic_jerrycan.glb",
@@ -491,6 +767,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/plastic_monobloc_chair_01"
+ },
+ "potted_plant_01": {
+  "file": "potted_plant_01/potted_plant_01.glb",
+  "name": "Potted Plant 01",
+  "bytes": 335464,
+  "srcTris": 176226,
+  "tris": 14721,
+  "dims": [
+   0.589,
+   0.637,
+   1.351
+  ],
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/potted_plant_01"
  },
  "potted_plant_02": {
   "file": "potted_plant_02/potted_plant_02.glb",
@@ -561,6 +854,92 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/propane_tank"
  },
+ "security_camera_01": {
+  "file": "security_camera_01/security_camera_01.glb",
+  "name": "Security Camera 01",
+  "bytes": 91532,
+  "srcTris": 13571,
+  "tris": 3001,
+  "dims": [
+   0.17,
+   0.554,
+   0.286
+  ],
+  "authors": [
+   "Alexander Otterbeck",
+   "Yann Kervran"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/security_camera_01"
+ },
+ "security_light": {
+  "file": "security_light/security_light.glb",
+  "name": "Security Light",
+  "bytes": 144468,
+  "srcTris": 4668,
+  "tris": 3044,
+  "dims": [
+   0.323,
+   0.417,
+   0.531
+  ],
+  "authors": [
+   "Maximilian Schuster"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/security_light"
+ },
+ "shrub_01": {
+  "file": "shrub_01/shrub_01.glb",
+  "name": "Shrub 01",
+  "bytes": 131544,
+  "srcTris": 156012,
+  "tris": 2988,
+  "dims": [
+   2.587,
+   0.219,
+   0.396
+  ],
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/shrub_01"
+ },
+ "shrub_02": {
+  "file": "shrub_02/shrub_02.glb",
+  "name": "Shrub 02",
+  "bytes": 96540,
+  "srcTris": 27254,
+  "tris": 2899,
+  "dims": [
+   5.341,
+   2.061,
+   2.071
+  ],
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/shrub_02"
+ },
+ "shrub_03": {
+  "file": "shrub_03/shrub_03.glb",
+  "name": "Shrub 03",
+  "bytes": 106772,
+  "srcTris": 8287,
+  "tris": 2999,
+  "dims": [
+   1.367,
+   0.151,
+   0.403
+  ],
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/shrub_03"
+ },
  "small_lpg_tank": {
   "file": "small_lpg_tank/small_lpg_tank.glb",
   "name": "Small Lpg Tank",
@@ -629,6 +1008,23 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/trashbag"
  },
+ "tree_small_02": {
+  "file": "tree_small_02/tree_small_02.glb",
+  "name": "Tree Small 02",
+  "bytes": 864940,
+  "srcTris": 2062487,
+  "tris": 36042,
+  "dims": [
+   2.921,
+   4.293,
+   4.65
+  ],
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/tree_small_02"
+ },
  "utility_box_01": {
   "file": "utility_box_01/utility_box_01.glb",
   "name": "Utility Box 01",
@@ -645,6 +1041,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/utility_box_01"
+ },
+ "watering_can_metal_01": {
+  "file": "watering_can_metal_01/watering_can_metal_01.glb",
+  "name": "Watering Can Metal 01",
+  "bytes": 153304,
+  "srcTris": 11837,
+  "tris": 2999,
+  "dims": [
+   0.191,
+   0.452,
+   0.197
+  ],
+  "authors": [
+   "Charles Nderitu"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/watering_can_metal_01"
  },
  "WetFloorSign_01": {
   "file": "WetFloorSign_01/WetFloorSign_01.glb",
@@ -747,6 +1160,23 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/wooden_display_shelves_01"
+ },
+ "wooden_stool_02": {
+  "file": "wooden_stool_02/wooden_stool_02.glb",
+  "name": "Wooden Stool 02",
+  "bytes": 140420,
+  "srcTris": 11146,
+  "tris": 3000,
+  "dims": [
+   0.265,
+   0.183,
+   0.182
+  ],
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/wooden_stool_02"
  },
  "worn_metal_rack": {
   "file": "worn_metal_rack/worn_metal_rack.glb",

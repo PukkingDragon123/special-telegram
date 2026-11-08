@@ -13,12 +13,35 @@ import { B, NB, RestSkel, restDir } from './skel';
  *   side: +1 = LEFT limb, -1 = RIGHT limb
  * ========================================================================================== */
 
+/** finger shapes: curl per finger [thumb, index, middle, ring, pinky] (0 straight … 1 fist) + spread (−1 … 1) */
+export const HAND_SHAPES = {
+  relax: [0.28, 0.24, 0.32, 0.4, 0.48, 0.12],
+  fist: [0.85, 1, 1, 1, 1, 0],
+  point: [0.75, 0, 1, 1, 1, 0],
+  open: [0.02, 0, 0, 0, 0, 0.75],
+  flat: [0.12, 0.02, 0.02, 0.02, 0.02, 0],
+  claw: [0.3, 0.5, 0.58, 0.64, 0.7, 0.85],
+  grip: [0.55, 0.62, 0.7, 0.76, 0.82, 0],
+  vsign: [0.8, 0, 0, 1, 1, 0.6],
+  thumb: [0, 1, 1, 1, 1, 0],
+  frame: [0.1, 0.08, 0.14, 0.2, 0.26, 0.95],
+} satisfies Record<string, number[]>;
+export type HandShape = keyof typeof HAND_SHAPES;
+export const HS_N = 6;
+
 export class Pose {
   q = new Float32Array(NB * 4);
   hp = new Float32Array(3);
+  /** hand shapes: [0..5] left, [6..11] right (see HAND_SHAPES) */
+  hs = new Float32Array(HS_N * 2);
   constructor() { this.identity(); }
-  identity() { for (let i = 0; i < NB; i++) { this.q[i * 4] = 0; this.q[i * 4 + 1] = 0; this.q[i * 4 + 2] = 0; this.q[i * 4 + 3] = 1; } this.hp[0] = this.hp[1] = this.hp[2] = 0; return this; }
-  copy(o: Pose) { this.q.set(o.q); this.hp.set(o.hp); return this; }
+  identity() {
+    for (let i = 0; i < NB; i++) { this.q[i * 4] = 0; this.q[i * 4 + 1] = 0; this.q[i * 4 + 2] = 0; this.q[i * 4 + 3] = 1; }
+    this.hp[0] = this.hp[1] = this.hp[2] = 0;
+    this.hs.set(HAND_SHAPES.relax, 0); this.hs.set(HAND_SHAPES.relax, HS_N);
+    return this;
+  }
+  copy(o: Pose) { this.q.set(o.q); this.hp.set(o.hp); this.hs.set(o.hs); return this; }
 }
 
 const D = Math.PI / 180;
@@ -38,6 +61,7 @@ export function blendPose(out: Pose, a: Pose, b: Pose, t: number, bones?: readon
     setQ(out, bi, _qa);
   }
   if (!bones || bones.includes(B.hips)) for (let k = 0; k < 3; k++) out.hp[k] = a.hp[k] + (b.hp[k] - a.hp[k]) * t;
+  if (!bones) for (let k = 0; k < HS_N * 2; k++) out.hs[k] = a.hs[k] + (b.hs[k] - a.hs[k]) * t;
 }
 export const ALL = Array.from({ length: NB }, (_, i) => i);
 export const UPPER = [B.spine, B.chest, B.neck, B.head, B.clav_l, B.upperarm_l, B.forearm_l, B.hand_l, B.clav_r, B.upperarm_r, B.forearm_r, B.hand_r];
@@ -137,6 +161,15 @@ export class PoseBuilder {
     const azim = Math.atan2(x, z) / D;
     return this.leg(side, elev, azim, knee, foot);
   }
+
+  /** finger shape for one hand (side +1 = left), optionally blended over the current one */
+  hand(side: number, shape: HandShape | number[], w = 1) {
+    const src = typeof shape === 'string' ? HAND_SHAPES[shape] : shape;
+    const o = side > 0 ? 0 : HS_N;
+    for (let k = 0; k < HS_N; k++) this.p.hs[o + k] += ((src[k] ?? 0) - this.p.hs[o + k]) * w;
+    return this;
+  }
+  hands(shape: HandShape | number[], w = 1) { this.hand(1, shape, w); return this.hand(-1, shape, w); }
 
   /** set the whole hips orientation from an explicit basis (lying poses) */
   hipsBasis(x: THREE.Vector3, y: THREE.Vector3, z: THREE.Vector3) {

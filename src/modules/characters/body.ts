@@ -225,8 +225,10 @@ export function buildBody(spec: BodySpec, lod: Lod): BodyResult {
   buildCollar(ctx);
   for (const a of spec.acc) {
     if (a.kind === 'apron') buildApron(ctx);
+    else if (a.kind === 'apron_waist') { if (!spec.acc.some((x) => x.kind === 'apron')) buildWaistApron(ctx); }
     else if (a.kind === 'backpack') buildBackpack(ctx);
     else if (a.kind === 'towel') buildTowel(ctx);
+    else if (a.kind === 'neckerchief') buildNeckerchief(ctx);
   }
   return { geo: G, skel: sk, spec };
 }
@@ -238,8 +240,10 @@ export function buildBodyExtras(G: Geo, spec: BodySpec, lod: Lod, torsoR: (y: nu
   buildCollar(ctx);
   for (const a of spec.acc) {
     if (a.kind === 'apron') buildApron(ctx);
+    else if (a.kind === 'apron_waist') { if (!spec.acc.some((x) => x.kind === 'apron')) buildWaistApron(ctx); }
     else if (a.kind === 'backpack') buildBackpack(ctx);
     else if (a.kind === 'towel') buildTowel(ctx);
+    else if (a.kind === 'neckerchief') buildNeckerchief(ctx);
   }
 }
 
@@ -795,6 +799,106 @@ function buildApron(c: Ctx) {
   for (let i = 0; i < ys.length - 1; i++) for (let j = 0; j < cols; j++) {
     G.triOut(grid[i][j], grid[i + 1][j], grid[i][j + 1], [0, 0, 1]); G.triOut(grid[i][j + 1], grid[i + 1][j], grid[i + 1][j + 1], [0, 0, 1]);
     G.triOut(gridB[i][j], gridB[i][j + 1], gridB[i + 1][j], [0, 0, -1]); G.triOut(gridB[i][j + 1], gridB[i + 1][j + 1], gridB[i + 1][j], [0, 0, -1]);
+  }
+}
+
+// ------------------------------------------------------------------ bistro waist apron (chefs)
+
+function buildWaistApron(c: Ctx) {
+  const { G, s, hi } = c;
+  const cols = hi ? 10 : 5;
+  const Y0 = 0.985, Y1 = 0.47;
+  const ys = hi ? [0.985, 0.95, 0.9, 0.84, 0.78, 0.71, 0.64, 0.57, 0.5, 0.47] : [0.985, 0.88, 0.72, 0.56, 0.47];
+  // over a loose untucked jacket the apron has to clear the jacket shell
+  const clear = s.top.loose >= 0.018 && s.top.hem < 0.9 ? 0.026 : 0.012;
+  const front = (y: number, x: number): number => {
+    if (y > 0.84) {
+      const yy = Math.max(0.86, y);
+      const th = Math.atan2(x, 0.12);
+      return c.torsoC(yy) + c.torsoR(yy, th) * Math.cos(th) + clear;
+    }
+    const top = front(0.85, x);
+    return lerp(top, 0.13 + s.build * 0.05 - Math.abs(x) * 0.2, smooth(0.84, 0.6, y));
+  };
+  const halfW = (y: number) => lerp(0.2 + s.build * 0.05, 0.215 + s.build * 0.05, smooth(0.98, 0.6, y));
+  const grid: number[][] = [], gridB: number[][] = [];
+  for (let i = 0; i < ys.length; i++) {
+    const y = ys[i];
+    const row: number[] = [], rowB: number[] = [];
+    for (let j = 0; j <= cols; j++) {
+      const x = lerp(-halfW(y), halfW(y), j / cols);
+      // gentle vertical folds below the waist
+      const fold = Math.sin((j / cols) * Math.PI * 5) * 0.006 * smooth(0.9, 0.6, y);
+      const p: V3 = [x, y, front(y, x) + fold];
+      const k = smooth(0.86, 0.62, y) * 0.85;
+      const ts = clamp01(0.5 + x / 0.2);
+      const w: W = k > 0 ? [B.hips, 1 - k, B.thigh_l, k * ts, B.thigh_r, k * (1 - ts)] : wb(B.hips);
+      const [u, v] = ruv(R.apron, j / cols, (Y0 - y) / (Y0 - Y1));
+      row.push(G.v(p, [x * 2.5, 0, 1], u, v, w));
+      rowB.push(G.v(p, [-x * 2.5, 0, -1], u, v, w));
+    }
+    grid.push(row); gridB.push(rowB);
+  }
+  for (let i = 0; i < ys.length - 1; i++) for (let j = 0; j < cols; j++) {
+    G.triOut(grid[i][j], grid[i + 1][j], grid[i][j + 1], [0, 0, 1]); G.triOut(grid[i][j + 1], grid[i + 1][j], grid[i + 1][j + 1], [0, 0, 1]);
+    G.triOut(gridB[i][j], gridB[i][j + 1], gridB[i + 1][j], [0, 0, -1]); G.triOut(gridB[i][j + 1], gridB[i + 1][j + 1], gridB[i + 1][j], [0, 0, -1]);
+  }
+}
+
+// ------------------------------------------------------------------ chef's neckerchief
+
+/** rolled cotton scarf round the neck (just above the collar) with a knot and two short tails at the front;
+ *  shares the towel atlas region (same 'neck' slot) */
+function buildNeckerchief(c: Ctx) {
+  const { G, s, hi } = c;
+  const k = (s.sex === 'f' ? 0.86 : 1) * (0.92 + s.build * 0.18);
+  const R0 = 0.056 * k + (s.top.collar === 'mandarin' || s.top.collar === 'shirt' || s.top.collar === 'polo' ? 0.013 : 0.006);
+  const cz = -0.016;
+  const segs = hi ? 6 : 4;
+  const N = hi ? 22 : 12;
+  const wN: W = [B.neck, 0.45, B.chest, 0.55];
+  const flatR = (n: number) => Array.from({ length: n }, (_, j) => { const th = -Math.PI + (2 * Math.PI * j) / n; const cc = Math.abs(Math.cos(th)), ss = Math.abs(Math.sin(th)); return 1 / Math.pow(Math.pow(cc / 0.0065, 2.4) + Math.pow(ss / 0.012, 2.4), 1 / 2.4); });
+  // band round the neck (open loop that starts and ends at the knot)
+  const path: V3[] = [];
+  for (let i = 0; i <= N; i++) {
+    const a = lerp(0.32, Math.PI * 2 - 0.32, i / N); // angle from the front, around the back
+    const front = Math.max(0, Math.cos(a));
+    path.push([Math.sin(a) * (R0 + front * 0.004), 1.474 - front * 0.014, cz + Math.cos(a) * (R0 + front * 0.004)]);
+  }
+  const rings: Ring[] = path.map((p, i) => {
+    const a = v3norm(v3sub(path[Math.min(path.length - 1, i + 1)], path[Math.max(0, i - 1)]));
+    const fr = frame(a, v3norm([p[0], 0, p[2] - cz]));
+    return { c: p, f: fr.f, s: fr.s, r: flatR(segs), t: i / N, w: wN };
+  });
+  loft(G, rings, { n: segs, uv: (u, v) => ruv(R.towel, v, u * 0.5), capStart: { depth: 0.003 }, capEnd: { depth: 0.003 } });
+  // knot: a squashed blob at the front
+  const kc: V3 = [0, 1.457, cz + R0 + 0.012];
+  const kr: Ring[] = [-1, -0.6, 0, 0.6, 1].map((q, i) => {
+    const f = Math.sqrt(Math.max(0.05, 1 - q * q * 0.85));
+    return { c: [kc[0], kc[1] + q * 0.011, kc[2] + (1 - Math.abs(q)) * 0.002] as V3, f: [0, 0, 1] as V3, s: [1, 0, 0] as V3, r: superR(0.015 * f, 0.009 * f, 2.2, 8), t: i / 4, w: wN };
+  });
+  loft(G, kr, { n: 8, uv: (u, v) => ruv(R.towel, 0.4 + u * 0.2, 0.5 + v * 0.4), capStart: { depth: 0.002 }, capEnd: { depth: 0.002 } });
+  // two short triangular tails hanging from the knot, splayed a little
+  for (const sd of [-1, 1]) {
+    const top: V3 = [sd * 0.006, 1.452, kc[2] + 0.004];
+    const rows = hi ? 5 : 3;
+    const L: number[] = [], Rr: number[] = [], Lb: number[] = [], Rb: number[] = [];
+    for (let i = 0; i <= rows; i++) {
+      const t = i / rows;
+      const y = top[1] - t * 0.06;
+      const zc = lerp(top[2], c.torsoC(y) + c.torsoR(y, sd * 0.25) * 0.97 + 0.02, smooth(0, 1, t));
+      const xc = top[0] + sd * t * 0.022;
+      const hw = lerp(0.012, 0.0015, t);
+      const nrm: V3 = [sd * 0.2, 0.25, 1];
+      const [u1, v1] = ruv(R.towel, 0.62 + t * 0.35, 0.2);
+      const [u2, v2] = ruv(R.towel, 0.62 + t * 0.35, 0.8);
+      L.push(G.v([xc - hw, y, zc], nrm, u1, v1, wb(B.chest))); Rr.push(G.v([xc + hw, y, zc], nrm, u2, v2, wb(B.chest)));
+      Lb.push(G.v([xc - hw, y, zc - 0.002], v3mul(nrm, -1), u1, v1, wb(B.chest))); Rb.push(G.v([xc + hw, y, zc - 0.002], v3mul(nrm, -1), u2, v2, wb(B.chest)));
+    }
+    for (let i = 0; i < rows; i++) {
+      G.triOut(L[i], L[i + 1], Rr[i], [0, 0, 1]); G.triOut(Rr[i], L[i + 1], Rr[i + 1], [0, 0, 1]);
+      G.triOut(Lb[i], Rb[i], Lb[i + 1], [0, 0, -1]); G.triOut(Rb[i], Rb[i + 1], Lb[i + 1], [0, 0, -1]);
+    }
   }
 }
 

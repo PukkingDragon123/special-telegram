@@ -361,8 +361,9 @@ export function buildBaseGround(c: Ctx, extraHoles: { x0: number; z0: number; x1
       flat(w, p.x0, p.z0, p.x1, p.z1, 0, 20);
     }
   }
-  // a single collider under the whole city (and beyond) at y=0
-  c.phys.box([0, -0.5, 10], [900, 1, 340]);
+  // a single collider under the whole city (and beyond) at y=0 — down to the canal's south wall (z −165): the canal
+  // road strip z −162…−160 used to have no floor at all (players fell through the map there)
+  c.phys.box([0, -0.5, 7.5], [900, 1, 345]);
 }
 
 void PY; void PX; void NX; void PZ; void NZ;

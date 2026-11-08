@@ -18,28 +18,50 @@ import { params } from './core/util';
  * src/modules/<name>/index.ts, each `export default defineModule({...})`) → menu.
  */
 async function boot() {
+  const T0 = performance.now();
+  const marks: Record<string, number> = ((window as any).__hpMarks = {});
+  const mark = (k: string) => { marks[k] = Math.round(performance.now() - T0); };
   Overlay.init();
-  Overlay.setLoading(0.05, 'กำลังตั้งเตา…');
-  await loadFonts();
-  Overlay.setLoading(0.25, 'กำลังซื้อหมูสับ…');
-  Sound.init();
-  await Promise.all([Sound.loadManifest(), Assets.loadManifests(), initRapier()]);
-  Overlay.setLoading(0.5, 'กำลังโขลกพริก…');
+  Overlay.setLoading(0.03, 'กำลังตั้งเตา…');
+  // real progress: boot stages + every tracked asset load while the modules initialise
+  let stage = 0.03;
+  const show = (label?: string) => {
+    const a = Assets.loaded + Assets.pending;
+    const k = a ? Assets.loaded / a : 0;
+    Overlay.setLoading(Math.min(0.98, stage + (0.97 - stage) * k * 0.6), label);
+  };
+  Assets.onProgress = () => show();
+  // the game bundle, physics and fonts are independent: fetch them in parallel
+  const modsP = loadModules();
+  await Promise.all([
+    loadFonts().then(() => mark('fonts')),
+    (Sound.init(), Promise.all([Sound.loadManifest(), Assets.loadManifests()])).then(() => mark('manifests')),
+    initRapier().then(() => mark('physics')),
+  ]);
+  stage = 0.35; show('กำลังโขลกพริก…');
 
   const engine = new Engine(document.getElementById('app')!);
+  mark('engine');
   const game = new Game(engine);
   installCoreEvents(game);
   installCoreActions(game);
   installWorldScene(game);
   game.scenes.register('menu', () => new FallbackMenu(game));
 
-  Overlay.setLoading(0.7, 'กำลังติดแก๊ส…');
-  await game.initModules(await loadModules());
+  stage = 0.45; show('กำลังติดแก๊ส…');
+  const mods = await modsP;
+  mark('modulesLoaded');
+  await game.initModules(mods);
+  mark('modulesInit');
 
   game.setSession(Session.local());
   engine.start();
+  Assets.onProgress = null;
   Overlay.setLoading(1, 'พร้อมแล้ว!');
   setTimeout(() => Overlay.hideLoading(), 250);
+  game.events.on('scene:entered', (n: string) => mark('scene:' + n));
+  mark('boot');
+  console.info('[boot]', JSON.stringify(marks), engine.gpu.name, engine.gpu.tier, engine.post.quality);
 
   (window as any).__hp = { game, engine, Input, Sound, Assets, Overlay };
 }

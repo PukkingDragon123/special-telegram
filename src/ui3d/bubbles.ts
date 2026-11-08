@@ -4,6 +4,8 @@ import { Text3D, Text3DOpts, Font3D, preloadText3D } from './text3d';
 import { Sound } from '../core/audio';
 import { Ease, TL, clamp } from '../core/util';
 import { ChoicePrompt, ChoiceOpts } from './choice';
+import { Speaker, speakStart, speakStop } from './mood';
+import type { Expression } from '../game/contracts';
 
 /**
  * Diegetic 3D UI — NO bubbles, panels or plates: every line is real extruded 3D lettering floating in the
@@ -38,6 +40,10 @@ export interface SayOpts {
   /** visible through walls */
   xray?: boolean;
   scale?: number;
+  /** the speaking character: mouth flaps while the line types out + a matching expression */
+  speaker?: Speaker | null;
+  /** expression for the line (default: guessed from the text; null = leave the face alone) */
+  mood?: Expression | null;
 }
 
 export interface BubbleHandle { close(): void; readonly alive: boolean; mesh: THREE.Object3D }
@@ -69,59 +75,57 @@ interface Live {
   quat: THREE.Quaternion;
   init: boolean;
   rise: number;
+  speaker?: Speaker | null;
 }
 
 /** looks (letter sizes are metres at the reference distance; lines grow with distance like before) */
 const LOOK: Record<string, Text3DOpts> = {
   say: {
-    font: 'talk', size: 0.07, depth: 0.55, bevel: 0.06, color: 0xfff0d2, side: 0x6a3418, roughness: 0.34, emissive: 0.08, shadow: 0.5,
-    maxWidth: 1.5, valign: 'bottom', anim: { pop: 0.3, rise: 0.45, spin: 1, vanish: 0.26, drift: 0.4 },
+    font: 'talk', size: 0.042, depth: 0.55, bevel: 0.06, color: 0xfff0d2, side: 0x6a3418, roughness: 0.34, emissive: 0.1, shadow: 0.5,
+    maxWidth: 0.92, valign: 'bottom', anim: { pop: 0.3, rise: 0.55, spin: 0.9, vanish: 0.42, drift: 0.55, wave: 0.045, squash: 1.1, glint: 0.55 },
   },
   saySub: {
-    font: 'ui', size: 0.028, depth: 0.2, bevel: 0.05, color: 0xefe3cf, side: 0x3b2c22, roughness: 0.5, emissive: 0.12, shadow: 0.45, castShadow: false,
-    maxWidth: 1.5, valign: 'bottom', anim: { pop: 0.25, rise: 0.3, spin: 0.6, vanish: 0.22, drift: 0.3 },
+    font: 'ui', size: 0.018, depth: 0.2, bevel: 0.05, color: 0xefe3cf, side: 0x3b2c22, roughness: 0.5, emissive: 0.14, shadow: 0.45, castShadow: false,
+    maxWidth: 0.92, valign: 'bottom', anim: { pop: 0.25, rise: 0.3, spin: 0.6, vanish: 0.34, drift: 0.4, wave: 0.03, glint: 0.3 },
   },
   shout: {
-    font: 'heavy', size: 0.09, depth: 0.6, bevel: 0.07, color: 0xff6526, side: 0x7d1006, roughness: 0.32, emissive: 0.2, shadow: 0.45,
-    maxWidth: 1.7, valign: 'bottom', anim: { pop: 0.16, rise: 0.0, spin: 0.35, vanish: 0.22, drift: 0.2, shake: 0.012 },
+    font: 'heavy', size: 0.055, depth: 0.6, bevel: 0.07, color: 0xff6526, side: 0x7d1006, roughness: 0.32, emissive: 0.22, shadow: 0.45,
+    maxWidth: 1.05, valign: 'bottom', anim: { pop: 0.16, rise: 0.0, spin: 0.35, vanish: 0.36, drift: 0.3, shake: 0.012, squash: 1.6, glint: 0.9 },
   },
   shoutSub: {
-    font: 'ui', size: 0.03, depth: 0.22, bevel: 0.05, color: 0xffd8bf, side: 0x6a1c0c, roughness: 0.45, emissive: 0.2, keyLight: 0.6, shadow: 0.45, castShadow: false,
-    maxWidth: 1.7, valign: 'bottom', anim: { pop: 0.2, rise: 0.2, spin: 0.5, vanish: 0.2, drift: 0.2 },
+    font: 'ui', size: 0.019, depth: 0.22, bevel: 0.05, color: 0xffd8bf, side: 0x6a1c0c, roughness: 0.45, emissive: 0.2, keyLight: 0.6, shadow: 0.45, castShadow: false,
+    maxWidth: 1.05, valign: 'bottom', anim: { pop: 0.2, rise: 0.2, spin: 0.5, vanish: 0.3, drift: 0.3 },
   },
   think: {
-    font: 'hand', size: 0.066, depth: 0.22, bevel: 0.06, color: 0xe3ebff, side: 0x5a66a6, roughness: 0.3, emissive: 0.42,
-    opacity: 0.88, rim: 0xc9b8ff, rimStrength: 0.55, shadow: 0.42, castShadow: false, maxWidth: 1.4, valign: 'bottom',
-    anim: { pop: 0.5, rise: 0.25, spin: 0.5, vanish: 0.4, drift: 0.9, wobble: 0.035 },
+    font: 'ui', size: 0.04, depth: 0.22, bevel: 0.06, color: 0xe3ebff, side: 0x5a66a6, roughness: 0.3, emissive: 0.42,
+    opacity: 0.88, rim: 0xc9b8ff, rimStrength: 0.55, shadow: 0.42, castShadow: false, maxWidth: 0.86, valign: 'bottom',
+    anim: { pop: 0.5, rise: 0.25, spin: 0.5, vanish: 0.5, drift: 0.9, wobble: 0.035, squash: 0.6, glint: 0.3 },
   },
   thinkSub: {
-    font: 'ui', size: 0.027, depth: 0.16, bevel: 0.04, color: 0xe9e1ff, side: 0x7d74ad, roughness: 0.4, emissive: 0.35,
-    opacity: 0.8, castShadow: false, maxWidth: 1.4, valign: 'bottom', anim: { pop: 0.4, rise: 0.2, spin: 0.4, vanish: 0.35, drift: 0.7, wobble: 0.02 },
+    font: 'ui', size: 0.017, depth: 0.16, bevel: 0.04, color: 0xe9e1ff, side: 0x7d74ad, roughness: 0.4, emissive: 0.35,
+    opacity: 0.8, castShadow: false, maxWidth: 0.86, valign: 'bottom', anim: { pop: 0.4, rise: 0.2, spin: 0.4, vanish: 0.4, drift: 0.7, wobble: 0.02 },
   },
   popup: {
-    font: 'heavy', size: 0.09, depth: 0.5, bevel: 0.08, color: 0xffd45a, metalness: 0.85, roughness: 0.24, emissive: 0.08, keyLight: 0.55, shadow: 0.35,
-    bevelFace: true, maxWidth: 1.6, valign: 'middle', anim: { pop: 0.36, rise: 0.5, spin: 1.3, vanish: 0.34, drift: -0.7 },
+    font: 'heavy', size: 0.058, depth: 0.5, bevel: 0.08, color: 0xffd45a, metalness: 0.85, roughness: 0.24, emissive: 0.08, keyLight: 0.55, shadow: 0.35,
+    bevelFace: true, maxWidth: 1.0, valign: 'middle', anim: { pop: 0.36, rise: 0.5, spin: 1.3, vanish: 0.4, drift: 0.9, squash: 1.3, glint: 0.8 },
   },
   tag: {
-    font: 'ui', size: 0.08, depth: 0.22, bevel: 0.05, color: 0xfffaf0, side: 0x2a231d, roughness: 0.45, emissive: 0.3, shadow: 0.55,
-    xray: true, castShadow: false, maxWidth: 1.6, valign: 'bottom', anim: { pop: 0.22, rise: 0.2, spin: 0.4, vanish: 0.18, drift: 0.2 },
+    font: 'ui', size: 0.062, depth: 0.22, bevel: 0.05, color: 0xfffaf0, side: 0x2a231d, roughness: 0.45, emissive: 0.3, shadow: 0.55,
+    xray: true, castShadow: false, maxWidth: 1.3, valign: 'bottom', anim: { pop: 0.22, rise: 0.2, spin: 0.4, vanish: 0.2, drift: 0.2, squash: 0.6, dissolve: false },
   },
   tagSub: {
-    font: 'ui', size: 0.042, depth: 0.16, bevel: 0.04, color: 0xd8cdbb, side: 0x26201b, roughness: 0.5, emissive: 0.3, shadow: 0.5,
-    xray: true, castShadow: false, maxWidth: 1.6, valign: 'bottom', anim: { pop: 0.2, rise: 0.15, spin: 0.3, vanish: 0.15, drift: 0.15 },
+    font: 'ui', size: 0.033, depth: 0.16, bevel: 0.04, color: 0xd8cdbb, side: 0x26201b, roughness: 0.5, emissive: 0.3, shadow: 0.5,
+    xray: true, castShadow: false, maxWidth: 1.3, valign: 'bottom', anim: { pop: 0.2, rise: 0.15, spin: 0.3, vanish: 0.18, drift: 0.15, squash: 0.5, dissolve: false },
   },
 };
 
 /** map a canvas font family (F.*) onto the closest 3D face */
 export function font3DFromFamily(f?: string): Font3D | null {
   if (!f) return null;
-  if (/Krub/i.test(f)) return 'talk';
-  if (/K2D/i.test(f)) return 'heavy';
-  if (/Kodchasan|KoHo|Mali/i.test(f)) return 'bubbly';
+  // every sans family is the same clean Noto Sans Thai Looped now: keep the look's own weight (talk / heavy / ui)
+  if (/Kodchasan/i.test(f)) return 'bubbly';
   if (/Chonburi/i.test(f)) return 'display';
-  if (/Itim|Sriracha/i.test(f)) return 'hand';
   if (/Taviraj|Trirong|Serif|Charm|Srisakdi|Fahkwang|Maitree|Pridi/i.test(f)) return 'news';
-  if (/IBM|Sarabun|Noto Sans/i.test(f)) return 'ui';
   return null;
 }
 
@@ -209,6 +213,10 @@ export class UI3D {
       onDone: o.onDone, baseScale: o.scale ?? 1,
     });
     if (key) this.byKey.set(key, L);
+    if (o.speaker && kind !== 'think') {
+      L.speaker = o.speaker;
+      speakStart(o.speaker, th, subText, o.mood, th.length / L.cps + 1.2);
+    }
     if (L.voice > 0) {
       this.posOf(L);
       Sound.play('bubble_pop', { pos: this.tmp.clone(), vol: 0.5, pitch: kind === 'shout' ? 0.75 : 1 });
@@ -280,11 +288,13 @@ export class UI3D {
   private kill(L: Live, instant: boolean, stagger = 0.012) {
     if (instant) { this.dispose(L); return; }
     if (L.closing >= 0) return;
+    speakStop(L.speaker); L.speaker = null;
     L.closing = 0;
     L.closeDur = Math.max(L.main.vanish(stagger), L.sub ? L.sub.vanish(stagger) : 0) + 0.05;
   }
 
   private dispose(L: Live) {
+    speakStop(L.speaker); L.speaker = null;
     const i = this.live.indexOf(L);
     if (i >= 0) this.live.splice(i, 1);
     if (L.key && this.byKey.get(L.key) === L) this.byKey.delete(L.key);
@@ -338,7 +348,7 @@ export class UI3D {
           L.lastBabble = L.age;
           Sound.play('babble', { pos: g.position, vol: 0.45, pitch: L.voice });
         }
-        if (L.revF >= n && (!sub || sub.isReady)) { L.revealedAt = L.age; if (sub) sub.reveal = Infinity; }
+        if (L.revF >= n && (!sub || sub.isReady)) { L.revealedAt = L.age; if (sub) sub.reveal = Infinity; speakStop(L.speaker); L.speaker = null; }
       }
       if (L.closing < 0 && L.revealedAt >= 0 && L.age > L.revealedAt + L.life) this.kill(L, false);
 

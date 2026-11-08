@@ -7,6 +7,23 @@ import { Ease, Tween, params } from './util';
 
 export interface Frame { dt: number; rawDt: number; time: number; frame: number }
 type Fn = (f: Frame) => void;
+/** 'auto' = no explicit choice saved: the tier is picked from the GPU and may step down at runtime. */
+export type QualityMode = Quality | 'auto';
+export type GpuTier = 'software' | 'integrated' | 'mobile' | 'discrete' | 'unknown';
+
+/**
+ * Internal render-resolution budget per quality (megapixels of the 3D render, before the final resample).
+ * The old behaviour rendered every effect at the full device resolution — fine on a phone (≈1.3 MP), but a
+ * maximized window on a 1440p / 4K PC monitor is 3.7–8.3 MP (×DPR²) and every pass (AO, bloom, SMAA, shafts,
+ * planar reflection) scales with it. `start` is where a session begins; the frame governor moves between
+ * `min` and the native resolution (×supersampling at ultra) from measured frame times.
+ */
+const BUDGET: Record<Quality, { dpr: number; startMP: number; minMP: number; maxSS: number }> = {
+  low: { dpr: 1, startMP: 0.95, minMP: 0.45, maxSS: 1 },
+  medium: { dpr: 1.25, startMP: 1.6, minMP: 0.6, maxSS: 1 },
+  high: { dpr: 2, startMP: 2.6, minMP: 0.85, maxSS: 1 },
+  ultra: { dpr: 2, startMP: 8.3, minMP: 1.4, maxSS: 2 },
+};
 
 /**
  * Renderer + main loop.
@@ -37,16 +54,32 @@ export class Engine {
   private hiddenTimer: any = null;
   /** drawing-buffer pixel ratio (≤ device pixel ratio) */
   pixelRatio = 1;
-  private maxPixelRatio = 1.5;
-  /** internal render scale on top of the drawing buffer: ultra supersamples (>1), adaptive drops below 1 only when truly slow */
+  /** internal render scale on top of the drawing buffer: ultra supersamples (>1), the governor drops below 1 under load */
   renderScale = 1;
-  private nominalScale = 1;
+  /** highest scale the governor may use (native, or the supersampling factor at ultra) */
+  private maxScale = 1;
   private minScale = 0.7;
   private adaptive = true;
   private ftAvg = 16;
-  private adaptCooldown = 4;
-  private slowFor = 0;
   fps = 60;
+  /** quality chosen by the player, or 'auto' */
+  qualityMode: QualityMode = 'auto';
+  readonly gpu: { name: string; tier: GpuTier };
+  /** display refresh interval (ms), measured from requestAnimationFrame ticks */
+  refreshMs = 1000 / 60;
+  /** render on every n-th display refresh (smooth frame pacing on 120–240 Hz monitors that can't be fed) */
+  frameDivider = 1;
+  /** sun shadow maps re-rendered every n-th frame (only throttled under heavy load) */
+  shadowEvery = 1;
+  /** JS time per frame (simulation + scene update + draw submission), ms (smoothed) */
+  cpuMs = 0;
+  /** GPU time per frame from EXT_disjoint_timer_query_webgl2 (ms, smoothed), -1 = unavailable */
+  gpuMs = -1;
+  private resizePending = false;
+  private gov = new Governor();
+  private gpuTimer: GpuTimer | null = null;
+  private tick = 0;
+  private lastTick = 0;
   /** Called with Frame when an uncaught error happens inside a loop callback (shown in debug overlay). */
   onError: ((e: any) => void) | null = null;
 
@@ -62,46 +95,76 @@ export class Engine {
     container.appendChild(this.canvas);
     Assets.maxAnisotropy = Math.min(16, this.renderer.capabilities.getMaxAnisotropy());
     installAnisotropyFloor();
+    const name = rendererName(this.renderer);
+    this.gpu = { name, tier: gpuTier(name) };
     // adaptive resolution is pointless on a software rasterizer (headless SwiftShader): keep the real look there
-    if (params.get('adapt') === '0' || /swiftshader|llvmpipe|softpipe|software/i.test(rendererName(this.renderer))) this.adaptive = false;
+    if (params.get('adapt') === '0' || this.gpu.tier === 'software') this.adaptive = false;
+    if (this.adaptive) this.gpuTimer = GpuTimer.create(this.renderer);
+    // a lost context (driver reset, GPU switch, sleep) must not leave a black canvas forever
+    this.canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); console.warn('[engine] WebGL context lost'); }, false);
+    this.canvas.addEventListener('webglcontextrestored', () => { console.warn('[engine] WebGL context restored'); this.resizePending = true; }, false);
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.05, 900);
     this.post = new PostFX(this.renderer, this.scene, this.camera);
     // ?quality=low|medium|high|ultra wins for this session only (not saved); otherwise the saved menu choice
+    // no saved choice (or saved 'auto') → pick from the GPU; the governor keeps it smooth at runtime
     const urlQ = asQuality(params.get('quality'));
     let savedQ: Quality | null = null;
     try { savedQ = asQuality(localStorage.getItem('hp.quality')); } catch {}
-    this.setQuality(urlQ ?? savedQ ?? 'high', !urlQ);
+    if (urlQ) { this.qualityMode = urlQ; this.setQuality(urlQ, false); }
+    else if (savedQ) { this.qualityMode = savedQ; this.setQuality(savedQ, false); }
+    else { this.qualityMode = 'auto'; this.applyQuality(autoQuality(this.gpu.tier)); }
     Input.attach(this.canvas);
-    window.addEventListener('resize', () => this.resize());
+    // window resizes are applied at the start of the next frame, right before it renders (see step())
+    window.addEventListener('resize', () => { this.resizePending = true; });
     document.addEventListener('visibilitychange', () => this.onVisibility());
-    this.resize();
+    this.applyResize();
   }
 
   /**
-   * Quality tiers
-   *  low     drawing buffer 0.85 (browser upscale), no AO / shafts / grain — fast
-   *  medium  1× CSS pixels, no CA, no sharpening
-   *  high    native device pixel ratio (up to 2) + light CAS sharpening; adaptive scale only drops below
-   *          native when the frame time is really bad (> 30 ms for a while) and climbs back fast
-   *  ultra   native DPR × 1.5–2 supersampling (≤ ~14.7 MP internal) with a tent downsample
+   * Quality tiers (all render the 3D view at an internal resolution inside a per-tier pixel budget, see BUDGET;
+   * the final pass resamples to the native drawing buffer with contrast-adaptive sharpening)
+   *  low     ≤ 0.95 MP, no AO / shafts / grain / reflections — fast
+   *  medium  ≤ 1.6 MP, no CA, no sharpening, env-map reflections
+   *  high    ≤ 2.6 MP to start (1080p native), planar reflections, AO; the governor climbs to native when the
+   *          GPU has headroom and drops (to ≥ 0.85 MP) when the frame time is over budget
+   *  ultra   supersampled (≤ 8.3 MP) with a tent downsample
+   * `q` may be 'auto' (pick from the GPU, may step down at runtime). Explicit choices are saved.
    */
-  setQuality(q: Quality, persist = true) {
-    q = asQuality(q) ?? 'high';
+  setQuality(q: QualityMode, persist = true) {
+    const mode: QualityMode = q === 'auto' ? 'auto' : asQuality(q) ?? 'high';
+    this.qualityMode = mode;
+    if (persist) { try { localStorage.setItem('hp.quality', mode); } catch {} }
+    this.applyQuality(mode === 'auto' ? autoQuality(this.gpu.tier) : mode);
+  }
+
+  /** set the effective tier (keeps qualityMode) */
+  private applyQuality(q: Quality) {
     this.post.setQuality(q);
-    const dpr = window.devicePixelRatio || 1;
-    this.maxPixelRatio = q === 'low' ? Math.min(dpr, 0.85) : q === 'medium' ? Math.min(dpr, 1) : Math.min(dpr, 2);
-    this.pixelRatio = this.maxPixelRatio;
-    const px = innerWidth * innerHeight * this.maxPixelRatio * this.maxPixelRatio;
-    const ss = q === 'ultra' ? Math.max(1, Math.min(dpr >= 2 ? 1.5 : 2, Math.sqrt(14.7e6 / Math.max(1, px)))) : 1;
-    this.nominalScale = ss;
-    this.renderScale = ss;
-    this.minScale = q === 'ultra' ? 0.75 : q === 'high' ? 0.7 : 1;
     this.renderer.shadowMap.type = q === 'low' ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
-    if (persist) { try { localStorage.setItem('hp.quality', q); } catch {} }
-    this.adaptCooldown = 3;
-    this.resize();
+    this.gov.reset(4);
+    this.shadowEvery = 1;
+    this.frameDivider = 1;
+    this.fitBudget(true);
+  }
+
+  /** Recompute drawing-buffer DPR + the internal scale range from the tier budget and the window size. */
+  private fitBudget(reset: boolean) {
+    const q = this.post.quality, b = BUDGET[q];
+    const dpr = window.devicePixelRatio || 1;
+    this.pixelRatio = Math.min(dpr, b.dpr);
+    const px = Math.max(1, innerWidth * innerHeight * this.pixelRatio * this.pixelRatio);
+    const fit = (mp: number) => Math.sqrt((mp * 1e6) / px);
+    // ultra: supersample up to 2× (1.5× on hi-dpi screens) within its budget; others never above native
+    this.maxScale = q === 'ultra' ? Math.max(1, Math.min(dpr >= 2 ? 1.5 : b.maxSS, fit(14.7))) : 1;
+    this.minScale = Math.min(this.maxScale, Math.max(0.45, fit(b.minMP)));
+    const start = this.adaptive ? Math.min(this.maxScale, fit(b.startMP)) : (q === 'ultra' ? Math.min(this.maxScale, fit(b.startMP)) : 1);
+    if (reset || !this.adaptive) this.renderScale = Math.max(this.minScale, start);
+    else this.renderScale = Math.max(this.minScale, Math.min(this.maxScale, this.renderScale));
+    // the old tiers at native size on a software rasterizer (tests / headless): unchanged look
+    if (!this.adaptive && q !== 'ultra') this.renderScale = q === 'low' ? Math.min(1, Math.max(0.5, fit(b.startMP))) : 1;
+    this.resizePending = true;
   }
   get quality(): Quality { return this.post.quality; }
 
@@ -128,12 +191,27 @@ export class Engine {
   /** Wait game seconds. */
   wait(sec: number) { return this.tween(sec, () => {}, Ease.linear); }
 
-  resize() {
+  /** Request a resize; applied at the start of the next frame (never between a render and its presentation). */
+  resize() { this.resizePending = true; }
+
+  /**
+   * Resizing the canvas (even to the same size) resets the WebGL drawing buffer. Doing it after a frame was
+   * rendered but before the browser presented it shows the clear colour (near black) for one frame — the old
+   * adaptive-resolution code did exactly that on every step, which flashed black on PCs hovering around the
+   * threshold. Now: only at the start of a frame, only touching the canvas when its size really changes.
+   */
+  private applyResize() {
+    this.resizePending = false;
     const w = window.innerWidth, h = window.innerHeight;
-    this.renderer.setPixelRatio(this.pixelRatio);
-    this.renderer.setSize(w, h, false);
-    this.canvas.style.width = w + 'px';
-    this.canvas.style.height = h + 'px';
+    if (this.post.quality) this.fitBudget(false);
+    this.resizePending = false;
+    const cw = Math.floor(w * this.pixelRatio), ch = Math.floor(h * this.pixelRatio);
+    if (this.canvas.width !== cw || this.canvas.height !== ch || this.renderer.getPixelRatio() !== this.pixelRatio) {
+      this.renderer.setPixelRatio(this.pixelRatio);
+      this.renderer.setSize(w, h, false);
+    }
+    if (this.canvas.style.width !== w + 'px') this.canvas.style.width = w + 'px';
+    if (this.canvas.style.height !== h + 'px') this.canvas.style.height = h + 'px';
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.post.scale = this.renderScale;
@@ -144,10 +222,15 @@ export class Engine {
     if (this.running) return;
     this.running = true;
     this.last = performance.now();
-    const loop = () => {
+    const loop = (ts: number) => {
       if (!this.running) return;
       requestAnimationFrame(loop);
       if (document.hidden) return;
+      // every display refresh ticks; we render on every frameDivider-th tick (even pacing on 120–240 Hz screens)
+      if (this.lastTick) this.gov.refreshSample(ts - this.lastTick);
+      this.lastTick = ts;
+      this.refreshMs = this.gov.refreshMs;
+      if (++this.tick % this.frameDivider !== 0) return;
       this.step();
     };
     requestAnimationFrame(loop);
@@ -188,7 +271,9 @@ export class Engine {
   /** One frame. Exposed for tests (window.__hp.engine.step()). */
   step() {
     const now = performance.now();
-    const raw = Math.min(0.1, (now - this.last) / 1000);
+    if (this.resizePending) this.applyResize();
+    const interval = now - this.last;
+    const raw = Math.min(0.1, interval / 1000);
     this.last = now;
     const dt = raw * this.timeScale;
     this.time += dt;
@@ -208,53 +293,215 @@ export class Engine {
     for (const fn of this.frameFns) this.safe(fn, f);
     for (const fn of this.lateFns) this.safe(fn, f);
     Sound.setListener(this.camera);
+    // shadow throttling (governor, heavy load only): re-render the shadow maps every n-th frame
+    const sm = this.renderer.shadowMap;
+    if (this.shadowEvery > 1) { sm.autoUpdate = false; sm.needsUpdate = this.frame % this.shadowEvery === 0; }
+    else if (!sm.autoUpdate) sm.autoUpdate = true;
+    this.gpuTimer?.begin();
     this.post.render(raw);
+    this.gpuTimer?.end();
     Input.endFrame();
-    this.adapt(raw);
+    const cpu = performance.now() - now;
+    this.cpuMs += (cpu - this.cpuMs) * 0.1;
+    if (this.gpuTimer) { const g = this.gpuTimer.poll(); if (g >= 0) this.gpuMs = this.gpuMs < 0 ? g : this.gpuMs + (g - this.gpuMs) * 0.1; }
+    this.adapt(interval, cpu);
   }
 
   /**
-   * Adaptive resolution. high/ultra move the internal render scale (the drawing buffer stays native, the final
-   * pass resamples + sharpens); low/medium move the drawing-buffer pixel ratio. Drops need a sustained bad frame
-   * time; recovery is quick.
+   * Frame governor (desktop lag). Every 0.5 s window it compares the delivered frame interval with the target
+   * (display refresh × divider) and, when frames are missed, in this order: halves the frame rate on 120–240 Hz
+   * monitors (even pacing beats a judder between 70 and 144), lowers the internal resolution (GPU-bound only —
+   * when the JS side is the bottleneck pixels don't help), throttles the shadow maps, and finally (quality
+   * 'auto' only) steps the tier down. It climbs back when the GPU timer shows headroom, or by probing with an
+   * exponential back-off when no timer exists. Off on software rasterizers and with ?adapt=0.
    */
-  private adapt(raw: number) {
-    this.ftAvg += (raw * 1000 - this.ftAvg) * 0.05;
-    this.fps = 1000 / this.ftAvg;
+  private adapt(intervalMs: number, cpuMs: number) {
+    this.ftAvg += (intervalMs - this.ftAvg) * 0.05;
+    this.fps = 1000 / Math.max(1, this.ftAvg);
     if (!this.adaptive || document.hidden) return;
-    this.adaptCooldown -= raw;
+    const d = this.gov.frame(intervalMs, cpuMs, this.gpuMs, this.refreshMs * this.frameDivider);
+    if (!d) return;
     const q = this.post.quality;
-    const scaled = q === 'high' || q === 'ultra';
-    // ultra sheds supersampling first (> 20 ms), below native only when truly bad (> 30 ms)
-    const badMs = scaled && this.renderScale > 1.001 ? 20 : scaled ? 30 : 24;
-    this.slowFor = this.ftAvg > badMs ? this.slowFor + raw : 0;
-    if (this.adaptCooldown > 0) return;
-    if (scaled) {
-      if (this.slowFor > 1.5 && this.renderScale > this.minScale + 1e-3) {
-        const step = this.renderScale > 1.001 ? 0.25 : 0.1;
-        this.renderScale = Math.max(this.minScale, this.renderScale - step);
-        if (this.renderScale > 1 && this.renderScale < 1.12) this.renderScale = 1;
-        this.resize();
-        this.adaptCooldown = 1.5;
-        this.slowFor = 0;
-      } else if (this.ftAvg < (this.renderScale >= 1 ? 13 : 20) && this.renderScale < this.nominalScale - 1e-3) {
-        this.renderScale = Math.min(this.nominalScale, this.renderScale + (this.renderScale >= 1 ? 0.25 : 0.1));
-        this.resize();
-        this.adaptCooldown = 0.75;
+    if (d === 'slow') {
+      // 1) pacing on high-refresh screens: 144 → 72, 165 → 82, 240 → 120/80/60 (never below ~55 fps)
+      if (1000 / (this.refreshMs * (this.frameDivider + 1)) >= 55 && this.refreshMs < 12) { this.frameDivider++; this.gov.changed('divider'); return; }
+      const cpuBound = this.gov.cpuAvg > 0.8 * this.gov.intervalAvg && (this.gpuMs < 0 || this.gpuMs < this.gov.cpuAvg);
+      // 2) resolution (GPU-bound)
+      if (!cpuBound && this.renderScale > this.minScale + 1e-3) {
+        this.renderScale = Math.max(this.minScale, this.renderScale * (this.renderScale > 1.001 ? 0.8 : 0.88));
+        if (this.renderScale > 1 && this.renderScale < 1.08) this.renderScale = 1;
+        this.resizePending = true; this.gov.changed('scale'); return;
+      }
+      // 3) shadows at half rate (helps both CPU — fewer draw calls — and GPU)
+      if (this.shadowEvery === 1) { this.shadowEvery = 2; this.gov.changed('shadow'); return; }
+      // 4) auto quality: one tier down after a sustained struggle
+      if (this.qualityMode === 'auto' && q !== 'low' && this.gov.slowSeconds > 8) {
+        const next: Quality = q === 'ultra' ? 'high' : q === 'high' ? 'medium' : 'low';
+        console.info(`[engine] auto quality ${q} → ${next} (${this.fps.toFixed(0)} fps, gpu ${this.gpuMs.toFixed(1)} ms, cpu ${this.gov.cpuAvg.toFixed(1)} ms)`);
+        this.post.setQuality(next);
+        this.renderer.shadowMap.type = next === 'low' ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
+        this.fitBudget(false);
+        this.gov.changed('tier', 6);
       }
       return;
     }
-    if (this.slowFor > 1.5 && this.pixelRatio > 0.6) {
-      this.pixelRatio = Math.max(0.6, this.pixelRatio - 0.1);
-      this.resize();
-      this.adaptCooldown = 1.5;
-      this.slowFor = 0;
-    } else if (this.ftAvg < 14 && this.pixelRatio < this.maxPixelRatio) {
-      this.pixelRatio = Math.min(this.maxPixelRatio, this.pixelRatio + 0.1);
-      this.resize();
-      this.adaptCooldown = 0.75;
+    // d === 'up': undo the cheapest-to-undo degradation first
+    if (this.shadowEvery > 1) { this.shadowEvery = 1; this.gov.changed('shadow-up'); return; }
+    if (this.frameDivider > 1 && this.gov.canRaiseRate(this.refreshMs * (this.frameDivider - 1), this.gpuMs)) { this.frameDivider--; this.gov.changed('divider-up'); return; }
+    if (this.renderScale < this.maxScale - 1e-3 && this.gov.canRaiseScale(this.renderScale, Math.min(this.maxScale, this.renderScale * 1.1), this.refreshMs * this.frameDivider, this.gpuMs)) {
+      this.renderScale = Math.min(this.maxScale, this.renderScale * (this.renderScale >= 1 ? 1.15 : 1.1));
+      if (this.renderScale > 0.97 && this.renderScale < 1.03) this.renderScale = 1;
+      this.resizePending = true; this.gov.changed('scale-up');
     }
   }
+
+  /** Debug / HUD: what the governor is doing. */
+  perfInfo() {
+    const r = this.post.renderSize;
+    return { quality: this.post.quality, mode: this.qualityMode, gpu: this.gpu, fps: +this.fps.toFixed(1), refreshHz: +(1000 / this.refreshMs).toFixed(0), divider: this.frameDivider,
+      scale: +this.renderScale.toFixed(3), internal: `${r.w}×${r.h}`, shadowEvery: this.shadowEvery, cpuMs: +this.cpuMs.toFixed(2), gpuMs: +this.gpuMs.toFixed(2), adaptive: this.adaptive };
+  }
+}
+
+/**
+ * Decision helper for the frame governor: windowed stats, refresh-rate estimate, hysteresis + cooldowns,
+ * and upward probing with back-off when the GPU time is unknown.
+ */
+class Governor {
+  refreshMs = 1000 / 60;
+  intervalAvg = 16.7;
+  cpuAvg = 0;
+  slowSeconds = 0;
+  private ticks: number[] = [];
+  private win = { t: 0, n: 0, sum: 0, cpu: 0, miss: 0, hitch: false };
+  private cooldown = 4;
+  private slowWins = 0;
+  private goodFor = 0;
+  private probeWait = 6;
+  private lastChange = '';
+  private sinceChange = 99;
+
+  reset(cool = 2) { this.cooldown = cool; this.slowWins = 0; this.goodFor = 0; this.win = { t: 0, n: 0, sum: 0, cpu: 0, miss: 0, hitch: false }; }
+
+  /** rAF tick interval → display refresh estimate (robust low percentile, snapped to common rates) */
+  refreshSample(dt: number) {
+    if (dt <= 2 || dt > 60) return;
+    this.ticks.push(dt);
+    if (this.ticks.length < 90) return;
+    const s = this.ticks.slice().sort((a, b) => a - b);
+    const est = s[Math.floor(s.length * 0.2)];
+    this.ticks.length = 0;
+    const rates = [240, 165, 144, 120, 100, 90, 75, 60, 50, 30];
+    let best = 1000 / 60, err = 1e9;
+    for (const hz of rates) { const e = Math.abs(1000 / hz - est); if (e < err) { err = e; best = 1000 / hz; } }
+    this.refreshMs = err < 0.12 * best ? best : est;
+  }
+
+  /** feed one rendered frame; returns a decision every 0.5 s window (or null) */
+  frame(intervalMs: number, cpuMs: number, gpuMs: number, targetMs: number): 'slow' | 'up' | null {
+    const w = this.win;
+    const sec = intervalMs / 1000;
+    this.cooldown -= sec;
+    this.sinceChange += sec;
+    // hitches (shader compiles, loading, scene switches) say nothing about steady-state cost
+    if (intervalMs > 250) { w.hitch = true; this.cooldown = Math.max(this.cooldown, 1.5); }
+    w.t += sec; w.n++; w.sum += intervalMs; w.cpu += cpuMs;
+    if (intervalMs > targetMs * 1.45) w.miss++;
+    if (w.t < 0.5) return null;
+    const avg = w.sum / w.n, cpu = w.cpu / w.n, missRate = w.miss / w.n, hitch = w.hitch;
+    this.win = { t: 0, n: 0, sum: 0, cpu: 0, miss: 0, hitch: false };
+    if (hitch) return null;
+    this.intervalAvg = avg; this.cpuAvg = cpu;
+    const slow = avg > targetMs * 1.18 || missRate > 0.2;
+    if (slow) { this.slowWins++; this.slowSeconds += 0.5; this.goodFor = 0; }
+    else { this.slowWins = 0; this.slowSeconds = Math.max(0, this.slowSeconds - 0.25); this.goodFor += 0.5; }
+    // an upward step that immediately made it slow → back off the next probe
+    if (slow && this.lastChange.endsWith('-up') && this.sinceChange < 3) { this.probeWait = Math.min(90, this.probeWait * 2); this.lastChange = 'failed-up'; }
+    if (this.cooldown > 0) return null;
+    if (slow && this.slowWins >= 2) return 'slow';
+    if (!slow) {
+      // with a GPU timer we know the headroom → no need to wait long; without, probe with back-off
+      const wait = gpuMs >= 0 ? 2 : this.probeWait;
+      if (this.goodFor >= wait) { this.goodFor = 0; return 'up'; }
+    }
+    return null;
+  }
+
+  changed(what: string, cool = 1.25) { this.lastChange = what; this.sinceChange = 0; this.cooldown = cool; this.slowWins = 0; this.goodFor = 0; if (!what.endsWith('-up')) this.slowSeconds = Math.max(0, this.slowSeconds - 1); }
+
+  canRaiseRate(newTargetMs: number, gpuMs: number) {
+    const cost = Math.max(this.cpuAvg, gpuMs);
+    return gpuMs >= 0 ? cost < newTargetMs * 0.8 : true;
+  }
+
+  canRaiseScale(cur: number, next: number, targetMs: number, gpuMs: number) {
+    if (gpuMs < 0) return true;                       // probe (back-off handles failures)
+    const pred = gpuMs * (next * next) / Math.max(1e-3, cur * cur);
+    return pred < targetMs * 0.82;
+  }
+}
+
+/** EXT_disjoint_timer_query_webgl2 frame timer (ring of queries, results read a few frames later). */
+class GpuTimer {
+  private q: (WebGLQuery | null)[] = [];
+  private busy: boolean[] = [];
+  private i = 0;
+  private active: WebGLQuery | null = null;
+  private constructor(private gl: WebGL2RenderingContext, private ext: any) {
+    for (let k = 0; k < 4; k++) { this.q.push(gl.createQuery()); this.busy.push(false); }
+  }
+  static create(r: THREE.WebGLRenderer): GpuTimer | null {
+    try {
+      const gl = r.getContext() as WebGL2RenderingContext;
+      if (!(gl instanceof WebGL2RenderingContext)) return null;
+      const ext = gl.getExtension('EXT_disjoint_timer_query_webgl2');
+      return ext ? new GpuTimer(gl, ext) : null;
+    } catch { return null; }
+  }
+  begin() {
+    if (this.active || this.busy[this.i]) return;
+    const q = this.q[this.i];
+    if (!q) return;
+    try { this.gl.beginQuery(this.ext.TIME_ELAPSED_EXT, q); this.active = q; } catch { this.active = null; }
+  }
+  end() {
+    if (!this.active) return;
+    try { this.gl.endQuery(this.ext.TIME_ELAPSED_EXT); } catch {}
+    this.busy[this.i] = true;
+    this.active = null;
+    this.i = (this.i + 1) % this.q.length;
+  }
+  /** newest finished measurement in ms, or -1 */
+  poll(): number {
+    const gl = this.gl;
+    let out = -1;
+    const disjoint = gl.getParameter(this.ext.GPU_DISJOINT_EXT);
+    for (let k = 0; k < this.q.length; k++) {
+      const q = this.q[k];
+      if (!this.busy[k] || !q) continue;
+      if (!gl.getQueryParameter(q, gl.QUERY_RESULT_AVAILABLE)) continue;
+      const ns = gl.getQueryParameter(q, gl.QUERY_RESULT) as number;
+      this.busy[k] = false;
+      if (!disjoint) out = ns / 1e6;
+    }
+    return out;
+  }
+}
+
+/** GPU class from the unmasked renderer string (ANGLE wraps it: "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 …)"). */
+export function gpuTier(name: string): GpuTier {
+  const n = name.toLowerCase();
+  if (!n) return 'unknown';
+  if (/swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/.test(n)) return 'software';
+  if (/mali|adreno|powervr|apple a\d|apple gpu|videocore|tegra/.test(n)) return 'mobile';
+  if (/geforce|nvidia|quadro|rtx|gtx|radeon rx|radeon pro|rx \d{3,4}|arc\(tm\)|intel\(r\) arc|apple m\d/.test(n) && !/mx\s?\d{3}|geforce gt \d{3}|geforce \d{3}m/.test(n)) return 'discrete';
+  if (/intel|uhd|iris|hd graphics|radeon\(tm\) graphics|radeon graphics|vega \d\b|radeon \d{3}m|mx\s?\d{3}/.test(n)) return 'integrated';
+  return 'unknown';
+}
+
+/** tier for quality 'auto' (the governor still adapts resolution / pacing within it) */
+export function autoQuality(t: GpuTier): Quality {
+  return t === 'integrated' ? 'medium' : 'high';
 }
 
 function asQuality(v: string | null | undefined): Quality | null {

@@ -91,7 +91,7 @@ export function dressSoi(c: Ctx, ok: (x: number, z: number, r?: number) => boole
   }
   // ---------------------------------------------------------------- where the aunties sit: monobloc chairs and stools by doors
   for (let i = 0; i < 16; i++) {
-    const side = rng.chance(0.5) ? -1 : 1, z = rng.range(-150, -3), x = side * rng.range(5.1, 5.5);
+    const side = rng.chance(0.5) ? -1 : 1, z = rng.range(-150, -3), x = side * rng.range(5.35, 5.6);
     if (!place(x, z, 0.4)) continue;
     const t = rng.int(0, 3);
     if (t === 0) real.add('monobloc', x, SW_H, z, faceRoad(side) + rng.range(-0.6, 0.6), { color: rng.pick([0xf2efe6, 0xe8e4dc, 0x2a62b8, 0xc03020, 0x2a8a4a]) });
@@ -101,7 +101,7 @@ export function dressSoi(c: Ctx, ok: (x: number, z: number, r?: number) => boole
   }
   // ---------------------------------------------------------------- big static stuff: utility boxes, hydrants, barriers
   for (const [x, z, id, yaw] of [[-5.6, -36.5, 'utility_box', Math.PI / 2], [5.65, -66.8, 'utility_box', -Math.PI / 2], [-5.55, -118, 'utility_box', Math.PI / 2],
-    [4.3, -12.5, 'hydrant', -Math.PI / 2], [-4.3, -61, 'hydrant', Math.PI / 2], [4.3, -126, 'hydrant', -Math.PI / 2]] as [number, number, string, number][]) {
+    [3.92, -12.5, 'hydrant', -Math.PI / 2], [-3.92, -61, 'hydrant', Math.PI / 2], [3.92, -126, 'hydrant', -Math.PI / 2]] as [number, number, string, number][]) {
     if (!ok(x, z, 0.4)) continue;
     real.add(id, x, SW_H, z, yaw);
     real.claim(x, z, 0.5);

@@ -119,6 +119,10 @@ export class NightLights {
   readonly root = new THREE.Group();
   private assigned: (LightPoint | null)[] = [];
   private fade: number[] = [];
+  /** slot is fading out (its point left the pool) — reusable once dark */
+  private leaving: boolean[] = [];
+  /** score of the last point that still gets a pool light (for the soft edge) */
+  private cutoff = 70;
   private timer = 0;
   private glowMesh: THREE.Mesh | null = null;
   private coneMesh: THREE.Mesh | null = null;
@@ -136,6 +140,7 @@ export class NightLights {
       l.name = 'pool-light-' + i;
       this.pool.push(l);
       this.assigned.push(null);
+      this.leaving.push(false);
       this.fade.push(0);
       this.root.add(l);
     }
@@ -294,7 +299,9 @@ export class NightLights {
       else if (c.mats?.length) for (const mm of c.mats) mm.m.emissiveIntensity = mm.base * night;
       else c.obj.visible = night > 0.5;
     }
-    // re-assign pool every 0.25 s
+    // re-assign pool every 0.25 s. No popping: a slot that loses its point fades OUT first and is only handed to a new
+    // point once dark (the light never jumps across the street at full power); current points keep their slot until a
+    // rival is clearly closer (hysteresis), and every pool light dims smoothly towards the edge of the pool radius.
     this.timer -= dt;
     if (this.timer <= 0) {
       this.timer = 0.25;
@@ -304,20 +311,23 @@ export class NightLights {
         if (lit <= 0.01 || p.intensity <= 0) continue;
         const d = p.p.distanceTo(cam);
         if (d > 70) continue;
-        cand.push({ p, s: d / (p.prio ?? 1) });
+        const held = this.assigned.includes(p);
+        cand.push({ p, s: (d * (held ? 0.8 : 1)) / (p.prio ?? 1) });
       }
       cand.sort((a, b) => a.s - b.s);
       const want = new Set(cand.slice(0, this.pool.length).map((c) => c.p));
-      // keep existing assignments that are still wanted
+      this.cutoff = cand.length > this.pool.length ? cand[this.pool.length - 1].s : 70;
+      // keep existing assignments that are still wanted; the rest start fading out (slot stays busy until dark)
       for (let i = 0; i < this.pool.length; i++) {
         const a = this.assigned[i];
-        if (a && !want.has(a)) this.assigned[i] = null;
-        else if (a) want.delete(a);
+        if (a && !want.has(a)) { this.leaving[i] = true; }
+        else if (a) { want.delete(a); this.leaving[i] = false; }
       }
       for (const p of want) {
-        const slot = this.assigned.findIndex((x) => x === null);
+        const slot = this.assigned.findIndex((x, i) => x === null || (this.leaving[i] && this.fade[i] <= 0.001));
         if (slot < 0) break;
         this.assigned[slot] = p;
+        this.leaving[slot] = false;
         this.fade[slot] = 0;
         const l = this.pool[slot];
         l.position.copy(p.p);
@@ -328,10 +338,17 @@ export class NightLights {
     for (let i = 0; i < this.pool.length; i++) {
       const a = this.assigned[i];
       const l = this.pool[i];
-      if (!a) { this.fade[i] = Math.max(0, this.fade[i] - dt * 3); l.intensity *= 0.8; continue; }
-      this.fade[i] = Math.min(1, this.fade[i] + dt * 2.5);
+      if (!a) { this.fade[i] = 0; l.intensity = 0; continue; }
+      if (this.leaving[i]) {
+        this.fade[i] = Math.max(0, this.fade[i] - dt * 1.6);
+        if (this.fade[i] <= 0) { this.assigned[i] = null; this.leaving[i] = false; l.intensity = 0; continue; }
+      } else this.fade[i] = Math.min(1, this.fade[i] + dt * 1.6);
       const lit = Math.max(night, a.day ?? 0);
-      l.intensity = a.intensity * lit * this.fade[i];
+      // soft edge: lights about to drop out of the pool are already dim (distance relative to the pool cutoff)
+      const d = a.p.distanceTo(cam) / (a.prio ?? 1);
+      const edge = 1 - THREE.MathUtils.smoothstep(d, this.cutoff * 0.7, this.cutoff * 1.05);
+      const k = this.fade[i] * this.fade[i] * (3 - 2 * this.fade[i]);
+      l.intensity = a.intensity * lit * k * Math.max(0.15, edge);
     }
   }
 }

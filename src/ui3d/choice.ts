@@ -23,17 +23,17 @@ export interface ChoiceOpts {
 }
 
 const OPT: Text3DOpts = {
-  font: 'talk', size: 0.026, depth: 0.32, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.34, shadow: 0.5,
-  xray: true, castShadow: false, maxWidth: 0.5, valign: 'bottom', anim: { pop: 0.3, rise: 0.4, spin: 1, vanish: 0.2, drift: 0.3 },
+  font: 'talk', size: 0.019, depth: 0.32, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.34, shadow: 0.5,
+  xray: true, castShadow: false, maxWidth: 0.36, valign: 'bottom', anim: { pop: 0.3, rise: 0.4, spin: 1, vanish: 0.3, drift: 0.35, wave: 0.03, squash: 1.1, glint: 0.6 },
 };
 const OPT_HOT: Partial<Text3DOpts> = { color: 0xffe28a, side: 0x8a3c0a, emissive: 0.85, rim: 0xffb347, rimStrength: 1.3 };
 const SUB: Text3DOpts = {
-  font: 'ui', size: 0.0125, depth: 0.2, bevel: 0.05, color: 0xe9dfcd, side: 0x33271f, roughness: 0.5, emissive: 0.3, shadow: 0.5,
-  xray: true, castShadow: false, maxWidth: 0.5, valign: 'top', anim: { pop: 0.25, rise: 0.3, spin: 0.5, vanish: 0.2, drift: 0.2 },
+  font: 'ui', size: 0.0092, depth: 0.2, bevel: 0.05, color: 0xe9dfcd, side: 0x33271f, roughness: 0.5, emissive: 0.3, shadow: 0.5,
+  xray: true, castShadow: false, maxWidth: 0.36, valign: 'top', anim: { pop: 0.25, rise: 0.3, spin: 0.5, vanish: 0.26, drift: 0.2 },
 };
 const NUM: Text3DOpts = {
-  font: 'display', size: 0.034, depth: 0.4, bevel: 0.1, color: 0xffcf5a, metalness: 0.85, roughness: 0.25, emissive: 0.2, bevelFace: true,
-  xray: true, castShadow: false, valign: 'bottom', anim: { pop: 0.35, rise: 0.4, spin: 1.4, vanish: 0.2, drift: 0.3 },
+  font: 'display', size: 0.024, depth: 0.4, bevel: 0.1, color: 0xffcf5a, metalness: 0.85, roughness: 0.25, emissive: 0.2, bevelFace: true,
+  xray: true, castShadow: false, valign: 'bottom', anim: { pop: 0.35, rise: 0.4, spin: 1.4, vanish: 0.26, drift: 0.3, squash: 1.4, glint: 0.9 },
 };
 
 const smokeVert = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
@@ -146,7 +146,7 @@ export class ChoicePrompt {
     this.seconds = o.seconds ?? 3;
     this.group.renderOrder = 2000;
     const n = o.options.length;
-    const spacing = n >= 3 ? 0.6 : 0.68;
+    const spacing = n >= 3 ? 0.44 : 0.5;
     o.options.forEach((opt, i) => {
       const root = new THREE.Group();
       const baseX = (i - (n - 1) / 2) * spacing;
@@ -164,8 +164,8 @@ export class ChoicePrompt {
       this.group.add(root);
       this.items.push({ root, num, main, sub, baseX, hot: false, tint });
     });
-    this.incense = new Incense(n >= 3 ? 0.62 : 0.5);
-    this.incense.group.position.set(0.02, -0.305, -0.9);
+    this.incense = new Incense(n >= 3 ? 0.48 : 0.4);
+    this.incense.group.position.set(0.02, -0.29, -0.9);
     this.group.add(this.incense.group);
     camera.add(this.group);
     this.sel = Math.floor((n - 1) / 2);
@@ -175,6 +175,7 @@ export class ChoicePrompt {
 
   /** returns false when finished */
   update(dt: number): boolean {
+    if (this.exitT >= 0) return this.updateExit(dt);
     if (this.done) return false;
     this.t += dt;
     const k = 1 - this.t / this.seconds;
@@ -194,8 +195,8 @@ export class ChoicePrompt {
         b.main.setLook(hot ? OPT_HOT : { color: b.tint, side: OPT.side, emissive: OPT.emissive, rim: undefined, rimStrength: 0 });
         b.num.setLook(hot ? { emissive: 0.8 } : { emissive: NUM.emissive });
       }
-      const pop = Ease.outBack(Math.min(1, Math.max(0, (this.t - i * 0.06) / 0.3)));
-      const s = Math.max(0.001, pop) * (hot ? 1.16 : 0.94);
+      const pop = Ease.outBack(Math.min(1, Math.max(0, (this.t - i * 0.08) / 0.32)));
+      const s = Math.max(0.001, pop) * (hot ? 1.16 + Math.sin(this.t * 9) * 0.015 : 0.92);
       const r = b.root;
       r.scale.setScalar(r.scale.x + (s - r.scale.x) * Math.min(1, dt * 14));
       r.position.y = -0.2 + (hot ? 0.022 : 0) + Math.sin(this.t * 2.2 + i * 1.7) * 0.004;
@@ -210,19 +211,52 @@ export class ChoicePrompt {
     return true;
   }
 
+  private exitT = -1;
+  private picked = -1;
   private pick(i: number): boolean {
     if (this.done) return false;
     this.done = true;
     Sound.play(i < 0 ? 'wrong_buzz' : 'ding_correct', { vol: 0.6 });
     this.tick?.stop(0.1);
     try { this.o.onPick(i); } catch (e) { console.error('[choice]', e); }
-    this.dispose();
-    return false;
+    // short exit: the chosen reply punches forward then burns away, the others drop and dissolve
+    this.picked = i;
+    this.exitT = 0;
+    this.items.forEach((b, k) => {
+      if (k === i) b.main.setLook(OPT_HOT);
+      b.main.vanish(k === i ? 0.012 : 0.004); b.sub?.vanish(0.004); b.num.vanish(0);
+    });
+    this.incense.group.visible = false;
+    return true;
   }
 
-  cancel() { if (!this.done) { this.done = true; this.tick?.stop(0.1); this.dispose(); } }
+  private updateExit(dt: number): boolean {
+    this.exitT += dt;
+    const k = Math.min(1, this.exitT / 0.45);
+    this.items.forEach((b, i) => {
+      const r = b.root;
+      if (i === this.picked) {
+        r.scale.setScalar(Math.max(0.001, 1.16 + Math.sin(Math.min(1, k * 2) * Math.PI) * 0.2));
+        r.position.z = -0.9 + 0.06 + k * 0.05;
+        r.position.y += dt * 0.08;
+      } else {
+        r.position.y -= dt * (0.05 + k * 0.25);
+        r.rotation.z += dt * (i < this.picked ? 1.5 : -1.5);
+      }
+    });
+    if (k >= 1) { this.dispose(); return false; }
+    return true;
+  }
 
+  cancel() {
+    if (this.exitT >= 0) { this.exitT = -1; this.dispose(); return; }
+    if (!this.done) { this.done = true; this.tick?.stop(0.1); this.dispose(); }
+  }
+
+  private disposed = false;
   private dispose() {
+    if (this.disposed) return;
+    this.disposed = true;
     this.group.removeFromParent();
     for (const b of this.items) { b.main.dispose(); b.sub?.dispose(); b.num.dispose(); }
     this.incense.dispose();

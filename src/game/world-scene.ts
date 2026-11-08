@@ -48,6 +48,9 @@ export class WorldScene implements SceneDef {
     Input.onUnlock = () => this.pause(true);
     this.offs.push(game.engine.onFrame((f) => player.update(f.dt)));
     game.events.emit('world:ready', this.scene);
+    // compile every visible material now (behind the scene fade), not when it first enters the view — on
+    // Windows (ANGLE → D3D11) each program link is a 50–300 ms hitch mid-game otherwise
+    await prewarmShaders(game.engine.renderer, this.scene, this.camera, 8000);
   }
 
   private pauseEl: HTMLDivElement | null = null;
@@ -92,6 +95,16 @@ export class WorldScene implements SceneDef {
     Overlay.crosshair(false);
     Input.setWantLock(false);
   }
+}
+
+/** renderer.compileAsync (KHR_parallel_shader_compile when available) with a time cap. */
+export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE.Object3D, camera: THREE.Camera, capMs = 6000) {
+  const t0 = performance.now();
+  try {
+    await Promise.race([renderer.compileAsync(scene, camera), new Promise((r) => setTimeout(r, capMs))]);
+  } catch (e) { console.warn('[world] shader prewarm', e); }
+  const marks = (window as any).__hpMarks;
+  if (marks) marks.prewarmMs = Math.round(performance.now() - t0);
 }
 
 export function installWorldScene(game: Game) {

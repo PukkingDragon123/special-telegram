@@ -3,6 +3,8 @@ import { Text3D, Text3DOpts } from './text3d';
 import { Input } from '../core/input';
 import { Sound } from '../core/audio';
 import { Ease } from '../core/util';
+import { Speaker, speakStart, speakStop } from './mood';
+import type { Expression } from '../game/contracts';
 
 /* ============================================================================================
  * DIALOGUE 3D — the "talk to an NPC" presentation (used by the quests module).
@@ -18,24 +20,30 @@ import { Ease } from '../core/util';
  * ========================================================================================== */
 
 export interface DlgViewOption { th: string; en?: string; locked?: string | null; tone?: 'quest' | 'money' | 'leave' | null }
-export interface DlgLineSpec { name: string; nameEn?: string; th: string; en?: string; color?: number; voice?: number; head: () => THREE.Vector3 | null }
+export interface DlgLineSpec {
+  name: string; nameEn?: string; th: string; en?: string; color?: number; voice?: number; head: () => THREE.Vector3 | null;
+  /** the speaking character (mouth flap while the line types + expression); optional */
+  speaker?: () => Speaker | null;
+  /** expression for the line (default: guessed from the text; null = leave the face alone) */
+  mood?: Expression | null;
+}
 export interface DlgEvents { picked?: number; cont?: boolean; leave?: boolean; buzz?: number }
 
 const LINE: Text3DOpts = {
   font: 'talk', size: 0.043, depth: 0.28, bevel: 0.06, color: 0xfff4de, side: 0x41281a, roughness: 0.35, emissive: 0.42, shadow: 0.65,
-  xray: true, castShadow: false, align: 'left', valign: 'top', lineHeight: 1.36, anim: { pop: 0.26, rise: 0.5, spin: 0.8, vanish: 0.22, drift: 0.4 },
+  xray: true, castShadow: false, align: 'left', valign: 'top', lineHeight: 1.36, anim: { pop: 0.26, rise: 0.5, spin: 0.8, vanish: 0.34, drift: 0.5, wave: 0.035, squash: 1.1, glint: 0.55 },
 };
 const LINE_EN: Text3DOpts = {
   font: 'ui', size: 0.02, depth: 0.2, bevel: 0.05, color: 0xd9cfbd, side: 0x2c231c, roughness: 0.5, emissive: 0.3, shadow: 0.55,
-  xray: true, castShadow: false, align: 'left', valign: 'top', anim: { pop: 0.22, rise: 0.3, spin: 0.4, vanish: 0.2, drift: 0.3 },
+  xray: true, castShadow: false, align: 'left', valign: 'top', anim: { pop: 0.22, rise: 0.3, spin: 0.4, vanish: 0.3, drift: 0.3, wave: 0.025, glint: 0.3 },
 };
 const NAME: Text3DOpts = {
   font: 'heavy', size: 0.032, depth: 0.42, bevel: 0.08, color: 0xffc94a, metalness: 0.5, roughness: 0.3, emissive: 0.35, shadow: 0.6, bevelFace: true,
-  xray: true, castShadow: false, align: 'left', valign: 'bottom', anim: { pop: 0.3, rise: 0.4, spin: 1.2, vanish: 0.2, drift: 0.3 },
+  xray: true, castShadow: false, align: 'left', valign: 'bottom', anim: { pop: 0.3, rise: 0.4, spin: 1.2, vanish: 0.3, drift: 0.3, squash: 1.3, glint: 0.8 },
 };
 const OPT: Text3DOpts = {
   font: 'talk', size: 0.021, depth: 0.3, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.36, shadow: 0.5,
-  xray: true, castShadow: false, align: 'left', valign: 'middle', maxWidth: 0.62, anim: { pop: 0.26, rise: 0.4, spin: 0.9, vanish: 0.18, drift: 0.3 },
+  xray: true, castShadow: false, align: 'left', valign: 'middle', maxWidth: 0.62, anim: { pop: 0.26, rise: 0.4, spin: 0.9, vanish: 0.26, drift: 0.3, squash: 0.9 },
 };
 const OPT_HOT: Partial<Text3DOpts> = { color: 0xffe28a, side: 0x8a3c0a, emissive: 0.85, rim: 0xffb347, rimStrength: 1.3 };
 const OPT_LOCK: Partial<Text3DOpts> = { color: 0x8f8780, side: 0x2a2522, emissive: 0.12, rim: undefined, rimStrength: 0 };
@@ -45,11 +53,15 @@ const OPT_EN: Text3DOpts = {
 };
 const NUM: Text3DOpts = {
   font: 'display', size: 0.026, depth: 0.42, bevel: 0.1, color: 0xffcf5a, metalness: 0.85, roughness: 0.25, emissive: 0.25, bevelFace: true,
-  xray: true, castShadow: false, align: 'center', valign: 'middle', anim: { pop: 0.3, rise: 0.4, spin: 1.4, vanish: 0.2, drift: 0.3 },
+  xray: true, castShadow: false, align: 'center', valign: 'middle', anim: { pop: 0.3, rise: 0.4, spin: 1.4, vanish: 0.26, drift: 0.3, squash: 1.4, glint: 0.9 },
 };
 const TONE: Record<string, number> = { quest: 0xffd36a, money: 0x9fe6a0, leave: 0xc9b9a6 };
-/** NPC line wrap width in local units (the block is scaled so this spans ≈ half the screen width) */
+/** NPC line wrap width in local units (the block is scaled so this spans ≈ 40 % of the screen width) */
 const LINE_W = 1.0;
+/** NDC width the wrap width maps to (compact: the old 1.3 read as a wall of text) */
+const LINE_NDC = 0.8;
+/** answer cards: on-screen size relative to the original design */
+const CARD_K = 0.7;
 
 function roundRect(w: number, h: number, r: number) {
   const s = new THREE.Shape();
@@ -61,9 +73,14 @@ function roundRect(w: number, h: number, r: number) {
   return new THREE.ShapeGeometry(s, 6);
 }
 
+/** free the per-card plate meshes (the Text3D parts dispose themselves) */
+function disposePlates(obj: THREE.Object3D) {
+  obj.traverse((o: any) => { if (o.isMesh && o.material?.userData?.cardPlate) { o.geometry.dispose(); o.material.dispose(); } });
+}
+
 interface Card {
   root: THREE.Group; plate: THREE.Mesh; edge: THREE.Mesh; num: Text3D; main: Text3D; sub: Text3D | null; reason: Text3D | null;
-  opt: DlgViewOption; hot: boolean; t0: number; w: number; h: number;
+  opt: DlgViewOption; hot: boolean; t0: number; w: number; h: number; picked?: number;
 }
 
 const _v = new THREE.Vector3(), _q = new THREE.Quaternion(), _r = new THREE.Vector3(), _u = new THREE.Vector3(), _cr = new THREE.Vector3(), _cu = new THREE.Vector3();
@@ -86,7 +103,8 @@ export class DialogueView {
   private cards: Card[] = [];
   private hover = -1;
   private ray = new THREE.Raycaster();
-  private dying: { obj: THREE.Object3D; parts: Text3D[]; t: number }[] = [];
+  private dying: { obj: THREE.Object3D; parts: Text3D[]; t: number; dur: number; mode: 'line' | 'card' | 'picked' }[] = [];
+  private speaker: Speaker | null = null;
   /** glyphs per second */
   cps = 32;
   private mouseMoved = false;
@@ -104,7 +122,14 @@ export class DialogueView {
   /** the NPC says something (replaces the previous line with a vanish) */
   setLine(spec: DlgLineSpec) {
     this.retire(this.lineGroup.children.slice(), [this.line, this.lineEn, this.name]);
+    // the previous answers no longer apply: the chosen one flies off, the rest slide away
+    if (this.cards.length) this.setOptions(null);
+    speakStop(this.speaker);
     this.spec = spec;
+    let sp: Speaker | null = null;
+    try { sp = spec.speaker?.() ?? null; } catch { sp = null; }
+    this.speaker = sp;
+    speakStart(sp, spec.th, spec.en, spec.mood, spec.th.length / this.cps + 1.4);
     const maxW = LINE_W;
     this.line = new Text3D(spec.th, { ...LINE, maxWidth: maxW });
     this.line.reveal = 0;
@@ -127,7 +152,7 @@ export class DialogueView {
 
   /** answer cards (null → none). `cont` adds a single "continue" card when there are no options. */
   setOptions(opts: DlgViewOption[] | null) {
-    for (const c of this.cards) this.retire([c.root], [c.num, c.main, c.sub, c.reason]);
+    for (const c of this.cards) this.retire([c.root], [c.num, c.main, c.sub, c.reason], c.picked !== undefined ? 'picked' : 'card');
     this.cards = [];
     this.hover = -1;
     if (!opts?.length) return;
@@ -142,9 +167,11 @@ export class DialogueView {
       const reason = locked ? new Text3D('🔒 ' + o.locked, { ...OPT_EN, color: 0xff9a7a, size: 0.0115 }) : null;
       main.popIn(0.018); sub?.popIn(0.01); num.popIn(0); reason?.popIn(0.01);
       const plateMat = new THREE.MeshBasicMaterial({ color: 0x140d09, transparent: true, opacity: 0.6, depthWrite: false });
+      plateMat.userData.cardPlate = true;
       const plate = new THREE.Mesh(roundRect(1, 1, 0.12), plateMat);
       plate.renderOrder = 2090;
       const edgeMat = new THREE.MeshBasicMaterial({ color: o.tone ? TONE[o.tone] : 0xffc94a, transparent: true, opacity: 0.0, depthWrite: false });
+      edgeMat.userData.cardPlate = true;
       const edge = new THREE.Mesh(roundRect(1, 1, 0.14), edgeMat);
       edge.renderOrder = 2089;
       edge.position.z = -0.002;
@@ -160,11 +187,12 @@ export class DialogueView {
 
   get hasOptions() { return this.cards.length > 0; }
 
-  private retire(objs: THREE.Object3D[], parts: (Text3D | null)[]) {
+  private retire(objs: THREE.Object3D[], parts: (Text3D | null)[], mode: 'line' | 'card' | 'picked' = 'line') {
     const ps = parts.filter(Boolean) as Text3D[];
     let dur = 0;
-    for (const p of ps) dur = Math.max(dur, p.vanish(0.006));
-    for (const o of objs) this.dying.push({ obj: o, parts: ps, t: Math.max(0.25, dur) });
+    for (const p of ps) dur = Math.max(dur, p.vanish(mode === 'picked' ? 0.01 : 0.006));
+    const t = Math.max(mode === 'picked' ? 0.5 : 0.3, dur);
+    for (const o of objs) this.dying.push({ obj: o, parts: ps, t, dur: t, mode });
   }
 
   /** per frame: layout + input. Returns what the player did this frame. */
@@ -178,8 +206,19 @@ export class DialogueView {
     for (let i = this.dying.length - 1; i >= 0; i--) {
       const d = this.dying[i];
       d.t -= dt;
-      d.obj.scale.multiplyScalar(d.obj.parent === this.cardGroup ? Math.max(0, 1 - dt * 6) : 1);
-      if (d.t <= 0) { d.obj.removeFromParent(); for (const p of d.parts) p.dispose(); this.dying.splice(i, 1); }
+      const k = 1 - Math.max(0, d.t) / d.dur;
+      if (d.mode === 'picked') {
+        // the chosen answer: a little punch, then it lifts away while its letters burn off
+        const punch = 1 + Math.sin(Math.min(1, k * 2.5) * Math.PI) * 0.12;
+        d.obj.scale.setScalar(Math.max(0.001, (d.obj.userData.s0 ??= d.obj.scale.x) * punch));
+        d.obj.position.y += dt * 0.06;
+        d.obj.position.x += dt * 0.03;
+      } else if (d.mode === 'card') {
+        d.obj.position.x -= dt * 0.35 * (0.3 + k);
+        d.obj.scale.multiplyScalar(Math.max(0, 1 - dt * 3));
+      }
+      if (d.mode !== 'line') d.obj.traverse((o: any) => { if (o.isMesh && o.material?.userData?.cardPlate) o.material.opacity *= Math.max(0, 1 - dt * 7); });
+      if (d.t <= 0) { d.obj.removeFromParent(); for (const p of d.parts) p.dispose(); disposePlates(d.obj); this.dying.splice(i, 1); }
     }
     // ---- NPC line: typewriter + placement beside the head, constant screen size, faces the camera
     const s = this.spec;
@@ -194,6 +233,7 @@ export class DialogueView {
           Sound.play('babble', { vol: 0.32, pitch: (s.voice ?? 1) * (0.92 + Math.random() * 0.16) });
         }
         if (this.lineEn && this.rev >= this.line.glyphCount) this.lineEn.reveal = Infinity;
+        if (this.rev >= this.line.glyphCount) { speakStop(this.speaker); }
       }
       const head = s.head();
       const holder = this.lineGroup.children[this.lineGroup.children.length - 1];
@@ -202,7 +242,7 @@ export class DialogueView {
         // its top a little above eye level, never off screen; it still lives in the world (parallax, depth)
         const ndc = _v.copy(head).project(cam);
         const right = THREE.MathUtils.clamp(ndc.x - 0.1, -0.2, 0.55);
-        const left = Math.max(-0.95, right - 1.3);
+        const left = Math.max(-0.95, right - LINE_NDC);
         const top = THREE.MathUtils.clamp(ndc.y + 0.55, 0.42, 0.88);   // the line lives in the top band, answers in the bottom
         const z = THREE.MathUtils.clamp(ndc.z, -1, 0.9999);
         const pL = _r.set(left, top, z).unproject(cam);
@@ -244,7 +284,7 @@ export class DialogueView {
     // stack always sits at the bottom of the screen at the same on-screen size
     const zBase = -0.75;
     const halfH = Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) * -zBase;
-    const ks = (halfH / 0.545) * 0.86;
+    const ks = (halfH / 0.545) * 0.86 * CARD_K;
     this.cardGroup.scale.setScalar(ks);
     this.cardGroup.position.set(0, 0, zBase * (1 - ks));
     // the answers form a column under the speaker's line, on the left of the frame
@@ -277,7 +317,8 @@ export class DialogueView {
       const sc = Math.max(0.001, pop) * (hot ? 1.06 : 1);
       const r = c.root;
       r.scale.setScalar(r.scale.x + (sc - r.scale.x) * Math.min(1, dt * 16));
-      const x = leftX + (hot ? 0.014 : 0);
+      const slide = (1 - Math.min(1, Math.max(0, (this.t - c.t0) / 0.32))) ** 2;   // staggered slide-in from the left
+      const x = leftX + (hot ? 0.014 : 0) - slide * 0.12;
       r.position.set(r.position.x ? r.position.x + (x - r.position.x) * Math.min(1, dt * 12) : x, y + c.h / 2 + Math.sin(this.t * 2 + i * 1.3) * 0.0016, zBase + (hot ? 0.025 : 0));
       r.rotation.set(Math.sin(this.t * 1.2 + i) * 0.025 - 0.03, Math.sin(this.t * 0.8 + i * 2) * 0.03, 0);
       // plate behind the text block (local origin = left edge, vertical centre)
@@ -286,7 +327,7 @@ export class DialogueView {
       (c.plate.material as THREE.MeshBasicMaterial).opacity = hot ? 0.78 : 0.58;
       c.edge.scale.set(c.w + 0.036, c.h + 0.006, 1);
       c.edge.position.set(c.w / 2 - 0.005, 0, -0.005);
-      (c.edge.material as THREE.MeshBasicMaterial).opacity = hot && !c.opt.locked ? 0.85 : c.opt.tone ? 0.28 : 0.0;
+      (c.edge.material as THREE.MeshBasicMaterial).opacity = hot && !c.opt.locked ? 0.7 + Math.sin(this.t * 7) * 0.18 : c.opt.tone ? 0.28 : 0.0;
       c.num.position.set(0.02, 0, 0.004);
       const tx = 0.05;
       const top = c.h / 2 - 0.01;
@@ -327,11 +368,15 @@ export class DialogueView {
       return ev;
     }
     Sound.play('ding_correct', { vol: 0.35, pitch: 1.15 });
+    c.picked = this.t;
+    c.main.setLook(OPT_HOT);
     ev.picked = i;
     return ev;
   }
 
   dispose() {
+    speakStop(this.speaker);
+    this.speaker = null;
     this.setOptions(null);
     this.retire(this.lineGroup.children.slice(), [this.line, this.lineEn, this.name]);
     this.line = this.lineEn = this.name = null;

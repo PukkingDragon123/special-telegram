@@ -397,7 +397,7 @@ export class Magazine {
     ctx.fillText('ซอย', 0, 0);
     ctx.restore();
     ctx.fillStyle = '#ffffff';
-    ctx.font = `italic 700 132px ${F.fancy}`;
+    ctx.font = `800 120px ${F.heavy}`;
     ctx.fillText('สไตล์', 560, 236);
     ctx.font = `800 30px ${F.looped}`;
     ctx.fillStyle = '#ffe36b';
@@ -764,7 +764,7 @@ function tabCanvas(label: string, color: string, i: number) {
   g.addColorStop(0, 'rgba(0,0,0,0.12)'); g.addColorStop(0.25, 'rgba(0,0,0,0)'); g.addColorStop(0.92, 'rgba(255,255,255,0.15)'); g.addColorStop(1, 'rgba(0,0,0,0.12)');
   ctx.fillStyle = g; ctx.fill();
   ctx.fillStyle = '#1b2b6b';
-  ctx.font = `400 ${label.length > 9 ? 31 : label.length > 6 ? 42 : 58}px ${F.hand}`;
+  ctx.font = `800 ${label.length > 9 ? 28 : label.length > 6 ? 38 : 52}px ${F.heavy}`;
   ctx.textBaseline = 'middle';
   ctx.save(); ctx.translate(114, 62); ctx.rotate((rnd() - 0.5) * 0.06); ctx.fillText(label, 0, 0); ctx.restore();
   return cv;

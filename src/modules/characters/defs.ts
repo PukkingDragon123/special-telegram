@@ -48,7 +48,8 @@ export type ShoeKind = 'barefoot' | 'flipflop' | 'sandal' | 'sneaker' | 'leather
 export interface ShoeSpec { id: string; name: TL; price?: number; colors?: string[]; color: string; kind: ShoeKind; sex?: Sex | 'u'; color2?: string; socks?: string }
 
 export type AccKind = 'sunglasses' | 'glasses' | 'headband' | 'cap' | 'cap_back' | 'bucket' | 'straw' | 'helmet' | 'police_cap'
-  | 'chain' | 'watch' | 'towel' | 'mask' | 'backpack' | 'apron' | 'lanyard' | 'sash' | 'earrings';
+  | 'chain' | 'watch' | 'towel' | 'mask' | 'backpack' | 'apron' | 'lanyard' | 'sash' | 'earrings'
+  | 'toque' | 'skullcap' | 'neckerchief' | 'apron_waist';
 export interface AccSpec { id: string; name: TL; price?: number; colors?: string[]; color: string; kind: AccKind; slot: 'hat' | 'eyes' | 'neck' | 'wrist' | 'face' | 'back' | 'body' | 'band' | 'ears'; hidden?: boolean; sex?: Sex | 'u' }
 
 export interface HairSpec { id: string; name: TL; price?: number; sex?: Sex | 'u'; hidden?: boolean }
@@ -99,6 +100,10 @@ export const TOPS: TopSpec[] = [
   T('tshirt_ragged', 'เสื้อยืดเก่าขาด', 'old torn t-shirt', { price: 5, sleeve: 'short', loose: 0.02, hem: 0.84, collar: 'crew', pattern: 'ragged', color: '#8a8270', colors: ['#8a8270', '#6b6a5e', '#7d5a4a'] }),
   T('temple_white', 'เสื้อขาวไปวัด', 'white temple blouse', { price: 199, sex: 'f', sleeve: 'long', loose: 0.016, hem: 0.88, collar: 'mandarin', pattern: 'white_blouse', color: '#f6f5f0' }),
   T('gamer_tee', 'เสื้อยืดเกมเมอร์', 'gamer tee', { price: 159, sleeve: 'short', loose: 0.022, hem: 0.84, collar: 'crew', pattern: 'gamer', color: '#1d1d1f', colors: ['#1d1d1f', '#2a2a40', '#3a1d3f'] }),
+  // chef whites (the default player outfit): double-breasted, mandarin collar, cloth-knot buttons; color2 = piping
+  T('chef_jacket', 'เสื้อเชฟกระดุมสองแถว', 'double-breasted chef jacket', { price: 690, sleeve: 'long', loose: 0.02, sleeveLoose: 0.012, hem: 0.82, collar: 'mandarin', pattern: 'chef', color: '#f4f3ee', color2: '#f4f3ee', colors: ['#f4f3ee', '#1d1d1f', '#2a3550', '#7d7466'] }),
+  T('chef_jacket_rolled', 'เสื้อเชฟพับแขน', 'chef jacket, rolled sleeves', { price: 650, sleeve: 'rolled', loose: 0.02, sleeveLoose: 0.016, hem: 0.82, collar: 'mandarin', pattern: 'chef', color: '#f4f3ee', color2: '#f4f3ee', colors: ['#f4f3ee', '#1d1d1f', '#2a3550', '#7d7466'] }),
+  T('chef_jacket_piped', 'เสื้อเชฟขลิบสี', 'piped chef jacket', { price: 790, sleeve: 'long', loose: 0.02, sleeveLoose: 0.012, hem: 0.82, collar: 'mandarin', pattern: 'chef', color: '#f4f3ee', color2: '#1d1d1f', colors: ['#f4f3ee'] }),
   T('monk_robe', 'จีวร', 'saffron robe', { hidden: true, sleeve: 'none', loose: 0.028, hem: 0.8, collar: 'robe', pattern: 'robe', color: '#d9781f' }),
 ];
 
@@ -124,6 +129,8 @@ export const BOTTOMS: BottomSpec[] = [
   B('elephant_pants', 'กางเกงช้าง', 'elephant pants', { price: 150, kind: 'trousers', hem: 0.07, loose: 0.035, pattern: 'elephant', color: '#2a4a8a', color2: '#e8d9a0', colors: ['#2a4a8a', '#1d1d1f', '#8a2a3a', '#2a6a5a'] }),
   B('denim_shorts', 'กางเกงยีนส์ขาสั้น', 'denim shorts', { price: 290, kind: 'shorts', hem: 0.72, loose: 0.012, pattern: 'denim_light', color: '#6f8fb8', colors: ['#6f8fb8', '#2c3a58', '#e9e6df'] }),
   B('khakuay', 'กางเกงขาก๊วย', 'fisherman pants', { price: 129, kind: 'trousers', hem: 0.24, loose: 0.04, pattern: 'plain_fabric', color: '#2a2a2e', colors: ['#2a2a2e', '#3a4a6a', '#6a4a3a'] }),
+  B('chef_pants', 'กางเกงเชฟลายตาราง', 'chef check trousers', { price: 450, kind: 'trousers', hem: 0.05, loose: 0.024, pattern: 'chef_check', color: '#1d1d1f', color2: '#efede6', colors: ['#1d1d1f', '#24305a', '#5a2a2a'] }),
+  B('chef_pants_black', 'กางเกงเชฟสีดำ', 'black chef trousers', { price: 390, kind: 'trousers', hem: 0.05, loose: 0.024, pattern: 'twill_fine', color: '#1f1f22', colors: ['#1f1f22', '#2a3550', '#f2f0ea'] }),
   B('monk_robe_lower', 'สบง', 'robe (lower)', { hidden: true, kind: 'wrap', hem: 0.2, loose: 0.03, flare: 0.02, pattern: 'robe', color: '#d9781f' }),
 ];
 
@@ -137,6 +144,7 @@ export const SHOES: ShoeSpec[] = [
   { id: 'slippers', name: tl('รองเท้าแตะสวม', 'slide slippers'), price: 99, kind: 'slipper', color: '#1d1d1f', colors: ['#1d1d1f', '#c8423a', '#2f5fa8', '#f2f0ea'] },
   { id: 'school_shoes', name: tl('รองเท้านักเรียน', 'school shoes'), price: 390, kind: 'school', color: '#1a1512', colors: ['#1a1512', '#6a4a2a'], socks: '#f4f4f0' },
   { id: 'rubber_boots', name: tl('รองเท้าบูทยาง', 'rubber boots'), price: 220, kind: 'boot', color: '#1d1d1f', colors: ['#1d1d1f', '#f2f0ea', '#2f5f3a'] },
+  { id: 'chef_clogs', name: tl('รองเท้าเชฟกันลื่น', 'kitchen clogs'), price: 590, kind: 'leather', color: '#161616', colors: ['#161616', '#f2f0ea', '#2f4f86', '#8a2a2a'], socks: '#1d1d1f' },
   { id: 'barefoot', name: tl('เท้าเปล่า', 'barefoot'), price: 0, kind: 'barefoot', color: '#000000' },
 ];
 
@@ -168,6 +176,10 @@ export const ACCS: AccSpec[] = [
   A('lanyard', 'สายคล้องบัตรพนักงาน', 'staff ID lanyard', 'lanyard', 'neck', '#2f5fa8', 49, ['#2f5fa8', '#c8423a', '#1d1d1f']),
   A('sash', 'ผ้าสไบ', 'shoulder sash', 'sash', 'body', '#f6f5f0', 120, ['#f6f5f0', '#d8b04a', '#d86b8c'], { sex: 'f' }),
   A('earrings', 'ต่างหูทอง', 'gold earrings', 'earrings', 'ears', '#d8b04a', 390, undefined, { sex: 'f' }),
+  A('chef_hat', 'หมวกเชฟทรงสูง', 'tall chef toque', 'toque', 'hat', '#f6f5f0', 250),
+  A('chef_skullcap', 'หมวกเชฟผ้า', 'chef skull cap', 'skullcap', 'hat', '#1d1d1f', 150, ['#1d1d1f', '#f6f5f0', '#2a3550', '#c8423a', '#4f7d3c']),
+  A('neckerchief', 'ผ้าพันคอเชฟ', 'chef neckerchief', 'neckerchief', 'neck', '#c8423a', 90, ['#c8423a', '#2f5fa8', '#1d1d1f', '#e8a33d', '#f6f5f0', '#4f9a62']),
+  A('apron_waist', 'ผ้ากันเปื้อนครึ่งตัว', 'bistro waist apron', 'apron_waist', 'body', '#1d1d1f', 190, ['#1d1d1f', '#f6f5f0', '#3e5578', '#6b5b4a']),
 ];
 
 // ------------------------------------------------------------------ hair
@@ -208,6 +220,7 @@ export function topSpec(id: string | undefined): TopSpec {
   if (/suit/.test(s)) return TOP_MAP.get('suit_black')!;
   if (/vest|moto|win/.test(s)) return TOP_MAP.get('moto_vest')!;
   if (/school|student/.test(s)) return TOP_MAP.get('school_shirt')!;
+  if (/chef/.test(s)) return TOP_MAP.get('chef_jacket')!;
   if (/blouse|auntie/.test(s)) return TOP_MAP.get('auntie_blouse')!;
   if (/stripe/.test(s)) return TOP_MAP.get('shirt_stripe_white')!;
   if (/shirt/.test(s) && !/t-?shirt/.test(s)) return TOP_MAP.get('dress_shirt')!;
@@ -217,6 +230,7 @@ export function bottomSpec(id: string | undefined): BottomSpec {
   if (id && BOT_MAP.has(id)) return BOT_MAP.get(id)!;
   const s = (id ?? '').toLowerCase();
   if (/boxer/.test(s)) return BOT_MAP.get('boxer_plaid')!;
+  if (/chef/.test(s)) return BOT_MAP.get('chef_pants')!;
   if (/basket/.test(s)) return BOT_MAP.get('basketball_shorts')!;
   if (/jean|denim/.test(s)) return BOT_MAP.get(/short/.test(s) ? 'denim_shorts' : 'jeans')!;
   if (/school/.test(s)) return BOT_MAP.get(/skirt/.test(s) ? 'skirt_school' : 'shorts_school')!;
@@ -235,11 +249,15 @@ export function shoeSpec(id: string | undefined): ShoeSpec {
   if (/leather|oxford|dress/.test(s)) return SHOE_MAP.get('leather')!;
   if (/sandal/.test(s)) return SHOE_MAP.get('sandals')!;
   if (/boot/.test(s)) return SHOE_MAP.get('rubber_boots')!;
+  if (/clog|chef/.test(s)) return SHOE_MAP.get('chef_clogs')!;
   if (/bare|none/.test(s)) return SHOE_MAP.get('barefoot')!;
   return SHOE_MAP.get('flipflops')!;
 }
 export function accSpec(id: string): AccSpec | null {
   if (ACC_MAP.has(id)) return ACC_MAP.get(id)!;
+  // "<id>#rrggbb" → that accessory recoloured (player outfits: neckerchief / apron colours)
+  const hc = /^(.+)#([0-9a-fA-F]{6})$/.exec(id);
+  if (hc) { const b = accSpec(hc[1]); return b ? { ...b, id, color: '#' + hc[2].toLowerCase() } : null; }
   const m = /^cap_(back_)?(.+)$/.exec(id);
   if (m) {
     const named: Record<string, string> = { red: '#b8302a', blue: '#2f5fa8', navy: '#1f2a4a', black: '#1d1d1f', white: '#eeece6', green: '#2f6a3a', yellow: '#e2b32a', orange: '#e8682a', pink: '#e07a9a', grey: '#7a7a7a' };
@@ -255,6 +273,9 @@ export function accSpec(id: string): AccSpec | null {
   if (/mask/.test(id)) return ACC_MAP.get('face_mask')!;
   if (/helmet/.test(id)) return ACC_MAP.get('helmet')!;
   if (/bucket/.test(id)) return ACC_MAP.get('bucket_hat')!;
+  if (/toque|chef_?hat/.test(id)) return ACC_MAP.get('chef_hat')!;
+  if (/skull|beanie/.test(id)) return ACC_MAP.get('chef_skullcap')!;
+  if (/neckerchief|scarf/.test(id)) return ACC_MAP.get('neckerchief')!;
   return null;
 }
 export function hairSpec(id: string | undefined): HairSpec { return HAIR_MAP.get(id ?? '') ?? HAIR_MAP.get('short')!; }
@@ -353,18 +374,24 @@ export function catalogue() {
   };
 }
 
-// ------------------------------------------------------------------ player looks (album cover, ref4)
+// ------------------------------------------------------------------ player looks (four street-food chefs)
 
+/** Default player looks: the four album-cover guys (same faces, hair, skin) in chef whites, each told apart by
+ *  hat, neckerchief, apron, jacket colour/sleeves and body type. Everything stays changeable in the magazine. */
 export function playerLook(slot: number): Look {
   const L: Look[] = [
-    // G1 left: shaggy shoulder-length hair, white long-sleeve shirt with grey stripes, jeans, white sneakers
-    { sex: 'm', height: 1.72, build: 0.32, skin: '#d8aa84', face: 'm01', hair: { style: 'shaggy', color: '#17120f' }, top: { id: 'shirt_stripe_white', color: '#ece9e2' }, bottom: { id: 'jeans', color: '#33415e' }, shoes: { id: 'sneakers', color: '#f2f1ee' }, acc: [] },
-    // G2 standing: afro + white headband + amber sunglasses, green hawaiian shirt open over white tee, jeans
-    { sex: 'm', height: 1.78, build: 0.4, skin: '#c28e69', face: 'm02', hair: { style: 'afro', color: '#16110d' }, top: { id: 'hawaiian_green', color: '#86c25e' }, bottom: { id: 'jeans', color: '#27324a' }, shoes: { id: 'sneakers', color: '#e9e7e2' }, acc: ['sunglasses', 'headband_white'] },
-    // G3 back right: green-white striped polo, jeans
-    { sex: 'm', height: 1.7, build: 0.5, skin: '#cd9c76', face: 'm03', hair: { style: 'short', color: '#16120f' }, top: { id: 'polo_stripe_green', color: '#4f9a62' }, bottom: { id: 'jeans', color: '#2f3d5a' }, shoes: { id: 'sneakers', color: '#ecebe6' }, acc: [] },
-    // G4 front right: white button shirt (rolled sleeves), dark jeans, white sneakers, digital watch
-    { sex: 'm', height: 1.75, build: 0.36, skin: '#e2b893', face: 'm04', hair: { style: 'spiky', color: '#1a1512' }, top: { id: 'shirt_paisley', color: '#f3f1ec' }, bottom: { id: 'jeans', color: '#222a3c' }, shoes: { id: 'sneakers', color: '#f4f4f2' }, acc: ['watch_casio'] },
+    // G1 — the classic: white double-breasted jacket, tall toque, red neckerchief, check trousers, black clogs
+    { sex: 'm', height: 1.72, build: 0.32, physique: { muscle: 0.45, shoulders: 0.5, belly: 0.4, legs: 0.55, head: 0.5 }, skin: '#d8aa84', face: 'm01', hair: { style: 'shaggy', color: '#17120f' },
+      top: { id: 'chef_jacket', color: '#f4f3ee' }, bottom: { id: 'chef_pants', color: '#1d1d1f' }, shoes: { id: 'chef_clogs', color: '#161616' }, acc: ['chef_hat', 'neckerchief'] },
+    // G2 — afro + white headband + amber sunglasses, rolled sleeves, black bistro apron, mustard neckerchief, white clogs
+    { sex: 'm', height: 1.8, build: 0.4, physique: { muscle: 0.62, shoulders: 0.7, belly: 0.4, legs: 0.62, head: 0.5 }, skin: '#c28e69', face: 'm02', hair: { style: 'afro', color: '#16110d' },
+      top: { id: 'chef_jacket_rolled', color: '#f4f3ee' }, bottom: { id: 'chef_pants', color: '#24305a' }, shoes: { id: 'chef_clogs', color: '#f2f0ea' }, acc: ['sunglasses', 'headband_white', 'apron_waist', 'neckerchief#e8a33d'] },
+    // G3 — the stocky one: green-piped jacket, black skull cap, white bib apron, check trousers
+    { sex: 'm', height: 1.69, build: 0.56, physique: { muscle: 0.55, shoulders: 0.6, belly: 0.78, legs: 0.42, head: 0.55 }, skin: '#cd9c76', face: 'm03', hair: { style: 'short', color: '#16120f' },
+      top: { id: 'chef_jacket_piped', color: '#f4f3ee' }, bottom: { id: 'chef_pants', color: '#1d1d1f' }, shoes: { id: 'chef_clogs', color: '#161616' }, acc: ['chef_skullcap', 'apron#f2f0ea'] },
+    // G4 — black chef jacket, white toque, white bistro apron, black trousers, digital watch
+    { sex: 'm', height: 1.76, build: 0.3, physique: { muscle: 0.5, shoulders: 0.45, belly: 0.3, legs: 0.6, head: 0.47 }, skin: '#e2b893', face: 'm04', hair: { style: 'spiky', color: '#1a1512' },
+      top: { id: 'chef_jacket', color: '#1d1d1f' }, bottom: { id: 'chef_pants_black', color: '#1f1f22' }, shoes: { id: 'chef_clogs', color: '#161616' }, acc: ['chef_hat', 'apron_waist#f2f0ea', 'watch_casio'] },
   ];
   return JSON.parse(JSON.stringify(L[((slot % 4) + 4) % 4]));
 }
@@ -390,7 +417,7 @@ const HAIR_DYED = ['#3b281c', '#4d3021', '#5c2c1c', '#8a6a44'];
 const HAIR_OLD = ['#8f8b86', '#c8c4bd', '#6e6a66'];
 
 function base(r: RNG, sex: Sex, o: Partial<Look> = {}): Look {
-  const h = sex === 'm' ? range(r, 1.62, 1.8) : range(r, 1.5, 1.66);
+  const h = sex === 'm' ? range(r, 1.58, 1.84) : range(r, 1.48, 1.69);
   return {
     sex, height: +h.toFixed(3), build: +range(r, 0.25, 0.65).toFixed(2), skin: pick(r, SKIN_MID), face: pickFace(r, sex, ['young']),
     hair: { style: sex === 'm' ? 'short' : 'long', color: pick(r, HAIR_BLACK) },
@@ -577,10 +604,66 @@ export function resolveArchetype(a: string | undefined, r: RNG): string {
   return r.weighted(COMMON.map((c) => c[0]), COMMON.map((c) => c[1]));
 }
 
+// ------------------------------------------------------------------ physique variety
+
+type Rng2 = [number, number];
+interface PhysBias { muscle?: Rng2; shoulders?: number; belly?: number; legs?: number; head?: number; tall?: number; short?: number }
+/** per-archetype body tendencies (ranges / offsets on top of build-correlated defaults) */
+const PHYS: Record<string, PhysBias> = {
+  auntie_vendor: { muscle: [0.25, 0.45], belly: 0.15, legs: -0.1 },
+  uncle_singlet: { muscle: [0.3, 0.6], belly: 0.22 },
+  office_worker_m: { muscle: [0.3, 0.55] },
+  office_worker_f: { muscle: [0.2, 0.4], legs: 0.08 },
+  student_m: { muscle: [0.12, 0.4], shoulders: -0.12, head: 0.1, belly: -0.1 },
+  student_f: { muscle: [0.1, 0.3], shoulders: -0.1, head: 0.1, belly: -0.12 },
+  moto_taxi: { muscle: [0.4, 0.68], belly: 0.06 },
+  delivery_rider: { muscle: [0.35, 0.62] },
+  construction_worker: { muscle: [0.66, 0.97], shoulders: 0.16, belly: -0.15 },
+  monk: { muscle: [0.2, 0.45], belly: -0.05 },
+  police: { muscle: [0.45, 0.78], shoulders: 0.08, belly: 0.12 },
+  tourist_backpacker: { muscle: [0.3, 0.72], legs: 0.15, tall: 0.2 },
+  old_lady: { muscle: [0.04, 0.24], shoulders: -0.16, legs: -0.1, head: 0.05 },
+  grandpa: { muscle: [0.08, 0.3], shoulders: -0.1, legs: -0.06 },
+  housewife: { muscle: [0.2, 0.45], belly: 0.06 },
+  teen_gamer: { muscle: [0.08, 0.35], shoulders: -0.12, head: 0.08 },
+  gangster_lite: { muscle: [0.35, 0.62], belly: -0.15, short: 0.12 },
+  temple_lady: { muscle: [0.15, 0.35], belly: 0.1 },
+  street_sweeper: { muscle: [0.35, 0.62] },
+  security_guard: { muscle: [0.4, 0.72], belly: 0.12 },
+  karaoke_uncle: { muscle: [0.3, 0.5], belly: 0.26 },
+  sexy_girl_who_screams: { muscle: [0.2, 0.4], legs: 0.14 },
+  old_man_cart_owner: { muscle: [0.12, 0.2], shoulders: -0.15, belly: -0.2 },
+  homeless_man: { muscle: [0.1, 0.25], shoulders: -0.1, belly: -0.3 },
+  vendor_cook: { muscle: [0.42, 0.68], belly: 0.2 },
+  shop_girl: { muscle: [0.2, 0.45] },
+};
+
+const cl01 = (v: number) => +Math.max(0, Math.min(1, v)).toFixed(2);
+
+/** Fill look.physique (and add the odd very tall / very short person) for an archetype. */
+export function genPhysique(r: RNG, look: Look, arch: string) {
+  const b = PHYS[arch] ?? {};
+  const fem = look.sex === 'f';
+  const [m0, m1] = b.muscle ?? (fem ? [0.2, 0.5] : [0.3, 0.62]);
+  const muscle = range(r, m0, m1);
+  const build = look.build ?? 0.4;
+  look.physique = {
+    muscle: cl01(muscle),
+    shoulders: cl01(0.5 + (muscle - 0.5) * 0.55 + range(r, -0.16, 0.16) + (b.shoulders ?? 0)),
+    belly: cl01(0.5 + (build - 0.45) * 0.95 + range(r, -0.12, 0.14) + (b.belly ?? 0) - (fem ? 0.08 : 0)),
+    legs: cl01(range(r, 0.3, 0.7) + (b.legs ?? 0)),
+    head: cl01(range(r, 0.36, 0.64) + (b.head ?? 0)),
+  };
+  const u = r.next();
+  if (u < (b.tall ?? 0.06)) look.height = +Math.min(1.94, look.height + range(r, 0.05, 0.1)).toFixed(3);
+  else if (u > 1 - (b.short ?? 0.06)) look.height = +Math.max(1.42, look.height - range(r, 0.04, 0.08)).toFixed(3);
+}
+
 export function randomLook(archetype?: string, seed?: number): Look {
   const r = new RNG(seed === undefined ? (Math.random() * 2 ** 31) | 0 : (Math.abs(Math.floor(seed)) * 2654435761 + 12345) >>> 0 || 1);
   const id = resolveArchetype(archetype, r);
   const look = ARCHETYPES[id].gen(r);
+  if (!look.physique) genPhysique(r, look, id);
   (look as any).arch = id;
   return look;
 }

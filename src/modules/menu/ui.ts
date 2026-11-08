@@ -301,7 +301,7 @@ export function plateCanvas(text: string, o: { plate?: string; caret?: boolean; 
   const rx = W * (isCode ? 0.12 : 0.1), ry = H * (isCode ? 0.36 : 0.3), rw = W * (isCode ? 0.76 : 0.8), rh = H * (isCode ? 0.44 : 0.42);
   const t = text || o.placeholder || '';
   ctx.save();
-  ctx.font = `900 ${Math.round(rh * (o.size ?? 0.92))}px ${F.looped}, ${F.heavy}`;
+  ctx.font = `800 ${Math.round(rh * (o.size ?? 0.92))}px ${F.heavy}, ${F.looped}`;
   (ctx as any).letterSpacing = isCode ? `${Math.round(rh * 0.18)}px` : '0px';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';

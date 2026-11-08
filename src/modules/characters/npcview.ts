@@ -7,6 +7,21 @@ import { tl } from '../../core/util';
 import type { AnyRig } from './rigglb';
 import { ARCHETYPES, resolveArchetype } from './defs';
 import { RNG } from '../../core/rng';
+import { RigWorld } from './rig';
+import { G } from '../../sim/physics';
+
+const _gO = new THREE.Vector3(), _gD = new THREE.Vector3(0, -1, 0);
+/** foot IK ground: static colliders right under the foot, from a little above the character's floor */
+function installGround(game: Game) {
+  if (RigWorld.groundAt) return;
+  RigWorld.groundAt = (x, z, y) => {
+    const ph = (game as any).physics;
+    if (!ph?.raycast) return NaN;
+    const h = ph.raycast(_gO.set(x, y + 0.3, z), _gD, 0.9, G.STATIC);
+    if (!h || h.toi < 1e-3 || h.normal.y < 0.7) return NaN;
+    return h.point.y;
+  };
+}
 
 /* ============================================================================================
  * View for `npc` entities: { role, look, p, yaw, anim?, animT?, animLoop?, face?, lookAt?, hold?,
@@ -19,6 +34,7 @@ const NO_CARRY: CarryPose = { r: false, l: false, two: false, head: false, load:
 const HOLD_R: CarryPose = { r: true, l: false, two: false, head: false, load: 0.1 };
 
 export function npcView(game: Game, factory: CharacterFactory) {
+  installGround(game);
   return (e: Ent) => {
     const root = new THREE.Group();
     root.name = 'npc:' + e.id;
@@ -42,6 +58,7 @@ export function npcView(game: Game, factory: CharacterFactory) {
     let holdKind: string | null = null;
     let holdObj: THREE.Object3D | null = null;
     let lastFace: any = undefined;
+    let lastExpr: any = undefined;
     let lastName = JSON.stringify(e.name ?? null);
     const tmp = new THREE.Vector3();
 
@@ -89,6 +106,9 @@ export function npcView(game: Game, factory: CharacterFactory) {
         if (e.posture && e.posture !== rig.posture) rig.setPosture(e.posture);
         if (typeof e.seat === 'number') rig.seat = e.seat;
         if (e.face !== lastFace) { lastFace = e.face; rig.setFace(e.face ?? null); }
+        // optional replicated extras: expr (Expression, held while set) and talking (mouth flap)
+        if ((e as any).expr !== lastExpr) { lastExpr = (e as any).expr; rig.setExpression?.(lastExpr ?? 'neutral', { fade: 0.25 }); }
+        if ((e as any).talking !== undefined) rig.setTalking?.(!!(e as any).talking);
         rig.lookAt(e.lookAt != null ? targetPos(e.lookAt) : null);
         const hk = e.hold ?? null;
         if (hk !== holdKind) setHold(hk);

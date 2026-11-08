@@ -140,5 +140,5 @@ export const TS = {
   tagSub: { font: F.body, size: 22, weight: 400, color: '#cfc5b5' } as TextStyle,
   popup: { font: F.heavy, size: 64, weight: 800, color: '#fff7e0', stroke: '#2a1a08', strokeWidth: 7, shadow: 'rgba(0,0,0,0.45)', shadowBlur: 10 } as TextStyle,
   sign: { font: F.heavy, size: 72, weight: 800, color: '#ffffff' } as TextStyle,
-  hand: { font: F.hand, size: 44, weight: 400, color: '#1b2b6b' } as TextStyle,
+  hand: { font: F.ui, size: 44, weight: 600, color: '#1b2b6b' } as TextStyle,
 };

@@ -52,7 +52,11 @@ export interface AlbumOpts {
 
 export interface AlbumCanvas extends HTMLCanvasElement { cssW: number; cssH: number }
 
-const fontOf = (l: LineSpec) => `${l.weight ?? 700} ${l.size}px ${l.font ?? F.bubbly}, ${F.ui}, sans-serif`;
+/** the one clean, modern face every menu label uses (no handwriting / calligraphy anywhere) */
+export const MF = F.heavy;
+export const MW = 800;
+
+const fontOf = (l: LineSpec) => `${l.weight ?? MW} ${l.size}px ${l.font ?? MF}, ${F.ui}, sans-serif`;
 
 /**
  * Render one or more lines of album-cover lettering into a tight canvas.

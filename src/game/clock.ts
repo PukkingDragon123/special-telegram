@@ -24,13 +24,14 @@ export class Clock {
   get minute() { return Math.floor((this.time % 1) * 60); }
   /** "08:30" */
   label() { return `${String(this.hour % 24).padStart(2, '0')}:${String(this.minute).padStart(2, '0')}`; }
-  /** 0 at 06:00 … 1 at 24:00 */
-  get dayProgress() { return (this.time - DAY_START) / (DAY_END - DAY_START); }
+  /** 0 at 06:00 … 1 at 24:00 (pre-dawn tutorial hours clamp to 0) */
+  get dayProgress() { return Math.max(0, (this.time - DAY_START) / (DAY_END - DAY_START)); }
   get isNight() { return this.time >= 19 || this.time < 5.5; }
   get isDusk() { return this.time >= 17.5 && this.time < 19.5; }
   /** 0 = full day … 1 = full night (smooth). */
   get nightFactor() {
     const t = this.time;
+    if (t < 5.5) return 1;   // pre-dawn (the tutorial starts at 03:00)
     if (t < 17.8) return t < 6.3 ? 1 - (t - 5.5) / 0.8 : 0;
     return Math.min(1, (t - 17.8) / 1.6);
   }
@@ -51,7 +52,12 @@ export class Clock {
     return out;
   }
 
-  /** HOST */
+  /**
+   * HOST. Scripted sequences (the 03:00 tutorial) can steer time through replicated fields:
+   *   g.clockCap  — time does not advance past this hour (held there until the script moves it)
+   *   g.clockRate — multiplier on the normal rate (e.g. 6 = a fast sunrise between tutorial beats)
+   * Both are deleted when the script ends.
+   */
   hostAdvance(dt: number) {
     const g = this.game.g;
     if (g.scene !== 'world' || g.freezeTime) return;
@@ -64,7 +70,10 @@ export class Clock {
       return;
     }
     const before = g.time;
-    g.time = Math.min(DAY_END, g.time + dt * HOURS_PER_SECOND * this.speed);
+    const cap = typeof g.clockCap === 'number' ? g.clockCap : DAY_END;
+    if (g.time >= cap) return;
+    const rate = typeof g.clockRate === 'number' && g.clockRate > 0 ? g.clockRate : 1;
+    g.time = Math.min(DAY_END, cap, g.time + dt * HOURS_PER_SECOND * this.speed * rate);
     if (Math.floor(before) !== Math.floor(g.time)) this.game.events.emit('clock:hour', Math.floor(g.time));
   }
 

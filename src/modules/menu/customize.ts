@@ -7,14 +7,14 @@ import { Input } from '../../core/input';
 import { damp } from '../../core/util';
 import { F } from '../../core/fonts';
 import { StickerUI, Sticker } from './ui';
-import { GOLD } from './lettering';
+import { GOLD, MF, MW } from './lettering';
 import { Magazine, MagItem } from './magazine';
 import { sfx, musicKey } from './sfx';
 import { screamLines } from './lines';
 
 /* ============================================================================================
- * Customize: your guy T-poses in the middle of a busy Thai street in nothing but a singlet and
- * shorts. The street is a REAL photo (Flickr, CC BY-SA 4.0 "Pattaya Patrol" / CC BY 2.0
+ * Customize: your guy T-poses in the middle of a busy Thai street in his current outfit (the default
+ * look comes from characters.playerLook, never hard-coded here). The street is a REAL photo (Flickr, CC BY-SA 4.0 "Pattaya Patrol" / CC BY 2.0
  * "Heidi De Vries") camera-projected onto a proxy corridor (ground + facades + far wall), so the
  * 3D characters stand inside it with correct perspective. Girls walk by, notice, scream
  * "ว้ายยย! โรคจิต!!" and run away. The UI is the "ซอยสไตล์" fashion magazine (magazine.ts).
@@ -83,10 +83,9 @@ export class CustomizeView {
     this.camera.lookAt(this.camLook);
     this.buildStreet();
     this.buildLights();
-    // ---- the look: first time → only a singlet + shorts (+ flip-flops)
+    // ---- the look: whatever you wear now (first time = the slot's default outfit from the characters module)
     const me = game.me;
     const cur: Look = JSON.parse(JSON.stringify(me?.look ?? game.profile.look ?? game.chars.playerLook(me?.slot ?? 0)));
-    if (!game.profile.look) { cur.top = { id: 'singlet_white', color: '#f1eee6' }; cur.bottom = { id: 'boxer_plaid', color: '#3a5aa0' }; cur.shoes = { id: 'flipflops', color: '#2f63b8' }; cur.acc = []; }
     this.look = cur;
     this.rig = game.chars.create(JSON.parse(JSON.stringify(cur)), { lod: 'high', castShadow: true });
     this.rig.root.rotation.y = Math.PI - 0.2;
@@ -113,8 +112,8 @@ export class CustomizeView {
     this.loadEnv();
     // ---- stickers
     const L = (text: string, en?: string, size = 54): any[] => {
-      const a: any[] = [{ text, size, font: F.looped, weight: 900 }];
-      if (en) a.push({ text: en, size: Math.round(size * 0.36), font: F.looped, weight: 900, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
+      const a: any[] = [{ text, size, font: MF, weight: MW }];
+      if (en) a.push({ text: en, size: Math.round(size * 0.36), font: MF, weight: MW, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
       return a;
     };
     this.stickers.push(this.ui.add({ lines: L('แต่งตัว', 'CUSTOMIZE', 58), anchor: 'tl', x: 135, y: 62, passive: true, tilt: -4, delay: 0.3 }));
