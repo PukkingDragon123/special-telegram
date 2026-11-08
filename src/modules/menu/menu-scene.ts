@@ -688,7 +688,8 @@ export class MenuScene implements SceneDef {
   }
 
   private refreshUI() {
-    if (this.starting) return;
+    // not while we fade over to the customize street (that used to re-add the whole lobby on top of the magazine)
+    if (this.starting || this.mode !== 'album') return;
     const key = this.uiState();
     if (key === this.uiKey) {
       // live code plate (caret blink)

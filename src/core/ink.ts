@@ -43,6 +43,10 @@ export const InkSettings = {
 
 // ------------------------------------------------------------------ shared uniforms
 
+/** 1 while the ink edge pass runs (anime look): only then do opaque materials write their ink mask into the
+ *  scene alpha. Otherwise alpha stays 1 — a 0 mask (setInk(mat, 0)) must never reach the screen as a hole. */
+export const INK_ON = { value: InkSettings.ink ? 1 : 0 };
+
 /** global cel controls (shared by every patched material) */
 export const CEL = {
   uCelK: { value: InkSettings.cel ? 0.45 : 0 },
@@ -91,6 +95,7 @@ export function setInk(target: THREE.Object3D | THREE.Material | THREE.Material[
 
 const CEL_HEAD = /* glsl */ `
 uniform float uInkMask;
+uniform float uInkOn;
 uniform float uCelK;
 uniform float uCelShadow;
 uniform float uCelSoft;
@@ -114,6 +119,7 @@ float celShadowSharp( float s ) {
 `;
 const MASK_HEAD = /* glsl */ `
 uniform float uInkMask;
+uniform float uInkOn;
 `;
 
 const DOTNL = 'float dotNL = saturate( dot( geometryNormal, directLight.direction ) );';
@@ -142,10 +148,11 @@ function patchShader(m: any, sh: any) {
   if (!fs.includes('#include <common>')) return;
   const u = matUniforms(m);
   sh.uniforms.uInkMask = u.uInkMask;
+  sh.uniforms.uInkOn = INK_ON;
   if (fs.includes('#include <opaque_fragment>')) {
     // + NaN / overflow guard: a single non-finite pixel (zero-length normal, pow(<0), a /0 in a custom chunk) or
     //   one above the half-float range (Inf) explodes through the bloom mip chain into flashing black blocks
-    fs = fs.replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor.rgb = hpSafeColor(gl_FragColor.rgb);\n#ifdef OPAQUE\ngl_FragColor.a = uInkMask;\n#endif');
+    fs = fs.replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor.rgb = hpSafeColor(gl_FragColor.rgb);\n#ifdef OPAQUE\ngl_FragColor.a = mix(1.0, uInkMask, uInkOn);\n#endif');
     fs = fs.replace('#include <common>', '#include <common>\n' + SAFE_HEAD);
   }
   if (lit) {

@@ -12,6 +12,7 @@ import { buildCasino, CasinoSet, makeBottle, makeGlass, ROULETTE, SLOTS_POS, TAB
 import { Chips, Particles, makeCard } from './casino-fx';
 import { CASINO } from './lines';
 import { CineCam, Menace, ScreenFX, CINE_LINES, SHOUT, animPicker, path } from './casino-cine';
+import { RigWorld } from '../characters/rig';
 import { clamp01, ease, key, lerp, play, smooth, suitLook } from './util';
 
 /* ============================================================================================
@@ -89,6 +90,7 @@ export class CasinoScene implements SceneDef {
   private menace = new Menace();
   private fx: ScreenFX | null = null as any;
   private freezeUntil = -1;
+  private ambientCamWas = true;
   private posesAt: { a: Actor; t: number; pose: string; side: number; done?: boolean }[] = [];
   private walkWaitress: ((dt: number) => void) | null = null;
 
@@ -120,6 +122,9 @@ export class CasinoScene implements SceneDef {
     s.add(this.parts.group);
     s.add(this.menace.group);
     this.fx = new ScreenFX();
+    // no idle "glance at the camera" from extras while we frame shots
+    this.ambientCamWas = RigWorld.ambientCam;
+    RigWorld.ambientCam = false;
     try {
       const hdr = await Promise.race([Assets.hdr('hdri/interior_warm_casino_1k.hdr'), new Promise<null>((r) => setTimeout(() => r(null), 6000))]);
       if (hdr) {
@@ -167,6 +172,7 @@ export class CasinoScene implements SceneDef {
     this.skipEl = null;
     this.music?.stop(0.4); this.amb?.stop(0.4);
     for (const l of this.loops) l.stop(0.2);
+    RigWorld.ambientCam = this.ambientCamWas;
     this.cine.restoreAll();
     this.menace.dispose();
     this.fx?.dispose(); this.fx = null;
@@ -229,7 +235,7 @@ export class CasinoScene implements SceneDef {
     this.addActor(look('karaoke_uncle', 5), V(-2.7, 0, 2.9), yawTo(2.7, -3.3), 'idle');
     this.addActor(look('auntie_vendor', 9, { top: { id: 'shirt_satin', color: '#a8202e' } }), V(2.6, 0, 3.0), yawTo(-2.6, -3.4), 'idle');
     // roulette regulars (ends of the table, facing it)
-    this.addActor(look('gangster_lite', 31), V(ROULETTE.x - 1.85, 0, ROULETTE.z + 0.15), -Math.PI / 2 + 0.25, 'idle');
+    this.addActor(look('gangster_lite', 31), V(ROULETTE.x - 2.2, 0, ROULETTE.z + 0.2), -Math.PI / 2 + 0.25, 'idle');   // clear of the wheel bowl
     this.addActor(look('tourist_backpacker', 41, { acc: [] }), V(ROULETTE.x + 2.05, 0, ROULETTE.z + 0.3), Math.PI / 2 - 0.3, 'idle');
     // slot players (seated on the machines' stools)
     for (const [idx, seed, arch] of [[2, 51, 'old_lady'], [5, 52, 'karaoke_uncle'], [10, 53, 'housewife']] as [number, number, string][]) {

@@ -59,6 +59,9 @@ export class LocalPlayer {
   private wasGrounded = true;
   /** virtual eye camera used for interaction rays in third person */
   readonly aimCam = new THREE.PerspectiveCamera(72, 1, 0.04, 50);
+  private _eye = new THREE.Vector3();
+  private eyeY = 0;
+  private fpSet: any = null;
 
   constructor(private game: Game, readonly camera: THREE.PerspectiveCamera) {
     camera.fov = this.baseFov;
@@ -319,13 +322,22 @@ export class LocalPlayer {
     } else {
       const rig = this.rig() as any;
       if (rig?.root && !rig.root.visible) rig.root.visible = true;
+      if (rig && this.fpSet !== rig) { this.fpSet = rig; rig.setFirstPerson(true); }
       const bobY = Math.abs(Math.sin(this.bobT)) * 0.045 * this.bob;
       const bobX = Math.cos(this.bobT) * 0.025 * this.bob;
-      cam.position.set(this.pos.x, this.pos.y + this.eye + bobY - 0.02 - this.landDip, this.pos.z);
+      // eyes of the actual body (stable chest-based FK, so it matches crouch/lean/height), else the capsule estimate
+      const eyeFK = rig?.eyeWorld?.(this._eye, true) as THREE.Vector3 | undefined;
+      if (eyeFK && isFinite(eyeFK.y) && Math.abs(eyeFK.y - (this.pos.y + this.eye)) < 0.5 && Math.hypot(eyeFK.x - this.pos.x, eyeFK.z - this.pos.z) < 0.6) {
+        // vertical from FK (smoothed), horizontal from the capsule so mouse look never wobbles
+        this.eyeY += (eyeFK.y - this.eyeY) * (snap || !this.eyeY ? 1 : damp(14, dt));
+        cam.position.set(this.pos.x, this.eyeY + bobY * 0.6 - this.landDip, this.pos.z);
+      } else {
+        cam.position.set(this.pos.x, this.pos.y + this.eye + bobY - 0.02 - this.landDip, this.pos.z);
+      }
       cam.position.addScaledVector(right, bobX);
-      // a little in front of the eyes so the (head-less) body never fills the view when looking down
-      cam.position.x += -Math.sin(this.yaw) * 0.09;
-      cam.position.z += -Math.cos(this.yaw) * 0.09;
+      // a little in front of the eyes, along the view, so the (head-less) body never fills the view when looking down
+      const fwdX = -Math.sin(this.yaw) * Math.cos(this.pitch), fwdZ = -Math.cos(this.yaw) * Math.cos(this.pitch);
+      cam.position.x += fwdX * 0.07; cam.position.z += fwdZ * 0.07; cam.position.y += Math.sin(this.pitch) * 0.05;
       cam.rotation.set(this.pitch, this.yaw, Math.cos(this.bobT) * 0.004 * this.bob, 'YXZ');
     }
     this.fovKick += (run * 6 - this.fovKick) * damp(4, dt);

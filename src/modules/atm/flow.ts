@@ -939,7 +939,7 @@ export class AtmUI {
     this.t += dt;
     if (!u) return;
     const game = this.game, cam = game.camera;
-    if (this.fpFix > 0 && !this.leaving) { this.fpFix--; const rg = game.player?.rig(); if (rg) { rg.setFirstPerson(true); rg.root.visible = false; } }
+    if (this.fpFix > 0 && !this.leaving) { this.fpFix--; const rg = game.player?.rig(); if (rg) rg.setFirstPerson(true); }
     if (!this.leaving) Overlay.crosshair(false);
     this.pollReply();
     if (this.timer && this.t >= this.timer.t && this.timer.st === this.st) { const fn = this.timer.fn; this.timer = null; fn(); }

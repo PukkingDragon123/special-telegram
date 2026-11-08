@@ -3,6 +3,7 @@ import type { Game } from '../../game/game';
 import { G } from '../../sim/physics';
 import { Overlay } from '../../ui3d/overlay';
 import { hud } from '../hud/api';
+import * as Rig from '../characters/rig';
 import { headOf } from './util';
 
 /* ============================================================================================
@@ -98,6 +99,7 @@ export class CineCam {
     const rg = pl.rig();
     if (rg) { rg.setFirstPerson(false); rg.root.visible = true; }
     if (o.letterbox !== false) this.letterbox(true);
+    this.ambient(false);
     this.next();
     return true;
   }
@@ -119,7 +121,14 @@ export class CineCam {
     this.shots = [];
     this.setDof(null);
     this.letterbox(false);
+    this.ambient(true);
     this.back = null;
+  }
+
+  /** idle NPCs glance at the camera when it's close — not while we're filming them */
+  private ambient(on: boolean) {
+    const W = (Rig as any).RigWorld;
+    if (W && 'ambientCam' in W) W.ambientCam = on;
   }
 
   private letterbox(on: boolean) {
@@ -145,6 +154,7 @@ export class CineCam {
     this.shots = [];
     this.setDof(null);
     this.letterbox(false);
+    this.ambient(true);
     const dur = this.opts.handBack ?? 0.7;
     if (pl) {
       if (dur > 0) this.back = { p: cam.position.clone(), q: cam.quaternion.clone(), fov: cam.fov, t: 0, dur };

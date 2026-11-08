@@ -4,7 +4,7 @@ import {
   SMAAEffect, SMAAPreset, ChromaticAberrationEffect, DepthOfFieldEffect, Effect, BlendFunction, EffectAttribute,
 } from 'postprocessing';
 import { N8AOPostPass } from 'n8ao';
-import { InkEdgePass, InkEffect, InkSettings, CEL, installMaterialPatch, updateInkHulls, InkParams, LOOK_STYLE, SAFE_HEAD } from './ink';
+import { InkEdgePass, InkEffect, InkSettings, CEL, INK_ON, installMaterialPatch, updateInkHulls, InkParams, LOOK_STYLE, SAFE_HEAD } from './ink';
 
 export type Quality = 'low' | 'medium' | 'high' | 'ultra';
 
@@ -32,7 +32,9 @@ class GradeEffect extends Effect {
         c = (c - 0.5) * min(contrast, 1.0) + 0.5;
         c *= tint;
         c = mix(c, vec3(0.0), fade);
-        outputColor = vec4(clamp(c, 0.0, 1.0), inputColor.a);
+        // the scene alpha is the ink mask (anime look) or garbage from blended / custom materials: from here on
+        // the image is opaque — an alpha-0 pixel must never show the page background (black) through the canvas
+        outputColor = vec4(clamp(c, 0.0, 1.0), 1.0);
       }`, {
       blendFunction: BlendFunction.NORMAL,
       uniforms: new Map<string, THREE.Uniform>([
@@ -206,7 +208,7 @@ class FinalEffect extends Effect {
           }
           c = mix(c, o, impK);
         }
-        outputColor = vec4(c, inputColor.a);
+        outputColor = vec4(c, 1.0);
       }`, {
       attributes: EffectAttribute.CONVOLUTION,
       blendFunction: BlendFunction.NORMAL,
@@ -578,6 +580,7 @@ export class PostFX {
     this.final.u('sharp').value = this.scale < 0.99 ? Math.max(this.sharpen, 0.45) : this.sharpen;
     this.syncOutput();
     this.inkPass.enabled = InkSettings.ink;
+    INK_ON.value = InkSettings.ink ? 1 : 0;
     updateInkHulls(this.intH, this.intW);
     this.composer.render(dt);
   }
