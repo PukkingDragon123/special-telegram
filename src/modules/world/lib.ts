@@ -70,7 +70,7 @@ export function loadLib(): Promise<LibEntry[]> {
         byId.set(e.id, e);
         const def: ModelDef = {
           file: e.id, path: BASE + e.file, phys: physKind(e), mass: e.mass_kg || undefined, friction: e.friction,
-          recolor: !!e.tint, far: farFactor(e), shadow: Math.max(...e.size_m) > 0.3, collider: e.collider,
+          recolor: !!e.tint, hueVar: e.category === 'vehicles' && /scooter/.test(e.id), far: farFactor(e), shadow: Math.max(...e.size_m) > 0.3, collider: e.collider,
           anchor: e.anchor, env: 0.6, dirt: 1,
         };
         MODELS[libPropId(e.id)] = def;

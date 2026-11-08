@@ -50,6 +50,9 @@ export interface ModelDef {
   collider?: 'hull' | 'box' | 'cyl';
   /** grey-normalise the albedo so instance colours give coloured plastic variants */
   recolor?: boolean;
+  /** paint variants for textured models (vehicles): the instance colour is read as (hue shift 0..1, saturation ×,
+   *  value ×) and only saturated texels (painted panels) are hue-rotated — tyres, seats, chrome stay as they are */
+  hueVar?: boolean;
   /** visible distance factor (1 = normal, small props < 1) */
   far?: number;
   shadow?: boolean;
@@ -257,10 +260,37 @@ function neutralTexture(t: THREE.Texture, target = 0.82): THREE.Texture {
   return out;
 }
 
+/** instance colour = (hue shift, saturation ×, value ×) applied to saturated texels only (see ModelDef.hueVar) */
+function hueVariant(m: THREE.MeshStandardMaterial) {
+  m.onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', `#include <common>
+vec3 hpHueVar(vec3 c, vec3 p) {
+  // rgb → hsv
+  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+  vec4 q = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+  vec4 r = mix(vec4(q.xyw, c.r), vec4(c.r, q.yzx), step(q.x, c.r));
+  float d = r.x - min(r.w, r.y);
+  vec3 hsv = vec3(abs(r.z + (r.w - r.y) / (6.0 * d + 1e-6)), d / (r.x + 1e-6), r.x);
+  float paint = smoothstep(0.28, 0.5, hsv.y);          // only clearly painted texels
+  vec3 h2 = vec3(fract(hsv.x + p.x), clamp(hsv.y * p.y, 0.0, 1.0), clamp(hsv.z * p.z, 0.0, 1.0));
+  vec3 rgb = h2.z * mix(vec3(1.0), clamp(abs(fract(h2.x + vec3(1.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0) - 1.0, 0.0, 1.0), h2.y);
+  return mix(c, rgb, paint);
+}`)
+      .replace('#include <color_fragment>', '')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+#if defined( USE_INSTANCING_COLOR ) || defined( USE_COLOR )
+diffuseColor.rgb = hpHueVar(diffuseColor.rgb, vColor.rgb);
+#endif`);
+  };
+  m.customProgramCacheKey = () => 'hp-huevar-1';
+}
+
 function prepMaterial(src: THREE.Material, def: ModelDef): THREE.Material {
   const m = (src as THREE.MeshStandardMaterial).clone();
   if (m.transparent || (m as any).alphaMode === 'BLEND') { m.transparent = false; m.depthWrite = true; m.alphaTest = Math.max(m.alphaTest, 0.5); }
   if (m.map && def.recolor) m.map = neutralTexture(m.map);
+  if (def.hueVar) hueVariant(m);
   for (const k of TEX_SLOTS) { const t = (m as any)[k] as THREE.Texture | null; if (t) ownTexture(t); }
   if (m.color) m.color.multiplyScalar(def.dirt ?? 0.92);
   m.envMapIntensity = def.env ?? 0.55;
@@ -326,7 +356,7 @@ async function loadGlb(def: ModelDef): Promise<Model | null> {
       const { mergeGeometries } = await import('three/examples/jsm/utils/BufferGeometryUtils.js');
       geom = mergeGeometries(gs, false) ?? gs[0];
     }
-    parts.push({ geom, mat: prepMaterial(mat, def), tint: !!def.recolor });
+    parts.push({ geom, mat: prepMaterial(mat, def), tint: !!def.recolor || !!def.hueVar });
   }
   return finishModel(parts, def);
 }

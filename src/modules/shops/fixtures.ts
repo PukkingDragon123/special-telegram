@@ -785,6 +785,39 @@ function drinksCooler(B: Batch, root: THREE.Object3D, fr: Frame, x: number, zc: 
   B.add(rbox(0.03, 0.12, len - 0.04, 0.006, 0.3), pbr('metal_painted_chipped', 0x2a2a2a, 0x2a2a2a), fr, x + 0.02, 0.02, zc);
 }
 
+/** distance (m) to the nearest static wall from `from` along `dir` (world), or `def` */
+function probeWall(game: Game, from: THREE.Vector3, dir: THREE.Vector3, max: number, def: number) {
+  const h = game.physics?.raycast(from, dir.clone().normalize(), max, 1);
+  return h ? h.toi : def;
+}
+
+function storeCladding(game: Game, B: Batch, door: Frame) {
+  const tile = pbr('tiles_wall_white_dirty', 0xf6f6f2, 0xf2f2ee);
+  const H = 2.95;
+  const o = door.at(0, 1.4, 3.6);
+  const right = probeWall(game, o, door.r, 10, 6.9) - 0.035;            // local +x wall
+  const left = probeWall(game, o, door.r.clone().negate(), 10, 7.3) - 0.035;
+  const back = probeWall(game, o, door.f, 10, 4.1) - 0.035;             // local +z wall
+  const zb = 3.6 + back, xr = right, xl = -left;
+  const zf = -0.25;
+  const lenZ = zb - zf, midZ = (zb + zf) / 2;
+  // side walls (inner faces) and back wall
+  B.add(mbox(0.03, H, lenZ, 0.6), tile, door, xr, 0, midZ);
+  B.add(mbox(0.03, H, lenZ, 0.6), tile, door, xl, 0, midZ);
+  B.add(mbox(xr - xl, H, 0.03, 0.6), tile, door, (xr + xl) / 2, 0, zb);
+  // brand stripes at 2.2 m around the three walls + a dark skirting
+  for (const [y, c] of [[2.16, 0xe8681e], [2.24, 0x1e8a4a], [2.32, 0xd8231a]] as [number, number][]) {
+    const m = pbr('plastic_glossy', c, c);
+    B.add(rbox(0.012, 0.07, lenZ, 0.003, 1), m, door, xr - 0.02, y, midZ);
+    B.add(rbox(0.012, 0.07, lenZ, 0.003, 1), m, door, xl + 0.02, y, midZ);
+    B.add(rbox(xr - xl, 0.07, 0.012, 0.003, 1), m, door, (xr + xl) / 2, y, zb - 0.02);
+  }
+  const sk = pbr('rubber_black', undefined, 0x202020);
+  B.add(rbox(0.012, 0.1, lenZ, 0.003, 1), sk, door, xr - 0.02, 0, midZ);
+  B.add(rbox(0.012, 0.1, lenZ, 0.003, 1), sk, door, xl + 0.02, 0, midZ);
+  B.add(rbox(xr - xl, 0.1, 0.012, 0.003, 1), sk, door, (xr + xl) / 2, 0, zb - 0.02);
+}
+
 function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<string, string>): ShopFix {
   const root = new THREE.Group(); root.name = 'shop:' + s.id;
   const B = new Batch();
@@ -840,7 +873,7 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
       continue;
     }
     // sauces & beer: real bottles, 2 deep, grouped by kind
-    for (let i = 0; i < 30; i++) for (const dz of [2.3, 2.42]) {
+    for (let i = 0; i < 30; i++) for (const dz of [2.27]) {
       const id = WALL_IDS[(Math.floor(i / 4) + li * 3) % WALL_IDS.length];
       (wall[id] ??= []).push(new THREE.Matrix4().makeRotationY(ctr.yaw + Math.PI + Math.sin(i * 1.7) * 0.25).setPosition(ctr.at(-1.38 + i * 0.094, y + 0.025, dz)));
     }
@@ -855,6 +888,9 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
   // ---- drinks cooler along the south wall
   const fx = 6.2;
   drinksCooler(B, root, door, fx, 2.8, 3.6);
+  // ---- clean store walls: white tiled cladding with the three brand stripes, set just inside the building's own
+  // walls (probed), so the shop never shows the raw building interior (rusty / mouldy plaster) behind the shelves
+  storeCladding(game, B, door);
   // ---- ceiling: recessed fluorescent troffers
   for (const z of [1.5, 3.2, 4.9]) for (const xx of [-4.3, -1.2, 2.0]) {
     B.add(rbox(0.6, 0.05, 1.2, 0.01, 1), pbr('metal_painted_chipped', 0xf2f2f0, 0xf2f2f0), door, xx, 2.92, z);
