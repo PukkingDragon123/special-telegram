@@ -207,6 +207,13 @@ export class IntroLocal {
     const g: any = game.g;
     this.time += dt;
     if (g.scene !== 'world' || !game.scene) return;
+    // safety: depth of field is only for cutscene shots — if a shot was cut short (step jumped ahead, skip, slow
+    // client), never leave the blur running in gameplay (blurry view + an expensive pass every frame)
+    {
+      const post: any = game.engine.post;
+      if (post?.dofPass?.enabled && !this.cine.active && game.player?.mode === 'play') post.setDOF(false);
+      if (this.wakeOn && g.introStep && g.introStep !== 'wake' && !this.cine.active) this.endWake();
+    }
     if (g.introStep !== this.step) {
       const prev = this.step;
       this.step = g.introStep;
