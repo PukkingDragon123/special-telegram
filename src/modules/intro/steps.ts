@@ -440,7 +440,8 @@ export class IntroHost {
     // 2. eyes snap open, flashlight
     this.after(1.3, () => {
       o.posture = 'stand'; o.face = null; o.lookAt = by;
-      playAnim(game, o, 'angry', false);
+      playAnim(game, o, 'idle', true);                     // replace the sitting loop first
+      this.after(0.15, () => playAnim(game, o, 'angry', false));
       this.expr(o.id, 'angry', 6);
       game.emit('intro:torch', { on: true, by, old: o.id });
       this.say(o, CAUGHT.shout[0], 3, 'shout');
@@ -471,8 +472,8 @@ export class IntroHost {
     // 5. the lecture
     this.after(7.6, () => { this.say(o, CAUGHT.lecture[0], 3.4); playAnim(game, o, 'lecture', true); this.expr(o.id, 'disgust', 3.4); this.cine('c_lecture', { by, old: o.id }); });
     this.after(11.2, () => { this.say(o, CAUGHT.lecture[1], 3.4); this.expr(o.id, 'angry', 3.4); });
-    // 6. excuses (the culprit picks)
-    this.after(14.8, () => {
+    // 6. excuses (the culprit picks) — after his last line has faded, so the cards have the frame to themselves
+    this.after(16.9, () => {
       this.cine('c_excuse', { by, old: o.id });
       this.choose(by, 'excuse', CAUGHT.excusePrompt, CAUGHT.excuses, 7, (i) => {
         if (i >= 0) this.say(pl, CAUGHT.excuses[i], 2.4);
@@ -500,7 +501,7 @@ export class IntroHost {
     this.cine('d_open', { by, old: o.id });
     this.after(0.2, () => { this.say(o, DEAL.open, 3.4); playAnim(game, o, 'talk', true); this.expr(o.id, 'sad', 3); });
     this.after(3.8, () => { this.say(o, DEAL.offer, 3.8, 'shout'); playAnim(game, o, 'cine_point', false); this.expr(o.id, 'smug', 3.5); this.cine('d_offer', { by, old: o.id }); });
-    this.after(8.0, () => {
+    this.after(9.8, () => {
       this.cine('d_haggle', { by, old: o.id });
       this.choose(by, 'r1', DEAL.r1Prompt, DEAL.r1, 7, (i) => {
         if (i >= 0) this.say(pl, DEAL.r1[i], 2.4);
@@ -509,9 +510,11 @@ export class IntroHost {
         this.after(5.4, () => { this.say(o, DEAL.nag[0], 5); playAnim(game, o, 'lecture', true); this.expr(o.id, 'angry', 5); this.cine('d_nag', { by, old: o.id }); });
         this.after(10.6, () => { this.say(o, DEAL.nag[1], 4.4); this.expr(o.id, 'disgust', 4); });
         this.after(15.2, () => {
-          this.say(o, DEAL.r2Prompt, 3.4);
+          this.say(o, DEAL.r2Prompt, 2.6);
           playAnim(game, o, 'shrug', false);
           this.cine('d_haggle', { by, old: o.id });
+        });
+        this.after(19.4, () => {
           this.choose(by, 'r2', DEAL.r2Prompt, DEAL.r2, 7, (j) => {
             if (j >= 0) this.say(pl, DEAL.r2[j], 2.4);
             this.after(1.3, () => { this.say(o, j >= 0 ? DEAL.r2Reply[j] : DEAL.timeout, 3.6, j === 2 ? 'shout' : 'speech'); playAnim(game, o, j === 2 ? 'angry' : 'laugh', false); this.expr(o.id, j === 2 ? 'angry' : 'laugh', 3); this.cine('d_reply', { by, old: o.id }); });

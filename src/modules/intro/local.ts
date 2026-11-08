@@ -518,15 +518,20 @@ export class IntroLocal {
     const game = this.game;
     if (!game.scene) return;
     if (!this.torch && d.on) {
-      const geo = new THREE.CylinderGeometry(0.025, 0.55, 1, 22, 1, true).translate(0, -0.5, 0);
-      const mat = new THREE.MeshBasicMaterial({ color: 0xfff0c8, transparent: true, opacity: 0.085, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false });
+      const geo = new THREE.CylinderGeometry(0.02, 0.42, 1, 24, 1, true).translate(0, -0.5, 0);
+      // bright at the lens (uv.y = 1), fading out toward the far end
+      const cv = document.createElement('canvas'); cv.width = 4; cv.height = 64;
+      const cx = cv.getContext('2d')!;
+      const gr = cx.createLinearGradient(0, 0, 0, 64); gr.addColorStop(0, '#fff'); gr.addColorStop(0.35, '#777'); gr.addColorStop(1, '#000');
+      cx.fillStyle = gr; cx.fillRect(0, 0, 4, 64);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xfff0c8, transparent: true, opacity: 0.07, alphaMap: new THREE.CanvasTexture(cv), blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.FrontSide, fog: false });
       const cone = new THREE.Mesh(geo, mat);
       cone.renderOrder = 5;
       cone.frustumCulled = false;
-      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.028, 10, 8), new THREE.MeshBasicMaterial({ color: 0xfffbe8, fog: false }));
+      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.026, 10, 8), new THREE.MeshBasicMaterial({ color: 0xfffbe8, fog: false }));
       game.scene.add(cone, lens);
       const W: any = game.world;
-      const light = W?.addLightPoint ? W.addLightPoint(V(), 0xfff1d6, 0, 7, 0) : null;
+      const light = W?.addLightPoint ? W.addLightPoint(V(), 0xfff1d6, 0, 5.5, 0) : null;
       if (light) light.prio = 4;
       this.torch = { cone, lens, light, by: d.by ?? -1, old: d.old ?? -1, on: false, k: 0 };
     }
@@ -544,7 +549,6 @@ export class IntroLocal {
     t.k = THREE.MathUtils.clamp(t.k + (t.on ? dt * 6 : -dt * 3), 0, 1);
     const vis = t.k > 0.01 && !!game.state.get(t.old);
     t.cone.visible = vis; t.lens.visible = vis;
-    if (t.light) t.light.intensity = vis ? 16 * t.k : 0;
     if (!vis) return;
     const r = rigOf(game, t.old);
     const hand = r?.attach ? r.attach('hand_r').getWorldPosition(V()) : (headOf(game, t.old, V())?.add(V(0, -0.55, 0)) ?? V());
@@ -556,10 +560,17 @@ export class IntroLocal {
     dir.normalize();
     t.cone.position.copy(hand);
     t.cone.quaternion.setFromUnitVectors(V(0, -1, 0), dir);
-    t.cone.scale.set(0.35 + len * 0.18, len * 1.15, 0.35 + len * 0.18);
-    (t.cone.material as THREE.MeshBasicMaterial).opacity = 0.085 * t.k;
+    const L = len * 1.1, wdt = 0.3 + len * 0.16;
+    t.cone.scale.set(wdt, L, wdt);
+    // fade the beam out when the camera is in / next to it (close-ups would look through a fog wall)
+    const cam = game.camera.getWorldPosition(V());
+    const along = THREE.MathUtils.clamp(cam.clone().sub(hand).dot(dir), 0, L);
+    const axisD = cam.distanceTo(hand.clone().addScaledVector(dir, along));
+    const near = THREE.MathUtils.smoothstep(axisD - (along / L) * wdt * 0.42, 0.25, 1.3);
+    (t.cone.material as THREE.MeshBasicMaterial).opacity = 0.07 * t.k * near;
+    t.cone.visible = vis && near > 0.02;
     t.lens.position.copy(hand);
-    if (t.light) t.light.p.copy(target).addScaledVector(dir, -0.35);
+    if (t.light) { t.light.p.copy(target).addScaledVector(dir, -0.9); t.light.intensity = vis ? 6 * t.k : 0; }
   }
 
   /** Big cinematic title card (DOM, centre of the screen). */
@@ -626,13 +637,31 @@ export class IntroLocal {
     game.ui.think(() => headOf(game, id, tmp)?.add(V(0, 0.25, 0)) ?? null, text, { duration: sec });
   }
 
+  private subEl: HTMLDivElement | null = null;
+  private subTimer: any = null;
   private subtitle(d: { id: number; text: string | TL; o?: any }) {
     if (!this.cine.active || d.o?.style === 'thought' || !isIntroActive((this.game.g as any).introStep)) return;
     const t: TL = typeof d.text === 'string' ? { th: d.text } : d.text;
     if (!t?.th || (d.o?.duration ?? 3) > 60) return;
     const e = this.game.state.get(d.id);
     const nm = e?.name ? (typeof e.name === 'string' ? e.name : e.name.th) : '';
-    Overlay.subtitle(nm ? `${nm}: ${t.th}` : t.th, t.en, Math.min(6, Math.max(2.2, (d.o?.duration ?? 3) + 0.6)));
+    if (!this.subEl) {
+      const st = document.createElement('style');
+      st.textContent = `.hp-cinesub{position:fixed;left:50%;bottom:calc(10.5vh + 14px);transform:translateX(-50%);z-index:14;pointer-events:none;max-width:min(84vw,1000px);
+        text-align:center;color:#fff8e8;font:600 clamp(16px,2.1vw,28px)/1.35 ${F.ui},sans-serif;text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 2px #000;opacity:0;transition:opacity .25s}
+        .hp-cinesub b{color:#ffd66b;font-weight:800;margin-right:.4em}
+        .hp-cinesub small{display:block;font:500 clamp(11px,1.2vw,16px)/1.3 ${F.body},sans-serif;color:#e6dccb;opacity:.92;margin-top:3px}
+        .hp-cinesub.on{opacity:1}`;
+      document.head.appendChild(st);
+      this.subEl = document.createElement('div');
+      this.subEl.className = 'hp-cinesub';
+      document.body.appendChild(this.subEl);
+    }
+    this.subEl.innerHTML = `${nm ? `<b>${esc(nm)}</b>` : ''}${esc(t.th)}${t.en ? `<small>${esc(t.en)}</small>` : ''}`;
+    this.subEl.classList.add('on');
+    clearTimeout(this.subTimer);
+    const sec = Math.min(6, Math.max(2.2, (d.o?.duration ?? 3) + 0.6));
+    this.subTimer = setTimeout(() => this.subEl?.classList.remove('on'), sec * 1000);
   }
 
   private shock(sec: number) {
