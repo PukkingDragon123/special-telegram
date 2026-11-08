@@ -4,8 +4,8 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 
 /* ============================================================================================
  * Fixture kit — real-looking shop furniture parts (no raw boxes): bevelled boxes with metre UVs, round
- * tubes between two points, pillow-shaped snack bags / cups / cartons whose fronts are slices of real shelf
- * photos (each pack shows a different real product), merged per photo into one draw call.
+ * tubes between two points, pillow-shaped snack bags / cups / cartons whose fronts are cells of the painted
+ * package atlas (packs.ts: each pack its own fictional product), merged into one draw call.
  * ========================================================================================== */
 
 /** Re-project UVs by the dominant normal axis, in metres / tile (keeps PBR texel density on any shape). */
@@ -61,6 +61,8 @@ export interface PackRowOpts {
   seed?: number;
   /** extra rows of packs behind the front one (depth, using the same faces) */
   deep?: number;
+  /** per-pack uv cell [u0,u1,v0,v1] (package atlas, packs.ts) — overrides the photo-slice uvs */
+  cellUV?: (i: number) => [number, number, number, number];
 }
 
 function rnd(s: number) { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
@@ -75,11 +77,12 @@ export function packRow(o: PackRowOpts): THREE.BufferGeometry {
   const du = (o.u1 - o.u0) / o.n;
   const seed = o.seed ?? 1;
   for (let i = 0; i < o.n; i++) {
-    const pu0 = o.u0 + du * i + du * 0.04, pu1 = o.u0 + du * (i + 1) - du * 0.04;
+    let pu0 = o.u0 + du * i + du * 0.04, pu1 = o.u0 + du * (i + 1) - du * 0.04, pv0 = o.v0, pv1 = o.v1;
+    if (o.cellUV) [pu0, pu1, pv0, pv1] = o.cellUV(i);
     for (let k = 0; k <= (o.deep ?? 0); k++) {
       const jx = (rnd(seed + i * 7.1 + k) - 0.5) * 0.008, jz = (rnd(seed + i * 3.3 + k * 2) - 0.5) * 0.01;
       const tilt = (rnd(seed + i * 5.7 + k) - 0.5) * (o.shape === 'bag' ? 0.12 : 0.04);
-      const g = o.shape === 'cup' ? cupGeo(o.w, o.h, pu0, pu1, o.v0, o.v1) : packGeo(o.w, o.h, o.d, o.shape === 'bag', pu0, pu1, o.v0, o.v1);
+      const g = o.shape === 'cup' ? cupGeo(o.w, o.h, pu0, pu1, pv0, pv1) : packGeo(o.w, o.h, o.d, o.shape === 'bag', pu0, pu1, pv0, pv1);
       g.rotateZ(tilt * 0.3).rotateY(tilt);
       g.translate(o.x0 + (o.w + gap) * i + o.w / 2 + jx, o.y, o.z - o.d / 2 - k * (o.d + 0.004) + jz);
       gs.push(g);
