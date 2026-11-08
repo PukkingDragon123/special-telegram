@@ -147,6 +147,10 @@ export class Engine {
   /** set the effective tier (keeps qualityMode) */
   private applyQuality(q: Quality) {
     this.post.setQuality(q);
+    // anisotropic filtering is texture bandwidth: full on high/ultra (unchanged look), cheaper on the low tiers
+    // (applies to textures uploaded from now on — tiers are normally chosen before the world loads)
+    const maxA = Math.min(16, this.renderer.capabilities.getMaxAnisotropy());
+    Assets.maxAnisotropy = q === 'low' ? Math.min(2, maxA) : q === 'medium' ? Math.min(4, maxA) : maxA;
     this.renderer.shadowMap.type = q === 'low' ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
     this.gov.reset(4);
     this.shadowEvery = 1;

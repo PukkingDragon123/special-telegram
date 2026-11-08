@@ -409,7 +409,7 @@ export class MenuScene implements SceneDef {
     const P = SLOTS[i].pos;
     switch (i) {
       case 0: return new THREE.Vector3(P.x - 0.12, 1.28, P.z + 0.05);
-      case 1: return new THREE.Vector3(P.x - 0.42, 1.12, P.z);
+      case 1: return new THREE.Vector3(P.x - 0.4, 1.5, P.z);   // beside his head, clear of G1's reaching hands
       case 2: return new THREE.Vector3(P.x + 0.05, 1.22, P.z);
       default: return new THREE.Vector3(P.x + 0.12, 1.32 + (h - 1.72) * 0.5, P.z);
     }
@@ -693,10 +693,32 @@ export class MenuScene implements SceneDef {
       return;
     }
     this.uiKey = key;
-    const keep = new Set(['title', 'tagline']);
-    for (const k of Object.keys(this.stickers)) if (!keep.has(k)) { this.ui.remove(this.stickers[k]); this.stickers[k] = null; }
+    // stickers whose content didn't change stay put (no re-slap of every button when a friend joins)
+    const old = new Map<string, Sticker>();
+    for (const k of Object.keys(this.stickers)) {
+      if (k === 'title' || k === 'tagline') continue;
+      const st = this.stickers[k];
+      if (st && !st.leaving) old.set(k, st);
+      this.stickers[k] = null;
+    }
+    const add = (k: string, o: any): Sticker => {
+      const sig = o.paint ? '' : stickerSig(o);
+      const prev = old.get(k);
+      if (prev && sig && this.sigs[k] === sig) {
+        old.delete(k);
+        prev.opts.onClick = o.onClick;
+        prev.setDisabled(!!o.disabled);
+        return (this.stickers[k] = prev);
+      }
+      this.sigs[k] = sig;
+      return (this.stickers[k] = this.ui.add(o));
+    };
+    try { this.buildUI(add); } finally { for (const st of old.values()) this.ui.remove(st); }
+  }
+  private sigs: Record<string, string> = {};
+
+  private buildUI(add: (k: string, o: any) => Sticker) {
     const g = this.game, s = g.session;
-    const add = (k: string, o: any) => (this.stickers[k] = this.ui.add(o));
     const L = (text: string, en?: string, size = 54): any[] => {
       const a: any[] = [{ text, size, font: MF, weight: MW }];
       if (en) a.push({ text: en, size: Math.round(size * 0.36), font: MF, weight: MW, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
@@ -953,6 +975,12 @@ export class MenuScene implements SceneDef {
 // ------------------------------------------------------------------ helpers
 
 const inBack = (t: number, s = 1.70158) => (s + 1) * t * t * t - s * t * t;
+
+/** identity of a sticker's look + place (lines, art, position, style) – equal ⇒ the sticker can stay */
+function stickerSig(o: any): string {
+  const st = o.style === GOLD ? 'g' : o.style === DANGER ? 'd' : o.style === DISABLED ? 'x' : o.style ? 'o' : '';
+  return JSON.stringify([o.lines?.map((l: any) => `${l.text}|${l.size}|${l.style === GOLD ? 'g' : ''}`), o.img, o.anchor, o.x, o.y, o.width, o.tilt, st, !!o.passive, o.bob ?? 0]);
+}
 
 function errText(e: any, hosting: boolean): [string, string] {
   const m = String(e?.message ?? e ?? '');

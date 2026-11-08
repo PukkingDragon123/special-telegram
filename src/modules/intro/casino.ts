@@ -437,15 +437,15 @@ export class CasinoScene implements SceneDef {
               this.menace.emit(() => this.head(a, tmp).clone().add(V(0, 0.1, 0)), p.a.slot! % 2 ? 'do' : 'go', 2.6, p.side);
             }
           }
-          if (k > 0.55) once('poseSub', () => { this.sub(CINE_LINES.poseN(n), 2.4); cine.crash(0.72, 1.4, 0.35); });
+          if (k > 0.55) once('poseSub', () => { this.sub(CINE_LINES.poseN(n), 2.4); cine.crash(0.8, 1.4, 0.35); });
           if (k > 0.93) once('poseEnd', () => { this.menace.stop(); this.fx.flash(0.12); });
         },
         // worm's-eye low angle, dutch tilt, slow push
         cam: (k) => {
           const c = this.center();
-          this.camera.position.set(c.x + 0.25 - k * 0.3, 0.32, c.z + 3.3 - k * 0.5);
-          this.look.set(c.x, 1.45, c.z);
-          this.aim(lerp(44, 38, ease(k)));
+          this.camera.position.set(c.x + 0.25 - k * 0.3, 0.4, c.z + 3.9 - k * 0.45);
+          this.look.set(c.x, 1.32, c.z);
+          this.aim(lerp(48, 42, ease(k)));
           this.focus.set(c.x, 1.4, c.z);
         },
       },

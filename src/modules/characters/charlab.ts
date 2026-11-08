@@ -204,17 +204,16 @@ export class CharLab implements SceneDef {
   private exprs() {
     const look = this.whoLook();
     const list: (Expression | 'talk')[] = [...EXPRESSIONS, 'talk'];
-    const perRow = 5;
+    // one row (no occlusion); __charlab.cam / focus pans along it (5 faces per view at 1.6 m)
     list.forEach((ex, i) => {
-      const row = Math.floor(i / perRow), col = i % perRow;
-      const e = this.add(look, new THREE.Vector3((col - (perRow - 1) / 2) * 0.46, 0, row * 0.7), Math.PI, 'idle', undefined, undefined, 'high');
+      const e = this.add(look, new THREE.Vector3((i - (list.length - 1) / 2) * 0.42, 0, 0), Math.PI, 'idle', undefined, undefined, 'high');
       (e.rig as any).fidgetWait = 1e9;
       (e.rig as any).ambient = false;
       if (ex === 'talk') e.rig.setTalking?.(true); else e.rig.setExpression?.(ex, { fade: 0.01 });
       if (!params.has('nolabel')) { e.label = this.label(ex); e.label.scale.set(0.42, 0.105, 1); e.label.position.set(e.base.x, 1.28, e.base.z + 0.3); this.scene.add(e.label); }
     });
-    this.camera.position.set(0, 1.52, 3.6);
-    this.camTarget.set(0, 1.45, 0.6);
+    this.camera.position.set(-2.1, 1.58, 1.6);
+    this.camTarget.set(-2.1, 1.5, 0);
   }
 
   /** the cinematic hero poses side by side */

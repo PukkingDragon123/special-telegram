@@ -100,7 +100,9 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
     if (z > -157.5 && z < 2 && Math.abs(Math.abs(x) - 4.6) < 0.45 + r) return true;
     // soi crossing lanes: nothing parked across them (nav.ts SOI_CROSSINGS)
     if (Math.abs(x) < 6.2 && SOI_CROSSINGS.some((zc) => Math.abs(z - zc) < 0.75 + r)) return true;
-    if (Math.abs(x) > 3 && Math.abs(z - 3.0) < 0.65 + r) return true;
+    if (Math.abs(x) > 3 && Math.abs(z - 3.55) < 0.5 + r) return true;
+    // main-road crossings (nav.ts): no kerb bike rows across them
+    if (z > -1 && z < 27 && [40, -80, 96].some((cx) => Math.abs(x - cx) < 1.0 + r)) return true;
     if (Math.abs(z - 24.0) < 0.65 + r) return true;
     if (x > OFFICE.plazaX0 && x < OFFICE.plazaX1 + 1 && Math.abs(z + 4.5) < 0.6 + r) return true;
     if (Math.abs(z - cz) < 0.5 + r && Math.abs(x) > 3) return true;
@@ -407,7 +409,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
     const t0 = rf.chance(0.5) ? 0.08 : 0.92;           // this pass works the outer edges of the frontage
     const edge = (k = 0) => A(t0 < 0.5 ? t0 + k : t0 - k);
     // ---- wall-mounted (on the piers between units): security lamp, hose reel next to the tap
-    if (has('wall_lamp') && (resid || ground === 'shutter') && rf.chance(0.45)) {
+    if (has('wall_lamp') && (resid || ground === 'shutter') && rf.chance(0.6)) {
       const [x, z] = f.at(A(rf.chance(0.5) ? 0.035 : 0.965), 0.02);   // on the party-wall pier, not over the opening
       add('wall_lamp', x, groundHeight(x, z) + 2.3, z, f.out, { tag: 'wall lamps' });
     }
@@ -416,7 +418,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       add('hose_reel', x, groundHeight(x, z) + 0.95, z, f.out, { tag: 'hose reels' });
     }
     // ---- ground: big potted plant / planter box / watering can (residences and quiet shops)
-    if ((resid || /pharmacy|gold|clinic|massage|salon|coffee|generic/.test(shop)) && rf.chance(0.55)) {
+    if ((resid || /pharmacy|gold|clinic|massage|salon|coffee|generic|phone|barber|laundry/.test(shop)) && rf.chance(0.8)) {
       const [x, z] = f.at(edge(0.03), 0.42);
       if (put(rf.chance(0.6) ? 'plant_pot_big' : 'planter_tall', x, z, rf.range(0, 6), { tag: 'big plants' }) && rf.chance(0.5)) {
         const [wx, wz] = f.at(edge(0.12), 0.25);
@@ -428,17 +430,17 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       put('planter_long', x, z, f.out + Math.PI / 2, { tag: 'planter boxes' });
     }
     // ---- a metal bin by the door (rusty or newer)
-    if (rf.chance(0.32)) {
+    if (rf.chance(0.5)) {
       const [x, z] = f.at(edge(0.06), 0.36);
       put(rf.chance(0.5) ? 'bin_metal' : 'bin_rusty', x, z, rf.range(0, 6), { tag: 'metal bins' });
     }
     // ---- where people sit: wooden stools by eateries and gates
-    if ((ground === 'eatery' || resid) && rf.chance(0.45)) {
+    if ((ground === 'eatery' || resid) && rf.chance(0.6)) {
       const [x, z] = f.at(edge(0.1), 0.34);
       put(rf.chance(0.5) ? 'painted_stool' : 'wood_stool', x, z, rf.range(0, 6), { tag: 'wooden stools' });
     }
     // ---- shop-specific
-    if (/grocery|eatery|noodle|food/.test(shop) && rf.chance(0.5)) {
+    if (/grocery|eatery|noodle|food/.test(shop) && rf.chance(0.75)) {
       const [x, z] = f.at(edge(0.16), 0.3);
       const id = rf.chance(0.5) ? 'crate_milk' : 'crate_low', col = rf.pick(CRATE_COLS);
       if (put(id, x, z, f.out + rf.range(-0.2, 0.2), { color: col, phys: 'static', tag: 'crates' })) {
@@ -446,7 +448,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
         for (let i = 1, n = rf.int(1, 4); i < n; i++) add(id, x, groundHeight(x, z) + i * h, z, f.out + rf.range(-0.15, 0.15), { color: col, phys: 'none', tag: 'crates' });
       }
     }
-    if (/grocery|rice|hardware/.test(shop) && rf.chance(0.5)) {
+    if (/grocery|rice|hardware|closed/.test(shop) && rf.chance(0.6)) {
       const [x, z] = f.at(edge(0.22), 0.5);
       put('sacks', x, z, f.out + Math.PI / 2 + rf.range(-0.15, 0.15), { tag: 'sacks' });
     }

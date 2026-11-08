@@ -187,18 +187,24 @@ export class Nav implements NavGraph {
 }
 
 /** soi crossing lines (zebras + casual); world dressing keeps these lanes clear of parked vehicles */
-export const SOI_CROSSINGS = [-4, -20.5, -33, -46, -57, -70, -84, -100, -116, -132, -150];
+export const SOI_CROSSINGS = [-6.5, -20.5, -33, -46, -57, -70, -86.5, -100, -113.5, -132, -151.3];   // ≥ 1.5 m from the soi poles (layout POLES_SOI*)
 
 /** Build the whole graph for the map. */
 export function buildNav(zones: Zone[]): Nav {
   const nav = new Nav(zones);
   const wx = SOI.x0 - 1.1, ex = SOI.x1 + 1.1; // walking lanes (±4.6) between the pole line (±3.95) and the parked bikes (±5…6)
-  const nz = 3.0, sz = 24.0;
+  const nz = 3.55, sz = 24.0;   // north lane between the bus shelter / stalls (z < 3.1) and the kerb bike rows (z > 4)
   // --- soi sidewalks
   const W = nav.line(wx, 1.5, wx, -157, 5.5);
   const E = nav.line(ex, 1.5, ex, -157, 5.5);
   // --- soi crossings (zebras + casual)
-  for (const z of SOI_CROSSINGS) nav.link(nav.nearestNode(wx, z), nav.nearestNode(ex, z), true);
+  // crossing nodes exactly on the crossing lines (clutter keeps exactly these lanes clear), joined to the sidewalk lines
+  for (const z of SOI_CROSSINGS) {
+    const a = nav.add(wx, z), b = nav.add(ex, z);
+    nav.link(a, nav.nearestNode(wx, z + 3)); nav.link(a, nav.nearestNode(wx, z - 3));
+    nav.link(b, nav.nearestNode(ex, z + 3)); nav.link(b, nav.nearestNode(ex, z - 3));
+    nav.link(a, b, true);
+  }
   // --- main road sidewalks
   const MN_W = nav.line(MAIN.x0 + 2, nz, wx, nz, 6);
   const MN_E = nav.line(ex, nz, MAIN.x1 - 2, nz, 6);
@@ -233,8 +239,12 @@ export function buildNav(zones: Zone[]): Nav {
   const bridge = nav.line(0, CROAD.z1 - 0.5, 0, BRIDGE.zN - 1.5, 3);
   nav.link(bridge[0], nav.nearestNode(wx, cz), true);
   nav.link(bridge[0], nav.nearestNode(ex, cz), true);
-  nav.link(bridge[1], nav.nearestNode(BRIDGE.x0 - 0.5, bz));
-  nav.link(bridge[1], nav.nearestNode(BRIDGE.x1 + 0.5, bz));
+  // bank walk → bridge via the road edge (a straight link cut through the bridge parapet ends)
+  for (const sx of [-1, 1]) {
+    const r = nav.add(sx * (BRIDGE.x1 + 0.5), CROAD.z0 + 1.2, 0);
+    nav.link(nav.nearestNode(sx * (BRIDGE.x1 + 0.5), bz), r, true);
+    nav.link(r, bridge[1], true);
+  }
   const rural = nav.line(0, BRIDGE.zN - 1.5, 0, RROAD.zN + 3, 6);
   void rural;
   // rural branches
@@ -247,13 +257,12 @@ export function buildNav(zones: Zone[]): Nav {
   nav.attach(ANCHORS.nang_tani_spot.p[0], ANCHORS.nang_tani_spot.p[2], 12);
   // paddy dikes (west)
   for (const z of [-204, -226, -248]) { const l = nav.line(-3.5, z, -102, z, 7); nav.link(l[0], nav.nearestNode(0, z)); }
-  // --- market aisles
-  const mx0 = MARKET.x0 + 3.0;
+  // --- market aisles (the stall islands of market.ts sit at x 8.2 + 4.6k, 4 m wide with 0.6 m slits — the only
+  //     north–south aisles are along the west and east walls; east–west aisles run between the island rows)
+  const mx0 = MARKET.x0 + 1.1, mx1 = MARKET.x1 - 0.5;
   nav.line(mx0, MARKET.z1 - 2, mx0, MARKET.z0 + 2, 4);
-  nav.line(mx0, -47, 48, -47, 4);
-  nav.line(mx0, -63, 48, -63, 4);
-  nav.line(mx0, -73, 48, -73, 4);
-  for (const x of [21, 33, 45]) nav.line(x, -47, x, -73, 4);
+  nav.line(mx1, MARKET.z1 - 2, mx1, MARKET.z0 + 2, 4);
+  for (const z of [-46.4, -64.4, -74.5]) { const l = nav.line(mx0, z, mx1, z, 4); void l; nav.link(nav.nearestNode(mx0, z), nav.nearestNode(mx0, z + 2)); nav.link(nav.nearestNode(mx1, z), nav.nearestNode(mx1, z + 2)); }
   for (const z of [-55, -72]) nav.link(nav.nearestNode(ex, z), nav.nearestNode(mx0, z));
   nav.link(nav.nearestNode(ex, -44), nav.nearestNode(mx0, -44));
   // --- shop fronts & anchors (attach to nearest walk node)
@@ -284,7 +293,7 @@ export function buildNav(zones: Zone[]): Nav {
   nav.line(WHOLESALE.x0, 28.3, WHOLESALE.x1 - 2, 28.3, 6);
   att('wholesale_door', 6);
   nav.link(nav.nearestNode(ANCHORS.wholesale_door.p[0], ANCHORS.wholesale_door.p[2]), nav.add(ANCHORS.wholesale_counter.p[0], ANCHORS.wholesale_counter.p[2]));
-  for (const x of [32, 50, 70]) nav.link(nav.nearestNode(x, 28.3), nav.nearestNode(x, sz));
+  for (const x of [36, 50, 70]) nav.link(nav.nearestNode(x, 28.3), nav.nearestNode(x, sz));   // x 29–33 is the last south-row shop front
   const pk = nav.line(97, sz, 97, 80, 6);
   nav.line(86, 50, 110, 50, 6); nav.line(86, 70, 110, 70, 6);
   nav.link(nav.nearestNode(97, 50), nav.nearestNode(86, 50)); nav.link(nav.nearestNode(97, 70), nav.nearestNode(86, 70));

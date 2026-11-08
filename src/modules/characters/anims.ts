@@ -758,7 +758,7 @@ def('sneak', { loop: true, dur: 1, posture: 'stand', fade: 0.3, expr: 'determine
   const pb = c.pb, t = c.t, v = Math.min(c.speed, 2);
   // cartoon tiptoe: slow, exaggerated high steps, crouched, hands up in front, looking around
   const moving = sm(0.08, 0.4, v);
-  const ph = (c.gt * (0.45 + 0.42 * v) + c.rnd) % 1;
+  const ph = c.phase % 1;                                        // integrated by the rig (no jumps on speed changes)
   const uL = ph, uR = (ph + 0.5) % 1;
   const bob = Math.abs(sin(ph * TAU)) * 0.03 * moving;
   pb.hips(0.01 * sin(ph * TAU) * moving, -0.11 + bob, -0.03, 12, 6 * sin(ph * TAU) * moving, 3 * sin(ph * TAU) * moving);

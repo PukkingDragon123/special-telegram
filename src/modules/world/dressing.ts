@@ -85,8 +85,8 @@ export function buildStreetLife(c: Ctx) {
     if (!real) { plate(x, 0.6, z, yaw, -2.607, 'plate'); plate(x, 0.42, z, yaw, 2.585, 'plate'); }
   };
   // a parked pickup in the soi (half on the curb) + one on the canal road
-  pickupAt(0xd8d8d4, 2.4, -112, Math.PI + 0.02);
-  c.phys.box([2.4, 0.9, -112], [1.9, 1.8, 5]);
+  pickupAt(0xd8d8d4, 2.4, -109.3, Math.PI + 0.02);   // clear of the crossing at z −113.5
+  c.phys.box([2.4, 0.9, -109.3], [1.9, 1.8, 5]);
   pickupAt(0x2a4a7a, -2.4, -128, 0.03);
   c.phys.box([-2.4, 0.9, -128], [1.9, 1.8, 5]);
   pickupAt(0xa02020, 40, (CROAD.z0 + CROAD.z1) / 2 - 1, Math.PI / 2);
@@ -96,8 +96,14 @@ export function buildStreetLife(c: Ctx) {
   for (const [px, pz] of allPoles) {
     if (!ok(px, pz, 0.8) || rng.chance(0.3)) continue;
     const n = rng.int(2, 6);
-    for (let k = 0; k < n; k++) w.put(P.trashBag(rng.int(0, 9)), px + rng.range(-0.6, 0.6), SW_H, pz + rng.range(-0.6, 0.6), rng.range(0, 6), rng.range(0.8, 1.2));
-    if (rng.chance(0.4)) w.put(P.bin(rng.pick([0x2a7a3a, 0x2a5aa0, 0xe0a020, 0x8a8a8a])), px + 0.8, SW_H, pz, rng.range(0, 6));
+    // kerb side of the pole, spread along the street (the walking lane behind the pole line stays clear)
+    const soiPole = Math.abs(px) < 7;
+    const kx = soiPole ? -Math.sign(px) : 0, kz = soiPole ? 0 : (pz < 10 ? 1 : -1);
+    for (let k = 0; k < n; k++) {
+      const a = rng.range(-0.8, 0.8), o = rng.range(0, 0.3);
+      w.put(P.trashBag(rng.int(0, 9)), px + (soiPole ? kx * o : a), SW_H, pz + (soiPole ? a : kz * o), rng.range(0, 6), rng.range(0.8, 1.2));
+    }
+    if (rng.chance(0.4)) w.put(P.bin(rng.pick([0x2a7a3a, 0x2a5aa0, 0xe0a020, 0x8a8a8a])), soiPole ? px + kx * 0.12 : px + 0.8, SW_H, soiPole ? pz + 1.0 : pz + kz * 0.12, rng.range(0, 6));
   }
   for (let i = 0; i < 40; i++) {
     const side = rng.chance(0.5) ? -1 : 1;
@@ -151,7 +157,7 @@ export function buildStreetLife(c: Ctx) {
   foodStall(-60, 25.2, Math.PI);
   foodStall(64, 1.3, 0);
   foodStall(-90, 1.3, 0);
-  foodStall(12, -156.7, Math.PI);
+  foodStall(12, -151.2, Math.PI);
   const cm = cloth.build();
   if (cm) { P.real.addObject(cm); P.real.animate(new THREE.Vector3(0, 2, -60), 400, (_dt, t) => { cloth.uTime.value = t; }); }
 
@@ -227,7 +233,8 @@ export function buildStreetLife(c: Ctx) {
     for (const [dx, dz] of [[-2.7, 1.3], [1.5, 1.3]]) { w.cyl(x + dx, SW_H, z + dz, 0.03, 0.03, 2.5, 5, 0); c.phys.box([x + dx, 1.3, z + dz], [0.08, 2.5, 0.08]); }
     const vs = c.signs?.any('moto', rng);
     if (vs) { w.atlas('sign', { e0: 0, ao: 1 }); w.quad(x - 2.6, SW_H + 1.6, z - 0.88, x - 0.6, SW_H + 1.6, z - 0.88, x - 0.6, SW_H + 2.4, z - 0.88, x - 2.6, SW_H + 2.4, z - 0.88, [vs.u0, vs.v0, vs.u1, vs.v1]); }
-    for (let k = 0; k < 4; k++) { w.put(P.motorbike(rng.pick(BIKE_COLS)), x + 2.4 + k * 0.85, SW_H, z + 1.6, Math.PI + rng.range(-0.15, 0.15), 1, { rz: 0.08 }); c.phys.box([x + 2.4 + k * 0.85, 0.6, z + 1.6], [0.4, 1.0, 1.4]); }
+    // the drivers' bikes: nose-in at the kerb next to the stand (not in the soi mouth / the walking lane at z 3.55)
+    for (let k = 0; k < 3; k++) { const bx = x + 0.9 + k * 0.86, bz = 4.95; w.put(P.motorbike(rng.pick(BIKE_COLS)), bx, SW_H, bz, Math.PI + rng.range(-0.12, 0.12), 1, { rz: 0.08 }); c.phys.box([bx, 0.6, bz], [0.4, 1.0, 1.4]); }
   }
   // ---------------------------------------------------------------- street-name / traffic signs (real photo signs on steel poles)
   const signPole = (x: number, z: number, yaw: number, cat: string, wd: number, top = 2.9) => {

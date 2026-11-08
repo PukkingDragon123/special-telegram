@@ -190,7 +190,13 @@ const CHAR_EMIS_F = /* glsl */`
 #include <emissivemap_fragment>
 totalEmissiveRadiance += vec3(0.9, 0.92, 0.95) * catchG;
 `;
-const CHAR_BUMP_F = THREE.ShaderChunk.bumpmap_pars_fragment.replace(/bumpScale \*/g, 'bumpScale * bumpK *');
+/** bump with NaN guards: on dense meshes (the face scan) the screen-space derivatives can be zero/parallel →
+ *  normalize(0) = NaN → the NaN guard paints the pixel black (black blotches on faces) */
+const CHAR_BUMP_F = THREE.ShaderChunk.bumpmap_pars_fragment.replace(/bumpScale \*/g, 'bumpScale * bumpK *')
+  .replace('vec3 vSigmaX = normalize( dFdx( surf_pos.xyz ) );\n\t\tvec3 vSigmaY = normalize( dFdy( surf_pos.xyz ) );',
+    'vec3 sdx = dFdx( surf_pos.xyz ), sdy = dFdy( surf_pos.xyz );\n\t\tif ( dot( sdx, sdx ) < 1e-24 || dot( sdy, sdy ) < 1e-24 ) return surf_norm;\n\t\tvec3 vSigmaX = normalize( sdx );\n\t\tvec3 vSigmaY = normalize( sdy );')
+  .replace('return normalize( abs( fDet ) * surf_norm - vGrad );', 'vec3 pn = abs( fDet ) * surf_norm - vGrad;\n\t\treturn dot( pn, pn ) > 1e-20 ? normalize( pn ) : surf_norm;');
+if (!CHAR_BUMP_F.includes('sdx') || !CHAR_BUMP_F.includes('pn, pn')) console.warn('[characters] bump guard patch did not apply');
 const CHAR_LIGHT_F = THREE.ShaderChunk.lights_physical_pars_fragment
   .replace('float dotNL = saturate( dot( geometryNormal, directLight.direction ) );\n\n\tvec3 irradiance = dotNL * directLight.color;',
     `float dotNL = saturate( dot( geometryNormal, directLight.direction ) );
@@ -411,7 +417,9 @@ export class Rig implements CharacterRig {
         f.onBeforeCompile = this.mat.onBeforeCompile;
         f.customProgramCacheKey = this.mat.customProgramCacheKey;
         f.userData = { ...this.mat.userData };
-        setInk(f, 0, 0.3);                 // softer cel banding: no blotchy islands on the scanned relief
+        // softer cel banding on the scanned relief. Ink mask MUST stay 1: the ink mask is written to the scene alpha and
+        // alpha 0 comes out of the post chain as black (the black blotches that covered half of every face)
+        setInk(f, 1, 0.3);
         this.faceMat = f;
       }
       const fm = new THREE.SkinnedMesh(t.faceMask, this.faceMat);
@@ -481,7 +489,7 @@ export class Rig implements CharacterRig {
     this.atlasKey = key;
     this.mat.map = e.tex;
     this.mat.bumpMap = e.tex;
-    if (this.faceMat) { this.faceMat.map = e.tex; this.faceMat.bumpMap = e.tex; this.faceMat.needsUpdate = true; }
+    if (this.faceMat) { this.faceMat.map = e.tex; this.faceMat.bumpMap = null; this.faceMat.needsUpdate = true; }   // the scan has real relief
     this.atlasE = e;
     this.mat.userData.uSkin.value = e.mtex ?? WHITE1;
     this.mat.needsUpdate = true;

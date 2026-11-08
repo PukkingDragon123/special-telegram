@@ -333,6 +333,7 @@ export class PostFX {
     // N8AO auto-detects transparent materials and then re-renders the scene twice per frame (transparent objects
     // only) — with shadowMap.autoUpdate on, each of those renders also re-rendered (and emptied) every shadow map.
     // The main RenderPass already produced this frame's shadows: freeze them while the AO pass runs.
+    installCheapAoTransparency(this.ao);
     const aoRender = this.ao.render.bind(this.ao);
     this.ao.render = (r: THREE.WebGLRenderer, inputBuffer: any, outputBuffer: any, dt?: number, mask?: boolean) => {
       const sm = r.shadowMap, au = sm.autoUpdate, nu = sm.needsUpdate;
@@ -442,6 +443,10 @@ export class PostFX {
     this.quality = q;
     this.ao.enabled = q !== 'low';
     if (q !== 'low') {
+      // transparency-aware AO re-renders every transparent object twice per frame (+3 scene traversals):
+      // kept on high/ultra, medium trades that CPU/GPU time for slight AO showing through glass / smoke
+      this.ao.autoDetectTransparency = q !== 'medium';
+      if (q === 'medium') this.ao.configuration.transparencyAware = false;
       this.ao.configuration.halfRes = q !== 'ultra';
       this.ao.configuration.aoSamples = q === 'ultra' ? 16 : q === 'high' ? 12 : 8;
       this.ao.configuration.denoiseSamples = q === 'medium' ? 4 : 6;
@@ -577,6 +582,67 @@ export class PostFX {
     this.composer.render(dt);
   }
 }
+
+/**
+ * N8AO's transparency-aware mode re-renders the transparent objects into two masks every frame. Its stock
+ * implementation walks the whole scene three times per frame to hide / restore every object's `visible` flag and
+ * allocates a Map entry per object (thousands → garbage → GC stutter). Same output, cheaper: the transparent
+ * objects (and the lights, so shader programs stay identical) are tagged with two spare layers, refreshed by one
+ * traversal every 30 frames, and the two mask renders just switch the camera's layer mask.
+ */
+const L_DW_OFF = 30, L_DW_ON = 29;
+function installCheapAoTransparency(ao: any) {
+  if (typeof ao.renderTransparency !== 'function') return;
+  let frame = 0, built = -1e9, builtFor: THREE.Object3D | null = null;
+  let tagged: THREE.Object3D[] = [];
+  const rebuild = (scene: THREE.Object3D) => {
+    for (const o of tagged) { o.layers.disable(L_DW_OFF); o.layers.disable(L_DW_ON); }
+    tagged = [];
+    scene.traverse((o: any) => {
+      if (o.isLight) { o.layers.enable(L_DW_OFF); o.layers.enable(L_DW_ON); tagged.push(o); return; }
+      const m = o.material;
+      if (!m) return;
+      const mm = Array.isArray(m) ? m[0] : m;
+      const off = (mm.transparent && !mm.depthWrite && !o.userData.treatAsOpaque) || !!o.userData.cannotReceiveAO;
+      const on = mm.transparent && mm.depthWrite && !o.userData.treatAsOpaque;
+      if (off) o.layers.enable(L_DW_OFF);
+      if (on) o.layers.enable(L_DW_ON);
+      if (off || on) tagged.push(o);
+    });
+    built = frame; builtFor = scene;
+  };
+  ao.renderTransparency = function (renderer: THREE.WebGLRenderer) {
+    frame++;
+    const scene: THREE.Scene = this.scene, camera: THREE.Camera = this.camera;
+    if (builtFor !== scene || frame - built >= 30) rebuild(scene);
+    const oldBackground = scene.background;
+    const oldClear = renderer.getClearColor(_cc), oldAlpha = renderer.getClearAlpha();
+    const oldAutoClearDepth = renderer.autoClearDepth;
+    const oldMask = camera.layers.mask;
+    scene.background = null;
+    renderer.autoClearDepth = false;
+    renderer.setClearColor(_black, 0);
+    this.depthCopyPass.material.uniforms.depthTexture.value = this.depthTexture;
+    try {
+      camera.layers.set(L_DW_OFF);
+      renderer.setRenderTarget(this.transparencyRenderTargetDWFalse);
+      renderer.clear(true, true, true);
+      this.depthCopyPass.render(renderer);
+      renderer.render(scene, camera);
+      camera.layers.set(L_DW_ON);
+      renderer.setRenderTarget(this.transparencyRenderTargetDWTrue);
+      renderer.clear(true, true, true);
+      this.depthCopyPass.render(renderer);
+      renderer.render(scene, camera);
+    } finally {
+      camera.layers.mask = oldMask;
+      renderer.setClearColor(oldClear, oldAlpha);
+      scene.background = oldBackground;
+      renderer.autoClearDepth = oldAutoClearDepth;
+    }
+  };
+}
+const _cc = new THREE.Color(), _black = new THREE.Color(0, 0, 0);
 
 // the full-screen inverted / halftone impact frame is an anime device: off in the realistic look unless ?impact=1
 const params_noImpact = (() => { const q = new URLSearchParams(location.search); return q.has('noimpact') || (LOOK_STYLE !== 'anime' && q.get('impact') !== '1'); })();

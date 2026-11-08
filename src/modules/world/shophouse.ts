@@ -887,8 +887,9 @@ export class Shophouse {
         this.col(x0 + 0.2, 0, -1.2, x0 + 1.8, y0 + 1.5, -0.2);
         // tables spill onto the sidewalk
         if (rng.chance(0.6)) {
-          w.put(P.plasticTable(rng.pick([0xe8e4dc, 0x2a62b8, 0xc0302a])), (x0 + x1) / 2, y0, 1.2, 0);
-          w.put(P.stool(sc), (x0 + x1) / 2 - 0.7, y0, 1.2, 1); w.put(P.stool(sc), (x0 + x1) / 2 + 0.7, y0, 1.2, 2);
+          // against the shop front (0.35…0.95 m out): the sidewalk walking lane stays clear
+          w.put(P.plasticTable(rng.pick([0xe8e4dc, 0x2a62b8, 0xc0302a])), (x0 + x1) / 2, y0, 0.65, 0);
+          w.put(P.stool(sc), (x0 + x1) / 2 - 0.7, y0, 0.65, 1); w.put(P.stool(sc), (x0 + x1) / 2 + 0.7, y0, 0.65, 2);
         }
         break;
       }

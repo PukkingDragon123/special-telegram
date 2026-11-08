@@ -279,7 +279,7 @@ export class ScreenFX {
   /** Colour-inverted flash (freeze frame hit). */
   flash(dur = 0.18) { this.flashT = 0; this.flashDur = dur; }
   focusLines(on: boolean, kind: 'focus' | 'speed' = 'focus') { this.linesTarget = on ? 1 : 0; this.linesKind = kind; }
-  duotone(on: boolean) { this.tintTarget = on ? 0.62 : 0; }
+  duotone(on: boolean) { this.tintTarget = on ? 0.5 : 0; }
   sepiaFreeze(on: boolean) { this.sepiaTarget = on ? 1 : 0; this.tbcEl.style.transform = on ? 'translateX(0)' : 'translateX(-120%)'; }
 
   update(raw: number) {
