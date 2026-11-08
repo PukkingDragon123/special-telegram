@@ -104,10 +104,10 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   // the whole frontage of every gameplay shop on the soi stays clear (customers walk in there), not just a
   // circle around its anchor: band |z - az| < 4.6 on that side of the soi
   const fronts: [number, number][] = [];
-  for (const [n, a] of Object.entries(anchors)) if (/(_shop|_store|^restaurant_unit|^furniture_backdoor)$/.test(n) || /_shop$|_store$/.test(n)) fronts.push([a.p[0], a.p[2]]);
+  for (const [n, a] of Object.entries(anchors)) if (/_shop$|_store$|^restaurant_unit$|^shelf:[^:]+:0$/.test(n)) fronts.push([a.p[0], a.p[2]]);
   const cz = (CROAD.sw0 + CROAD.sw1) / 2;
   const blocked = (x: number, z: number, r: number) => {
-    for (const [fx, fz] of fronts) if (Math.abs(fx) > 5 && Math.abs(fx) < 9 && Math.sign(fx) === Math.sign(x) && Math.abs(x) > 2.4 && Math.abs(x) < Math.abs(fx) + 1 && Math.abs(z - fz) < 4.6 + r) return true;
+    for (const [fx, fz] of fronts) if (Math.abs(fx) > 5 && Math.abs(fx) < 16 && Math.sign(fx) === Math.sign(x) && Math.abs(x) > 2.4 && Math.abs(x) < 8.6 && Math.abs(z - fz) < 4.6 + r) return true;
     if (x < MAP_BOUNDS.minX + 3 || x > MAP_BOUNDS.maxX - 3 || z < MAP_BOUNDS.minZ + 3 || z > MAP_BOUNDS.maxZ - 3) return true;
     if (x > MARKET.x0 - 0.3 - r && x < MARKET.x1 + 0.3 + r && z > MARKET.z0 - 0.3 - r && z < MARKET.z1 + 0.3 + r) return true;
     for (const [kx, kz, kr] of keep) if (Math.hypot(x - kx, z - kz) < kr + r) return true;

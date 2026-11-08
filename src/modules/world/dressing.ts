@@ -48,8 +48,11 @@ export function buildStreetLife(c: Ctx) {
   // straight through them.
   // Real sois: a few bikes in small clusters with gaps, never in front of an open shop / door (the old rows put a
   // bike every metre along the whole street — dozens of identical scooters — and 7 across the furniture store).
-  const SHOP_FRONTS = ['plastic_shop', 'gas_shop', 'kitchen_shop', 'convenience_store', 'furniture_store', 'restaurant_unit', 'furniture_backdoor']
-    .map((n) => A[n]).filter(Boolean).map((a) => [a!.p[0], a!.p[2]] as [number, number]);
+  // gameplay shop frontages: named shop anchors + the first shelf of every managed shop (the furniture store's own
+  // anchor is only registered later by the shops/build modules)
+  const SHOP_FRONTS = Object.entries(A)
+    .filter(([n]) => /^(plastic_shop|gas_shop|kitchen_shop|convenience_store|furniture_store|restaurant_unit)$/.test(n) || /^shelf:[^:]+:0$/.test(n))
+    .map(([, a]) => [a!.p[0], a!.p[2]] as [number, number]).filter(([x]) => Math.abs(x) > 4 && Math.abs(x) < 16);
   const frontOk = (x: number, z: number) => !SHOP_FRONTS.some(([fx, fz]) => Math.sign(fx) === Math.sign(x) && Math.abs(z - fz) < 4.8);
   const bikeRow = (x: number, z0: number, z1: number, _yaw: number, gap = 1.0) => {
     const sx = Math.sign(x), bx = sx * 5.5;
