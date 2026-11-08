@@ -293,7 +293,7 @@ const PILES: Record<string, { id: string; s: [number, number, number]; tint?: [n
   heap_dried_chili: { id: 'lime', s: [0.24, 0.24, 1.0], tint: [1.25, 0.16, 0.1], per: 1700 },
   heap_mango: { id: 'lime', s: [1.6, 1.25, 2.1], tint: [2.3, 1.7, 0.35], per: 160 },
   heap_eggplant: { id: 'lime', s: [0.75, 0.75, 1.9], tint: [0.55, 0.3, 0.75], per: 320 },
-  heap_cabbage: { id: 'onion', s: [2.4, 2.0, 2.4], tint: [0.85, 1.25, 0.65], per: 50 },
+  heap_cabbage: { id: 'lime', s: [2.7, 2.3, 2.7], tint: [0.95, 1.25, 0.85], per: 45 },
 };
 /** produce kind (market goods) → pile key */
 export const KIND_PILE: Record<string, string> = { chili: 'heap_chili', lime: 'heap_lime', veg: 'heap_beans', fruit: 'heap_lychee', herbs: 'heap_basil', garlic: 'heap_garlic', egg: 'heap_eggs', meat: 'pork_table', banana: 'bananas', onion: 'heap_onion', tomato: 'heap_tomato', flowers: 'heap_marigold', dried: 'heap_dried_chili', mango: 'heap_mango', eggplant: 'heap_eggplant', cabbage: 'heap_cabbage' };
