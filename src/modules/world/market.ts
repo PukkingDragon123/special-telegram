@@ -37,7 +37,9 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
   // ---------------------------------------------------------------- floor + drains + puddles
   // floor: hosed-down concrete (clean, light) — the wet look comes from a few sheen patches by the drains, not from
   // a texture full of black blotches
-  w.mat('concrete_old', { autoDirt: false, ao: 1 });
+  // smooth trowelled concrete (fine hairlines, no big cracks); vertex AO just under the puddle threshold so the
+  // world shader never paints rain puddles under the roof — the damp patches by the drains are decals
+  w.mat('concrete_road', { autoDirt: false, ao: 0.82 });
   flat(w, M.x0, M.z0, M.x1, M.z1, y0, 8);
   c.phys.box([(M.x0 + M.x1) / 2, y0 / 2, (M.z0 + M.z1) / 2], [M.x1 - M.x0, y0, M.z1 - M.z0]);
   w.mat('grate', { uv: 'face', autoDirt: false, group: 'detail' });
@@ -47,6 +49,11 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     const k = rng.int(0, 3);
     const z = rng.pick([-46.2, -63.7]) + rng.range(-0.9, 0.9);
     groundDecal(w, D.cell('decal_puddles', k % 2, k >> 1, 2, 2), rng.range(8, 48), y0 + 0.006, z, rng.range(0.7, 1.6), rng.range(0.4, 0.9), rng.range(0, 6), { wet: 0.35, alpha: rng.range(0.3, 0.42), tint: 0x8c8a86 });   // indoors: damp, not a sky mirror
+  }
+  // stains: old water marks / oil spots on the concrete (subtle)
+  if (D) for (let i = 0; i < 14; i++) {
+    const k = rng.int(0, 3);
+    groundDecal(w, D.cell('decal_oil_stains', k % 2, k >> 1, 2, 2), rng.range(8, 48), y0 + 0.005, rng.range(-78, -42), rng.range(0.6, 1.4), rng.range(0.5, 1.1), rng.range(0, 6), { alpha: rng.range(0.18, 0.3), tint: 0x6a6660 });
   }
 
   // ---------------------------------------------------------------- structure: posts, trusses, roofs
@@ -93,7 +100,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     w.quad(M.x1 + 0.6, eave, zb - 0.6, M.x0 - 0.6, eave, zb - 0.6, M.x0 - 0.6, ridge, zm, M.x1 + 0.6, ridge, zm);
     // undersides: galvanised sheet lit by the bounce off the floor and the skylights (a little self-light so the
     // roof never reads as a black void from below)
-    w.mat('roof_galv', { tint: 0xa8a6a0, ao: 0.85, uv: 'world', emis: EMIS.store.i, emisK: 0.045 });
+    w.mat('roof_galv', { tint: 0x8e8c88, ao: 0.8, uv: 'world', emis: EMIS.store.i, emisK: 0.025 });
     w.quad(M.x1 + 0.6, eave - 0.02, za + 0.6, M.x0 - 0.6, eave - 0.02, za + 0.6, M.x0 - 0.6, ridge - 0.02, zm, M.x1 + 0.6, ridge - 0.02, zm);
     w.quad(M.x0 - 0.6, eave - 0.02, zb - 0.6, M.x1 + 0.6, eave - 0.02, zb - 0.6, M.x1 + 0.6, ridge - 0.02, zm, M.x0 - 0.6, ridge - 0.02, zm);
     // fibreglass skylight strips (lighter), a raised ridge vent
