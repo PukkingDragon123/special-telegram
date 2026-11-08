@@ -10,7 +10,7 @@ import type { Atlas, AtlasRect } from './atlas';
 import { EMIS } from './mats';
 import type { AnchorPt } from '../../game/contracts';
 import type { FoliageSys } from './foliage';
-import { vines, bougainvillea, pottedPlant, weeds } from './foliage';
+import { vines, bougainvillea, weeds } from './foliage';
 import { birdcage, floorShrine, wallShrine, cctv, drainpipe, rebar, breezeBlocks, grilleMotif } from './archkit';
 import { ARCH } from './archmodels';
 import { ClothSpots } from '../cloth/api';
@@ -587,7 +587,7 @@ export class Shophouse {
         // potted plants on the slab / along the railing, a birdcage hanging from the ceiling
         if (deco.plants && this.c.fol) {
           const np = rng.int(1, 4);
-          for (let i = 0; i < np; i++) pottedPlant(w, this.c.fol, rng.range(0.4, W - 0.4), fl.y + 0.06, rng.range(0.25, bd - 0.2), rng);
+          for (let i = 0; i < np; i++) w.put(this.c.props.plant(rng.int(0, 4)), rng.range(0.4, W - 0.4), fl.y + 0.06, rng.range(0.25, bd - 0.2), rng.range(0, 6), rng.range(0.75, 1));
         }
         if (rng.chance(0.28)) w.put(birdcage(w, rng.int(0, 1)), rng.range(0.6, W - 0.6), fl.y + hf - 0.2, bd * 0.55, rng.range(0, 6));
         if (rng.chance(0.15)) w.put(wallShrine(w), rng.chance(0.5) ? 0.8 : W - 0.8, fl.y + 1.9, 0.0, 0);

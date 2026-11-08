@@ -5,12 +5,10 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 
 | model | Poly Haven page | author(s) | size |
 |---|---|---|---|
-| Anthurium Botany 01 (`anthurium_botany_01`) | https://polyhaven.com/a/anthurium_botany_01 | Rob Tuytel, Rico Cilliers | 86 KB |
 | Bananas (`bananas`) | https://polyhaven.com/a/bananas | Alexander Shulha | 77 KB |
 | Barrel_01 (`Barrel_01`) | https://polyhaven.com/a/Barrel_01 | Jorge Camacho | 120 KB |
 | Barrel 03 (`barrel_03`) | https://polyhaven.com/a/barrel_03 | Serhii Khromov | 91 KB |
 | Boombox (`boombox`) | https://polyhaven.com/a/boombox | Thomas Paul Mouilleron | 188 KB |
-| Calathea Orbifolia 01 (`calathea_orbifolia_01`) | https://polyhaven.com/a/calathea_orbifolia_01 | Rob Tuytel, Rico Cilliers | 79 KB |
 | Can Rusted (`can_rusted`) | https://polyhaven.com/a/can_rusted | Rahul Chaudhary | 113 KB |
 | Cardboard Box 01 (`cardboard_box_01`) | https://polyhaven.com/a/cardboard_box_01 | Rahul Chaudhary | 80 KB |
 | Cement Bag (`cement_bag`) | https://polyhaven.com/a/cement_bag | PierreB3D | 48 KB |
@@ -29,7 +27,6 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Hand Truck (`hand_truck`) | https://polyhaven.com/a/hand_truck | Mutanzom3D | 203 KB |
 | Industrial Plastic Container (`industrial_pastic_container`) | https://polyhaven.com/a/industrial_pastic_container | Galo Benivegna | 134 KB |
 | Island Tree 02 (`island_tree_02`) | https://polyhaven.com/a/island_tree_02 | Rob Tuytel, Rico Cilliers | 552 KB |
-| Korean Fire Extinguisher 01 (`korean_fire_extinguisher_01`) | https://polyhaven.com/a/korean_fire_extinguisher_01 | UM JOORIN | 200 KB |
 | Ladder Sectioned 01 (`ladder_sectioned_01`) | https://polyhaven.com/a/ladder_sectioned_01 | MP | 111 KB |
 | Lightbulb 01 (`lightbulb_01`) | https://polyhaven.com/a/lightbulb_01 | Josh Dean | 24 KB |
 | Metal Jerrycan (`metal_jerrycan`) | https://polyhaven.com/a/metal_jerrycan | Sean Buckley | 138 KB |
@@ -37,7 +34,6 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Metal Trash Can (`metal_trash_can`) | https://polyhaven.com/a/metal_trash_can | GurJas Studios | 273 KB |
 | Multi Cleaner 5 Litre (`multi_cleaner_5_litre`) | https://polyhaven.com/a/multi_cleaner_5_litre | James Ray Cock | 50 KB |
 | Old Tyre (`old_tyre`) | https://polyhaven.com/a/old_tyre | MP | 111 KB |
-| Pachira Aquatica 01 (`pachira_aquatica_01`) | https://polyhaven.com/a/pachira_aquatica_01 | Rob Tuytel, Rico Cilliers | 175 KB |
 | Painted Wooden Bench (`painted_wooden_bench`) | https://polyhaven.com/a/painted_wooden_bench | Kirill Sannikov | 253 KB |
 | Painted Wooden Stool (`painted_wooden_stool`) | https://polyhaven.com/a/painted_wooden_stool | Kirill Sannikov | 88 KB |
 | Planter Box 02 (`planter_box_02`) | https://polyhaven.com/a/planter_box_02 | James Ray Cock | 131 KB |
@@ -57,14 +53,11 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Propane Tank (`propane_tank`) | https://polyhaven.com/a/propane_tank | Slinc | 97 KB |
 | Security Camera 01 (`security_camera_01`) | https://polyhaven.com/a/security_camera_01 | Alexander Otterbeck, Yann Kervran | 89 KB |
 | Security Light (`security_light`) | https://polyhaven.com/a/security_light | Maximilian Schuster | 141 KB |
-| Shrub 01 (`shrub_01`) | https://polyhaven.com/a/shrub_01 | Rico Cilliers | 128 KB |
-| Shrub 02 (`shrub_02`) | https://polyhaven.com/a/shrub_02 | Rico Cilliers | 94 KB |
-| Shrub 03 (`shrub_03`) | https://polyhaven.com/a/shrub_03 | Rico Cilliers | 104 KB |
 | Small Lpg Tank (`small_lpg_tank`) | https://polyhaven.com/a/small_lpg_tank | Ulan Cabanilla | 137 KB |
 | Steel Frame Shelves 02 (`steel_frame_shelves_02`) | https://polyhaven.com/a/steel_frame_shelves_02 | James Ray Cock | 79 KB |
 | Street Rat (`street_rat`) | https://polyhaven.com/a/street_rat | Sean Buckley | 117 KB |
 | Trashbag (`trashbag`) | https://polyhaven.com/a/trashbag | Benny Weimer | 108 KB |
-| Tree Small 02 (`tree_small_02`) | https://polyhaven.com/a/tree_small_02 | Rico Cilliers | 845 KB |
+| Tree Small 02 (`tree_small_02`) | https://polyhaven.com/a/tree_small_02 | Rico Cilliers | 478 KB |
 | Utility Box 01 (`utility_box_01`) | https://polyhaven.com/a/utility_box_01 | James Ray Cock | 88 KB |
 | Watering Can Metal 01 (`watering_can_metal_01`) | https://polyhaven.com/a/watering_can_metal_01 | Charles Nderitu | 150 KB |
 | Wet Floor Sign 01 (`WetFloorSign_01`) | https://polyhaven.com/a/WetFloorSign_01 | Fran Calvente | 46 KB |
@@ -76,7 +69,7 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Wooden Stool 02 (`wooden_stool_02`) | https://polyhaven.com/a/wooden_stool_02 | Kuutti Siitonen | 137 KB |
 | Worn Metal Rack (`worn_metal_rack`) | https://polyhaven.com/a/worn_metal_rack | Luca B | 102 KB |
 
-Total: 10.0 MB in 70 models.
+Total: 9.7 MB in 70 models.
 
 
 ## Photo-derived textures (props agent)

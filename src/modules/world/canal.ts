@@ -5,7 +5,7 @@ import { ClothSpots } from '../cloth/api';
 import { WB, ALL, SIDES, PX, NX, PY, NY, PZ, NZ } from './geo';
 import type { SpecialCtx } from './buildings';
 import { flat } from './streets';
-import { card, bananaTree, coconutPalm, pottedPlant } from './foliage';
+import { card, bananaTree, coconutPalm } from './foliage';
 import { PLASTIC_COLORS } from './props';
 import { EMIS, U } from './mats';
 import { CANAL, BRIDGE, CROAD, SW_H, RURAL_Y, groundHeight } from './layout';
@@ -240,7 +240,7 @@ function stiltHouse(c: SpecialCtx, x: number, rng: RNG) {
     ClothSpots.line({ a: la.toArray() as [number, number, number], b: lb.toArray() as [number, number, number], seed: rng.int(1, 2 ** 30), fill: 0.85, style: 'alley', ...({ floor: lf } as any) });
   }
   w.setGroup('base');
-  if (F) { if (rng.chance(0.6)) pottedPlant(w, F, x + W - 0.4, fy, z0 + 1.1, rng); if (rng.chance(0.4)) bananaTree(w, F, x + W + 1.4, RURAL_Y, z1 - 1.5, rng, 0.85); if (rng.chance(0.25)) coconutPalm(w, F, x - 1.5, RURAL_Y, z1 - 2, rng, 0.9); }
+  if (F) { if (rng.chance(0.6)) w.put(c.props.plant(rng.int(0, 4)), x + W - 0.4, fy, z0 + 1.1, rng.range(0, 6)); if (rng.chance(0.4)) bananaTree(w, F, x + W + 1.4, RURAL_Y, z1 - 1.5, rng, 0.85); if (rng.chance(0.25)) coconutPalm(w, F, x - 1.5, RURAL_Y, z1 - 2, rng, 0.9); }
   // light at night (warm bulb on the deck)
   if (rng.chance(0.7)) {
     w.mat('glass', { tint: 0xfff0d0, emis: EMIS.warm.i, emisK: 0.8, uv: 'local' });

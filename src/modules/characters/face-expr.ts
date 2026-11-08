@@ -109,6 +109,9 @@ export class FaceRig {
   private doubleBlink = false;
   // talk
   private syl = 0; private sylT = 0; private sylTarget = 0; private sylWide = 0; private pause = 0;
+  // talking emphasis (speakers' faces keep moving between light expressions)
+  private emphT = 1;
+  private emph: { name: string; w: number; target: number } | null = null;
   // micro-expressions
   private microT = 2 + Math.random() * 5;
   private micro: { name: string; t: number; dur: number; a: Float32Array } | null = null;
@@ -174,6 +177,21 @@ export class FaceRig {
     add(this.animExpr, wAnim);
     add(this.animFrom, this.animFromW * (1 - exW));
     if (this.explicit) add(this.explicit.name, this.explicit.w);
+    // while talking: drift between light emphasis expressions
+    const talkingNow = this.talking || this.mouthMode === 'talk';
+    if (talkingNow) {
+      this.emphT -= dt;
+      if (this.emphT <= 0) {
+        this.emphT = 1.6 + Math.random() * 2.6;
+        const pool = ['happy', 'smug', 'shocked', 'determined', 'sad', 'happy', 'neutral', 'angry'];
+        this.emph = { name: pool[Math.floor(Math.random() * pool.length)], w: this.emph?.w ?? 0, target: 0.28 + Math.random() * 0.25 };
+      }
+    } else if (this.emph) this.emph.target = 0;
+    if (this.emph) {
+      this.emph.w += (this.emph.target - this.emph.w) * (1 - Math.exp(-dt * 4));
+      add(this.emph.name, this.emph.w * (1 - exW * 0.7));
+      if (this.emph.target === 0 && this.emph.w < 0.01) this.emph = null;
+    }
     const xp = this.expressive;
     for (let i = 0; i < FP.gazeX; i++) tg[i] *= xp;
     // ---- micro-expressions (subtle, frequent: people are never still)
@@ -298,10 +316,10 @@ export const FACE_EXPR_WARP = /* glsl */`
     float up = s == 0 ? browUpL : browUpR;
     float inn = s == 0 ? browInL : browInR;
     float toC = s == 0 ? -1.0 : 1.0;                       // image direction towards the nose
-    float g = gk2(f, vec2(ex, 0.372), vec2(0.105, 0.075)) * smoothstep(0.445, 0.395, f.y);
+    float g = gk2(f, vec2(ex, 0.372), vec2(0.105, 0.075)) * (1.0 - smoothstep(0.395, 0.445, f.y));
     float tilt = clamp((f.x - ex) * toC / 0.075, -1.0, 1.0); // +1 inner end, -1 outer end
-    d.y += g * (up * 0.022 + inn * 0.02 * (0.55 + 0.45 * tilt));
-    d.x += g * min(inn, 0.0) * 0.008 * toC;                  // knit: brows pull together
+    d.y += g * (up * 0.03 + inn * 0.026 * (0.55 + 0.45 * tilt));
+    d.x += g * min(inn, 0.0) * 0.01 * toC;                  // knit: brows pull together
   }
   // ---------- eyes: iris look, wide open
   eyeShift = vec2(gazeX * 0.013, -gazeY * 0.008);
@@ -325,8 +343,8 @@ export const FACE_EXPR_WARP = /* glsl */`
     float side = s == 0 ? 1.0 : -1.0;
     float sm2 = s == 0 ? smileL : smileR;
     float g = gk2(f, vec2(cx + side * 0.1, my + 0.004), vec2(0.06, 0.048));
-    d.y += g * sm2 * 0.022;
-    d.x -= g * side * max(sm2, 0.0) * 0.01;
+    d.y += g * sm2 * 0.028;
+    d.x -= g * side * max(sm2, 0.0) * 0.014;
   }
   float gM = gk2(f, vec2(cx, my), vec2(0.16, 0.075));
   d.x += (f.x - cx) * gM * (mWide < 0.0 ? -mWide * 0.42 : -mWide * 0.2);
@@ -334,7 +352,7 @@ export const FACE_EXPR_WARP = /* glsl */`
   // jaw drop: lower lip & chin slide down, upper lip lifts a little
   float wq = (f.x - cx) / (0.135 * (1.0 + 0.25 * mWide));
   float wx = exp(-wq * wq);
-  float gap = mOpen * 0.068 * wx;
+  float gap = mOpen * 0.085 * wx;
   float upLift = mOpen * 0.012 * wx + sneer * 0.006 * wx;
   float below = smoothstep(my - 0.004, my + 0.004, f.y);
   float chinFade = 1.0 - smoothstep(0.86, 0.99, f.y);

@@ -36,6 +36,8 @@ export interface Shot {
   tick?: (k: number, t: number) => void;
   /** don't run the collision check (shots that are meant to be very close / inside props) */
   noCollide?: boolean;
+  /** hide the local player's own body (POV shots) */
+  hideSelf?: boolean;
 }
 
 export interface PlayOpts { letterbox?: boolean; onEnd?: () => void; handBack?: number; skippable?: boolean }
@@ -188,11 +190,11 @@ export class CineCam {
     if (!this.owning) return;
     const pl = game.player;
     if (!pl || pl.mode !== 'external') { this.abort(); return; }
-    const rg = pl.rig();
-    if (rg) { rg.setFirstPerson(false); rg.root.visible = true; }
     Overlay.crosshair(false);
     const s = this.shots[this.si];
     if (!s) return;
+    const rg = pl.rig();
+    if (rg) { rg.setFirstPerson(!!s.hideSelf); if (!s.hideSelf) rg.root.visible = true; }
     this.st += dt;
     const raw01 = Math.min(1, this.st / Math.max(0.001, s.dur));
     const k = (s.ease ?? smoother)(raw01);

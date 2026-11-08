@@ -63,7 +63,7 @@ export interface ModelDef {
   anchor?: 'bottom' | 'back' | 'top';
   /** env-map intensity */
   env?: number;
-  /** only the meshes under the glTF node whose name starts with this (Poly Haven packs variants side by side) */
+  /** only the meshes under the glTF node with exactly this name (Poly Haven packs variants side by side) */
   node?: string;
 }
 
@@ -118,6 +118,27 @@ export const MODELS: Record<PropId, ModelDef> = {
   hydrant: M('fire_hydrant', { phys: 'static', far: 1.2, shadow: true }),
   barrier: M('concrete_road_barrier_02', { phys: 'static', far: 1.6, shadow: true }),
   bench_wood: M('painted_wooden_bench', { phys: 'dyn', mass: 14, friction: 0.7, shadow: true, collider: 'box', far: 1.1 }),
+  // ---- density pass (fill.ts), Poly Haven CC0
+  bin_metal: M('metal_trash_can', { phys: 'dyn', mass: 7, friction: 0.5, shadow: true, collider: 'cyl', node: 'metal_trash_can_handle_left' }),
+  bin_rusty: M('metal_trash_can', { phys: 'dyn', mass: 7, friction: 0.5, shadow: true, collider: 'cyl', node: 'metal_trash_can_rust' }),
+  cctv: M('security_camera_01', { phys: 'none', far: 0.7, anchor: 'back' }),
+  wall_lamp: M('security_light', { phys: 'none', far: 0.9, anchor: 'back' }),
+  plant_pot_big: M('potted_plant_01', { phys: 'dyn', mass: 11, friction: 0.7, shadow: true, collider: 'cyl', far: 1.0 }),
+  planter_long: M('planter_box_02', { phys: 'static', shadow: true, far: 1.0 }),
+  planter_tall: M('planter_box_03', { phys: 'static', shadow: true, far: 1.1 }),
+  crate_milk: M('plastic_crate_01', { phys: 'dyn', mass: 1.2, friction: 0.55, shadow: true, collider: 'box', far: 0.8, recolor: true }),
+  crate_low: M('plastic_crate_03', { phys: 'dyn', mass: 1.0, friction: 0.55, shadow: true, collider: 'box', far: 0.8, recolor: true }),
+  jerry_metal: M('metal_jerrycan', { phys: 'dyn', mass: 5, friction: 0.5, far: 0.7, collider: 'box' }),
+  ladder: M('ladder_sectioned_01', { phys: 'none', far: 1.0, shadow: true }),
+  wood_stool: M('wooden_stool_02', { phys: 'dyn', mass: 2, friction: 0.6, far: 0.7, collider: 'box' }),
+  painted_stool: M('painted_wooden_stool', { phys: 'dyn', mass: 2.5, friction: 0.6, far: 0.8, collider: 'box', shadow: true }),
+  hose_reel: M('garden_hose_wall_mounted_01', { phys: 'none', far: 0.7, anchor: 'back' }),
+  watering_can: M('watering_can_metal_01', { phys: 'dyn', mass: 0.8, friction: 0.5, far: 0.5 }),
+  sacks: M('compost_bags', { phys: 'static', shadow: true, far: 0.9, node: 'compost_bags_floorstacked' }),
+  ac_out: M('exterior_aircon_unit', { phys: 'none', shadow: true, far: 1.2, anchor: 'back', node: 'exterior_aircon_unit_rusted' }),
+  ac_out_clean: M('exterior_aircon_unit', { phys: 'none', shadow: true, far: 1.2, anchor: 'back', node: 'exterior_aircon_unit' }),
+  tree_small: M('tree_small_02', { phys: 'none', shadow: true, far: 2.5 }),
+  tree_shrubby: M('island_tree_02', { phys: 'none', shadow: true, far: 2.2 }),
   // parked car under a dust cover (Poly Haven) — callers add their own static colliders
   covered_car: M('covered_car', { phys: 'none', shadow: true, far: 1.7 }),
   // ---- vehicles (realprops-vehicle.ts) — callers add their own static colliders
@@ -287,7 +308,7 @@ async function loadGlb(def: ModelDef): Promise<Model | null> {
   const gltf = await loader.loadAsync(Assets.url(def.path ?? `gen/world/models/${def.file}/${def.file}.glb`));
   gltf.scene.updateMatrixWorld(true);
   const byMat = new Map<THREE.Material, THREE.BufferGeometry[]>();
-  const under = (o: THREE.Object3D) => { for (let p: THREE.Object3D | null = o; p; p = p.parent) if (p.name.startsWith(def.node!)) return true; return false; };
+  const under = (o: THREE.Object3D) => { for (let p: THREE.Object3D | null = o; p; p = p.parent) if (p.name === def.node) return true; return false; };
   gltf.scene.traverse((o) => {
     const mesh = o as THREE.Mesh;
     if (!mesh.isMesh) return;

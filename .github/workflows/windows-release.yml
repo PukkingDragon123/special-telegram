@@ -12,7 +12,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: npm }
+      # converted WebP images (scripts/optimize-assets.mjs) are keyed by content: re-used across runs
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/hp-assets
+          key: hp-assets-v1-${{ hashFiles('public/assets/**/*.png', 'public/assets/**/*.jpg', 'public/assets/**/*.jpeg') }}
+          restore-keys: hp-assets-v1-
       - run: npm ci && npm run build
+      - run: du -sh dist && du -sh dist/assets/* | sort -h | tail -8
       - name: Package Electron app
         run: |
           curl -sSL -o electron.zip https://github.com/electron/electron/releases/download/v33.2.1/electron-v33.2.1-win32-x64.zip

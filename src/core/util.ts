@@ -1,8 +1,13 @@
 import * as THREE from 'three';
 
 export const BASE = (import.meta as any).env?.BASE_URL ?? './';
-/** Resolve a path inside public/assets → URL usable at runtime. */
-export const asset = (p: string) => `${BASE}assets/${p.replace(/^\/?(assets\/)?/, '')}`;
+/** Resolve a path inside public/assets → URL usable at runtime. Production builds re-encode many images to WebP
+ *  (scripts/optimize-assets.mjs): index.html carries the map (window.__HP_REMAP__); dev server: none → originals. */
+const REMAP: Record<string, string> = (globalThis as any).__HP_REMAP__ ?? {};
+export const asset = (p: string) => {
+  const rel = p.replace(/^(\.\/)?\/?(assets\/)?/, '');
+  return `${BASE}assets/${REMAP[rel] ?? rel}`;
+};
 
 export const clamp = (v: number, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;

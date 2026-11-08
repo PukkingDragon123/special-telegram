@@ -112,7 +112,7 @@ export class IntroHost {
   }
 
   /** New session / state: forget everything. */
-  reset() { this.cur = undefined; this.jobs = []; this.caught = false; this.finishing = false; this.skipPending = false; this.lastStep = undefined; this.waitCart = 0; this.dogPhase = ''; this.ask = null; this.served = false; this.lesson.stop(); }
+  reset() { this.cur = undefined; this.jobs = []; this.caught = false; this.finishing = false; this.skipPending = false; this.lastStep = undefined; this.waitCart = 0; this.dogPhase = ''; this.ask = null; this.served = false; this.lesson.halt(); }
 
   /** HOST: dev/test skip: straight to 'done' with the cart owned + starter kit minus pork/rice. */
   skipAll() { this.skipPending = true; }
@@ -272,7 +272,7 @@ export class IntroHost {
     this.stepT += dt;
     // clock: catch up quickly toward the step's hour (a visible sunrise), then normal speed
     const cap = g.clockCap;
-    if (typeof cap === 'number') g.clockRate = Math.min(14, 1 + Math.max(0, cap - (g.time ?? cap) - 0.05) * 22);
+    if (typeof cap === 'number') g.clockRate = Math.min(9, 1 + Math.max(0, cap - (g.time ?? cap) - 0.05) * 22);
     if (this.jobs.length) {
       const due = this.jobs.filter((j) => j.t <= this.stepT);
       if (due.length) { this.jobs = this.jobs.filter((j) => j.t > this.stepT); for (const j of due) { try { j.fn(); } catch (e) { console.error('[intro] job', e); } } }
@@ -329,6 +329,7 @@ export class IntroHost {
     }
     this.g.introStep = order[Math.max(0, idx - 1)];
     this.go(step);
+    this.game.emit('intro:cine', { k: 'stop' });
   }
 
   // ------------------------------------------------------------------ wake helpers

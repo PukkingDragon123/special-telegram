@@ -534,6 +534,12 @@ export function makeProps(w: WB) {
     w.tube([-0.5, 0.02, -0.3, 0.6, 0.2, 0.3], 0.02, 4);
   }));
 
+  // fallback pot for the real potted plants below (only drawn when the photoscans are missing)
+  const plantStub = () => memo('plantStub', () => T((w) => {
+    w.mat('tiles_terracotta', { tint: 0x9a4a2a, uv: 'local' });
+    w.cyl(0, 0, 0, 0.13, 0.17, 0.26, 10, 1, 0, 0.05);
+  }));
+
   const signBoxStand = () => memo('aframe', () => T((w) => {
     w.mat('metal_paint', { tint: 0xd8d2c8, uv: 'local' });
     w.pushTR(0, 0, 0.2, -0.22, 0, 0); w.box(-0.32, 0, -0.01, 0.32, 0.95, 0.01, ALL); w.pop();
@@ -579,6 +585,10 @@ export function makeProps(w: WB) {
     waterTankSteel: () => asReal(waterTankSteel(), (m) => real.addMatrix('lib:water_tank_steel', m, { phys: 'none' }), { need: ['lib:water_tank_steel'] }),
     waterTankBlue: () => asReal(waterTankBlue(), (m) => real.addMatrix('lib:water_tank_plastic', local(m, 0, 0.25, 0), { color: 0x3a6ac0, phys: 'none' }), { stamp: tankPlinth(), need: ['lib:water_tank_plastic'] }),
     basket: (col: number) => asReal(basket(col), (m) => real.addMatrix('lib:plastic_basket', m, { color: col, phys: 'none' }), { need: ['lib:plastic_basket'] }),
+    // potted plants: photoscanned taro / aloe / big leafy pot (Poly Haven), physical, instanced — replaces the old
+    // cylinder-pot + 3 foliage cards (k picks the species deterministically)
+    plant: (k: number) => asReal(plantStub(), (m) => real.addMatrix(['plant_taro', 'plant_aloe', 'plant_pot_big', 'plant_aloe', 'plant_taro'][((k % 5) + 5) % 5], m),
+      { need: ['plant_taro', 'plant_aloe', 'plant_pot_big'] }),
     junkPile: (k: number) => asReal(junkPile(k), (m) => {
       real.addMatrix('tyre', local(m, -0.25, 0, 0.1, k));
       if (k % 2 === 0) real.addMatrix('tyre', local(m, -0.25, 0.165, 0.1, k + 1));

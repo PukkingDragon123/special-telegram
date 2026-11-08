@@ -323,7 +323,9 @@ export class Game {
         n++;
         if (!this.g.paused) this.clock.hostAdvance(step);
         for (const m of this.modules) if (m.hostUpdate) {
+          const t = this.prof ? performance.now() : 0;
           try { m.hostUpdate(this, step); } catch (e) { console.error(`[module ${m.id}] hostUpdate`, e); }
+          if (this.prof) this.profAdd('host:' + m.id, t);
         }
         this.events.emit('host:update', step);
       }
@@ -340,10 +342,24 @@ export class Game {
       if (this.psAcc >= 1 / NET_HZ) { this.psAcc = 0; this.sendPlayerState(); }
     }
     for (const m of this.modules) if (m.frame) {
+      const t = this.prof ? performance.now() : 0;
       try { m.frame(this, dt); } catch (e) { console.error(`[module ${m.id}] frame`, e); }
+      if (this.prof) this.profAdd(m.id, t);
     }
+    let t = this.prof ? performance.now() : 0;
     this.views.update(dt);
+    if (this.prof) { this.profAdd('views', t); t = performance.now(); }
     this.ui.update(rawDt);
+    if (this.prof) { this.profAdd('ui', t); this.prof.frames++; }
+  }
+
+  /** CPU profiler (?prof, or `__hp.game.startProfile()`): mean ms per frame for every module frame / hostUpdate. */
+  prof: { frames: number; ms: Record<string, number> } | null = params.has('prof') ? { frames: 0, ms: {} } : null;
+  private profAdd(k: string, t0: number) { const p = this.prof!; p.ms[k] = (p.ms[k] ?? 0) + performance.now() - t0; }
+  startProfile() { this.prof = { frames: 0, ms: {} }; }
+  profileReport() {
+    const p = this.prof; if (!p || !p.frames) return {};
+    return Object.fromEntries(Object.entries(p.ms).map(([k, v]) => [k, +(v / p.frames).toFixed(3)] as [string, number]).sort((a, b) => b[1] - a[1]));
   }
 
   // ------------------------------------------------------------------ helpers

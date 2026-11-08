@@ -630,9 +630,9 @@ function baseBottomFabric(P: Painter, b: BottomSpec, rn: string, reg: Region, t0
       const [x, y, w, h] = P.rect(reg, 0, t0, 1, t1);
       if (w > 0 && h > 0) {
         const g = P.g; g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
-        const pat = g.createPattern(houndstoothTile(col), 'repeat')!;
+        const pat = g.createPattern(houndstoothTile(mix(col, c2, 0.12)), 'repeat')!;
         const pp = ppm ?? PPM[rn] ?? [500, 500];
-        const REP = 0.02;
+        const REP = 0.0135;
         pat.setTransform(new DOMMatrix().translate(x, y).scale((REP * pp[0]) / 32, (REP * pp[1]) / 32));
         g.fillStyle = pat; g.fillRect(x, y, w, h); g.restore();
       }

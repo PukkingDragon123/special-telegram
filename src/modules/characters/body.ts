@@ -852,18 +852,18 @@ function buildWaistApron(c: Ctx) {
 function buildNeckerchief(c: Ctx) {
   const { G, s, hi } = c;
   const k = (s.sex === 'f' ? 0.86 : 1) * (0.92 + s.build * 0.18);
-  const R0 = 0.056 * k + (s.top.collar === 'mandarin' || s.top.collar === 'shirt' || s.top.collar === 'polo' ? 0.013 : 0.006);
+  const R0 = 0.056 * k + (s.top.collar === 'mandarin' || s.top.collar === 'shirt' || s.top.collar === 'polo' ? 0.02 : 0.011);
   const cz = -0.016;
   const segs = hi ? 6 : 4;
   const N = hi ? 22 : 12;
   const wN: W = [B.neck, 0.45, B.chest, 0.55];
-  const flatR = (n: number) => Array.from({ length: n }, (_, j) => { const th = -Math.PI + (2 * Math.PI * j) / n; const cc = Math.abs(Math.cos(th)), ss = Math.abs(Math.sin(th)); return 1 / Math.pow(Math.pow(cc / 0.0065, 2.4) + Math.pow(ss / 0.012, 2.4), 1 / 2.4); });
+  const flatR = (n: number) => Array.from({ length: n }, (_, j) => { const th = -Math.PI + (2 * Math.PI * j) / n; const cc = Math.abs(Math.cos(th)), ss = Math.abs(Math.sin(th)); return 1 / Math.pow(Math.pow(cc / 0.011, 2.4) + Math.pow(ss / 0.019, 2.4), 1 / 2.4); });
   // band round the neck (open loop that starts and ends at the knot)
   const path: V3[] = [];
   for (let i = 0; i <= N; i++) {
     const a = lerp(0.32, Math.PI * 2 - 0.32, i / N); // angle from the front, around the back
     const front = Math.max(0, Math.cos(a));
-    path.push([Math.sin(a) * (R0 + front * 0.004), 1.474 - front * 0.014, cz + Math.cos(a) * (R0 + front * 0.004)]);
+    path.push([Math.sin(a) * (R0 + front * 0.006), 1.47 - front * 0.016, cz + Math.cos(a) * (R0 + front * 0.006)]);
   }
   const rings: Ring[] = path.map((p, i) => {
     const a = v3norm(v3sub(path[Math.min(path.length - 1, i + 1)], path[Math.max(0, i - 1)]));
@@ -872,23 +872,23 @@ function buildNeckerchief(c: Ctx) {
   });
   loft(G, rings, { n: segs, uv: (u, v) => ruv(R.towel, v, u * 0.5), capStart: { depth: 0.003 }, capEnd: { depth: 0.003 } });
   // knot: a squashed blob at the front
-  const kc: V3 = [0, 1.457, cz + R0 + 0.012];
+  const kc: V3 = [0, 1.45, cz + R0 + 0.016];
   const kr: Ring[] = [-1, -0.6, 0, 0.6, 1].map((q, i) => {
     const f = Math.sqrt(Math.max(0.05, 1 - q * q * 0.85));
-    return { c: [kc[0], kc[1] + q * 0.011, kc[2] + (1 - Math.abs(q)) * 0.002] as V3, f: [0, 0, 1] as V3, s: [1, 0, 0] as V3, r: superR(0.015 * f, 0.009 * f, 2.2, 8), t: i / 4, w: wN };
+    return { c: [kc[0], kc[1] + q * 0.015, kc[2] + (1 - Math.abs(q)) * 0.003] as V3, f: [0, 0, 1] as V3, s: [1, 0, 0] as V3, r: superR(0.021 * f, 0.013 * f, 2.2, 8), t: i / 4, w: wN };
   });
   loft(G, kr, { n: 8, uv: (u, v) => ruv(R.towel, 0.4 + u * 0.2, 0.5 + v * 0.4), capStart: { depth: 0.002 }, capEnd: { depth: 0.002 } });
   // two short triangular tails hanging from the knot, splayed a little
   for (const sd of [-1, 1]) {
-    const top: V3 = [sd * 0.006, 1.452, kc[2] + 0.004];
+    const top: V3 = [sd * 0.008, 1.442, kc[2] + 0.004];
     const rows = hi ? 5 : 3;
     const L: number[] = [], Rr: number[] = [], Lb: number[] = [], Rb: number[] = [];
     for (let i = 0; i <= rows; i++) {
       const t = i / rows;
-      const y = top[1] - t * 0.06;
+      const y = top[1] - t * 0.085;
       const zc = lerp(top[2], c.torsoC(y) + c.torsoR(y, sd * 0.25) * 0.97 + 0.02, smooth(0, 1, t));
-      const xc = top[0] + sd * t * 0.022;
-      const hw = lerp(0.012, 0.0015, t);
+      const xc = top[0] + sd * t * 0.03;
+      const hw = lerp(0.018, 0.002, t);
       const nrm: V3 = [sd * 0.2, 0.25, 1];
       const [u1, v1] = ruv(R.towel, 0.62 + t * 0.35, 0.2);
       const [u2, v2] = ruv(R.towel, 0.62 + t * 0.35, 0.8);

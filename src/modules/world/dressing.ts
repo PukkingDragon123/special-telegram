@@ -3,7 +3,7 @@ import { RNG } from '../../core/rng';
 import { WB, ALL, SIDES, PX, NX, PY, NY, PZ, NZ } from './geo';
 import type { ShopCtx } from './shophouse';
 import type { FoliageSys } from './foliage';
-import { weeds, pottedPlant, bananaTree, coconutPalm, bougainvillea } from './foliage';
+import { weeds, bananaTree, coconutPalm, bougainvillea } from './foliage';
 import { flat, groundDecal, wallDecal } from './streets';
 import { PLASTIC_COLORS } from './props';
 import { dressSoi, tableSetting } from './realprops-dress';
@@ -129,7 +129,9 @@ export function buildStreetLife(c: Ctx) {
     // a proper table with its condiment caddy, tissues, spoons, jug & glasses, stools around it
     const steel = rng.chance(0.4);
     const soi = Math.abs(x) < 7;
-    const tx = soi ? Math.sign(x) * 5.4 : x + rng.range(-0.8, 0.8), tz = z + (Math.abs(x) < 7 ? rng.pick([-1.5, 1.5]) : 1.3), ty = rng.range(-0.2, 0.2);
+    // soi: table against the shop front next to the cart; main road / canal: beside the cart along the kerb line
+    // (never out in the walking lane at z 3 / 24)
+    const tx = soi ? Math.sign(x) * 5.4 : x + rng.pick([-1.75, 1.75]), tz = soi ? z + rng.pick([-1.5, 1.5]) : z, ty = rng.range(-0.2, 0.2);
     P.real.add(steel ? 'steel_table' : 'thai_table', tx, SW_H, tz, ty, steel ? {} : { color: rng.pick([0xe8e4dc, 0x2a62b8, 0xc0302a]) });
     tableSetting(P.real, tx, SW_H + (steel ? propHeight('steel_table', STEEL_TABLE.H) : propHeight('thai_table', THAI_TABLE.H)), tz, ty, rng, steel);
     const sc = rng.pick(PLASTIC_COLORS);
@@ -145,10 +147,10 @@ export function buildStreetLife(c: Ctx) {
   foodStall(5.5, -44.5, -Math.PI / 2);
   foodStall(-5.5, -95, Math.PI / 2);
   foodStall(5.5, -140, -Math.PI / 2);
-  foodStall(20, 3.2, 0);
-  foodStall(-60, 24.6, Math.PI);
-  foodStall(64, 3.2, 0);
-  foodStall(-90, 3.2, 0);
+  foodStall(20, 1.3, 0);
+  foodStall(-60, 25.2, Math.PI);
+  foodStall(64, 1.3, 0);
+  foodStall(-90, 1.3, 0);
   foodStall(12, -156.7, Math.PI);
   const cm = cloth.build();
   if (cm) { P.real.addObject(cm); P.real.animate(new THREE.Vector3(0, 2, -60), 400, (_dt, t) => { cloth.uTime.value = t; }); }
@@ -281,9 +283,9 @@ export function buildStreetLife(c: Ctx) {
       const side = rng.chance(0.5) ? -1 : 1;
       const x = side * rng.range(5.4, 5.9), z = rng.range(-150, -2);
       if (!okT(x, z, 0.6)) continue;
-      pottedPlant(w, F, x, SW_H, z, rng);
+      w.put(P.plant(rng.int(0, 4)), x, SW_H, z, rng.range(0, 6), rng.range(0.85, 1.1));
     }
-    for (let x = -124; x < 124; x += rng.range(6, 16)) if (ok(x, 0.5, 0.5)) pottedPlant(w, F, x, SW_H, 0.45, rng);
+    for (let x = -124; x < 124; x += rng.range(6, 16)) if (ok(x, 0.5, 0.5)) w.put(P.plant(rng.int(0, 4)), x, SW_H, 0.45, rng.range(0, 6), rng.range(0.85, 1.1));
     // banana clumps & palms poking out of gaps (the soi fades into green toward the canal)
     for (const [x, z] of [[-21, -54.2], [-20.5, -99], [24, -40.8], [-31, -146], [8.5, -81]] as [number, number][]) bananaTree(w, F, x, SW_H, z, rng, 0.9);
     for (const [x, z] of [[-34, -100], [55, -38], [-70, -42], [96, -40], [-100, 40], [120, 42]] as [number, number][]) coconutPalm(w, F, x, 0.15, z, rng, 1);

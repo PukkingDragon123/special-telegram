@@ -103,8 +103,27 @@ export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE
   try {
     await Promise.race([renderer.compileAsync(scene, camera), new Promise((r) => setTimeout(r, capMs))]);
   } catch (e) { console.warn('[world] shader prewarm', e); }
+  // upload every loaded texture of visible objects now (also behind the fade): no texImage2D + mipmap hitch
+  // the first time something turns into view. Time-sliced so the page stays responsive.
+  const texs = new Set<THREE.Texture>();
+  scene.traverseVisible((o: any) => {
+    const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+    for (const m of ms) {
+      for (const k in m) { const v = m[k]; if (v && v.isTexture) texs.add(v); }
+      const u = m.uniforms;
+      if (u) for (const k in u) { const v = u[k]?.value; if (v && v.isTexture) texs.add(v); }
+    }
+  });
+  let n = 0, t1 = performance.now();
+  for (const t of texs) {
+    if (performance.now() - t0 > capMs * 2) break;
+    const img: any = t.image;
+    if (!img || (t as any).isRenderTargetTexture || (img.width === undefined && !(t as any).isDataTexture)) continue;
+    try { renderer.initTexture(t); n++; } catch {}
+    if (performance.now() - t1 > 30) { await new Promise((r) => setTimeout(r, 0)); t1 = performance.now(); }
+  }
   const marks = (window as any).__hpMarks;
-  if (marks) marks.prewarmMs = Math.round(performance.now() - t0);
+  if (marks) { marks.prewarmMs = Math.round(performance.now() - t0); marks.prewarmTex = n; }
 }
 
 export function installWorldScene(game: Game) {

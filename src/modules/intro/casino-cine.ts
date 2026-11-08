@@ -249,9 +249,11 @@ export class ScreenFX {
   private sepiaOn = 0; private sepiaTarget = 0;
 
   constructor() {
-    const host = Overlay.root ?? document.body;
+    // a direct child of <body> just under the overlay layer (.hp-ov is z-index 10 and its own stacking
+    // context, so blend modes inside it could not reach the WebGL canvas); subtitles stay un-inverted
+    const host = document.body;
     const r = (this.root = document.createElement('div'));
-    r.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3';
+    r.style.cssText = 'position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9';
     const layer = (css: string) => { const d = document.createElement('div'); d.style.cssText = 'position:absolute;inset:0;opacity:0;' + css; r.appendChild(d); return d; };
     // duotone "standing pose" grade: purple shadows / gold highlights
     this.tint = layer('background:linear-gradient(160deg,#5b1a8a 0%,#b0308e 45%,#e6a43a 100%);mix-blend-mode:color;');
@@ -269,7 +271,8 @@ export class ScreenFX {
       <text x="30" y="58" font-family=${JSON.stringify(F.heavy.replace(/"/g, ''))} font-weight="800" font-size="30" fill="#f3e6c0" letter-spacing="1">${CINE_LINES.tbc.th}</text>
       <text x="32" y="79" font-family=${JSON.stringify(F.ui.replace(/"/g, ''))} font-weight="700" font-size="17" fill="#d8c08a" letter-spacing="4">TO BE CONTINUED</text>
     </svg>`;
-    r.appendChild(tbc);
+    (Overlay.root ?? r).appendChild(tbc);
+    this.tbcHost = tbc;
     host.appendChild(r);
   }
 
@@ -329,7 +332,8 @@ export class ScreenFX {
     }
   }
 
-  dispose() { this.root.remove(); }
+  private tbcHost: HTMLElement | null = null;
+  dispose() { this.root.remove(); this.tbcHost?.remove(); }
 }
 
 /** Pick the first anim name the characters module knows (new cinematic poses fall back gracefully). */

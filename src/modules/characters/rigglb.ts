@@ -98,7 +98,6 @@ function templateData(t: BodyTemplate): TData {
         if (i === undefined || ci === undefined) continue;
         const dir = t.Gp[ci].clone().sub(t.Gp[i]).normalize();
         const flex = new THREE.Vector3().crossVectors(dir, palmN).normalize();
-        if (fn === 'thumb') flex.add(new THREE.Vector3(0, 0, 0.6)).normalize().multiplyScalar(1);
         const spread = palmN.clone().multiplyScalar(side);
         const p = t.parent[i];
         const inv = p >= 0 ? t.Gq[p].clone().invert() : new THREE.Quaternion();
@@ -832,7 +831,6 @@ export class Rig implements CharacterRig {
     // ---- first person: keep hands out of the camera
     if (this.mode === 'fp') { this.fpHands(); this.fk(); }
     this.updateAttach();
-    if (c.name === 'wake_up') this.updateFace();
     // ---- face
     if (dt > 0) {
       if (c.def.exprAt && !(c.ended && !c.def.hold)) this.face.setAnimExpression(c.def.exprAt(k, c.t) ?? c.def.expr ?? 'neutral');
@@ -841,7 +839,7 @@ export class Rig implements CharacterRig {
       this.face.talking = this.explicitTalk;
       this.face.update(dt);
       (this.mat.userData.uFace.value as Float32Array).set(this.face.u);
-      this.mat.userData.uFaceOn.value = this.face.detail > 0.01 ? 1 : 0;
+      this.mat.userData.uFaceOn.value = this.face.detail > 0.01 && !this.photoVariant ? 1 : 0;
     }
   }
 
@@ -881,14 +879,15 @@ export class Rig implements CharacterRig {
     _w2.copy(_w1).sub(this.rPrev).divideScalar(dt);
     _w2.y = 0;
     const kv = 1 - Math.exp(-dt * 10);
-    _w3.copy(_w2).sub(this.rVel).divideScalar(Math.max(dt, 1e-3));   // acceleration
+    _w3.copy(this.rVel);
     this.rVel.lerp(_w2, kv);
+    _w3.subVectors(this.rVel, _w3).divideScalar(dt);                  // acceleration of the smoothed velocity
     this.rSpeed = this.rVel.length();
     const fx = -Math.sin(yaw), fz = -Math.cos(yaw);                   // forward
     const lx = -Math.cos(yaw), lz = Math.sin(yaw);                    // character's left
     const ka = 1 - Math.exp(-dt * 6);
-    this.accF += (Math.max(-12, Math.min(12, _w3.x * fx + _w3.z * fz)) * kv - this.accF) * ka;
-    this.accL += (Math.max(-12, Math.min(12, _w3.x * lx + _w3.z * lz)) * kv - this.accL) * ka;
+    this.accF += (Math.max(-12, Math.min(12, _w3.x * fx + _w3.z * fz)) - this.accF) * ka;
+    this.accL += (Math.max(-12, Math.min(12, _w3.x * lx + _w3.z * lz)) - this.accL) * ka;
     let dy = yaw - this.rYaw;
     if (dy > Math.PI) dy -= Math.PI * 2; else if (dy < -Math.PI) dy += Math.PI * 2;
     this.yawRate += (Math.max(-6, Math.min(6, dy / dt)) - this.yawRate) * (1 - Math.exp(-dt * 8));
@@ -900,9 +899,9 @@ export class Rig implements CharacterRig {
 
   private secondary(dt: number, carrying: number) {
     const sp = this.spr;
+    const n = Math.min(8, Math.ceil(dt / 0.017)), h = dt / n;
     const spring = (i: number, target: number, k: number, c: number) => {
-      sp[i + 1] += ((target - sp[i]) * k - sp[i + 1] * c) * dt;
-      sp[i] += sp[i + 1] * dt;
+      for (let j = 0; j < n; j++) { sp[i + 1] += ((target - sp[i]) * k - sp[i + 1] * c) * h; sp[i] += sp[i + 1] * h; }
       return sp[i];
     };
     const mv = Math.min(1, this.speed / 1.2);
@@ -1052,11 +1051,9 @@ export class Rig implements CharacterRig {
         }
       }
       tg.lerpVectors(fk, tg, this.ikW);
+      // lower ground under this foot → the pelvis has to come down (only for the ground, not for planted-foot drift)
+      drop = Math.max(drop, (rootY - gy) / sc * this.ikW);
       tg.applyMatrix4(_m4);           // → template model space
-      // reach: how much must the pelvis come down for this foot to touch?
-      const reach = _w2.copy(tg).sub(this.Fp[ia]).length();
-      const len = this.Fp[t.index[tb]].distanceTo(this.Fp[ia]) + this.Fp[ic].distanceTo(this.Fp[t.index[tb]]);
-      drop = Math.max(drop, reach - len * 0.985);
     }
     // lower the pelvis for uneven ground (smoothed), then solve both legs
     this.pelvisDrop += (Math.max(0, Math.min(0.22 / sc, drop)) - this.pelvisDrop) * (1 - Math.exp(-dt * 10));
@@ -1284,16 +1281,17 @@ export class Rig implements CharacterRig {
   }
 
   private applyLook(dt: number, allowed: boolean) {
-    const want = allowed && this.lookTarget ? 1 : 0;
+    const target = this.lookTarget ?? (this.amb.on ? this.amb.p : null);
+    const want = allowed && target ? (this.lookTarget ? 1 : 0.75) : 0;
     this.lookW += (want - this.lookW) * (1 - Math.exp(-5 * dt));
-    if (this.lookW < 0.01) { this.lookYaw *= 0.9; this.lookPitch *= 0.9; return; }
+    if (this.lookW < 0.01) { this.lookYaw *= 0.9; this.lookPitch *= 0.9; this.face.setGaze(null); return; }
     const t = this.t;
-    if (this.lookTarget) {
+    if (target) {
       this.root.updateWorldMatrix(true, false);
       const s = this.height / t.height;
       const hp = this.Fp[t.index.Head];
       _v.set(-hp.x * s, (hp.y + 0.08) * s, -hp.z * s).applyMatrix4(this.root.matrixWorld);
-      _v2.copy(this.lookTarget).sub(_v);
+      _v2.copy(target).sub(_v);
       if (_v2.lengthSq() > 1e-6) {
         const sp = t.index.spine_03;
         this.root.getWorldQuaternion(_q);
@@ -1302,11 +1300,15 @@ export class Rig implements CharacterRig {
         let yaw = Math.atan2(_v2.x, _v2.z) / D2R;
         let pitch = -Math.asin(Math.max(-1, Math.min(1, _v2.y))) / D2R;
         if (Math.abs(yaw) > 115) yaw = 0;
+        const yawRaw = yaw, pitchRaw = pitch;
         yaw = Math.max(-75, Math.min(75, yaw)); pitch = Math.max(-40, Math.min(50, pitch));
         const kk = 1 - Math.exp(-7 * dt);
         this.lookYaw += (yaw - this.lookYaw) * kk; this.lookPitch += (pitch - this.lookPitch) * kk;
+        // eyes get there first; the head catches up (the eyes cover what the head hasn't turned yet)
+        const w = this.lookW;
+        this.face.setGaze((yawRaw - this.lookYaw * w) / 28 * w, -(pitchRaw - this.lookPitch * w) / 22 * w);
       }
-    }
+    } else this.face.setGaze(null);
     const w = this.lookW;
     this.addLocal('neck_01', this.lookPitch * 0.35 * w, this.lookYaw * 0.4 * w, 0);
     this.fk();
@@ -1344,13 +1346,16 @@ export class Rig implements CharacterRig {
     this.proxy.scale.set(maxX - minX + m * 2, maxY - y0 + 0.04, maxZ - minZ + m * 2);
   }
 
+  /** Photo face variants are only used for explicit setFace() calls on faces that have that photo; everything
+   *  else (anim faces, expressions) is the animated face shader on the neutral photo — no atlas repaints. */
+  private photoVariant = false;
   private updateFace() {
-    let f: FaceVariant = this.faceOverride ?? this.cur.def.face ?? 'neutral';
-    if (!this.faceOverride && this.cur.name === 'wake_up') f = this.cur.t / this.cur.def.dur < 0.45 ? 'sleep' : 'neutral';
+    const f: FaceVariant = this.faceOverride ?? 'neutral';
     if (f === this.faceCur) return;
     this.faceCur = f;
     const fe = faceEntry(this.look.face, this.look.sex === 'f' ? 'f' : 'm');
-    const v: FaceVariant = fe.photo && f !== 'neutral' && !fe.photo.variants[f] ? 'neutral' : f;
+    const v: FaceVariant = f !== 'neutral' && (!fe.photo || !fe.photo.variants[f]) ? 'neutral' : f;
+    this.photoVariant = v !== 'neutral';
     this.setAtlas(v);
   }
 

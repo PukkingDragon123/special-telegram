@@ -495,10 +495,11 @@ function vacantLot(c: SpecialCtx) {
   // junk: tyres, old mattress, plywood, sacks, a wrecked pickup
   w.setGroup('detail');
   for (let i = 0; i < 5; i++) w.put(c.props.junkPile(i), rng.range(-30, -20), SW_H, rng.range(-97, -78), rng.range(0, 6));
-  w.mat('rubber', { uv: 'local' });
-  for (let i = 0; i < 6; i++) { w.pushTR(-28 + (i % 3) * 0.2, SW_H + 0.12 + Math.floor(i / 3) * 0.22, -95 + (i % 2) * 0.1, Math.PI / 2, i, 0); w.cyl(0, -0.1, 0, 0.32, 0.32, 0.2, 10, 3); w.pop(); }
-  w.mat('fabric', { tint: 0xb8a890, uv: 'local', ov: 'plaster_moldy', ovAmt: 0.9 });
-  w.pushTR(-24, SW_H + 0.08, -78.5, 0.05, 0.4, 0); w.bevelBox(-0.9, -0.08, -0.7, 0.9, 0.08, 0.7, 0.08); w.pop();
+  // a stack of scrap tyres (photoscanned old_tyre, physical) and dumped sacks / cardboard where the mattress block was
+  for (let i = 0; i < 6; i++) c.props.real.add('tyre', -28 + (i % 3) * 0.66, SW_H + Math.floor(i / 3) * 0.165, -95 + (i % 2) * 0.12, i * 0.7);
+  c.props.real.add('cardboard', -24.2, SW_H, -78.6, 0.4);
+  c.props.real.add('cardboard', -23.6, SW_H, -78.3, 1.3);
+  c.props.real.add('cement', -24.8, SW_H, -79.2, 0.2);
   w.put(c.props.pickup(0x6a5a4a), -27, SW_H, -82, 1.2, 1, { rz: 0.06 });
   c.phys.box([-27, 1, -82], [4.5, 2, 4.5]);
   w.setGroup('base');

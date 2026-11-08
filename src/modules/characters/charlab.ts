@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import type { Game } from '../../game/game';
 import type { SceneDef } from '../../game/scenes';
-import type { AnimName, FaceVariant, Look } from '../../game/contracts';
+import type { AnimName, Expression, FaceVariant, Look } from '../../game/contracts';
+import { EXPRESSIONS } from './face-expr';
 import { Assets } from '../../core/assets';
 import { params } from '../../core/util';
 import { RigWorld, atlasQueueLength } from './rig';
@@ -11,7 +12,7 @@ import { ARCHETYPES, HAIRS, TOPS, BOTTOMS, playerLook, randomLook } from './defs
 
 /* ============================================================================================
  * 'charlab' dev scene (?charlab): a Thai street-ish backdrop with lineups for screenshots.
- *   &lab=lineup (default) | players | anims | faces | hair | clothes | crowd | tpose
+ *   &lab=lineup (default) | players | anims | faces | expr | cine | walk | fp | hair | clothes | crowd | tpose
  *   &anim=<AnimName> (force), &face=<variant>, &who=<archetype|p0..p3>, &n=<crowd size>,
  *   &cam=x,y,z,lx,ly,lz, &cycle (cycle anims)
  * window.__charlab = { rigs, setAnim, setFace, cam, focus }
@@ -48,6 +49,10 @@ export class CharLab implements SceneDef {
       case 'players': this.players(); break;
       case 'anims': this.anims(); break;
       case 'faces': this.faces(); break;
+      case 'expr': this.exprs(); break;
+      case 'cine': this.cine(); break;
+      case 'walk': this.walkLab(); break;
+      case 'fp': this.fpLab(); break;
       case 'hair': this.hairs(); break;
       case 'clothes': this.clothes(); break;
       case 'crowd': this.crowd(); break;
@@ -195,6 +200,55 @@ export class CharLab implements SceneDef {
     this.camTarget.set(0, 1.5, 0);
   }
 
+  /** every animated expression on one face, plus a talking & a laughing one (&who=p0..p3|archetype) */
+  private exprs() {
+    const look = this.whoLook();
+    const list: (Expression | 'talk')[] = [...EXPRESSIONS, 'talk'];
+    const perRow = 5;
+    list.forEach((ex, i) => {
+      const row = Math.floor(i / perRow), col = i % perRow;
+      const e = this.add(look, new THREE.Vector3((col - (perRow - 1) / 2) * 0.46, 0, row * 0.7), Math.PI, 'idle', undefined, undefined, 'high');
+      (e.rig as any).fidgetWait = 1e9;
+      (e.rig as any).ambient = false;
+      if (ex === 'talk') e.rig.setTalking?.(true); else e.rig.setExpression?.(ex, { fade: 0.01 });
+      if (!params.has('nolabel')) { e.label = this.label(ex); e.label.scale.set(0.42, 0.105, 1); e.label.position.set(e.base.x, 1.28, e.base.z + 0.3); this.scene.add(e.label); }
+    });
+    this.camera.position.set(0, 1.52, 3.6);
+    this.camTarget.set(0, 1.45, 0.6);
+  }
+
+  /** the cinematic hero poses side by side */
+  private cine() {
+    const look = this.whoLook();
+    const list: AnimName[] = ['cine_point', 'cine_twist', 'cine_lean', 'cine_menace', 'cine_cross', 'cine_hair', 'stretch', 'look_around', 'laugh', 'facepalm', 'handshake', 'lecture', 'nod', 'sneak'];
+    const perRow = 7;
+    list.forEach((a, i) => {
+      const row = Math.floor(i / perRow), col = i % perRow;
+      this.add(look, new THREE.Vector3((col - (perRow - 1) / 2) * 1.25, 0, row * 2.0), Math.PI, a, a);
+    });
+    this.camera.position.set(0, 2.2, 9.5);
+    this.camTarget.set(0, 0.9, 1.0);
+  }
+
+  /** locomotion: start/stop, turns and speed changes (foot locking, leaning, follow-through) */
+  private walkLab() {
+    const look = this.whoLook();
+    for (let i = 0; i < 3; i++) {
+      const e = this.add(look, new THREE.Vector3(0, 0, 0), 0, 'walk', undefined, undefined, i === 0 ? 'high' : undefined);
+      e.walk = { r: 2 + i * 1.3, a: i * 2, sp: [1.3, -2.6, 4.6][i], c: new THREE.Vector3(0, 0, 2) };
+      (e as any).vary = true;
+    }
+    this.camera.position.set(0, 4.5, 11);
+    this.camTarget.set(0, 0.8, 2);
+  }
+
+  /** first person: camera at the eyes of a rig in setFirstPerson(true) */
+  private fpLab() {
+    const e = this.add(playerLook(0), new THREE.Vector3(0, 0, 2), Math.PI, 'idle', undefined, undefined, 'high');
+    e.rig.setFirstPerson(true);
+    (this as any).fp = e;
+  }
+
   private hairs() {
     const ids = HAIRS.map((h) => h.id);
     ids.forEach((h, i) => {
@@ -267,12 +321,15 @@ export class CharLab implements SceneDef {
       const e = this.entries[i];
       if (e.walk) {
         const w = e.walk;
+        // walk lab: speed changes and stops every few seconds
+        const vk = (e as any).vary ? Math.max(0, Math.sin(this.t * 0.45 + i * 1.7) * 1.4) : 1;
         if (w.r > 0) {
-          w.a += (w.sp / w.r) * dt;
+          w.a += (w.sp / w.r) * dt * Math.min(1, vk);
+          if ((e as any).vary) { e.rig.setMove(Math.abs(w.sp) * Math.min(1, vk)); }
           e.rig.root.position.set(w.c.x + Math.cos(w.a) * w.r, 0, w.c.z + Math.sin(w.a) * w.r);
           const tx = -Math.sin(w.a) * Math.sign(w.sp), tz = Math.cos(w.a) * Math.sign(w.sp);
           e.rig.root.rotation.y = Math.atan2(-tx, -tz);
-          e.rig.setMove(Math.abs(w.sp));
+          if (!(e as any).vary) e.rig.setMove(Math.abs(w.sp));
         } else {
           // tpose lab: the girl runs past screaming, then loops
           const x = -3 + ((this.t * w.sp) % 12);
@@ -289,6 +346,16 @@ export class CharLab implements SceneDef {
         if (a !== e.anim) { e.anim = a; e.rig.play(a, { loop: true }); }
       }
       e.rig.update(dt);
+    }
+    // first-person lab: camera at the rig's eyes, looking down at the body / forward
+    const fp = (this as any).fp as Entry | undefined;
+    if (fp && (fp.rig as any).eyeWorld) {
+      const eye = (fp.rig as any).eyeWorld(new THREE.Vector3());
+      const pitch = +(params.get('pitch') ?? 50) * Math.PI / 180;
+      const fwd = new THREE.Vector3(0, 0, 1);    // rig faces +Z (yaw π)
+      this.camera.position.copy(eye).addScaledVector(fwd, 0.06);
+      this.camTarget.copy(this.camera.position).add(new THREE.Vector3(0, -Math.sin(pitch), Math.cos(pitch)));
+      this.camera.near = 0.05; this.camera.updateProjectionMatrix();
     }
     // let the camera follow nothing; keep sun shadows around the lineup
     this.sun.target.position.copy(this.camTarget);

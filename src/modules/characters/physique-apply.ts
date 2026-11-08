@@ -26,6 +26,7 @@ interface PhysRig {
   bones: THREE.Bone[];
   mat: THREE.MeshStandardMaterial;
   posture: string;
+  look: Look;
   update(dt: number): void;
   __phys?: PhysState;
 }
@@ -38,6 +39,7 @@ interface PhysState {
   amp: THREE.Vector4;
   belly: THREE.Vector3;
   t: BodyTemplate | null;
+  look: Look | null;
 }
 
 /** per-template bone region membership (belly, chest, arms, legs) */
@@ -127,11 +129,13 @@ export function applyPhysique(rigAny: unknown, look: Look) {
   const fem = look.sex === 'f';
   let st = rig.__phys;
   if (!st) {
-    st = rig.__phys = { lift: 0, w: 1, regions: regionsFor(t), amp: new THREE.Vector4(), belly: new THREE.Vector3(), t: null };
+    st = rig.__phys = { lift: 0, w: 1, regions: regionsFor(t), amp: new THREE.Vector4(), belly: new THREE.Vector3(), t: null, look: null };
     // posture-aware root lift (the feet stay planted with longer/shorter legs) — runs before the rig's own tick
     const upd = rig.update;
     rig.update = function (this: PhysRig, dt: number) {
       const s = this.__phys;
+      // setLook() skips the rebuild when only the physique changed (same atlas key) → re-apply here
+      if (s && this.look && s.look !== this.look) applyPhysique(this, this.look);
       if (s && s.lift !== 0) {
         const want = this.posture === 'stand' ? 1 : this.posture === 'sit' ? 0.45 : 0;
         s.w += (want - s.w) * Math.min(1, dt * 6);
@@ -143,6 +147,7 @@ export function applyPhysique(rigAny: unknown, look: Look) {
     } as any;
   }
   if (st.t !== t) { st.regions = regionsFor(t); st.t = t; }
+  st.look = look;
 
   // ---- skeleton proportions (absolute from the template rest pose → idempotent)
   const I = t.index;

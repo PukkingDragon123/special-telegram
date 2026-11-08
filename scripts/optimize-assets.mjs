@@ -5,8 +5,8 @@
 //      data maps (normal / orm / roughness / height / masks, grayscale, palette) → lossless WebP (bit-exact)
 //      JPEGs are only converted when it saves ≥ 25 %, PNGs ≥ 15 % (else the original is kept)
 //  - the source tree is untouched: converted files live in a cache (node_modules/.cache/hp-assets) and replace
-//    the originals in the build output only; the old→new path map is inlined into the bundle as the virtual
-//    module 'virtual:hp-asset-remap', which core/util.ts asset() applies (dev server: empty map, originals)
+//    the originals in the build output only; the old→new path map is inlined into index.html as
+//    window.__HP_REMAP__, which core/util.ts asset() applies (dev server / other configs: no map → originals)
 //  - files nothing loads are left out of the build (2K HDRIs — the game bakes the 1K ones to PMREM —, notes)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,7 +14,6 @@ import crypto from 'node:crypto';
 import os from 'node:os';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const VID = 'virtual:hp-asset-remap';
 const CACHE_VERSION = 'v1';
 const MIN_BYTES = 40 * 1024;
 const DATA_RE = /(^|[_\-/.])(normal|nrm|norm|orm|arm|rough|roughness|metal|metalness|height|disp|displacement|bump|ao|occlusion|mask|depth|spec|gloss|opacity|alpha|fat|lut|id|weights?)([_\-/.]|$)/i;
@@ -53,7 +52,8 @@ export async function optimizeAssets(publicDir, { log = console.log, cacheDir = 
     if (st.size < MIN_BYTES) return;
     const rel = path.relative(assetsDir, abs).split(path.sep).join('/');
     const isPng = /\.png$/i.test(abs);
-    const key = crypto.createHash('sha1').update(CACHE_VERSION + rel + st.size + ':' + st.mtimeMs).digest('hex');
+    // content hash (not mtime: a fresh CI checkout must still hit the actions/cache of converted files)
+    const key = crypto.createHash('sha1').update(CACHE_VERSION).update(rel).update(fs.readFileSync(abs)).digest('hex');
     const out = path.join(cacheDir, key + '.webp');
     const skip = path.join(cacheDir, key + '.skip');
     if (fs.existsSync(skip)) return;
@@ -87,7 +87,7 @@ export async function optimizeAssets(publicDir, { log = console.log, cacheDir = 
   return { map, files, stats };
 }
 
-/** Vite plugin: inline the remap, swap converted files into the build output, prune unused files. */
+/** Vite plugin: inline the remap into index.html, swap converted files into the build output, prune unused files. */
 export function hpAssets() {
   let result = { map: {}, files: {} };
   let cfg;
@@ -98,8 +98,10 @@ export function hpAssets() {
       if (cfg.command !== 'build' || process.env.HP_NO_ASSET_OPT) return;
       result = await optimizeAssets(cfg.publicDir, { log: (m) => cfg.logger.info(m) });
     },
-    resolveId(id) { return id === VID ? '\0' + VID : null; },
-    load(id) { return id === '\0' + VID ? `export default ${JSON.stringify(cfg.command === 'build' ? result.map : {})};` : null; },
+    transformIndexHtml() {
+      if (cfg.command !== 'build' || !Object.keys(result.map).length) return;
+      return [{ tag: 'script', children: `window.__HP_REMAP__=${JSON.stringify(result.map)};`, injectTo: 'head-prepend' }];
+    },
     closeBundle() {
       if (cfg.command !== 'build') return;
       const outDir = path.resolve(cfg.root, cfg.build.outDir);

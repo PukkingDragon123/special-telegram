@@ -1,22 +1,4 @@
 {
- "anthurium_botany_01": {
-  "file": "anthurium_botany_01/anthurium_botany_01.glb",
-  "name": "Anthurium Botany 01",
-  "bytes": 88220,
-  "srcTris": 67152,
-  "tris": 3001,
-  "dims": [
-   2.806,
-   1.801,
-   0.507
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/anthurium_botany_01"
- },
  "bananas": {
   "file": "bananas/bananas.glb",
   "name": "Bananas",
@@ -85,24 +67,6 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/boombox"
  },
- "calathea_orbifolia_01": {
-  "file": "calathea_orbifolia_01/calathea_orbifolia_01.glb",
-  "name": "Calathea Orbifolia 01",
-  "bytes": 81092,
-  "srcTris": 16688,
-  "tris": 3000,
-  "dims": [
-   2.492,
-   1.194,
-   0.424
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/calathea_orbifolia_01"
- },
  "can_rusted": {
   "file": "can_rusted/can_rusted.glb",
   "name": "Can Rusted",
@@ -166,7 +130,7 @@
    0.372
   ],
   "authors": [
-   "Aron Łyczek"
+   "Aron \u0141yczek"
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/ceramic_pot"
@@ -285,7 +249,7 @@
    0.799
   ],
   "authors": [
-   "Gonçalo Felício"
+   "Gon\u00e7alo Fel\u00edcio"
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/fire_hydrant"
@@ -410,23 +374,6 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/island_tree_02"
  },
- "korean_fire_extinguisher_01": {
-  "file": "korean_fire_extinguisher_01/korean_fire_extinguisher_01.glb",
-  "name": "Korean Fire Extinguisher 01",
-  "bytes": 204644,
-  "srcTris": 9913,
-  "tris": 3234,
-  "dims": [
-   0.28,
-   0.367,
-   0.659
-  ],
-  "authors": [
-   "UM JOORIN"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/korean_fire_extinguisher_01"
- },
  "ladder_sectioned_01": {
   "file": "ladder_sectioned_01/ladder_sectioned_01.glb",
   "name": "Ladder Sectioned 01",
@@ -545,24 +492,6 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/old_tyre"
- },
- "pachira_aquatica_01": {
-  "file": "pachira_aquatica_01/pachira_aquatica_01.glb",
-  "name": "Pachira Aquatica 01",
-  "bytes": 179268,
-  "srcTris": 76914,
-  "tris": 2985,
-  "dims": [
-   6.869,
-   0.997,
-   1.904
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/pachira_aquatica_01"
  },
  "painted_wooden_bench": {
   "file": "painted_wooden_bench/painted_wooden_bench.glb",
@@ -889,57 +818,6 @@
   "license": "CC0",
   "source": "https://polyhaven.com/a/security_light"
  },
- "shrub_01": {
-  "file": "shrub_01/shrub_01.glb",
-  "name": "Shrub 01",
-  "bytes": 131544,
-  "srcTris": 156012,
-  "tris": 2988,
-  "dims": [
-   2.587,
-   0.219,
-   0.396
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/shrub_01"
- },
- "shrub_02": {
-  "file": "shrub_02/shrub_02.glb",
-  "name": "Shrub 02",
-  "bytes": 96540,
-  "srcTris": 27254,
-  "tris": 2899,
-  "dims": [
-   5.341,
-   2.061,
-   2.071
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/shrub_02"
- },
- "shrub_03": {
-  "file": "shrub_03/shrub_03.glb",
-  "name": "Shrub 03",
-  "bytes": 106772,
-  "srcTris": 8287,
-  "tris": 2999,
-  "dims": [
-   1.367,
-   0.151,
-   0.403
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/shrub_03"
- },
  "small_lpg_tank": {
   "file": "small_lpg_tank/small_lpg_tank.glb",
   "name": "Small Lpg Tank",
@@ -1011,9 +889,9 @@
  "tree_small_02": {
   "file": "tree_small_02/tree_small_02.glb",
   "name": "Tree Small 02",
-  "bytes": 864940,
+  "bytes": 489092,
   "srcTris": 2062487,
-  "tris": 36042,
+  "tris": 9491,
   "dims": [
    2.921,
    4.293,

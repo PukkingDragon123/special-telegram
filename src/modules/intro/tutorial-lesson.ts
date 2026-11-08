@@ -81,6 +81,8 @@ export class LessonHost {
   }
 
   stop() { this.jobs = []; this.set('done'); }
+  /** forget everything without touching replicated state (new session) */
+  halt() { this.jobs = []; this.stage = 'done'; this.dish = null; }
 
   private set(s: Stage) {
     this.stage = s;

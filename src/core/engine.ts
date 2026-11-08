@@ -4,12 +4,13 @@ import { Input } from './input';
 import { Sound } from './audio';
 import { Assets } from './assets';
 import { Ease, Tween, params } from './util';
+import { Governor, GpuTimer, gpuTier, autoQuality, GpuTier } from './perf';
 
 export interface Frame { dt: number; rawDt: number; time: number; frame: number }
 type Fn = (f: Frame) => void;
 /** 'auto' = no explicit choice saved: the tier is picked from the GPU and may step down at runtime. */
 export type QualityMode = Quality | 'auto';
-export type GpuTier = 'software' | 'integrated' | 'mobile' | 'discrete' | 'unknown';
+export type { GpuTier } from './perf';
 
 /**
  * Internal render-resolution budget per quality (megapixels of the 3D render, before the final resample).
@@ -18,6 +19,7 @@ export type GpuTier = 'software' | 'integrated' | 'mobile' | 'discrete' | 'unkno
  * planar reflection) scales with it. `start` is where a session begins; the frame governor moves between
  * `min` and the native resolution (×supersampling at ultra) from measured frame times.
  */
+const QKEY = 'hp.qualityMode';
 const BUDGET: Record<Quality, { dpr: number; startMP: number; minMP: number; maxSS: number }> = {
   low: { dpr: 1, startMP: 0.95, minMP: 0.45, maxSS: 1 },
   medium: { dpr: 1.25, startMP: 1.6, minMP: 0.6, maxSS: 1 },
@@ -80,6 +82,10 @@ export class Engine {
   private gpuTimer: GpuTimer | null = null;
   private tick = 0;
   private lastTick = 0;
+  private lastPx = 0;
+  /** optional-work hint for modules (planar reflection, far LOD updates…): render it every n-th frame. 1 normally,
+   *  2 while the governor is throttling shadows (heavy load). */
+  reflectEvery = 1;
   /** Called with Frame when an uncaught error happens inside a loop callback (shown in debug overlay). */
   onError: ((e: any) => void) | null = null;
 
@@ -109,12 +115,11 @@ export class Engine {
     this.post = new PostFX(this.renderer, this.scene, this.camera);
     // ?quality=low|medium|high|ultra wins for this session only (not saved); otherwise the saved menu choice
     // no saved choice (or saved 'auto') → pick from the GPU; the governor keeps it smooth at runtime
-    const urlQ = asQuality(params.get('quality'));
-    let savedQ: Quality | null = null;
-    try { savedQ = asQuality(localStorage.getItem('hp.quality')); } catch {}
-    if (urlQ) { this.qualityMode = urlQ; this.setQuality(urlQ, false); }
-    else if (savedQ) { this.qualityMode = savedQ; this.setQuality(savedQ, false); }
-    else { this.qualityMode = 'auto'; this.applyQuality(autoQuality(this.gpu.tier)); }
+    // (new key: the old 'hp.quality' was written on every launch, so it never meant an explicit choice)
+    const urlQ = params.get('quality') === 'auto' ? 'auto' : asQuality(params.get('quality'));
+    let savedQ: QualityMode | null = null;
+    try { const v = localStorage.getItem(QKEY); savedQ = v === 'auto' ? 'auto' : asQuality(v); } catch {}
+    this.setQuality(urlQ ?? savedQ ?? 'auto', false);
     Input.attach(this.canvas);
     // window resizes are applied at the start of the next frame, right before it renders (see step())
     window.addEventListener('resize', () => { this.resizePending = true; });
@@ -135,7 +140,7 @@ export class Engine {
   setQuality(q: QualityMode, persist = true) {
     const mode: QualityMode = q === 'auto' ? 'auto' : asQuality(q) ?? 'high';
     this.qualityMode = mode;
-    if (persist) { try { localStorage.setItem('hp.quality', mode); } catch {} }
+    if (persist) { try { localStorage.setItem(QKEY, mode); } catch {} }
     this.applyQuality(mode === 'auto' ? autoQuality(this.gpu.tier) : mode);
   }
 
@@ -145,6 +150,7 @@ export class Engine {
     this.renderer.shadowMap.type = q === 'low' ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
     this.gov.reset(4);
     this.shadowEvery = 1;
+    this.reflectEvery = 1;
     this.frameDivider = 1;
     this.fitBudget(true);
   }
@@ -203,7 +209,10 @@ export class Engine {
   private applyResize() {
     this.resizePending = false;
     const w = window.innerWidth, h = window.innerHeight;
-    if (this.post.quality) this.fitBudget(false);
+    // a much bigger / smaller window (maximize, other monitor, DPR change) restarts from the tier budget
+    const px = w * h * (window.devicePixelRatio || 1) ** 2;
+    this.fitBudget(Math.abs(px - this.lastPx) > 0.2 * Math.max(1, this.lastPx));
+    this.lastPx = px;
     this.resizePending = false;
     const cw = Math.floor(w * this.pixelRatio), ch = Math.floor(h * this.pixelRatio);
     if (this.canvas.width !== cw || this.canvas.height !== ch || this.renderer.getPixelRatio() !== this.pixelRatio) {
@@ -325,7 +334,10 @@ export class Engine {
     if (d === 'slow') {
       // 1) pacing on high-refresh screens: 144 → 72, 165 → 82, 240 → 120/80/60 (never below ~55 fps)
       if (1000 / (this.refreshMs * (this.frameDivider + 1)) >= 55 && this.refreshMs < 12) { this.frameDivider++; this.gov.changed('divider'); return; }
-      const cpuBound = this.gov.cpuAvg > 0.8 * this.gov.intervalAvg && (this.gpuMs < 0 || this.gpuMs < this.gov.cpuAvg);
+      // CPU-bound: the JS side alone overruns the frame budget (vsync inflates the measured interval, so compare
+      // with the budget, not the interval) — fewer pixels would only make it blurrier
+      const budget = this.refreshMs * this.frameDivider;
+      const cpuBound = this.gpuMs >= 0 ? this.gov.cpuAvg >= this.gpuMs && this.gov.cpuAvg > 0.7 * budget : this.gov.cpuAvg > 0.85 * budget;
       // 2) resolution (GPU-bound)
       if (!cpuBound && this.renderScale > this.minScale + 1e-3) {
         this.renderScale = Math.max(this.minScale, this.renderScale * (this.renderScale > 1.001 ? 0.8 : 0.88));
@@ -333,9 +345,9 @@ export class Engine {
         this.resizePending = true; this.gov.changed('scale'); return;
       }
       // 3) shadows at half rate (helps both CPU — fewer draw calls — and GPU)
-      if (this.shadowEvery === 1) { this.shadowEvery = 2; this.gov.changed('shadow'); return; }
+      if (this.shadowEvery === 1) { this.shadowEvery = 2; this.reflectEvery = 2; this.gov.changed('shadow'); return; }
       // 4) auto quality: one tier down after a sustained struggle
-      if (this.qualityMode === 'auto' && q !== 'low' && this.gov.slowSeconds > 8) {
+      if (this.qualityMode === 'auto' && q !== 'low' && !cpuBound && this.gov.slowSeconds > 8) {
         const next: Quality = q === 'ultra' ? 'high' : q === 'high' ? 'medium' : 'low';
         console.info(`[engine] auto quality ${q} → ${next} (${this.fps.toFixed(0)} fps, gpu ${this.gpuMs.toFixed(1)} ms, cpu ${this.gov.cpuAvg.toFixed(1)} ms)`);
         this.post.setQuality(next);
@@ -346,7 +358,7 @@ export class Engine {
       return;
     }
     // d === 'up': undo the cheapest-to-undo degradation first
-    if (this.shadowEvery > 1) { this.shadowEvery = 1; this.gov.changed('shadow-up'); return; }
+    if (this.shadowEvery > 1) { this.shadowEvery = 1; this.reflectEvery = 1; this.gov.changed('shadow-up'); return; }
     if (this.frameDivider > 1 && this.gov.canRaiseRate(this.refreshMs * (this.frameDivider - 1), this.gpuMs)) { this.frameDivider--; this.gov.changed('divider-up'); return; }
     if (this.renderScale < this.maxScale - 1e-3 && this.gov.canRaiseScale(this.renderScale, Math.min(this.maxScale, this.renderScale * 1.1), this.refreshMs * this.frameDivider, this.gpuMs)) {
       this.renderScale = Math.min(this.maxScale, this.renderScale * (this.renderScale >= 1 ? 1.15 : 1.1));
@@ -361,147 +373,6 @@ export class Engine {
     return { quality: this.post.quality, mode: this.qualityMode, gpu: this.gpu, fps: +this.fps.toFixed(1), refreshHz: +(1000 / this.refreshMs).toFixed(0), divider: this.frameDivider,
       scale: +this.renderScale.toFixed(3), internal: `${r.w}×${r.h}`, shadowEvery: this.shadowEvery, cpuMs: +this.cpuMs.toFixed(2), gpuMs: +this.gpuMs.toFixed(2), adaptive: this.adaptive };
   }
-}
-
-/**
- * Decision helper for the frame governor: windowed stats, refresh-rate estimate, hysteresis + cooldowns,
- * and upward probing with back-off when the GPU time is unknown.
- */
-class Governor {
-  refreshMs = 1000 / 60;
-  intervalAvg = 16.7;
-  cpuAvg = 0;
-  slowSeconds = 0;
-  private ticks: number[] = [];
-  private win = { t: 0, n: 0, sum: 0, cpu: 0, miss: 0, hitch: false };
-  private cooldown = 4;
-  private slowWins = 0;
-  private goodFor = 0;
-  private probeWait = 6;
-  private lastChange = '';
-  private sinceChange = 99;
-
-  reset(cool = 2) { this.cooldown = cool; this.slowWins = 0; this.goodFor = 0; this.win = { t: 0, n: 0, sum: 0, cpu: 0, miss: 0, hitch: false }; }
-
-  /** rAF tick interval → display refresh estimate (robust low percentile, snapped to common rates) */
-  refreshSample(dt: number) {
-    if (dt <= 2 || dt > 60) return;
-    this.ticks.push(dt);
-    if (this.ticks.length < 90) return;
-    const s = this.ticks.slice().sort((a, b) => a - b);
-    const est = s[Math.floor(s.length * 0.2)];
-    this.ticks.length = 0;
-    const rates = [240, 165, 144, 120, 100, 90, 75, 60, 50, 30];
-    let best = 1000 / 60, err = 1e9;
-    for (const hz of rates) { const e = Math.abs(1000 / hz - est); if (e < err) { err = e; best = 1000 / hz; } }
-    this.refreshMs = err < 0.12 * best ? best : est;
-  }
-
-  /** feed one rendered frame; returns a decision every 0.5 s window (or null) */
-  frame(intervalMs: number, cpuMs: number, gpuMs: number, targetMs: number): 'slow' | 'up' | null {
-    const w = this.win;
-    const sec = intervalMs / 1000;
-    this.cooldown -= sec;
-    this.sinceChange += sec;
-    // hitches (shader compiles, loading, scene switches) say nothing about steady-state cost
-    if (intervalMs > 250) { w.hitch = true; this.cooldown = Math.max(this.cooldown, 1.5); }
-    w.t += sec; w.n++; w.sum += intervalMs; w.cpu += cpuMs;
-    if (intervalMs > targetMs * 1.45) w.miss++;
-    if (w.t < 0.5) return null;
-    const avg = w.sum / w.n, cpu = w.cpu / w.n, missRate = w.miss / w.n, hitch = w.hitch;
-    this.win = { t: 0, n: 0, sum: 0, cpu: 0, miss: 0, hitch: false };
-    if (hitch) return null;
-    this.intervalAvg = avg; this.cpuAvg = cpu;
-    const slow = avg > targetMs * 1.18 || missRate > 0.2;
-    if (slow) { this.slowWins++; this.slowSeconds += 0.5; this.goodFor = 0; }
-    else { this.slowWins = 0; this.slowSeconds = Math.max(0, this.slowSeconds - 0.25); this.goodFor += 0.5; }
-    // an upward step that immediately made it slow → back off the next probe
-    if (slow && this.lastChange.endsWith('-up') && this.sinceChange < 3) { this.probeWait = Math.min(90, this.probeWait * 2); this.lastChange = 'failed-up'; }
-    if (this.cooldown > 0) return null;
-    if (slow && this.slowWins >= 2) return 'slow';
-    if (!slow) {
-      // with a GPU timer we know the headroom → no need to wait long; without, probe with back-off
-      const wait = gpuMs >= 0 ? 2 : this.probeWait;
-      if (this.goodFor >= wait) { this.goodFor = 0; return 'up'; }
-    }
-    return null;
-  }
-
-  changed(what: string, cool = 1.25) { this.lastChange = what; this.sinceChange = 0; this.cooldown = cool; this.slowWins = 0; this.goodFor = 0; if (!what.endsWith('-up')) this.slowSeconds = Math.max(0, this.slowSeconds - 1); }
-
-  canRaiseRate(newTargetMs: number, gpuMs: number) {
-    const cost = Math.max(this.cpuAvg, gpuMs);
-    return gpuMs >= 0 ? cost < newTargetMs * 0.8 : true;
-  }
-
-  canRaiseScale(cur: number, next: number, targetMs: number, gpuMs: number) {
-    if (gpuMs < 0) return true;                       // probe (back-off handles failures)
-    const pred = gpuMs * (next * next) / Math.max(1e-3, cur * cur);
-    return pred < targetMs * 0.82;
-  }
-}
-
-/** EXT_disjoint_timer_query_webgl2 frame timer (ring of queries, results read a few frames later). */
-class GpuTimer {
-  private q: (WebGLQuery | null)[] = [];
-  private busy: boolean[] = [];
-  private i = 0;
-  private active: WebGLQuery | null = null;
-  private constructor(private gl: WebGL2RenderingContext, private ext: any) {
-    for (let k = 0; k < 4; k++) { this.q.push(gl.createQuery()); this.busy.push(false); }
-  }
-  static create(r: THREE.WebGLRenderer): GpuTimer | null {
-    try {
-      const gl = r.getContext() as WebGL2RenderingContext;
-      if (!(gl instanceof WebGL2RenderingContext)) return null;
-      const ext = gl.getExtension('EXT_disjoint_timer_query_webgl2');
-      return ext ? new GpuTimer(gl, ext) : null;
-    } catch { return null; }
-  }
-  begin() {
-    if (this.active || this.busy[this.i]) return;
-    const q = this.q[this.i];
-    if (!q) return;
-    try { this.gl.beginQuery(this.ext.TIME_ELAPSED_EXT, q); this.active = q; } catch { this.active = null; }
-  }
-  end() {
-    if (!this.active) return;
-    try { this.gl.endQuery(this.ext.TIME_ELAPSED_EXT); } catch {}
-    this.busy[this.i] = true;
-    this.active = null;
-    this.i = (this.i + 1) % this.q.length;
-  }
-  /** newest finished measurement in ms, or -1 */
-  poll(): number {
-    const gl = this.gl;
-    let out = -1;
-    const disjoint = gl.getParameter(this.ext.GPU_DISJOINT_EXT);
-    for (let k = 0; k < this.q.length; k++) {
-      const q = this.q[k];
-      if (!this.busy[k] || !q) continue;
-      if (!gl.getQueryParameter(q, gl.QUERY_RESULT_AVAILABLE)) continue;
-      const ns = gl.getQueryParameter(q, gl.QUERY_RESULT) as number;
-      this.busy[k] = false;
-      if (!disjoint) out = ns / 1e6;
-    }
-    return out;
-  }
-}
-
-/** GPU class from the unmasked renderer string (ANGLE wraps it: "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 …)"). */
-export function gpuTier(name: string): GpuTier {
-  const n = name.toLowerCase();
-  if (!n) return 'unknown';
-  if (/swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/.test(n)) return 'software';
-  if (/mali|adreno|powervr|apple a\d|apple gpu|videocore|tegra/.test(n)) return 'mobile';
-  if (/geforce|nvidia|quadro|rtx|gtx|radeon rx|radeon pro|rx \d{3,4}|arc\(tm\)|intel\(r\) arc|apple m\d/.test(n) && !/mx\s?\d{3}|geforce gt \d{3}|geforce \d{3}m/.test(n)) return 'discrete';
-  if (/intel|uhd|iris|hd graphics|radeon\(tm\) graphics|radeon graphics|vega \d\b|radeon \d{3}m|mx\s?\d{3}/.test(n)) return 'integrated';
-  return 'unknown';
-}
-
-/** tier for quality 'auto' (the governor still adapts resolution / pacing within it) */
-export function autoQuality(t: GpuTier): Quality {
-  return t === 'integrated' ? 'medium' : 'high';
 }
 
 function asQuality(v: string | null | undefined): Quality | null {

@@ -384,7 +384,7 @@ function buildToque(c: HCtx, hairId: string) {
     base.push({ th, r, y: Hd[1] + ry, cz: Hd[2] + hc.cz });
   }
   // rows: [height above band bottom (m, unscaled), radius factor, pleat depth, t]
-  const top = (HEAD_TOP + 0.2 + lift) * hs;
+  const top = Hd[1] + (HEAD_TOP + 0.2 + lift) * hs;
   const rows: [number, number, number, number][] = [
     [0, 1, 0, 1], [0.036, 1.005, 0, 0.84], [0.04, 1.01, 0.15, 0.82], [0.075, 1.06, 0.55, 0.62],
     [0.115, 1.14, 0.85, 0.42], [0.155, 1.22, 1, 0.22], [0.19, 1.27, 1, 0.07], [0.205, 1.26, 0.8, 0.0],

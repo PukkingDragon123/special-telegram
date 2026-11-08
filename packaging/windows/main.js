@@ -28,10 +28,16 @@ function serve(cb, i = 0) {
     if (p === '/') p = '/index.html';
     const f = path.join(ROOT, path.normalize(p));
     if (!f.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
+    const send = (file, st) => {
+      res.writeHead(200, { 'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Content-Length': st.size });
+      fs.createReadStream(file).pipe(res);
+    };
     fs.stat(f, (err, st) => {
-      if (err || !st.isFile()) { res.writeHead(404); return res.end(); }
-      res.writeHead(200, { 'Content-Type': TYPES[path.extname(f).toLowerCase()] || 'application/octet-stream', 'Content-Length': st.size });
-      fs.createReadStream(f).pipe(res);
+      if (!err && st.isFile()) return send(f, st);
+      // the build re-encodes many images to WebP (same name, .webp): serve it for any stale .png/.jpg request
+      const alt = /\.(png|jpe?g)$/i.test(f) ? f.replace(/\.(png|jpe?g)$/i, '.webp') : null;
+      if (!alt) { res.writeHead(404); return res.end(); }
+      fs.stat(alt, (e2, st2) => { if (e2 || !st2.isFile()) { res.writeHead(404); return res.end(); } send(alt, st2); });
     });
   });
   srv.once('error', () => serve(cb, i + 1));

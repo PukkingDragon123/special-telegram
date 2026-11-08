@@ -68,19 +68,28 @@ class AssetSys {
       const e: { tex: THREE.Texture | null; loaded: boolean; variants: THREE.Texture[] } = (entry = { tex: null, loaded: false, variants: [] });
       this.baseTex.set(path, e);
       this.pending++;
-      e.tex = this.tex.load(
-        this.url(path),
-        () => {
-          e.loaded = true;
-          for (const v of e.variants) v.needsUpdate = true;
-          this.pending--; this.loaded++; this.onProgress?.(this.loaded, this.pending);
-        },
-        undefined,
-        () => {
-          console.warn('[assets] missing texture', path);
-          this.pending--; this.onProgress?.(this.loaded, this.pending);
-        },
-      );
+      // HTMLImageElement + decode(): the image is decoded off the main thread BEFORE three uploads it, instead of
+      // a synchronous decode inside texImage2D on the first frame that shows it (a hitch per texture)
+      const base = (e.tex = new THREE.Texture());
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.decoding = 'async';
+      let settled = false;
+      const ok = () => {
+        if (settled) return; settled = true;
+        base.image = img;
+        e.loaded = true;
+        for (const v of e.variants) v.needsUpdate = true;
+        this.pending--; this.loaded++; this.onProgress?.(this.loaded, this.pending);
+      };
+      const fail = () => {
+        if (settled) return; settled = true;
+        console.warn('[assets] missing texture', path);
+        this.pending--; this.onProgress?.(this.loaded, this.pending);
+      };
+      img.onload = () => { img.decode().then(ok, ok); };
+      img.onerror = fail;
+      img.src = this.url(path);
     }
     t = entry.tex!.clone();
     this.applyOpts(t, opts);
@@ -134,7 +143,8 @@ class AssetSys {
       p = this.track(new Promise<HTMLImageElement>((res, rej) => {
         const im = new Image();
         im.crossOrigin = 'anonymous';
-        im.onload = () => res(im);
+        im.decoding = 'async';
+        im.onload = () => { im.decode().then(() => res(im), () => res(im)); };
         im.onerror = () => rej(new Error('image ' + path));
         im.src = this.url(path);
       }));

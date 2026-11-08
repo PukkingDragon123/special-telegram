@@ -42,6 +42,10 @@ const OTHER_SIZE: Record<string, [number, number, number]> = {
   crate: [0.506, 0.254, 0.406], drum: [0.634, 0.93, 0.639], bucket: [0.32, 0.3, 0.32], trashbag: [0.53, 0.58, 0.46], cardboard: [0.39, 0.34, 0.52],
   broom: [0.42, 1.2, 0.3], broom_wood: [0.49, 1.45, 0.2], plant_aloe: [0.17, 0.27, 0.19], pot_clay: [0.27, 0.22, 0.26], plant_taro: [0.7, 0.84, 0.66],
   jerrycan: [0.27, 0.32, 0.34], thai_stool: [0.37, 0.45, 0.37], tyre: [0.6, 0.165, 0.6],
+  // density pass (Poly Haven); trees: trunk footprint only (the canopy overhangs lanes and roads)
+  bin_metal: [0.56, 0.9, 0.56], bin_rusty: [0.56, 0.9, 0.56], plant_pot_big: [0.6, 1.35, 0.6], planter_tall: [0.9, 0.86, 0.66], planter_long: [1.25, 0.45, 0.45],
+  watering_can: [0.2, 0.3, 0.45], crate_milk: [0.3, 0.27, 0.41], crate_low: [0.48, 0.265, 0.27], jerry_metal: [0.17, 0.46, 0.35], ladder: [0.66, 2.1, 0.3],
+  wood_stool: [0.27, 0.18, 0.18], painted_stool: [0.39, 0.58, 0.41], sacks: [0.85, 0.6, 0.55], tree_small: [0.45, 4.3, 0.45], tree_shrubby: [0.5, 4.0, 0.5],
 };
 
 interface Stats { placed: number; tries: number; kinds: Record<string, number> }
@@ -383,6 +387,100 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       else put('jerrycan', x, zWall, yaw, { color: rng.pick([0xc03020, 0x2a62b8, 0xe0b020]), tag: 'jerrycans' });
     }
     if (west && al.z1 - al.z0 > 1.8) putLong('laundry_rack', (al.x0 + al.x1) / 2, al.z1 - 0.38, 0.03);
+  }
+
+  // ================================================================ DENSITY PASS (round 3: "the map feels empty")
+  // A second, independently seeded layer of real photoscanned models (Poly Haven CC0, realprops.ts "density pass"),
+  // all through the same occupancy / keep-out / static-collider tests as above, so nothing lands in a walking lane,
+  // a doorway kept free for gameplay, or inside a wall.
+  const rf = new RNG(SEED + '-density');
+  const has = (id: string) => !!pid(id);
+  for (const row of ROWS) for (const u of row) {
+    if (u.name === 'gap' || u.far || u.noGround) continue;
+    const f = front(u);
+    const W = u.a1 - u.a0;
+    if (W < 2.5) continue;
+    const A = (t: number) => u.a0 + W * t;
+    const ground = u.ground ?? 'open';
+    const shop = u.shop ?? (ground === 'gate' || ground === 'half' ? 'residence' : ground === 'shutter' ? 'closed' : 'generic');
+    const resid = ground === 'gate' || ground === 'half' || /residence/.test(shop);
+    const t0 = rf.chance(0.5) ? 0.08 : 0.92;           // this pass works the outer edges of the frontage
+    const edge = (k = 0) => A(t0 < 0.5 ? t0 + k : t0 - k);
+    // ---- wall-mounted (on the piers between units): security lamp, hose reel next to the tap
+    if (has('wall_lamp') && (resid || ground === 'shutter') && rf.chance(0.45)) {
+      const [x, z] = f.at(A(rf.chance(0.5) ? 0.035 : 0.965), 0.02);   // on the party-wall pier, not over the opening
+      add('wall_lamp', x, groundHeight(x, z) + 2.3, z, f.out, { tag: 'wall lamps' });
+    }
+    if (has('hose_reel') && resid && rf.chance(0.35)) {
+      const [x, z] = f.at(edge(0.02), 0.02);
+      add('hose_reel', x, groundHeight(x, z) + 0.95, z, f.out, { tag: 'hose reels' });
+    }
+    // ---- ground: big potted plant / planter box / watering can (residences and quiet shops)
+    if ((resid || /pharmacy|gold|clinic|massage|salon|coffee|generic/.test(shop)) && rf.chance(0.55)) {
+      const [x, z] = f.at(edge(0.03), 0.42);
+      if (put(rf.chance(0.6) ? 'plant_pot_big' : 'planter_tall', x, z, rf.range(0, 6), { tag: 'big plants' }) && rf.chance(0.5)) {
+        const [wx, wz] = f.at(edge(0.12), 0.25);
+        put('watering_can', wx, wz, rf.range(0, 6), { tag: 'watering cans' });
+      }
+    }
+    if (resid && f.depth >= 0.6 && rf.chance(0.3)) {
+      const [x, z] = f.at(A(0.5) + rf.range(-0.6, 0.6), 0.3);
+      put('planter_long', x, z, f.out + Math.PI / 2, { tag: 'planter boxes' });
+    }
+    // ---- a metal bin by the door (rusty or newer)
+    if (rf.chance(0.32)) {
+      const [x, z] = f.at(edge(0.06), 0.36);
+      put(rf.chance(0.5) ? 'bin_metal' : 'bin_rusty', x, z, rf.range(0, 6), { tag: 'metal bins' });
+    }
+    // ---- where people sit: wooden stools by eateries and gates
+    if ((ground === 'eatery' || resid) && rf.chance(0.45)) {
+      const [x, z] = f.at(edge(0.1), 0.34);
+      put(rf.chance(0.5) ? 'painted_stool' : 'wood_stool', x, z, rf.range(0, 6), { tag: 'wooden stools' });
+    }
+    // ---- shop-specific
+    if (/grocery|eatery|noodle|food/.test(shop) && rf.chance(0.5)) {
+      const [x, z] = f.at(edge(0.16), 0.3);
+      const id = rf.chance(0.5) ? 'crate_milk' : 'crate_low', col = rf.pick(CRATE_COLS);
+      if (put(id, x, z, f.out + rf.range(-0.2, 0.2), { color: col, phys: 'static', tag: 'crates' })) {
+        const h = id === 'crate_milk' ? 0.27 : 0.265;
+        for (let i = 1, n = rf.int(1, 4); i < n; i++) add(id, x, groundHeight(x, z) + i * h, z, f.out + rf.range(-0.15, 0.15), { color: col, phys: 'none', tag: 'crates' });
+      }
+    }
+    if (/grocery|rice|hardware/.test(shop) && rf.chance(0.5)) {
+      const [x, z] = f.at(edge(0.22), 0.5);
+      put('sacks', x, z, f.out + Math.PI / 2 + rf.range(-0.15, 0.15), { tag: 'sacks' });
+    }
+    if (/repair|gas|hardware|closed/.test(shop) && rf.chance(0.4)) {
+      const [x, z] = f.at(edge(0.08), 0.24);
+      put('jerry_metal', x, z, rf.range(0, 6), { tag: 'metal jerrycans' });
+    }
+    if (/repair|hardware|closed|residence/.test(shop) && rf.chance(0.12)) {
+      // a ladder leaning on the facade: its foot ~0.45 m out, top against the wall
+      const lean = 0.2;
+      const [x, z] = f.at(edge(0.02), 0.45);
+      put('ladder', x, z, f.out + Math.PI, { rx: -lean, probe: false, pad: -0.2, tag: 'ladders' });
+    }
+  }
+  // ---- main roads: shade trees in kerbside pits, metal bins between them
+  const treeAt = (x: number, z: number, id: string) => {
+    if (!has(id)) return false;
+    if (POLES_MAIN_N.some(([px, pz]) => Math.hypot(px - x, pz - z) < 3) || POLES_MAIN_S.some(([px, pz]) => Math.hypot(px - x, pz - z) < 3)) return false;
+    const sc = rf.range(0.85, 1.15);
+    if (!put(id, x, z, rf.range(0, 6), { scale: sc, tag: 'street trees' })) return false;
+    phys?.addCylinder([x, groundHeight(x, z) + 1.1, z], 0.15 * sc, 2.2);   // trunk (the model itself is non-physical)
+    return true;
+  };
+  for (let x = -118; x < 120; x += rf.range(13, 19)) {
+    if (Math.abs(x) < 9) continue;
+    treeAt(x, 22.75, rf.chance(0.7) ? 'tree_small' : 'tree_shrubby');
+    if (rf.chance(0.4)) put(rf.chance(0.5) ? 'bin_metal' : 'bin_rusty', x + 3, 25.45, rf.range(0, 6), { tag: 'metal bins' });
+  }
+  for (let x = -120; x < 122; x += rf.range(18, 28)) { if (Math.abs(x) > 9 && !(x > -50 && x < -20)) treeAt(x, 5.65, 'tree_small'); }
+  // ---- greener edges: the temple forecourt, the vacant lot, the canal bank, the rural road
+  for (const [x, z, id] of [[30, -156, 'tree_shrubby'], [52, -156, 'tree_small'], [70, -156.3, 'tree_shrubby'], [-30.5, -76.5, 'tree_small'], [-29.5, -97, 'tree_shrubby'],
+    [-40, -163.3, 'tree_small'], [36, -163.3, 'tree_small'], [80, -163.3, 'tree_shrubby'], [-80, -163.3, 'tree_shrubby']] as [number, number, string][]) treeAt(x, z, id);
+  for (let z = -186; z > -262; z -= rf.range(10, 16)) {
+    for (const sx of [-1, 1]) if (rf.chance(0.55)) treeAt(sx * rf.range(4.5, 6.5), z, rf.chance(0.6) ? 'tree_shrubby' : 'tree_small');
   }
 
   console.info(`[clutter] ${stats.placed} library props placed (${stats.tries} tries)`, stats.kinds);
