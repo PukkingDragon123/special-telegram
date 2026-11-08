@@ -1,0 +1,34 @@
+name: Windows release
+on:
+  push:
+    branches: [claude/peaceful-bell-t7p4bj, main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci && npm run build
+      - name: Package Electron app
+        run: |
+          curl -sSL -o electron.zip https://github.com/electron/electron/releases/download/v33.2.1/electron-v33.2.1-win32-x64.zip
+          mkdir HiaPhat && unzip -q electron.zip -d HiaPhat
+          mv HiaPhat/electron.exe HiaPhat/HiaPhat.exe
+          find HiaPhat/locales -type f ! -name 'en-US.pak' ! -name 'th.pak' -delete
+          rm -f HiaPhat/resources/default_app.asar
+          mkdir -p HiaPhat/resources/app
+          cp packaging/windows/main.js packaging/windows/package.json HiaPhat/resources/app/
+          cp -r dist HiaPhat/resources/app/dist
+          zip -qr -9 HiaPhat-win64.zip HiaPhat
+          ls -lh HiaPhat-win64.zip
+      - name: Publish release
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh release delete windows-latest -y --cleanup-tag || true
+          gh release create windows-latest HiaPhat-win64.zip --target "$GITHUB_SHA" \
+            --title "เฮียผัด! Hia Phat – Windows" \
+            --notes "Download HiaPhat-win64.zip, right-click → Extract All, then run HiaPhat\\HiaPhat.exe."
