@@ -46,7 +46,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
   if (D) for (let i = 0; i < 16; i++) {
     const k = rng.int(0, 3);
     const z = rng.pick([-46.2, -63.7]) + rng.range(-0.9, 0.9);
-    groundDecal(w, D.cell('decal_puddles', k % 2, k >> 1, 2, 2), rng.range(8, 48), y0 + 0.006, z, rng.range(0.7, 1.6), rng.range(0.4, 0.9), rng.range(0, 6), { wet: 1, alpha: rng.range(0.35, 0.55) });
+    groundDecal(w, D.cell('decal_puddles', k % 2, k >> 1, 2, 2), rng.range(8, 48), y0 + 0.006, z, rng.range(0.7, 1.6), rng.range(0.4, 0.9), rng.range(0, 6), { wet: 0.35, alpha: rng.range(0.3, 0.42), tint: 0x8c8a86 });   // indoors: damp, not a sky mirror
   }
 
   // ---------------------------------------------------------------- structure: posts, trusses, roofs
