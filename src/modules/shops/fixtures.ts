@@ -642,7 +642,7 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
  */
 function makeShutter(game: Game, root: THREE.Object3D, fr: Frame, off: number, w: number, h: number, zFront: number, note: string) {
   const shMat = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.45, side: THREE.DoubleSide, color: 0xb9b7b0 });
-  const bays = w > 5 ? Math.max(2, Math.round(w / 3.85)) : 1;
+  const bays = w > 6.5 ? Math.max(2, Math.round(w / 3.85)) : 1;   // shophouse openings span bays; a 5 m warehouse door is one curtain
   const bw = w / bays, col = 0.24;   // the arcade column (~0.3 m) overlaps both curtains' inner edges
   const curtain = (cw: number) => {   // corrugated steel slat curtain (horizontal ribs), origin at the top
     const g = new THREE.PlaneGeometry(cw, h, 1, Math.max(8, Math.round(h / 0.0375)));
