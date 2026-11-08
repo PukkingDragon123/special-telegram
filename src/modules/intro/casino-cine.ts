@@ -277,7 +277,7 @@ export class ScreenFX {
   }
 
   /** Colour-inverted flash (freeze frame hit). */
-  flash(dur = 0.18) { this.flashT = 0; this.flashDur = dur; }
+  flash(dur = 0.1) { this.flashT = 0; this.flashDur = Math.min(dur, 0.12); }
   focusLines(on: boolean, kind: 'focus' | 'speed' = 'focus') { this.linesTarget = on ? 1 : 0; this.linesKind = kind; }
   duotone(on: boolean) { this.tintTarget = on ? 0.5 : 0; }
   sepiaFreeze(on: boolean) { this.sepiaTarget = on ? 1 : 0; this.tbcEl.style.transform = on ? 'translateX(0)' : 'translateX(-120%)'; }
@@ -287,7 +287,7 @@ export class ScreenFX {
     if (this.flashT >= 0) {
       this.flashT += raw;
       const k = this.flashT / this.flashDur;
-      this.invert.style.opacity = k < 0.45 ? '1' : k < 0.6 ? '0' : k < 1 ? '1' : '0';
+      this.invert.style.opacity = k < 1 ? '1' : '0';   // one hard blink (kept short: no strobing)
       if (k >= 1) this.flashT = -1;
     }
     const ease = (cur: number, to: number, rate: number) => cur + (to - cur) * (1 - Math.exp(-raw * rate));

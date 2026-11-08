@@ -763,27 +763,94 @@ function deliveryBagMaterial() {
 }
 
 /**
- * Coconut ice-cream sidecar (รถพ่วงข้าง) on the bike's left: stainless freezer cabinet with a lid and handle on a
- * galvanised frame, a small third wheel with a mudguard, a cash tin. Vehicle space (-Z forward, left = -X).
+ * Coconut ice-cream sidecar (รถไอติมกะทิพ่วงข้าง) on the bike's left, built like the real ones in the soi:
+ * a fibreglass insulated cabinet printed with the vendor's livery (coconut, "ไอติมกะทิ สูตรโบราณ"), two round
+ * stainless tub lids with knobs on top, a small glass case of hot-dog buns, a brass hand bell, a striped
+ * parasol on a chromed pole, a galvanised frame with a third wheel + mudguard. Vehicle space (-Z forward, left = -X).
+ * One merged geometry per material (instanced by the traffic system).
  */
-function icecreamSidecar(): { geo: THREE.BufferGeometry; mat: THREE.Material }[] {
+export function icecreamSidecar(): { geo: THREE.BufferGeometry; mat: THREE.Material }[] {
   const X = -0.7;
   const clean = (gs: THREE.BufferGeometry[]) => {
-    const ps = gs.map((g) => { const h = g.index ? g.toNonIndexed() : g; for (const k of Object.keys(h.attributes)) if (k !== 'position' && k !== 'normal' && k !== 'uv') h.deleteAttribute(k); return h; });
+    const ps = gs.map((g) => {
+      const h = g.index ? g.toNonIndexed() : g;
+      for (const k of Object.keys(h.attributes)) if (k !== 'position' && k !== 'normal' && k !== 'uv') h.deleteAttribute(k);
+      if (!h.getAttribute('uv')) h.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(h.getAttribute('position').count * 2), 2));
+      return h;
+    });
     return mergeGeometries(ps, false) ?? ps[0];
   };
-  const rod = (a: THREE.Vector3, b: THREE.Vector3, r: number) => {
+  const rod = (a: THREE.Vector3, b: THREE.Vector3, r: number, seg = 8) => {
     const L = a.distanceTo(b);
-    const g = new THREE.CylinderGeometry(r, r, L, 8, 1, false).translate(0, L / 2, 0);
+    const g = new THREE.CylinderGeometry(r, r, L, seg, 1, false).translate(0, L / 2, 0);
     g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize())));
     return g.translate(a.x, a.y, a.z);
   };
   const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
-  // cabinet + lid (stainless)
-  const cab = new RoundedBoxGeometry(0.56, 0.5, 0.82, 3, 0.04).translate(X, 0.62, 0.05);
-  const lid = new RoundedBoxGeometry(0.6, 0.05, 0.86, 2, 0.02).translate(X, 0.895, 0.05);
-  const handle = rod(V(X - 0.12, 0.935, 0.05), V(X + 0.12, 0.935, 0.05), 0.012);
-  const tin = new RoundedBoxGeometry(0.18, 0.1, 0.14, 2, 0.015).translate(X, 0.97, -0.25);
+  // ---- printed livery for the cabinet sides (canvas: cream body, red band, coconut, Thai lettering)
+  const livery = (() => {
+    const c = document.createElement('canvas'); c.width = 512; c.height = 256;
+    const x = c.getContext('2d')!;
+    const gr = x.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#fbf6ea'); gr.addColorStop(1, '#efe4cc');
+    x.fillStyle = gr; x.fillRect(0, 0, 512, 256);
+    x.fillStyle = '#d42a2a'; x.fillRect(0, 186, 512, 46); x.fillStyle = '#1d6fc4'; x.fillRect(0, 232, 512, 24);
+    x.fillStyle = '#2a8f3e'; x.fillRect(0, 0, 512, 16);
+    // coconut half with white flesh
+    x.save(); x.translate(92, 104);
+    x.fillStyle = '#6b4120'; x.beginPath(); x.arc(0, 0, 62, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#fffdf6'; x.beginPath(); x.arc(0, 0, 48, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#f3ecd9'; x.beginPath(); x.arc(-8, -6, 30, 0, Math.PI * 2); x.fill();
+    x.restore();
+    // scoops cone
+    x.fillStyle = '#e7b56a'; x.beginPath(); x.moveTo(178, 120); x.lineTo(214, 120); x.lineTo(196, 176); x.closePath(); x.fill();
+    for (const [cx, cy, col] of [[188, 108, '#fff7e8'], [204, 102, '#9ad27a'], [196, 88, '#f6c3d0']] as [number, number, string][]) { x.fillStyle = col; x.beginPath(); x.arc(cx, cy, 15, 0, Math.PI * 2); x.fill(); }
+    x.fillStyle = '#c4231f'; x.textBaseline = 'middle';
+    x.font = '900 58px "Noto Sans Thai Looped", sans-serif'; x.fillText('ไอติมกะทิ', 236, 82);
+    x.fillStyle = '#1d4f8f'; x.font = '700 30px "Noto Sans Thai Looped", sans-serif'; x.fillText('สูตรโบราณ · 10 บาท', 240, 140);
+    x.fillStyle = '#ffffff'; x.font = '800 26px "Noto Sans Thai Looped", sans-serif'; x.fillText('COCONUT ICE CREAM', 160, 209);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.38, metalness: 0.02 });
+  })();
+  // ---- parasol canvas: 8 alternating panels (u wraps around the cone)
+  const canopyMat = (() => {
+    const c = document.createElement('canvas'); c.width = 256; c.height = 16;
+    const x = c.getContext('2d')!;
+    for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? '#f4f1e6' : (i % 4 === 0 ? '#d93a2f' : '#2f78c8'); x.fillRect(i * 32, 0, 32, 16); }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.85, side: THREE.DoubleSide });
+  })();
+  // cabinet: livery on the long sides (+x/-x faces = BoxGeometry groups 0/1), cream elsewhere
+  const cabG = new RoundedBoxGeometry(0.56, 0.48, 0.84, 3, 0.035).translate(X, 0.6, 0.05);
+  // RoundedBoxGeometry has no face groups: project the livery onto the side faces by remapping uv from position
+  { const p = cabG.getAttribute('position'), n = cabG.getAttribute('normal'), uv = cabG.getAttribute('uv') as THREE.BufferAttribute;
+    for (let i = 0; i < p.count; i++) {
+      const side = Math.abs(n.getX(i)) > 0.6;
+      if (side) uv.setXY(i, (n.getX(i) < 0 ? 1 : -1) * (p.getZ(i) - 0.05) / 0.84 + 0.5, (p.getY(i) - 0.36) / 0.48);
+      else uv.setXY(i, 0.04, 0.6);   // cream area of the canvas
+    } }
+  const rim = new RoundedBoxGeometry(0.6, 0.04, 0.88, 2, 0.015).translate(X, 0.86, 0.05);
+  // two round stainless tub lids with knobs + a cash tin
+  const steelParts: THREE.BufferGeometry[] = [rim];
+  for (const z of [-0.12, 0.24]) {
+    steelParts.push(new THREE.CylinderGeometry(0.16, 0.165, 0.035, 20).translate(X, 0.895, z));
+    steelParts.push(new THREE.SphereGeometry(0.028, 10, 6).scale(1, 0.7, 1).translate(X, 0.925, z));
+  }
+  steelParts.push(new RoundedBoxGeometry(0.16, 0.08, 0.12, 2, 0.012).translate(X + 0.17, 0.92, -0.32));
+  // glass bun case (frame in steel, panes in glass) on the front end
+  const bx = X - 0.13, bz = -0.33;
+  for (const [dx, dz] of [[-0.09, -0.07], [0.09, -0.07], [-0.09, 0.07], [0.09, 0.07]] as [number, number][]) steelParts.push(rod(V(bx + dx, 0.88, bz + dz), V(bx + dx, 1.04, bz + dz), 0.006, 6));
+  steelParts.push(new RoundedBoxGeometry(0.2, 0.012, 0.16, 1, 0.004).translate(bx, 1.045, bz));
+  const glassG = new THREE.BoxGeometry(0.18, 0.15, 0.14).translate(bx, 0.96, bz);
+  const buns: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < 4; i++) buns.push(new THREE.CapsuleGeometry(0.018, 0.07, 3, 8).rotateZ(Math.PI / 2).translate(bx - 0.03 + (i % 2) * 0.06, 0.905 + Math.floor(i / 2) * 0.035, bz - 0.03 + (i % 2) * 0.05));
+  // brass bell on a bracket
+  const bell = [new THREE.LatheGeometry([new THREE.Vector2(0, 0.05), new THREE.Vector2(0.012, 0.048), new THREE.Vector2(0.022, 0.03), new THREE.Vector2(0.034, 0.002), new THREE.Vector2(0.036, 0)], 14).translate(X + 0.25, 0.95, 0.42), rod(V(X + 0.25, 0.86, 0.42), V(X + 0.25, 1.0, 0.42), 0.005, 6)];
+  // parasol: chromed pole + 8-panel canopy + tip
+  const poleTop = V(X + 0.18, 1.98, 0.36);
+  const pole = [rod(V(X + 0.18, 0.86, 0.36), poleTop, 0.014, 10), new THREE.SphereGeometry(0.02, 8, 6).translate(poleTop.x, poleTop.y + 0.2, poleTop.z)];
+  const canopy = new THREE.ConeGeometry(0.85, 0.24, 8, 1, true).translate(poleTop.x, poleTop.y + 0.1, poleTop.z);
+  const ribs: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2 + Math.PI / 8; ribs.push(rod(V(poleTop.x, poleTop.y + 0.2, poleTop.z), V(poleTop.x + Math.sin(a) * 0.84, poleTop.y - 0.02, poleTop.z + Math.cos(a) * 0.84), 0.005, 5)); }
   const steel = Assets.pbr('aluminium_scratched', { repeat: 1 });
   // frame + mudguard + rim (painted / galvanised)
   const frame = [
@@ -796,7 +863,21 @@ function icecreamSidecar(): { geo: THREE.BufferGeometry; mat: THREE.Material }[]
   const paint = new THREE.MeshStandardMaterial({ color: 0x2f6fb8, roughness: 0.45, metalness: 0.3 });
   const tyre = new THREE.TorusGeometry(0.17, 0.045, 8, 20).rotateY(Math.PI / 2).translate(X - 0.36, 0.2, 0.05);
   const rubber = new THREE.MeshStandardMaterial({ color: 0x1b1a19, roughness: 0.92, metalness: 0 });
-  return [{ geo: clean([cab, lid, handle, tin]), mat: steel }, { geo: clean(frame), mat: paint }, { geo: clean([tyre]), mat: rubber }];
+  const glassMat = new THREE.MeshStandardMaterial({ color: 0xdfeef2, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.25, depthWrite: false });
+  const bunMat = new THREE.MeshStandardMaterial({ color: 0xd99a52, roughness: 0.75 });
+  const brass = new THREE.MeshStandardMaterial({ color: 0xc8a14a, roughness: 0.3, metalness: 0.9 });
+  const chromeMat = new THREE.MeshStandardMaterial({ color: 0xe8e8e8, roughness: 0.15, metalness: 1 });
+  return [
+    { geo: clean([cabG]), mat: livery },
+    { geo: clean(steelParts), mat: steel },
+    { geo: clean(frame), mat: paint },
+    { geo: clean([tyre]), mat: rubber },
+    { geo: clean([glassG]), mat: glassMat },
+    { geo: clean(buns), mat: bunMat },
+    { geo: clean(bell), mat: brass },
+    { geo: clean([...pole, ...ribs]), mat: chromeMat },
+    { geo: clean([canopy]), mat: canopyMat },
+  ];
 }
 
 // ------------------------------------------------------------------ baking real riders

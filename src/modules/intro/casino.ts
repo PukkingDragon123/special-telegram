@@ -355,14 +355,20 @@ export class CasinoScene implements SceneDef {
     const wc = this.set.wheelCenter;
     const cine = this.cine;
     const rnd = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
-    const shoutAt = (a: Actor | undefined, lines: { th: string; en?: string }[]) => { if (a) this.bubble(a, rnd(lines)); };
+    const shoutAt = (a: Actor | undefined, lines: { th: string; en?: string }[], expr?: string) => {
+      if (!a) return;
+      this.bubble(a, rnd(lines));
+      if (expr) this.expr(a, expr, 1.4);
+      try { a.rig.setTalking?.(true); } catch {}
+      setTimeout(() => { try { a.rig.setTalking?.(false); } catch {} }, 1300);
+    };
     // walking in (open + walk beats): straight through the archway, the last guy stumbles on the carpet edge
     const walkIn = (dt: number, k: number, beat: 'open' | 'walk') => {
       P.forEach((a, i) => {
         const tripper = beat === 'walk' && i === n - 1 && n > 1;
         if (tripper && k > 0.42) once('trip', () => {
           anim(a, pick('get_slapped'), false, 0.06); a.speed = 0.25; play('body_thud', { vol: 0.5, pitch: 1.3 });
-          this.expr(a, 'shocked', 1.2); cine.snap(0.78, 0.5); shoutAt(a, SHOUT.trip);
+          cine.snap(0.78, 0.5); shoutAt(a, SHOUT.trip, 'shocked');
         });
         if (tripper && k > 0.6) once('trip2', () => { anim(a, 'idle', true, 0.35); a.speed = 1.55; });
         const sp = a.speed;
@@ -417,7 +423,7 @@ export class CasinoScene implements SceneDef {
           const c = this.center();
           if (Math.abs(c.z + 7.4) > 0.9) c.z = -7.4;
           P.forEach((a, i) => { a.root.position.x = c.x + (i - (n - 1) / 2) * 0.72; a.root.position.z = c.z + (i % 2 ? 0.25 : -0.1); a.root.rotation.y = Math.PI + (i - (n - 1) / 2) * 0.12; });
-          this.fx.flash(0.16);
+          this.fx.flash(0.1);
           this.fx.duotone(true);
           this.fx.focusLines(true, 'focus');
           play('bass_boom', { vol: 0.9 }); play('slowmo_whoosh', { vol: 0.6, pitch: 0.8 });
@@ -444,7 +450,7 @@ export class CasinoScene implements SceneDef {
             }
           }
           if (k > 0.55) once('poseSub', () => { this.sub(CINE_LINES.poseN(n), 2.4); cine.crash(0.8, 1.4, 0.35); });
-          if (k > 0.93) once('poseEnd', () => { this.menace.stop(); this.fx.flash(0.12); });
+          if (k > 0.93) once('poseEnd', () => this.menace.stop());
         },
         // worm's-eye low angle, dutch tilt, slow push
         cam: (k) => {
@@ -521,7 +527,7 @@ export class CasinoScene implements SceneDef {
           cine.crash(0.6, 1.1, 0.9);
           this.dof = 0;
           this.sub(CINE_LINES.win, 2.8);
-          P.forEach((a, i) => { if (i < 2) setTimeout(() => { if (this.ready) shoutAt(a, SHOUT.win); }, 150 + i * 650); });
+          P.forEach((a, i) => { if (i < 2) setTimeout(() => { if (this.ready) { shoutAt(a, SHOUT.win, i ? 'happy' : 'laugh'); cine.snap(0.85, 0.4); } }, 150 + i * 650); });
         },
         tick: (k) => {
           // the dealer pushes the pot to the players
@@ -615,7 +621,7 @@ export class CasinoScene implements SceneDef {
             if (k > at) once(id, () => {
               play('hiccup', { vol: 0.8, pitch: 0.9 + Math.random() * 0.3 });
               const a = P[Math.floor(Math.random() * n)];
-              if (a && Math.random() < 0.75) shoutAt(a, SHOUT.drink);
+              if (a && Math.random() < 0.75) shoutAt(a, SHOUT.drink, rnd(['laugh', 'happy', 'drunk']));
               cine.snap(0.88, 0.35);
             });
           }
@@ -643,7 +649,7 @@ export class CasinoScene implements SceneDef {
           this.sub(CINE_LINES.allin, 2.8);
           this.dof = 0;
           cine.handheld = 0.35;
-          shoutAt(P[0], SHOUT.allin);
+          shoutAt(P[0], SHOUT.allin, 'determined');
         },
         tick: (k) => {
           const g = this.stacks.rouletteBank;
@@ -652,7 +658,7 @@ export class CasinoScene implements SceneDef {
           if (k > 0.08) once('push', () => { play('chips_clatter', { vol: 0.9 }); P.forEach((a) => anim(a, 'point', false)); });
           if (k > 0.26) once('spin', () => { play('roulette_spin', { vol: 1 }); this.loops.push(play('heartbeat_slow', { vol: 0.7 })); cine.pushIn(0.2, 3.2); });
           if (k > 0.45) once('s6', () => this.sub(CINE_LINES.spin, 3));
-          if (k > 0.5) once('preshock', () => { P.forEach((a) => { face(a, 'shock'); this.expr(a, 'scared'); }); shoutAt(P[n - 1], SHOUT.spin); cine.pushIn(0.22, 1.2); });
+          if (k > 0.5) once('preshock', () => { P.forEach((a) => { face(a, 'shock'); this.expr(a, 'scared'); }); shoutAt(P[n - 1], SHOUT.spin, 'scared'); cine.pushIn(0.22, 1.2); });
           if (k > 0.64) once('wheel2', () => cine.pushIn(0.3, 2.4));
           if (k > 0.78) this.slowTarget = 0.4;
         },
@@ -696,14 +702,13 @@ export class CasinoScene implements SceneDef {
           const after = 2.3 / 6.0;
           if (k > after) once('unfreeze', () => {
             this.fx.sepiaFreeze(false);
-            this.fx.flash(0.1);
             cine.handheld = 0.45;
             cine.crash(0.66, 1.2, 0.7);
             play('sad_trombone', { vol: 1 });
             P.forEach((a) => { anim(a, 'casino_despair', true, 0.15); face(a, 'shock'); this.expr(a, 'shocked'); });
             anim(this.croupier, 'wipe');
             this.sub(CINE_LINES.lose, 3.2);
-            P.forEach((a, i) => { if (i < 3) setTimeout(() => { if (this.ready) shoutAt(a, [SHOUT.lose[(i + 0) % SHOUT.lose.length]]); }, 120 + i * 500); });
+            P.forEach((a, i) => { if (i < 3) setTimeout(() => { if (this.ready) { shoutAt(a, [SHOUT.lose[i % SHOUT.lose.length]], i === 0 ? 'angry' : 'pain'); cine.snap(0.84, 0.4); } }, 120 + i * 500); });
           });
           if (k > after + 0.25) once('sad', () => P.forEach((a) => this.expr(a, 'sad')));
           const kk = clamp01((k - after) / (1 - after));

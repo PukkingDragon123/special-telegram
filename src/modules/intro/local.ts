@@ -63,6 +63,7 @@ export class IntroLocal {
   constructor(private game: Game) {
     this.cine = new CineCam(game);
     registerTutorialDialogue();
+    (game as any).tutorialLocal = this;   // debugging / tests
     this.mono = new Monologue(game, (text, sec) => game.emit('intro:think', { id: game.localPlayerId, text, sec }));
     game.events.on('world:ready', () => this.onWorld());
     game.events.on('world:exit', () => this.onExit());
@@ -79,7 +80,7 @@ export class IntroLocal {
     game.events.on('cook:openBook', () => { this.bookOpened = true; });
     // during cutscenes the camera is close on faces, so spoken lines also run as cinematic subtitles
     game.on('say', (d: { id: number; text: string | TL; o?: any }) => this.subtitle(d));
-    game.engine.onLate((f) => this.late(f.rawDt));
+    game.engine.onLate((f) => this.late(f.dt));   // game time: slow-mo / pause also hold the camera
     game.interact.provide((ctx) => this.provide(ctx), 50);
   }
 
@@ -300,7 +301,7 @@ export class IntroLocal {
     };
     const shots: Shot[] = [
       pov,
-      { dur: WAKE_T.stretch - WAKE_T.up, enter: () => { post.fade = 0; (post as any).setDOF?.(false); }, pose: crane(game, id, { h0: 5.2, h1: 1.9, r0: 0.4, r1: 2.6, az: 0.5, az1: 0.25, lookY: 0.45, fov: 52, fov1: 44 }), ease: easeOut },
+      { dur: WAKE_T.stretch - WAKE_T.up, enter: () => { post.fade = 0; (post as any).setDOF?.(false); }, pose: crane(game, id, { h0: 5.2, h1: 1.75, r0: 0.4, r1: 2.6, az: 0.5, az1: 0.25, lookY: 0.4, lookY1: 0.85, fov: 52, fov1: 44 }), ease: easeOut },
       { dur: WAKE_T.look - WAKE_T.stretch, pose: orbit(game, id, { r: 2.5, h: 1.45, az0: 0.75, az1: 0.2, lookY: 1.1, fov: 40, fov1: 36 }), focus: () => subject(game, id)?.head ?? null },
       {
         dur: WAKE_T.end - WAKE_T.look, drift: 1.2,

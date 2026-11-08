@@ -771,10 +771,12 @@ function buildApron(c: Ctx) {
   const { G, s, hi } = c;
   const cols = hi ? 8 : 4;
   const ys = hi ? [1.31, 1.24, 1.16, 1.08, 1.0, 0.92, 0.84, 0.76, 0.66, 0.56] : [1.31, 1.12, 0.96, 0.8, 0.56];
+  // loose tops (chef jackets, auntie blouses) are shells standing off the body: clear them or the bib sinks inside
+  const clear = s.top.loose >= 0.018 && s.top.sleeve !== 'none' ? 0.014 + s.top.loose : 0.012;
   const front = (y: number, x: number) => {
     if (y > 0.86) {
       const th = Math.atan2(x, 0.12);
-      return c.torsoC(y) + c.torsoR(y, th) * Math.cos(th) + 0.012;
+      return c.torsoC(y) + c.torsoR(y, th) * Math.cos(th) + clear;
     }
     return 0.125 + s.build * 0.05 - Math.abs(x) * 0.15;
   };
@@ -857,7 +859,7 @@ function buildNeckerchief(c: Ctx) {
   const segs = hi ? 6 : 4;
   const N = hi ? 22 : 12;
   const wN: W = [B.neck, 0.45, B.chest, 0.55];
-  const flatR = (n: number) => Array.from({ length: n }, (_, j) => { const th = -Math.PI + (2 * Math.PI * j) / n; const cc = Math.abs(Math.cos(th)), ss = Math.abs(Math.sin(th)); return 1 / Math.pow(Math.pow(cc / 0.011, 2.4) + Math.pow(ss / 0.019, 2.4), 1 / 2.4); });
+  const flatR = (n: number) => Array.from({ length: n }, (_, j) => { const th = -Math.PI + (2 * Math.PI * j) / n; const cc = Math.abs(Math.cos(th)), ss = Math.abs(Math.sin(th)); return 1 / Math.pow(Math.pow(cc / 0.0085, 2.4) + Math.pow(ss / 0.017, 2.4), 1 / 2.4); });
   // band round the neck (open loop that starts and ends at the knot)
   const path: V3[] = [];
   for (let i = 0; i <= N; i++) {

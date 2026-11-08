@@ -162,7 +162,9 @@ export class DialogueSession {
     this.view!.setLine({
       name: nm.th, nameEn: nm.en, th: text.th, en: text.en,
       color: NAME_COL[hashStr(t.role) % NAME_COL.length], voice: voiceOf(t, this.dlg), head: () => headOfTarget(t),
-    });
+      speaker: () => (t.kind === 'entity' && t.eid !== undefined ? ((this.game.views.of(t.eid).find((v: any) => v.rig) as any)?.rig ?? null) : null),
+      mood: n.face ? null : undefined,   // an explicit node face wins over the text guess
+    } as any);
     // everybody else hears it as ordinary 3D speech
     this.game.emit('talk:line', { by: this.game.localPlayerId, eid: t.eid ?? null, key: t.key, th: text.th, en: text.en ?? null, voice: voiceOf(t, this.dlg) });
     // options (first node also gets the quest extras + a goodbye)

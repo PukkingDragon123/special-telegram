@@ -430,11 +430,13 @@ export function installCoreEvents(game: Game) {
   game.on('say', (d: { id: number; text: any; o: SayOpts }) => {
     const obj = game.views.objectOf(d.id);
     const e = game.state.get(d.id);
+    // the speaker's rig: mouth flaps while the line types, expression from the line's mood
+    const rig = (game.views.of(d.id).find((v: any) => v.rig) as any)?.rig ?? null;
     if (obj) {
       const h = (obj.userData.headHeight as number) ?? 1.9;
-      game.ui.say(() => obj.localToWorld(new THREE.Vector3(0, h, 0)), d.text, { ...d.o });
+      game.ui.say(() => obj.localToWorld(new THREE.Vector3(0, h, 0)), d.text, { ...d.o, speaker: rig } as any);
     } else if (e?.p) {
-      game.ui.say(new THREE.Vector3(e.p[0], e.p[1] + 1.9, e.p[2]), d.text, d.o);
+      game.ui.say(new THREE.Vector3(e.p[0], e.p[1] + 1.9, e.p[2]), d.text, { ...d.o, speaker: rig } as any);
     }
   });
   game.on('popup', (d: { p: number[]; text: string; style?: any }) => {

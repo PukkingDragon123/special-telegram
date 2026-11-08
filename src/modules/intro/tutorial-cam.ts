@@ -18,7 +18,7 @@ import { headOf } from './util';
  * character's root, head and facing on this peer.
  * ========================================================================================== */
 
-export interface Pose { p: THREE.Vector3; look: THREE.Vector3; fov: number; roll?: number }
+export interface Pose { p: THREE.Vector3; look: THREE.Vector3; fov: number; roll?: number; /** collision is tested from here (default: look) */ pivot?: THREE.Vector3 }
 
 export interface Shot {
   dur: number;
@@ -253,16 +253,18 @@ export class CineCam {
   private collide(pose: Pose) {
     const phys = this.game.physics;
     if (!phys) return;
-    const dir = _a.subVectors(pose.p, pose.look);
+    const from = pose.pivot ?? pose.look;
+    const dir = _a.subVectors(pose.p, from);
     const len = dir.length();
     if (len < 0.05) return;
     dir.multiplyScalar(1 / len);
     // start a little in front of the subject so their own collider/props don't count
-    const start = _b.copy(pose.look).addScaledVector(dir, Math.min(0.35, len * 0.3));
-    const hit = phys.raycast(start, dir, len, G.STATIC);
+    const s0 = Math.min(0.3, len * 0.3);
+    const start = _b.copy(from).addScaledVector(dir, s0);
+    const hit = phys.raycast(start, dir, len - s0, G.STATIC);
     if (hit) {
-      const keep = Math.max(0.25, Math.min(0.35, len * 0.3) + hit.toi - 0.18);
-      pose.p.copy(pose.look).addScaledVector(dir, keep);
+      const keep = Math.max(0.22, s0 + hit.toi - 0.18);
+      pose.p.copy(from).addScaledVector(dir, keep);
     }
   }
 
@@ -318,12 +320,28 @@ export function closeUp(game: Game, id: number, o: { d0?: number; d1?: number; s
     const right = _b.set(-f.z, 0, f.x);
     const look = s.head.clone().add(new THREE.Vector3(0, -0.04 - (o.lookDown ?? 0), 0));
     const p = look.clone().addScaledVector(f, d).addScaledVector(right, (o.side ?? 0.18) * d).add(new THREE.Vector3(0, (o.up ?? 0.02), 0));
-    return pose(p, look, THREE.MathUtils.lerp(o.fov0 ?? 40, o.fov1 ?? (o.fov0 ?? 40), k));
+    return { ...pose(p, look, THREE.MathUtils.lerp(o.fov0 ?? 40, o.fov1 ?? (o.fov0 ?? 40), k)), pivot: s.head.clone() };
   };
 }
 
-/** Over-the-shoulder: behind `fromId`'s shoulder looking at `toId`'s face; push = dolly in over the shot. */
+/** Free fraction (0..1) of the segment a→b against static geometry. */
+export function room(game: Game, a: THREE.Vector3, b: THREE.Vector3): number {
+  const phys = game.physics;
+  if (!phys) return 1;
+  const dir = new THREE.Vector3().subVectors(b, a);
+  const len = dir.length();
+  if (len < 1e-3) return 1;
+  dir.multiplyScalar(1 / len);
+  const hit = phys.raycast(a, dir, len + 0.2, G.STATIC);
+  return hit ? Math.max(0, (hit.toi - 0.2) / len) : 1;
+}
+
+/**
+ * Over-the-shoulder: behind `fromId`'s shoulder looking at `toId`'s face; push = dolly in over the shot.
+ * Wall right behind the speaker (sidewalk against a shutter)? Try the other shoulder, then rise above the head.
+ */
 export function ots(game: Game, fromId: number, toId: number, o: { side?: number; back?: number; push?: number; fov?: number; fov1?: number; lift?: number } = {}) {
+  let chosen = 0, lastCheck = -1, t = 0;
   return (k: number): Pose | null => {
     const a = subject(game, fromId, S1), b = subject(game, toId, S2);
     if (!a || !b) return null;
@@ -331,11 +349,21 @@ export function ots(game: Game, fromId: number, toId: number, o: { side?: number
     const dist = Math.max(0.4, d.length());
     d.normalize();
     const right = _b.set(-d.z, 0, d.x);
-    const side = o.side ?? 1;
+    const side0 = o.side ?? 1;
     const back = (o.back ?? 0.9) - (o.push ?? 0) * k;
-    const p = a.head.clone().addScaledVector(d, -back).addScaledVector(right, 0.5 * side).add(new THREE.Vector3(0, o.lift ?? 0.12, 0));
-    const look = b.head.clone().addScaledVector(right, -0.18 * side * dist).add(new THREE.Vector3(0, -0.1, 0));
-    return pose(p, look, THREE.MathUtils.lerp(o.fov ?? 46, o.fov1 ?? (o.fov ?? 46), k));
+    const lift0 = o.lift ?? 0.12;
+    const cand = (sd: number, lift: number, bk: number) => a.head.clone().addScaledVector(d, -bk).addScaledVector(right, 0.5 * sd).add(new THREE.Vector3(0, lift, 0));
+    t++;
+    if (chosen === 0 || t - lastCheck > 20) {
+      lastCheck = t;
+      const r1 = room(game, a.head, cand(side0, lift0, back)), r2 = room(game, a.head, cand(-side0, lift0, back));
+      chosen = r1 >= 0.8 || r1 >= r2 ? 1 : r2 >= 0.6 ? -1 : (Math.max(r1, r2) < 0.5 ? 2 : (r1 >= r2 ? 1 : -1));
+    }
+    const sd = chosen === -1 ? -side0 : side0;
+    // 2 = no room behind: high shot from above the head, looking down past the shoulder
+    const p = chosen === 2 ? a.head.clone().addScaledVector(d, -0.25).addScaledVector(right, 0.35 * sd).add(new THREE.Vector3(0, 0.75, 0)) : cand(sd, lift0, back);
+    const look = b.head.clone().addScaledVector(right, -0.18 * sd * dist).add(new THREE.Vector3(0, -0.1, 0));
+    return { p, look, fov: THREE.MathUtils.lerp(o.fov ?? 46, o.fov1 ?? (o.fov ?? 46), k), pivot: a.head.clone() };
   };
 }
 
@@ -358,7 +386,7 @@ export function twoShot(game: Game, aId: number, bId: number, o: { side?: number
 }
 
 /** Crane: from high above (h0) down to h1 at radius r0→r1 in front of / around the subject, looking at a body point. */
-export function crane(game: Game, id: number, o: { h0?: number; h1?: number; r0?: number; r1?: number; az?: number; az1?: number; lookY?: number; fov?: number; fov1?: number } = {}) {
+export function crane(game: Game, id: number, o: { h0?: number; h1?: number; r0?: number; r1?: number; az?: number; az1?: number; lookY?: number; lookY1?: number; fov?: number; fov1?: number } = {}) {
   return (k: number): Pose | null => {
     const s = subject(game, id, S1);
     if (!s) return null;
@@ -366,7 +394,7 @@ export function crane(game: Game, id: number, o: { h0?: number; h1?: number; r0?
     const dir = _a.copy(s.fwd).applyAxisAngle(UP, az);
     const r = THREE.MathUtils.lerp(o.r0 ?? 0.6, o.r1 ?? 2.2, k);
     const h = THREE.MathUtils.lerp(o.h0 ?? 7, o.h1 ?? 1.6, k);
-    const look = s.pos.clone().add(new THREE.Vector3(0, o.lookY ?? 0.4, 0));
+    const look = s.pos.clone().add(new THREE.Vector3(0, THREE.MathUtils.lerp(o.lookY ?? 0.4, o.lookY1 ?? (o.lookY ?? 0.4), k), 0));
     const p = s.pos.clone().addScaledVector(dir, r).add(new THREE.Vector3(0, h, 0));
     return pose(p, look, THREE.MathUtils.lerp(o.fov ?? 50, o.fov1 ?? (o.fov ?? 50), k));
   };

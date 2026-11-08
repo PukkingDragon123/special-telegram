@@ -5,6 +5,7 @@ import { posterMaterial } from '../restaurant/menuposter';
 import { libModel, libEntry, libInstanced } from '../world/lib';
 import { F } from '../../core/fonts';
 import { text3d } from '../../ui3d/text3d';
+import { buildMeatTray, buildBasil, buildChiliBag, buildEggTray } from '../cooking/models';
 
 /* =============================================================================================
  * BUILD — furniture models.
@@ -237,18 +238,20 @@ export function foodCabinet() {
   for (const [x, y, z, w, ry] of panes) { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h - 0.04), gl); p.position.set(x, y, z); p.rotation.y = ry; p.castShadow = false; g.add(p); }
   const top = new THREE.Mesh(new THREE.PlaneGeometry(W - 0.04, Dp - 0.04), gl); top.rotation.x = -Math.PI / 2; top.position.y = H - 0.012; g.add(top);
   const shelf = new THREE.Mesh(new THREE.BoxGeometry(W - 0.05, 0.006, Dp - 0.05), glass(0xd8eeea, 0.28)); shelf.position.y = y0 + h * 0.5 + 0.012; g.add(shelf);
-  // what's inside: steel trays of prepared ingredients (the cook's mise en place) and egg trays
+  // what's inside: the cook's mise en place with the REAL ingredient models of the cooking module (photo-real
+  // minced pork / shrimp trays, basil bunch, chilies, an egg tray, limes) on steel trays
   const trays: THREE.BufferGeometry[] = [];
-  for (let i = 0; i < 3; i++) trays.push(rbox(0.24, 0.05, 0.3, 0.01, -0.28 + i * 0.28, y0 + 0.004, 0));
-  for (let i = 0; i < 2; i++) trays.push(rbox(0.3, 0.045, 0.3, 0.01, -0.18 + i * 0.36, y0 + h * 0.5 + 0.02, 0));
+  for (let i = 0; i < 3; i++) trays.push(rbox(0.26, 0.012, 0.3, 0.004, -0.28 + i * 0.28, y0 + 0.004, 0));
+  for (let i = 0; i < 2; i++) trays.push(rbox(0.32, 0.012, 0.3, 0.004, -0.18 + i * 0.36, y0 + h * 0.5 + 0.02, 0));
   g.add(mesh(merge(trays), steel()));
-  const food = [0xb8563a, 0x4a8a3a, 0xd8c070, 0xc83a2a, 0xe8e0c8];
-  food.forEach((c, i) => {
-    const pile = new THREE.SphereGeometry(0.1, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2); pile.scale(1.05, 0.35, 1.3);
-    const m = mesh(pile, flat(c, 0.75));
-    m.position.set(i < 3 ? -0.28 + i * 0.28 : -0.18 + (i - 3) * 0.36, i < 3 ? y0 + 0.045 : y0 + h * 0.5 + 0.06, 0);
-    g.add(m);
-  });
+  const put = (o: THREE.Object3D, x: number, y: number, z: number, ry = 0, s = 1) => { o.position.set(x, y, z); o.rotation.y = ry; o.scale.setScalar(s); o.traverse((c: any) => { if (c.isMesh) { c.castShadow = false; c.receiveShadow = true; } }); g.add(o); };
+  const lower = y0 + 0.016, upper = y0 + h * 0.5 + 0.032;
+  put(buildMeatTray('pork_minced'), -0.28, lower, 0.02, 0.1, 1.1);
+  put(buildMeatTray('shrimp'), 0, lower, -0.01, -0.08, 1.1);
+  put(buildMeatTray('pork_sliced'), 0.28, lower, 0.02, 0.05, 1.1);
+  put(buildBasil(), -0.2, upper, 0.0, 0.4);
+  put(buildChiliBag(), -0.06, upper, 0.04, -0.3);
+  put(buildEggTray(), 0.18, upper, 0.0, 0.0, 0.9);
   return g;
 }
 

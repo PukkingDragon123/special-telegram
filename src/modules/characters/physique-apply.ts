@@ -44,10 +44,12 @@ interface PhysState {
 
 /** per-template bone region membership (belly, chest, arms, legs) */
 const REGION_W: Record<string, [number, number, number, number]> = {
-  pelvis: [0.75, 0, 0, 0.3],
+  // belly membership is 1 on every trunk bone (the navel gaussian does the vertical falloff) so layered
+  // garments skinned to different trunk bones (jacket shell vs apron bib) bulge by the same amount
+  pelvis: [1, 0, 0, 0.3],
   spine_01: [1, 0.05, 0, 0],
   spine_02: [1, 0.4, 0, 0],
-  spine_03: [0.45, 1, 0, 0],
+  spine_03: [1, 1, 0, 0],
   neck_01: [0, 0.75, 0, 0],
   clavicle_l: [0, 1, 0.35, 0], clavicle_r: [0, 1, 0.35, 0],
   upperarm_l: [0, 0.15, 1, 0], upperarm_r: [0, 0.15, 1, 0],

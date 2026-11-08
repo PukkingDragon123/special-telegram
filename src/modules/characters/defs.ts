@@ -386,9 +386,9 @@ export function playerLook(slot: number): Look {
     // G2 — afro + white headband + amber sunglasses, rolled sleeves, black bistro apron, mustard neckerchief, white clogs
     { sex: 'm', height: 1.8, build: 0.4, physique: { muscle: 0.62, shoulders: 0.7, belly: 0.4, legs: 0.62, head: 0.5 }, skin: '#c28e69', face: 'm02', hair: { style: 'afro', color: '#16110d' },
       top: { id: 'chef_jacket_rolled', color: '#f4f3ee' }, bottom: { id: 'chef_pants', color: '#24305a' }, shoes: { id: 'chef_clogs', color: '#f2f0ea' }, acc: ['sunglasses', 'headband_white', 'apron_waist', 'neckerchief#e8a33d'] },
-    // G3 — the stocky one: green-piped jacket, black skull cap, white bib apron, check trousers
+    // G3 — the stocky one: black-piped jacket, black skull cap, denim bib apron, blue neckerchief, check trousers
     { sex: 'm', height: 1.69, build: 0.56, physique: { muscle: 0.55, shoulders: 0.6, belly: 0.78, legs: 0.42, head: 0.55 }, skin: '#cd9c76', face: 'm03', hair: { style: 'short', color: '#16120f' },
-      top: { id: 'chef_jacket_piped', color: '#f4f3ee' }, bottom: { id: 'chef_pants', color: '#1d1d1f' }, shoes: { id: 'chef_clogs', color: '#161616' }, acc: ['chef_skullcap', 'apron#f2f0ea'] },
+      top: { id: 'chef_jacket_piped', color: '#f4f3ee' }, bottom: { id: 'chef_pants', color: '#1d1d1f' }, shoes: { id: 'chef_clogs', color: '#161616' }, acc: ['chef_skullcap', 'apron#3e5578', 'neckerchief#2f5fa8'] },
     // G4 — black chef jacket, white toque, white bistro apron, black trousers, digital watch
     { sex: 'm', height: 1.76, build: 0.3, physique: { muscle: 0.5, shoulders: 0.45, belly: 0.3, legs: 0.6, head: 0.47 }, skin: '#e2b893', face: 'm04', hair: { style: 'spiky', color: '#1a1512' },
       top: { id: 'chef_jacket', color: '#1d1d1f' }, bottom: { id: 'chef_pants_black', color: '#1f1f22' }, shoes: { id: 'chef_clogs', color: '#161616' }, acc: ['chef_hat', 'apron_waist#f2f0ea', 'watch_casio'] },
