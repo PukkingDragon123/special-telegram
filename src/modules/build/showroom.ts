@@ -82,13 +82,37 @@ function layout(ceil: number, bk: Backs): SlotSpec[] {
 /** back wall lines (local z) of the two merged units: the world picks the interior depth per unit, so probe the
  *  real walls. L = left half (local x < 0), R = right half (x > 0), step = local x of the return wall between them */
 export interface Backs { L: number; R: number; min: number; max: number; step: number }
+let backsMemo: { key: string; b: Backs } | null = null;
+/** nearest VISIBLE world surface along a ray (the shophouse's rear block has a visible wall without a collider,
+ *  in front of a deeper physics wall — the furniture used to end up hidden behind it) */
+function meshHit(game: Game, from: THREE.Vector3, dir: THREE.Vector3, max: number): number {
+  const sc = game.scene;
+  if (!sc) return Infinity;
+  const rc = new THREE.Raycaster(from, dir.clone().normalize(), 0.05, max);
+  const targets = sc.children.filter((o) => /^world/.test(o.name) || o.userData?.worldMesh || (o as any).isMesh);
+  const hits = rc.intersectObjects(targets.length ? targets : sc.children, true);
+  for (const h of hits) {
+    let o: THREE.Object3D | null = h.object, skip = false;
+    while (o) { if (/^(build:|player:|entity|item|npc|shop:)/.test(o.name)) { skip = true; break; } o = o.parent; }
+    if (skip || !(h.object as any).isMesh) continue;
+    const m: any = (h.object as any).material;
+    if (m && (m.transparent && m.opacity < 0.6)) continue;
+    return h.distance;
+  }
+  return Infinity;
+}
 export function probeBacks(game: Game): Backs {
   const fr = new Fr(STORE.anchor.p, STORE.anchor.yaw);
+  const memoKey = String(game.physics ? 1 : 0) + ':' + (game.scene?.uuid ?? '');
+  if (backsMemo && backsMemo.key === memoKey) return backsMemo.b;
   const depth = (xs: number[]) => {
     let B = 99;
     for (const x of xs) {
       const h = game.physics?.raycast(fr.at(x, 1.4, 0.3), fr.f.clone(), 12, 1);
       if (h) B = Math.min(B, 0.3 + h.toi);
+      // …and the visible wall, whichever is nearer
+      const v = meshHit(game, fr.at(x, 1.4, 0.3), fr.f.clone(), 12);
+      if (v < 12) B = Math.min(B, 0.3 + v);
     }
     return B > 3 && B < 9 ? B : 4.15;
   };
@@ -100,7 +124,9 @@ export function probeBacks(game: Game): Backs {
     const h = game.physics?.raycast(fr.at(dir < 0 ? 2.5 : -2.5, 1.4, z), fr.r.clone().multiplyScalar(dir), 5, 1);
     if (h) step = (dir < 0 ? 2.5 : -2.5) + dir * h.toi;
   }
-  return { L, R, min: Math.min(L, R), max: Math.max(L, R), step };
+  const b = { L, R, min: Math.min(L, R), max: Math.max(L, R), step };
+  backsMemo = { key: memoKey, b };
+  return b;
 }
 /** back wall line on the door's side */
 export function probeBack(game: Game): number { const b = probeBacks(game); return DOOR_X < 0 ? b.L : b.R; }
@@ -140,6 +166,33 @@ export function buildShowroom(game: Game): Showroom {
     fit.add(t);
     fit.position.copy(fr.at(x, ceil, z)); fit.rotation.y = fr.yaw;
     root.add(fit);
+  }
+  // ---- the room shell: cream plastered side walls (the merged units were open toward the market on one side),
+  // back walls just in front of whatever the building has back there (a raw grey block with door holes), with an
+  // opening for the STAFF ONLY door, a dark skirting line all round
+  {
+    const W2 = 3.83, zF = -1.15;
+    const plaster = pbr('plaster_painted_clean', { repeat: 1.6, color: 0xf1e8d4 });
+    const skirt = pbr('wood_painted_weathered', { repeat: 1, color: 0x5a3a24 });
+    const wallBox = (x0: number, x1: number, z0: number, z1: number, y0 = 0, y1 = ceil) => {
+      const w = Math.max(0.03, x1 - x0), d = Math.max(0.03, z1 - z0);
+      // geometry centred on its own origin; placed with the frame (local +z of a mesh maps to −f, so never offset z inside it)
+      const m = mesh(rbox(w, y1 - y0, d, 0.006, 0, 0, 0), plaster, false);
+      m.position.copy(fr.at((x0 + x1) / 2, y0, (z0 + z1) / 2)); m.rotation.y = fr.yaw; m.receiveShadow = true; root.add(m);
+      if (y0 < 0.01) { const k = mesh(rbox(w + 0.004, 0.1, d + 0.004, 0.004, 0, 0, 0), skirt, false); k.position.copy(fr.at((x0 + x1) / 2, 0, (z0 + z1) / 2)); k.rotation.y = fr.yaw; root.add(k); }
+    };
+    const back = Math.max(bk.L, bk.R);
+    wallBox(-W2 - 0.04, -W2, zF, back);                 // left side wall
+    wallBox(W2, W2 + 0.04, zF, back);                   // right side wall (was open to the market)
+    const zl = bk.L - 0.02, zr = Rb - 0.02;
+    const split = Math.abs(bk.L - bk.R) > 0.3 ? bk.step : 0;
+    wallBox(-W2, split, zl, zl + 0.04);                 // back wall, left half
+    // back wall, right half with the staff door opening (door 0.86 wide + frame)
+    const d0 = DOOR_X - 0.5, d1 = DOOR_X + 0.5;
+    wallBox(split, d0, zr, zr + 0.04);
+    wallBox(d1, W2, zr, zr + 0.04);
+    wallBox(d0, d1, zr, zr + 0.04, 2.14, ceil);
+    if (split !== 0) wallBox(split - 0.02, split + 0.02, Math.min(zl, zr), Math.max(zl, zr));   // return wall
   }
   // ---- red signboard with extruded yellow Thai lettering over the opening (lit at night)
   const signY = Math.min(dims.h0 + 0.15, 4.2);

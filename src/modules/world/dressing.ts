@@ -37,7 +37,14 @@ export function buildStreetLife(c: Ctx) {
   // phone booths (placed further down): no weeds / pots / clutter growing inside them
   const BOOTHS: [number, number, number][] = [[-14.5, 0.8, 0], [33, 25.4, Math.PI]];
   for (const [bx, bz] of BOOTHS) clear.push([bx, bz, 0.75]);
-  const ok = (x: number, z: number, r = 0.6) => !clear.some(([cx, cz, cr]) => Math.hypot(x - cx, z - cz) < cr + r);
+  // gameplay shop frontages: named shop anchors + the first shelf of every managed shop (the furniture store's own
+  // anchor is only registered later by the shops/build modules)
+  const SHOP_FRONTS = Object.entries(A)
+    .filter(([n]) => /^(plastic_shop|gas_shop|kitchen_shop|convenience_store|furniture_store|restaurant_unit)$/.test(n) || /^shelf:[^:]+:0$/.test(n))
+    .map(([, a]) => [a!.p[0], a!.p[2]] as [number, number]).filter(([x]) => Math.abs(x) > 4 && Math.abs(x) < 16);
+  const frontOk = (x: number, z: number) => !SHOP_FRONTS.some(([fx, fz]) => Math.sign(fx) === Math.sign(x) && Math.abs(z - fz) < 4.8);
+  const ok = (x: number, z: number, r = 0.6) => !clear.some(([cx, cz, cr]) => Math.hypot(x - cx, z - cz) < cr + r)
+    && !(Math.abs(x) > 3.6 && Math.abs(x) < 8.6 && z < 0 && !frontOk(x, z));
   const tables = A.tables_area;
   const okT = (x: number, z: number, r = 0.6) => ok(x, z, r) && !(tables && Math.hypot(x - tables.p[0], z - tables.p[2]) < (tables.r ?? 3.6) + 0.5);
 
@@ -48,12 +55,6 @@ export function buildStreetLife(c: Ctx) {
   // straight through them.
   // Real sois: a few bikes in small clusters with gaps, never in front of an open shop / door (the old rows put a
   // bike every metre along the whole street — dozens of identical scooters — and 7 across the furniture store).
-  // gameplay shop frontages: named shop anchors + the first shelf of every managed shop (the furniture store's own
-  // anchor is only registered later by the shops/build modules)
-  const SHOP_FRONTS = Object.entries(A)
-    .filter(([n]) => /^(plastic_shop|gas_shop|kitchen_shop|convenience_store|furniture_store|restaurant_unit)$/.test(n) || /^shelf:[^:]+:0$/.test(n))
-    .map(([, a]) => [a!.p[0], a!.p[2]] as [number, number]).filter(([x]) => Math.abs(x) > 4 && Math.abs(x) < 16);
-  const frontOk = (x: number, z: number) => !SHOP_FRONTS.some(([fx, fz]) => Math.sign(fx) === Math.sign(x) && Math.abs(z - fz) < 4.8);
   const bikeRow = (x: number, z0: number, z1: number, _yaw: number, gap = 1.0) => {
     const sx = Math.sign(x), bx = sx * 5.5;
     let run = 0;
