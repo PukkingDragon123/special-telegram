@@ -793,8 +793,9 @@ function probeWall(game: Game, from: THREE.Vector3, dir: THREE.Vector3, max: num
 
 function storeCladding(game: Game, B: Batch, door: Frame) {
   const tile = pbr('tiles_wall_white_dirty', 0xf6f6f2, 0xf2f2ee);
-  const H = 2.95;
   const o = door.at(0, 1.4, 3.6);
+  // up to the real ceiling (probed), so no strip of the raw building wall shows above the cladding
+  const H = Math.max(2.95, Math.min(4.6, 1.4 + probeWall(game, o, new THREE.Vector3(0, 1, 0), 4, 2.2) + 0.02));
   const right = probeWall(game, o, door.r, 10, 6.9) - 0.035;            // local +x wall
   const left = probeWall(game, o, door.r.clone().negate(), 10, 7.3) - 0.035;
   const back = probeWall(game, o, door.f, 10, 4.1) - 0.035;             // local +z wall
