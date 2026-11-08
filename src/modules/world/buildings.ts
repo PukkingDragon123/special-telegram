@@ -456,7 +456,7 @@ function spiritLot(c: SpecialCtx) {
       const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (i * 1.7) % 6.28);
       ms.push(new THREE.Matrix4().compose(new THREE.Vector3(sp[0] + 0.45 - (i % 3) * 0.15, SW_H + 0.42, sp[2] - 0.6 + Math.floor(i / 3) * 0.12), q, new THREE.Vector3(1, 1, 1)));
     }
-    c.props.real.addObject(libInstanced('bottle_fanta_red', ms));
+    c.props.real.addObject(libInstanced('bottle_fanta_red', ms, { cull: 30 }));
   }
   w.mat('fabric', { tint: 0xf0a020, uv: 'local' });
   for (let i = 0; i < 5; i++) w.tube(WB.sagLine(sp[0] + 0.42, SW_H + 2.05, sp[2] - 0.6 + i * 0.25, sp[0] + 0.42, SW_H + 2.0, sp[2] - 0.45 + i * 0.25, 0.25, 6), 0.035, 5);

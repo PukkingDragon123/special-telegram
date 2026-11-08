@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { DetailCull } from '../../core/detailcull';
 import { ClothSpots } from '../cloth/api';
 import { defineModule } from '../../game/contracts';
 import type { WorldAPI, AnchorPt } from '../../game/contracts';
@@ -255,6 +256,7 @@ function releaseCpuCopies(game: Game, assets: any) {
 }
 
 function dispose() {
+  DetailCull.clear();
   if (!S) return;
   S.atmo.dispose();
   S.weather.dispose();
@@ -279,6 +281,9 @@ function frame(game: Game, dt: number) {
   drainsFrame(_cam, S.atmo.night, U.uWet.value, S.atmo.hemi.color);
   ARCH.update(_cam);
   U.uWet.value += (((game.g as any).rain ?? 0) - U.uWet.value) * Math.min(1, dt * 0.2);
+  // tiny instanced details (pegs, fruit piles, shelf goods …) registered by any module
+  DetailCull.scale = game.engine.quality === 'low' ? 0.65 : game.engine.quality === 'medium' ? 0.85 : game.engine.quality === 'ultra' ? 1.3 : 1;
+  DetailCull.update(cam, dt);
   // distance-cull small detail meshes
   if ((S.frameN++ & 7) === 0) {
     const far = game.engine.quality === 'low' ? 60 : game.engine.quality === 'medium' ? 80 : 110;

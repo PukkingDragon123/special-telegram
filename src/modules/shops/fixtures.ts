@@ -419,7 +419,7 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
   // a long fluorescent tube inside
   B.add(new THREE.CylinderGeometry(0.018, 0.018, 1.2, 6).rotateZ(Math.PI / 2), glow(0xf3fbff, 1.8), fr, sw.off, 2.75, zFront + 2.2);
   B.flush(root);
-  for (const [id, e] of goods) root.add(libInstanced(id, e.m, { colors: e.c }));
+  for (const [id, e] of goods) root.add(libInstanced(id, e.m, { colors: e.c, cull: 32 }));
   // keeper stool (real moulded Thai stool)
   const stool = buildShape('sfb_stool');
   if (stool) { stool.position.copy(fr.at(cx, 0, cz + 0.62)); root.add(stool); }
@@ -608,7 +608,7 @@ function drinksCooler(B: Batch, root: THREE.Object3D, fr: Frame, x: number, zc: 
       (mats[ids[(si + Math.floor(i / 9)) % ids.length]] ??= []).push(new THREE.Matrix4().makeRotationY(fr.yaw - Math.PI / 2 + Math.sin(i * 3.1) * 0.3).setPosition(p));
     }
   }
-  for (const [id, m] of Object.entries(mats)) root.add(libInstanced(id, m, { shadow: false }));
+  for (const [id, m] of Object.entries(mats)) root.add(libInstanced(id, m, { shadow: false, cull: 32 }));
   // 4 glass doors with aluminium frames and long pull handles
   const dl = len / 4;
   for (let k = 0; k < 4; k++) {

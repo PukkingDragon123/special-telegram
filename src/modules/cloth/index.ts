@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { DetailCull, splitByGrid } from '../../core/detailcull';
 import * as BGU from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { defineModule } from '../../game/contracts';
 import type { Game } from '../../game/game';
@@ -443,9 +444,9 @@ export class ClothWorld {
     if (pegs.length) {
       const im = new THREE.InstancedMesh(pegGeometry(), new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0 }), pegs.length);
       pegs.forEach((m, i) => { im.setMatrixAt(i, m); im.setColorAt(i, pegCol[i]); });
-      im.castShadow = true; im.receiveShadow = true; im.name = 'cloth:pegs';
-      im.computeBoundingSphere();
-      this.root.add(im);
+      // tiny: no shadow; split per 12 m cell and hidden beyond ~26 m (they were 786 pegs map-wide, always drawn)
+      im.castShadow = false; im.receiveShadow = true; im.name = 'cloth:pegs';
+      for (const part of splitByGrid(im, 12)) { this.root.add(part); DetailCull.add(part, 26); }
     }
     // hangers (instanced: plastic + wire)
     const hg = hangerGeometry();
@@ -455,9 +456,8 @@ export class ClothWorld {
       const mat = wire ? new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, metalness: 0.9 }) : new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0 });
       const im = new THREE.InstancedMesh(wire ? hg.wire : hg.plastic, mat, hs.length);
       hs.forEach((h, i) => { im.setMatrixAt(i, h.m); im.setColorAt(i, h.c); });
-      im.castShadow = true; im.receiveShadow = true; im.name = wire ? 'cloth:hangers-wire' : 'cloth:hangers';
-      im.computeBoundingSphere();
-      this.root.add(im);
+      im.castShadow = false; im.receiveShadow = true; im.name = wire ? 'cloth:hangers-wire' : 'cloth:hangers';
+      for (const part of splitByGrid(im, 12)) { this.root.add(part); DetailCull.add(part, 34); }
     }
     // ropes (merged)
     if (ropes.length) {

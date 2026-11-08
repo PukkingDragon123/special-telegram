@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { DetailCull } from '../../core/detailcull';
 import type RAPIER from '@dimforge/rapier3d-compat';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
@@ -231,7 +232,7 @@ function greyMap(t: THREE.Texture): THREE.Texture {
   return o;
 }
 
-export interface LibObjOpts { color?: THREE.ColorRepresentation; shadow?: boolean; receive?: boolean }
+export interface LibObjOpts { color?: THREE.ColorRepresentation; shadow?: boolean; receive?: boolean; /** static repeats only: hide beyond this camera distance (m) */ cull?: number }
 
 function fillGroup(g: THREE.Group, id: string, a: LibAsset, o: LibObjOpts) {
   for (const p of a.parts) {
@@ -274,11 +275,14 @@ export function libInstanced(id: string, matrices: THREE.Matrix4[], o: LibObjOpt
         for (let i = 0; i < n; i++) im.setColorAt(i, new THREE.Color(o.colors[i % o.colors.length]));
       }
       im.instanceMatrix.needsUpdate = true;
-      im.castShadow = (o.shadow ?? true) && !p.mat.transparent;
+      // small items (bottles, tins, bowls…) don't cast shadows unless asked to explicitly
+      const small = a.box.getSize(new THREE.Vector3()).length() < 0.6;
+      im.castShadow = (o.shadow ?? !small) && !p.mat.transparent;
       im.receiveShadow = true;
       im.boundingSphere = sph.clone();
       im.name = 'libI:' + id;
       g.add(im);
+      if (o.cull) DetailCull.add(im, o.cull);
     }
   };
   const a = ready.get(id);

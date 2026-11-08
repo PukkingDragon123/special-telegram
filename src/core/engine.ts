@@ -50,6 +50,7 @@ export class Engine {
   private fixedFns = new Set<Fn>();
   private frameFns = new Set<Fn>();
   private lateFns = new Set<Fn>();
+  private overlayFns = new Set<Fn>();
   private tweens: Tween[] = [];
   private last = performance.now();
   private running = false;
@@ -194,6 +195,8 @@ export class Engine {
   onFixed(fn: Fn) { this.fixedFns.add(fn); return () => this.fixedFns.delete(fn); }
   onFrame(fn: Fn) { this.frameFns.add(fn); return () => this.frameFns.delete(fn); }
   onLate(fn: Fn) { this.lateFns.add(fn); return () => this.lateFns.delete(fn); }
+  /** after post-processing: draw screen-space 3D overlays (HUD hotbar items) straight onto the canvas */
+  onOverlay(fn: Fn) { this.overlayFns.add(fn); return () => this.overlayFns.delete(fn); }
 
   /** Promise-based tween on game time (respects timeScale unless real=true). */
   tween(dur: number, onUpdate: (k: number) => void, ease: (t: number) => number = Ease.inOutCubic, delay = 0): Promise<void> {
@@ -317,6 +320,7 @@ export class Engine {
     this.renderer.info.reset();
     this.gpuTimer?.begin();
     this.post.render(raw);
+    for (const fn of this.overlayFns) this.safe(fn, f);
     this.gpuTimer?.end();
     Input.endFrame();
     const cpu = performance.now() - now;

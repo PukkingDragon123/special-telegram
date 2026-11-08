@@ -13,7 +13,7 @@ let pegGeo: THREE.BufferGeometry | null = null;
 export function pegGeometry() {
   if (pegGeo) return pegGeo;
   const jaw = (side: number) => {
-    const g = new RoundedBoxGeometry(0.0105, 0.072, 0.0075, 2, 0.0028);
+    const g = new RoundedBoxGeometry(0.0105, 0.072, 0.0075, 1, 0.0028);
     // jaws taper toward the grip end and open slightly at the bottom (they clamp the cloth at the top)
     const p = g.getAttribute('position') as THREE.BufferAttribute;
     for (let i = 0; i < p.count; i++) {
@@ -25,7 +25,7 @@ export function pegGeometry() {
     g.computeVertexNormals();
     return g.translate(0, -0.03, 0);
   };
-  const spring = new THREE.TorusGeometry(0.0055, 0.0011, 5, 12).rotateY(Math.PI / 2).translate(0, -0.038, 0);
+  const spring = new THREE.TorusGeometry(0.0055, 0.0011, 3, 8).rotateY(Math.PI / 2).translate(0, -0.038, 0);
   const g = mergeGeometries([jaw(-1).toNonIndexed(), jaw(1).toNonIndexed(), spring.toNonIndexed()]);
   pegGeo = g;
   return g;

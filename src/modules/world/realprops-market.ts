@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { DetailCull, splitByGrid } from '../../core/detailcull';
 import { ClothSpots, type V3 } from '../cloth/api';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
@@ -348,9 +349,10 @@ export class PileBatch {
           if (e.tint) { const c = (part.mat as THREE.MeshStandardMaterial).clone(); c.color.multiply(new THREE.Color(e.tint[0], e.tint[1], e.tint[2])); mat = c; }
           const im = new THREE.InstancedMesh(part.geom, mat, mats.length);
           mats.forEach((M, i) => im.setMatrixAt(i, M));
-          im.castShadow = true; im.receiveShadow = true; im.computeBoundingSphere();
+          // fruit/veg in piles: no shadow casting, split per 10 m cell, hidden beyond ~38 m
+          im.castShadow = false; im.receiveShadow = true;
           im.name = 'pile:' + e.id;
-          parent.add(im);
+          for (const part of splitByGrid(im, 10)) { parent.add(part); DetailCull.add(part, 38); }
         }
       });
     }
