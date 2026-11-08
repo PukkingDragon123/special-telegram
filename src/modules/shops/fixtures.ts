@@ -1009,8 +1009,18 @@ function warehouseFacade(game: Game, B: Batch, root: THREE.Object3D, door: Frame
   // signboard: red box with yellow lettering + a lit edge
   { const sw2 = 10.5, sh2 = 1.7, sy = 5.4;
     B.add(rbox(sw2, sh2, 0.32, 0.04, 1), pbr('metal_painted_chipped', 0xc8141a, 0xc8141a), door, -0.5, sy, zc - 0.2);
-    const face = new THREE.Mesh(plane(sw2 - 0.3, sh2 - 0.25), canvasMat(signTex('mk-front', [{ text: 'แม็กโคร่ง ขายส่ง', size: 150, color: '#ffd23a' }, { text: 'ถูกทั้งโกดัง · เปิด 24 ชม.', size: 60, color: '#fff6dc' }], 'card_board', 1600, 260), { emissive: 0.35, rough: 0.5 }));
-    face.material = (() => { const m = (face.material as THREE.MeshStandardMaterial); m.color.set(0xffffff); return m; })();
+    const face = new THREE.Mesh(plane(sw2 - 0.3, sh2 - 0.25), mat('mk-front-sign', () => {
+      const cv = document.createElement('canvas'); cv.width = 1600; cv.height = 260;
+      const x = cv.getContext('2d')!;
+      const g = x.createLinearGradient(0, 0, 0, 260); g.addColorStop(0, '#d8191f'); g.addColorStop(1, '#a50f14');
+      x.fillStyle = g; x.fillRect(0, 0, 1600, 260);
+      x.fillStyle = '#ffd23a'; x.fillRect(0, 232, 1600, 28);
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillStyle = '#ffd23a'; x.font = `900 150px ${F.heavy}`; x.fillText('แม็กโคร่ง ขายส่ง', 800, 112);
+      x.fillStyle = '#7a0a0e'; x.font = `800 30px ${F.ui}`; x.fillText('ถูกทั้งโกดัง · เปิด 24 ชม. · WHOLESALE', 800, 246);
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+      return new THREE.MeshStandardMaterial({ map: t, emissive: new THREE.Color(0xffffff), emissiveMap: t, emissiveIntensity: 0.3, roughness: 0.45 });
+    }));
     face.position.copy(door.at(-0.5, sy + 0.12, zc - 0.37)); face.rotation.y = door.yaw; root.add(face);
     const lp = (game.world as any)?.addLightPoint?.(door.at(-0.5, sy - 0.4, zc - 1.2), 0xfff0d8, 6, 7, 0.3); void lp; }
   // entrance canopy: steel frame + corrugated roof, two posts with bollards
