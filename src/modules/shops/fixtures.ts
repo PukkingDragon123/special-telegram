@@ -34,7 +34,7 @@ export interface ShopFix {
   cards: Map<string, number>;
   cardStyle: CardStyle;
   atlas: CardAtlas;
-  shutter?: { obj: THREE.Object3D; mesh: THREE.Mesh; h: number; tex: THREE.Texture | null; k: number; collider: any; box: { c: number[]; s: number[]; yaw: number } };
+  shutter?: { obj: THREE.Object3D; mesh: THREE.Mesh; meshes?: THREE.Mesh[]; h: number; tex: THREE.Texture | null; k: number; collider: any; box: { c: number[]; s: number[]; yaw: number } };
   tarp?: THREE.Object3D;
   closedSign?: THREE.Mesh;
   door?: [number, number, number];
@@ -634,29 +634,42 @@ function buildShophouse(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, st
 }
 
 
-/** Animated roller shutter across an opening (local frame), with a hand-written closed sign. */
+/**
+ * Animated roller shutters across an opening (local frame), with a hand-written closed sign. Wide openings span
+ * several shophouse bays: one shutter PER BAY (≈3.6–3.9 m) between the arcade columns, each with its own roll box,
+ * so the columns stand in front of closed shutters instead of the curtain running behind them.
+ */
 function makeShutter(game: Game, root: THREE.Object3D, fr: Frame, off: number, w: number, h: number, zFront: number, note: string) {
   const shMat = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.45, side: THREE.DoubleSide, color: 0xb9b7b0 });
-  const shGeo = (() => {   // corrugated steel slat curtain (horizontal ribs), origin at the top
-    const g = new THREE.PlaneGeometry(w, h, 1, Math.max(8, Math.round(h / 0.0375)));
+  const bays = w > 5 ? Math.max(2, Math.round(w / 3.85)) : 1;
+  const bw = w / bays, col = 0.42;
+  const curtain = (cw: number) => {   // corrugated steel slat curtain (horizontal ribs), origin at the top
+    const g = new THREE.PlaneGeometry(cw, h, 1, Math.max(8, Math.round(h / 0.0375)));
     const p = g.getAttribute('position') as THREE.BufferAttribute;
     for (let i = 0; i < p.count; i++) p.setZ(i, 0.007 * Math.sin((p.getY(i) / 0.075) * Math.PI * 2));
     g.computeVertexNormals();
     return g.translate(0, -h / 2, 0);
-  })();
-  const shMesh = new THREE.Mesh(shGeo, shMat); // origin at the top
-  shMesh.castShadow = true; shMesh.receiveShadow = true;
+  };
   const shObj = new THREE.Group();
   shObj.position.copy(fr.at(off, h, zFront - 0.02)); shObj.rotation.y = fr.yaw;
-  shObj.add(shMesh);
-  const rollBox = new THREE.Mesh(rbox(w + 0.1, 0.26, 0.3, 0.03, 1), pbr('metal_painted_chipped', 0x9a9a94, 0x8a8a86));
-  rollBox.castShadow = rollBox.receiveShadow = true;
-  rollBox.position.set(0, -0.02, -0.12); shObj.add(rollBox);
-  const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.8), canvasMat(signTex('closed:' + note, [{ text: note, size: 76, color: '#b11414' }], 'card_board', 640, 400)));
-  sign.position.set(0, -h * 0.55, 0.03); shMesh.add(sign);
+  const meshes: THREE.Mesh[] = [];
+  let signBay: THREE.Mesh | null = null;
+  for (let i = 0; i < bays; i++) {
+    const x0 = -w / 2 + i * bw + (i > 0 ? col / 2 : 0), x1 = -w / 2 + (i + 1) * bw - (i < bays - 1 ? col / 2 : 0);
+    const cw = x1 - x0, cx = (x0 + x1) / 2;
+    const m = new THREE.Mesh(curtain(cw), shMat);
+    m.position.x = cx; m.castShadow = true; m.receiveShadow = true;
+    shObj.add(m); meshes.push(m);
+    const rollBox = new THREE.Mesh(rbox(cw + 0.06, 0.26, 0.3, 0.03, 1), pbr('metal_painted_chipped', 0x9a9a94, 0x8a8a86));
+    rollBox.castShadow = rollBox.receiveShadow = true;
+    rollBox.position.set(cx, -0.02, -0.12); shObj.add(rollBox);
+    if (!signBay || Math.abs(cx) < Math.abs(signBay.position.x)) signBay = m;
+  }
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(1.25, bw - 0.6), 0.8), canvasMat(signTex('closed:' + note, [{ text: note, size: 76, color: '#b11414' }], 'card_board', 640, 400)));
+  sign.position.set(0, -h * 0.55, 0.03); signBay!.add(sign);
   root.add(shObj);
-  const shut: NonNullable<ShopFix['shutter']> = { obj: shObj, mesh: shMesh, h, tex: null, k: 0, collider: null, box: { c: fr.arr(off, h / 2, zFront + 0.05), s: [w, h, 0.12], yaw: fr.yaw } };
-  Assets.loadTexture('textures/pbr/shutter_roller_painted/albedo.jpg', { srgb: true, repeat: [w / 2, h / 2] }).then((t) => {
+  const shut: NonNullable<ShopFix['shutter']> = { obj: shObj, mesh: meshes[0], meshes, h, tex: null, k: 0, collider: null, box: { c: fr.arr(off, h / 2, zFront + 0.05), s: [w, h, 0.12], yaw: fr.yaw } };
+  Assets.loadTexture('textures/pbr/shutter_roller_painted/albedo.jpg', { srgb: true, repeat: [bw / 2, h / 2] }).then((t) => {
     shMat.map = t; shMat.color.set(0xdedcd6); shMat.needsUpdate = true; shut.tex = t;
     t.repeat.y = Math.max(0.001, (h * shut.k) / 2); t.offset.y = 1 - t.repeat.y;
   }).catch(() => {});
@@ -952,9 +965,83 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
 }
 
 // ------------------------------------------------------------------ แม็กโคร่ง
+/**
+ * The warehouse's street face (the building itself is a plain box): painted corrugated cladding with the door
+ * opening, a big red/yellow signboard (lit at night), a steel entrance canopy with yellow-black bollards, and a
+ * loading dock at the left end — raised concrete dock with rubber bumpers and hazard edge, a second (closed)
+ * roller door, pallets of cartons waiting and a hand truck. Door frame: z < 0 = the street side.
+ */
+function warehouseFacade(game: Game, B: Batch, root: THREE.Object3D, door: Frame) {
+  // the visible front face (probed with a few rays from the street); fall back to the shop's own numbers
+  const fz = (() => {
+    const rc = new THREE.Raycaster();
+    const tg = (game.scene?.children ?? []).filter((o) => /^world/.test(o.name));
+    let best = Infinity;
+    for (const x of [-10, -6, -3, 3]) {
+      rc.set(door.at(x, 2.5, -8), door.f.clone());
+      const h = rc.intersectObjects(tg, true)[0];
+      if (h && h.distance < 12) best = Math.min(best, h.distance - 8);
+    }
+    return isFinite(best) ? best : 0.45;
+  })();
+  const zc = fz - 0.05;                               // cladding sits 5 cm proud of the box
+  const X0 = -12.2, X1 = 7.2, H = 11.8;
+  const clad = pbr('corrugated_painted', 0xc8d2d8, 0xc0c8cc);
+  const trim = pbr('metal_painted_chipped', 0x2a4f8a, 0x2a4f8a);
+  const dW = 2.75, dH = 3.45;                         // main door opening (shutter 5.2 × 3.2)
+  const lx0 = -11.4, lx1 = -6.8, lH = 4.9;            // loading-bay door opening
+  const panel = (x0: number, x1: number, y0: number, y1: number) => { if (x1 - x0 > 0.05 && y1 - y0 > 0.05) B.add(mbox(x1 - x0, y1 - y0, 0.05, 2.2), clad, door, (x0 + x1) / 2, y0, zc - 0.025); };
+  panel(X0, lx0, 0, H); panel(lx1, -dW, 0, H); panel(dW, X1, 0, H);
+  panel(lx0, lx1, lH, H); panel(-dW, dW, dH, H);
+  panel(lx0, lx1, 0, 1.15);                           // under the dock door: the dock face is in front anyway
+  // blue base band + top fascia + door frames
+  B.add(rbox(X1 - X0, 0.5, 0.08, 0.01, 1), trim, door, (X0 + X1) / 2, 0, zc - 0.07);
+  B.add(rbox(X1 - X0, 0.35, 0.1, 0.01, 1), trim, door, (X0 + X1) / 2, H - 0.35, zc - 0.08);
+  for (const [a, b, h] of [[-dW, dW, dH], [lx0, lx1, lH]] as [number, number, number][]) {
+    B.add(rbox(0.16, h, 0.14, 0.01, 1), trim, door, a - 0.08, a === lx0 ? 1.15 : 0, zc - 0.09);
+    B.add(rbox(0.16, h, 0.14, 0.01, 1), trim, door, b + 0.08, a === lx0 ? 1.15 : 0, zc - 0.09);
+    B.add(rbox(b - a + 0.32, 0.18, 0.14, 0.01, 1), trim, door, (a + b) / 2, (a === lx0 ? 1.15 : 0) + h, zc - 0.09);
+  }
+  // the dock door (closed roller, painted)
+  { const g = new THREE.PlaneGeometry(lx1 - lx0, lH - 1.15, 1, 48); const pp = g.getAttribute('position') as THREE.BufferAttribute; for (let i = 0; i < pp.count; i++) pp.setZ(i, 0.008 * Math.sin((pp.getY(i) / 0.08) * Math.PI * 2)); g.computeVertexNormals(); g.translate(0, (lH - 1.15) / 2, 0);
+    B.add(g, pbr('shutter_roller_painted', 0xe8e4da, 0xdedcd6), door, (lx0 + lx1) / 2, 1.15, zc - 0.03); }
+  // signboard: red box with yellow lettering + a lit edge
+  { const sw2 = 10.5, sh2 = 1.7, sy = 5.4;
+    B.add(rbox(sw2, sh2, 0.32, 0.04, 1), pbr('metal_painted_chipped', 0xc8141a, 0xc8141a), door, -0.5, sy, zc - 0.2);
+    const face = new THREE.Mesh(plane(sw2 - 0.3, sh2 - 0.25), canvasMat(signTex('mk-front', [{ text: 'แม็กโคร่ง ขายส่ง', size: 150, color: '#ffd23a' }, { text: 'ถูกทั้งโกดัง · เปิด 24 ชม.', size: 60, color: '#fff6dc' }], 'card_board', 1600, 260), { emissive: 0.35, rough: 0.5 }));
+    face.material = (() => { const m = (face.material as THREE.MeshStandardMaterial); m.color.set(0xffffff); return m; })();
+    face.position.copy(door.at(-0.5, sy + 0.12, zc - 0.37)); face.rotation.y = door.yaw; root.add(face);
+    const lp = (game.world as any)?.addLightPoint?.(door.at(-0.5, sy - 0.4, zc - 1.2), 0xfff0d8, 6, 7, 0.3); void lp; }
+  // entrance canopy: steel frame + corrugated roof, two posts with bollards
+  { const cy = 4.15, cd = 2.6, cw = 7.2;
+    B.add(rbox(cw, 0.08, cd, 0.01, 1), clad, door, 0, cy, zc - cd / 2);
+    B.add(rbox(cw + 0.1, 0.22, 0.12, 0.01, 1), trim, door, 0, cy - 0.14, zc - cd);
+    for (const x of [-cw / 2 + 0.15, cw / 2 - 0.15]) {
+      B.add(rbox(0.14, cy, 0.14, 0.01, 1), trim, door, x, 0, zc - cd + 0.1);
+      B.add(new THREE.CylinderGeometry(0.11, 0.11, 0.9, 14).translate(0, 0.45, 0), pbr('metal_painted_chipped', 0xf2c21e, 0xf2c21e), door, x + (x < 0 ? -0.35 : 0.35), 0, zc - cd + 0.1);
+      B.add(new THREE.CylinderGeometry(0.112, 0.112, 0.12, 14).translate(0, 0.62, 0), flat(0x1a1a1a, 0.6), door, x + (x < 0 ? -0.35 : 0.35), 0, zc - cd + 0.1);
+    }
+    for (const lz of [-0.6, -1.9]) { const lp = (game.world as any)?.addLightPoint?.(door.at(0, cy - 0.3, zc + lz), 0xf4f8ff, 7, 7, 0.25); if (lp) lp.day = 0; } }
+  // loading dock: raised slab, hazard edge, rubber bumpers, steps; pallets of cartons + a hand truck
+  { const dx = (lx0 + lx1) / 2, dw = lx1 - lx0 + 0.8, dd = 2.6, dh = 1.15;
+    B.add(rbox(dw, dh, dd, 0.02, 1), pbr('concrete_old_cracked', 0xb8b4ac, 0xb0aca4), door, dx, 0, zc - dd / 2);
+    B.add(rbox(dw, 0.1, 0.03, 0.005, 1), mat('hazard', () => { const cv = document.createElement('canvas'); cv.width = 256; cv.height = 16; const x = cv.getContext('2d')!; for (let i = -16; i < 256; i += 32) { x.fillStyle = '#f2c21e'; x.fillRect(i, 0, 16, 16); x.fillStyle = '#151515'; x.fillRect(i + 16, 0, 16, 16); } const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(6, 1); return new THREE.MeshStandardMaterial({ map: t, roughness: 0.7 }); }), door, dx, dh - 0.1, zc - dd - 0.016);
+    for (const x of [dx - 1.2, dx + 1.2]) B.add(rbox(0.3, 0.35, 0.12, 0.03, 1), pbr('rubber_black', undefined, 0x1a1a1a), door, x, dh - 0.55, zc - dd - 0.06);
+    for (let k = 0; k < 4; k++) B.add(rbox(1.0, dh * (k + 1) / 5, 0.32, 0.01, 1), pbr('concrete_old_cracked', 0xa8a49c, 0xa8a49c), door, lx0 - 0.9, 0, zc - dd + 0.16 + k * 0.32);
+    const boxes: THREE.Matrix4[] = [];
+    for (let i = 0; i < 2; i++) for (let a = 0; a < 2; a++) for (let b = 0; b < 2; b++) for (let c = 0; c < 3; c++) {
+      if ((i + a + b + c) % 5 === 4) continue;
+      boxes.push(new THREE.Matrix4().makeRotationY(door.yaw + Math.PI / 2 + ((a + c) % 2) * 0.05).setPosition(door.at(dx - 1.0 + i * 1.6 + a * 0.54 - 0.27, dh + 0.12 + c * 0.345, zc - 1.2 + b * 0.44 - 0.22)));
+    }
+    root.add(libInstanced('cardboard_box_01', boxes, { shadow: true, cull: 45 }));
+    const ht = libModel('hand_truck'); ht.position.copy(door.at(dx + 1.6, dh, zc - 0.6)); ht.rotation.y = door.yaw + 0.4; root.add(ht);
+    game.physics.addBox(door.arr(dx, dh / 2, zc - dd / 2), [dw, dh, dd], door.yaw); }
+}
+
 function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<string, string>): ShopFix {
   const root = new THREE.Group(); root.name = 'shop:' + s.id;
   const B = new Batch();
+  warehouseFacade(game, B, root, door);
   // checkout lanes: bevelled counters with a rubber belt, end rollers, scanner, card terminal, lane-number pole
   for (let lane = 0; lane < 3; lane++) {
     const x = lane * 3.2;
@@ -1005,7 +1092,7 @@ function buildWarehouse(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: 
   B.add(mbox(26, 1.0, 0.2, 1.2), pbr('cement_block_wall', 0xd8d4cc, 0xd8d4cc), door, 3, 0, 19.6);
   B.add(mbox(26, 3.8, 0.08, 2), pbr('corrugated_painted', 0xdfe6ea, 0xdfe6ea), door, 3, 1.0, 19.62);
   { const sign = new THREE.Mesh(plane(9, 1.2), canvasMat(signTex('mk-wall', [{ text: 'แม็กโคร่ง · ขายส่ง ถูกทั้งโกดัง', size: 92, color: '#c8141a' }], 'card_board', 1600, 220), { rough: 0.7 }));
-    sign.position.copy(door.at(3, 3.6, 19.5)); sign.rotation.y = door.yaw + Math.PI; root.add(sign); }
+    sign.position.copy(door.at(3, 3.6, 19.5)); sign.rotation.y = door.yaw; root.add(sign); }
   for (const lz of [5, 10, 15]) for (const lx of [-0.5, 4, 8.5]) {
     const lamp = libModel('hanging_industrial_lamp'); lamp.position.copy(door.at(lx, 3.0, lz)); root.add(lamp);
     const lp = (game.world as any)?.addLightPoint?.(door.at(lx, 2.9, lz), 0xf2f6ff, 12, 11, 0);
@@ -1069,7 +1156,7 @@ export function setShutter(game: Game, fix: ShopFix, k: number) {
   k = Math.max(0.0001, Math.min(1, k));
   if (Math.abs(sh.k - k) < 1e-4) return;
   sh.k = k;
-  sh.mesh.scale.y = k;
+  for (const m of sh.meshes ?? [sh.mesh]) m.scale.y = k;
   if (sh.tex) { sh.tex.repeat.y = (sh.h * k) / 2; sh.tex.offset.y = 1 - sh.tex.repeat.y; }
   if (fix.closedSign) fix.closedSign.visible = k > 0.95;
   const want = k > 0.9;
