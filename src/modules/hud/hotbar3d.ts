@@ -21,6 +21,8 @@ interface Item {
   scale: number; scaleV: number;
   lift: number;
   retry: number;
+  dataSig: string;
+  refreshT: number;
   leaving: boolean;
   slot: number; span: number;
 }
@@ -96,18 +98,28 @@ export class Hotbar3D {
     for (const [eid, pos] of want) {
       const e = this.game.state.get(eid);
       if (!e) continue;
-      const sig = e.k + '|' + JSON.stringify(e.data ?? null);
+      // rebuild only when the KIND changes; data changes (wok contents, temperature…) refresh in place, ≤ 4×/s
+      const sig = e.k;
       let it = this.items.get(eid);
       if (it && it.leaving) { it.leaving = false; }
       if (!it) {
         const root = new THREE.Group(), spin = new THREE.Group();
         root.add(spin); this.scene.add(root);
-        it = { eid, sig: '', root, spin, obj: null, radius: 0, center: new THREE.Vector3(), scale: 0, scaleV: 0, lift: 0, retry: 0, leaving: false, slot: pos.slot, span: pos.span };
+        it = { eid, sig: '', root, spin, obj: null, radius: 0, center: new THREE.Vector3(), scale: 0, scaleV: 0, lift: 0, retry: 0, dataSig: '', refreshT: 0, leaving: false, slot: pos.slot, span: pos.span };
         this.items.set(eid, it);
         spin.rotation.y = Math.random() * 6.28;
       }
       it.slot = pos.slot; it.span = pos.span;
-      if (it.sig !== sig) { it.sig = sig; this.build(it, e); }
+      if (it.sig !== sig) { it.sig = sig; it.dataSig = ''; this.build(it, e); }
+      else if (it.obj && (it.refreshT -= dt) <= 0) {
+        it.refreshT = 0.25;
+        const ds = JSON.stringify(e.data ?? null);
+        if (ds !== it.dataSig) {
+          const first = it.dataSig === '';
+          it.dataSig = ds;
+          if (!first) { try { this.game.items.defOf(e)?.refresh?.(it.obj, e, this.game); } catch { /* visual only */ } }
+        }
+      }
       else if (!it.radius && (it.retry -= dt) <= 0) this.fit(it);
     }
     // ---- animate
