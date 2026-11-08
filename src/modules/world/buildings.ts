@@ -201,11 +201,25 @@ function officeTower(c: SpecialCtx) {
   // podium (granite + glass lobby)
   w.mat('marble', { tint: 0x8a8680, ov: 'concrete_streaked', ovAmt: 0.4 });
   w.box(O.x0 - 2, 0, O.z0, O.x1 + 2, SW_H + podium * fh, O.z1 + 1, ALL & ~NY);
-  w.glass({ tint: 0xc8d8dc, alpha: 0.35 });
-  w.quad(O.x0 + 6, SW_H + 0.05, O.z1 + 1.02, O.x1 - 6, SW_H + 0.05, O.z1 + 1.02, O.x1 - 6, SW_H + 4.6, O.z1 + 1.02, O.x0 + 6, SW_H + 4.6, O.z1 + 1.02);
-  // lobby interior glow
-  w.mat('marble', { tint: 0xd8d0c0, emis: EMIS.shopwarm.i, emisK: 0.15 });
-  w.quad(O.x1 - 6, SW_H, O.z1 + 0.6, O.x0 + 6, SW_H, O.z1 + 0.6, O.x0 + 6, SW_H + 4.6, O.z1 + 0.6, O.x1 - 6, SW_H + 4.6, O.z1 + 0.6);
+  // glass lobby: interior-mapped panes (lobby depth, lit) instead of a flat glowing plane behind one glass quad,
+  // which read as a blank grey wall from the street
+  {
+    const lx0 = O.x0 + 6, lx1 = O.x1 - 6, lz = O.z1 + 1.02, n = Math.max(1, Math.round((lx1 - lx0) / 2.4));
+    w.pushT(lx0, 0, lz, 0);
+    for (let i = 0; i < n; i++) w.roomPane(((lx1 - lx0) * i) / n, SW_H + 0.05, ((lx1 - lx0) * (i + 1)) / n, SW_H + 4.6, 0, EMIS.shopwarm.i, 0.35, 0.95);
+    w.pop();
+    // mullions, transom and a revolving-door style entrance frame under the canopy
+    w.mat('alu', { tint: 0x8c9296, uv: 'local' });
+    for (let i = 0; i <= n; i++) { const x = lx0 + ((lx1 - lx0) * i) / n; w.box(x - 0.06, SW_H, lz - 0.02, x + 0.06, SW_H + 4.7, lz + 0.08, PZ | PX | NX); }
+    w.box(lx0, SW_H + 3.3, lz - 0.02, lx1, SW_H + 3.42, lz + 0.09, PZ | PY | NY);
+    w.box(lx0, SW_H, lz - 0.02, lx1, SW_H + 0.08, lz + 0.1, PZ | PY);
+    w.mat('metal_paint', { tint: 0x2a2e32 });
+    // entrance frame (posts + header + a push bar), the panes behind stay visible
+    for (const x of [-47.6, -45.0, -42.4]) w.box(x - 0.07, SW_H, lz + 0.02, x + 0.07, SW_H + 2.9, lz + 0.16, PZ | PX | NX);
+    w.box(-47.67, SW_H + 2.9, lz + 0.02, -42.33, SW_H + 3.05, lz + 0.16, PZ | PY | NY);
+    w.mat('stainless', {});
+    for (const x of [-46.3, -43.7]) w.box(x - 0.9, SW_H + 1.0, lz + 0.18, x + 0.9, SW_H + 1.05, lz + 0.22, PZ | PY | NY);
+  }
   // canopy over the entrance
   w.mat('alu', { tint: 0xb8bcc0 });
   w.box(-50, SW_H + 4.7, O.z1 + 1, -40, SW_H + 5.0, O.z1 + 5, ALL);
