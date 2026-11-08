@@ -40,6 +40,8 @@ interface PhysState {
   belly: THREE.Vector3;
   t: BodyTemplate | null;
   look: Look | null;
+  /** head bone scale factor (re-applied every update: the first-person view collapses/restores the head bone) */
+  head: number;
 }
 
 /** per-template bone region membership (belly, chest, arms, legs) */
@@ -131,13 +133,17 @@ export function applyPhysique(rigAny: unknown, look: Look) {
   const fem = look.sex === 'f';
   let st = rig.__phys;
   if (!st) {
-    st = rig.__phys = { lift: 0, w: 1, regions: regionsFor(t), amp: new THREE.Vector4(), belly: new THREE.Vector3(), t: null, look: null };
+    st = rig.__phys = { lift: 0, w: 1, regions: regionsFor(t), amp: new THREE.Vector4(), belly: new THREE.Vector3(), t: null, look: null, head: 1 };
     // posture-aware root lift (the feet stay planted with longer/shorter legs) — runs before the rig's own tick
     const upd = rig.update;
     rig.update = function (this: PhysRig, dt: number) {
       const s = this.__phys;
       // setLook() skips the rebuild when only the physique changed (same atlas key) → re-apply here
       if (s && this.look && s.look !== this.look) applyPhysique(this, this.look);
+      if (s && s.head !== 1) {
+        const hi = this.t.index.Head, hb = hi !== undefined ? this.bones[hi] : null;
+        if (hb && hb.scale.x > 0.01 && Math.abs(hb.scale.x - this.t.restScale[hi].x * s.head) > 1e-4) hb.scale.copy(this.t.restScale[hi]).multiplyScalar(s.head);
+      }
       if (s && s.lift !== 0) {
         const want = this.posture === 'stand' ? 1 : this.posture === 'sit' ? 0.45 : 0;
         s.w += (want - s.w) * Math.min(1, dt * 6);
@@ -174,7 +180,8 @@ export function applyPhysique(rigAny: unknown, look: Look) {
     st.w = rig.posture === 'stand' ? 1 : 0;
   }
   // head: ±6 %
-  { const i = I.Head; if (i !== undefined && bones[i]) bones[i].scale.copy(t.restScale[i]).multiplyScalar(1 + (ph.head - 0.5) * 0.12); }
+  st.head = 1 + (ph.head - 0.5) * 0.12;
+  { const i = I.Head; if (i !== undefined && bones[i]) bones[i].scale.copy(t.restScale[i]).multiplyScalar(st.head); }
 
   // ---- soft tissue (template metres; the rig's uniform height scale applies on top)
   const m = (ph.muscle - 0.5) * 2;

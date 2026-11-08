@@ -37,7 +37,15 @@ export function whenImage(path: string | undefined): Promise<HTMLImageElement | 
   return waiting.get(path)!;
 }
 
+const pixCache = new WeakMap<HTMLImageElement | HTMLCanvasElement, Uint8ClampedArray>();
 function pixels(im: HTMLImageElement | HTMLCanvasElement, size = FACE_PX): Uint8ClampedArray {
+  // the face photos / detail maps are decoded once per image (the tint is per skin, the source pixels aren't)
+  if (size === FACE_PX && im instanceof HTMLImageElement) { const hit = pixCache.get(im); if (hit) return hit; }
+  const px = pixelsRaw(im, size);
+  if (size === FACE_PX && im instanceof HTMLImageElement) pixCache.set(im, px);
+  return px;
+}
+function pixelsRaw(im: HTMLImageElement | HTMLCanvasElement, size: number): Uint8ClampedArray {
   const cv = document.createElement('canvas');
   cv.width = cv.height = size;
   const ctx = cv.getContext('2d', { willReadFrequently: true })!;

@@ -371,6 +371,14 @@ export function lookKey(look: Look) {
   return JSON.stringify([look.sex, Math.round((look.build ?? 0.4) * 8), look.skin, look.face, look.hair, look.top, look.bottom, look.shoes, [...(look.acc ?? [])].sort(), (look as any).arch ?? '']);
 }
 
+/** accessories that are pure geometry (palette material) and never touch the atlas */
+const UNPAINTED_ACC = /^(sunglasses|glasses|gold_chain|watch_casio|earrings)(#|$)/;
+/** Atlas cache key: lookKey minus everything the painter ignores (geometry-only accessories, physique, names…),
+ *  so e.g. two aunties who differ only by glasses share one painted atlas. */
+export function paintKey(look: Look) {
+  return JSON.stringify([look.sex, Math.round((look.build ?? 0.4) * 8), look.skin, look.face, look.hair, look.top, look.bottom, look.shoes, [...(look.acc ?? [])].filter((a) => !UNPAINTED_ACC.test(a)).sort(), (look as any).arch ?? '']);
+}
+
 /** Paint a character atlas in small resumable steps (one garment layer per step) so the caller can
  *  time-slice it across frames (rig.ts processAtlasQueue). Same result as paintAtlas(). */
 export function* paintAtlasJob(look: Look, size: number, variant: FaceVariant, onFaceReady?: () => void): Generator<string, HTMLCanvasElement, void> {
@@ -381,7 +389,7 @@ export function* paintAtlasJob(look: Look, size: number, variant: FaceVariant, o
   const P = new Painter(cv, size);
   const spec = bodySpec(look);
   const skin = look.skin || '#c69472';
-  const r = new RNG(hashStr(lookKey(look)));
+  const r = new RNG(hashStr(paintKey(look)));
   // the bare-skin layer (photo pores, form shading, AO) only depends on skin tone / sex / build: paint it once per
   // combination and blit it (the most expensive layer: ~16 full-region overlay composites)
   const sk = yield* skinLayer(size, skin, spec);
@@ -436,6 +444,64 @@ function* skinLayer(size: number, skin: string, spec: BodySpec): Generator<strin
   for (const c of skinLayers.values()) bytes += c.width * c.height * 4;
   for (const k of skinLayers.keys()) { if (bytes <= 12e6 || skinLayers.size <= 2) break; const c = skinLayers.get(k)!; bytes -= c.width * c.height * 4; skinLayers.delete(k); }
   return cv;
+}
+
+/** Instant stand-in atlas (≈0.1 ms): flat garment colours on the right regions + a simple face, plus the matching
+ *  skin mask. Shown while the real (time-sliced) paint is queued so characters never pop in undressed. */
+export function paintQuick(look: Look, size = 128): { cv: HTMLCanvasElement; mask: HTMLCanvasElement } {
+  const cv = document.createElement('canvas'); cv.width = cv.height = size;
+  const mk = document.createElement('canvas'); mk.width = mk.height = 32;
+  const g = cv.getContext('2d')!, m = mk.getContext('2d')!;
+  const k = size / ATLAS, km = 32 / ATLAS;
+  g.setTransform(k, 0, 0, k, 0, 0); m.setTransform(km, 0, 0, km, 0, 0);
+  const spec = bodySpec(look);
+  const skin = look.skin || '#c69472';
+  g.fillStyle = skin; g.fillRect(0, 0, ATLAS, ATLAS);
+  m.fillStyle = '#ffffff'; m.fillRect(0, 0, ATLAS, ATLAS);
+  const box = (reg: Region, s0: number, t0: number, s1: number, t1: number, col: string) => {
+    const x0 = reg.x + (s0 <= 0 ? 0 : INSET + s0 * (reg.w - 2 * INSET)), x1 = reg.x + (s1 >= 1 ? reg.w : INSET + s1 * (reg.w - 2 * INSET));
+    const y0 = reg.y + (t0 <= 0 ? 0 : INSET + t0 * (reg.h - 2 * INSET)), y1 = reg.y + (t1 >= 1 ? reg.h : INSET + t1 * (reg.h - 2 * INSET));
+    if (x1 <= x0 || y1 <= y0) return;
+    g.fillStyle = col; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+    m.fillStyle = '#000000'; m.fillRect(x0, y0, x1 - x0, y1 - y0);
+  };
+  const top = spec.top, bot = spec.bottom;
+  const tc = look.top?.color ?? top.color, bc = look.bottom?.color ?? bot.color, sc = look.shoes?.color ?? spec.shoe.color;
+  // bottoms
+  const tw = torsoT(bot.waist);
+  box(R.torso, 0, tw, 1, 1, bc);
+  if (isTube(bot)) box(R.skirt, 0, 0, 1, 1, bc);
+  else box(R.leg, 0, 0, 1, bot.kind === 'trousers' ? 1 : legT(bot.hem), bc);
+  // top
+  if (!(top.sleeve === 'none' && top.collar !== 'robe' && top.loose < 0.004)) {
+    const tH = top.hem <= 0.8 ? 1 : torsoT(top.hem);
+    box(R.torso, 0, top.sleeve === 'none' ? torsoT(1.38) : torsoT(1.45), 1, tH, tc);
+    if (top.hem >= 0.8 && !isTube(bot)) box(R.leg, 0, 0, 1, legT(Math.max(0.78, top.hem)), tc);
+    const se = sleeveEnd(top);
+    if (se > 0) box(R.arm, 0, 0, 1, armT(se), tc);
+    box(R.collar, 0, 0, 1, 1, tc);
+  }
+  // shoes
+  if (!['barefoot', 'flipflop', 'sandal'].includes(spec.shoe.kind)) box(R.foot, 0, 0, 1, 1, sc);
+  box(R.sole, 0, 0, 1, 1, spec.shoe.kind === 'barefoot' ? skin : '#2a2624');
+  // hair / hats / neck & body accessories
+  const hc = look.hair?.color ?? '#141110';
+  if (look.hair?.style !== 'shaved') { box(R.hair, 0, 0, 1, 1, hc); box(R.scalp, 0, 0, 1, 0.7, hc); }
+  for (const a of spec.acc) {
+    if (a.slot === 'hat') box(R.hat, 0, 0, 1, 1, a.color);
+    else if (a.kind === 'apron' || a.kind === 'apron_waist') box(R.apron, 0, 0, 1, 1, a.color);
+    else if (a.kind === 'towel' || a.kind === 'neckerchief') box(R.towel, 0, 0, 1, 1, a.color);
+    else if (a.kind === 'headband') box(R.band, 0, 0, 1, 1, a.color);
+    else if (a.kind === 'mask') box(R.mask, 0, 0, 1, 1, a.color);
+    else if (a.kind === 'backpack') box(R.pack, 0, 0, 1, 1, a.color);
+  }
+  // face: brows, eyes, mouth at the photo layout positions (eyes 0.36/0.64 × 0.44, mouth 0.5 × 0.73)
+  const F = R.face;
+  const fp = (u: number, v: number): [number, number] => [F.x + INSET + u * (F.w - 2 * INSET), F.y + INSET + v * (F.h - 2 * INSET)];
+  g.fillStyle = 'rgba(40,26,20,0.85)';
+  for (const u of [0.36, 0.64]) { const [x, y] = fp(u, 0.44); g.beginPath(); g.ellipse(x, y, 9, 5, 0, 0, Math.PI * 2); g.fill(); const [bx, by] = fp(u, 0.385); g.fillRect(bx - 16, by - 3, 32, 6); }
+  { const [x, y] = fp(0.5, 0.73); g.fillStyle = shade(skin, 0.62); g.fillRect(x - 16, y - 2.5, 32, 5); }
+  return { cv, mask: mk };
 }
 
 /** Paint a character atlas synchronously (all steps at once). */
@@ -694,8 +760,14 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
   const tSleeve = se > 0 ? armT(se) : -1;
   baseTopFabric(P, top, 'torso', T, 0, tHem, col, c2, r);
   // hip vertices skinned to the thighs live in the leg region: continue an untucked shirt there so the hem stays a straight line
-  const hemY = Math.max(top.hem, shellHem + 0.004);
-  if (top.hem > 0.8 && hemY < 1.0 && !isTube(bot)) baseTopFabric(P, top, 'leg', R.leg, 0, legT(hemY), col, c2, r);
+  // (jackets: the shell's polygons near the hem are split between torso and leg UVs by bone dominance → paint the leg
+  //  strip down to exactly the shell hem, or the hem comes out as a saw-tooth of jacket / trouser triangles)
+  const jacket = top.collar === 'suit' || top.loose >= 0.028;
+  const hemY = jacket && shellHem > 0 ? shellHem + 0.004 : Math.max(top.hem, shellHem + 0.004);
+  if ((top.hem > 0.8 || jacket) && hemY < 1.0 && !isTube(bot)) {
+    baseTopFabric(P, top, 'leg', R.leg, 0, legT(hemY), col, c2, r);
+    if (jacket) { P.band(R.leg, legT(hemY) - 0.014, legT(hemY), shade(col, 0.82), 1); P.line(R.leg, [[0, legT(hemY) - 0.012], [1, legT(hemY) - 0.012]], shade(col, 0.62), 1, 0.6, [3, 2]); }
+  }
   if (tSleeve > 0) baseTopFabric(P, top, 'arm', A, 0, tSleeve, col, c2, r);
   // collar strip (geometry)
   baseTopFabric(P, top, 'collar', R.collar, 0, 1, top.pattern === 'polo_stripe' ? c2 : col, c2, r);
@@ -811,7 +883,7 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
       neckline(neckF + 0.004, neckB + 0.01, skin);
       P.band(T, torsoT(1.12), torsoT(1.08), '#d9dcd8', 0.9, 0, 1); // reflective strip
       // back number plate (back = s 0/1)
-      const num = String(1 + (hashStr(lookKey(look)) % 49));
+      const num = String(1 + (hashStr(paintKey(look)) % 49));
       for (const s of [0.0, 1.0]) {
         const [cx, cy] = P.pt(T, s, torsoT(1.24));
         const g = P.g; g.save(); P.clipRegion(T);
@@ -855,7 +927,7 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
   // embroidery / prints
   if (top.pattern === 'school' || top.pattern === 'school_girl') {
     P.text(T, 0.4, torsoT(1.32), 'ส.ห.ผ.', LOOPED.body, 13, c2);
-    P.text(T, 0.4, torsoT(1.29), (look.sex === 'f' ? 'ด.ญ.' : 'ด.ช.') + ' ' + ['สมชาย', 'สมศรี', 'มานี', 'ปิติ', 'ชูใจ', 'วีระ'][hashStr(lookKey(look)) % 6], LOOPED.body, 10, c2);
+    P.text(T, 0.4, torsoT(1.29), (look.sex === 'f' ? 'ด.ญ.' : 'ด.ช.') + ' ' + ['สมชาย', 'สมศรี', 'มานี', 'ปิติ', 'ชูใจ', 'วีระ'][hashStr(paintKey(look)) % 6], LOOPED.body, 10, c2);
     if (top.pattern === 'school_girl') { // navy tie knot
       const g = P.g; const [cx, cy] = P.pt(T, 0.5, neckF + 0.04);
       g.fillStyle = c2; g.beginPath(); g.moveTo(cx - 7, cy - 8); g.lineTo(cx + 7, cy - 8); g.lineTo(cx + 12, cy + 30); g.lineTo(cx, cy + 36); g.lineTo(cx - 12, cy + 30); g.closePath(); g.fill();
@@ -876,7 +948,7 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
   }
   if (top.pattern === 'tee_print') {
     const lines = ['กินข้าวยัง?', 'ไม่เป็นไร', 'ใจเย็นๆ', 'รวยมาก', 'หิวตลอด', 'สู้ๆ นะ', 'อ้วนแต่หล่อ'];
-    const txt = lines[hashStr(lookKey(look)) % lines.length];
+    const txt = lines[hashStr(paintKey(look)) % lines.length];
     const ink = lum(col) > 0.5 ? '#1d1d1f' : '#f2efe6';
     P.text(T, 0.5, torsoT(1.28), txt, LOOPED.hand, 34, ink, { rot: -0.05 });
     P.noise(T, 0.25, 0.38, torsoT(1.33), 0.62, torsoT(1.22));

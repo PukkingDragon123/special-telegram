@@ -5,7 +5,7 @@ import { buildBody, bodySpec, shapeKey, BodySpec, Lod, headScale, HEAD_TOP } fro
 import { buildHairAndHead, hairThickAt } from './hair';
 import { Pose, PoseBuilder, blendPose, getQ, ARM_L, ARM_R, sm } from './pose';
 import { ANIMS, AnimCtx, AnimDef, FIDGETS, Posture } from './anims';
-import { paintAtlasJob, repaintFace, lookKey, accessoryPalette } from './atlas';
+import { paintAtlasJob, paintQuick, repaintFace, paintKey, lookKey, accessoryPalette } from './atlas';
 import { faceEntry } from './defs';
 
 /* ============================================================================================
@@ -72,24 +72,30 @@ const PLACEHOLDER = (() => { const c = document.createElement('canvas'); c.width
 /** atlases for characters beyond this distance start at LOW_RES and are upgraded when someone gets close */
 const FAR_PAINT = 13, LOW_RES = 256, UPGRADE_DIST = 11;
 
-function atlasKey(look: Look, size: number, v: FaceVariant) { return lookKey(look) + '|' + size + '|' + v; }
+function atlasKey(look: Look, size: number, v: FaceVariant) { return paintKey(look) + '|' + size + '|' + v; }
 
 function acquireAtlas(look: Look, size: number, v: FaceVariant, sync = false, at?: THREE.Object3D): { key: string; e: AtlasEntry } {
   const key = atlasKey(look, size, v);
   let e = atlasCache.get(key);
   if (!e) {
-    const ph = document.createElement('canvas');
-    ph.width = ph.height = 4;
-    const g = ph.getContext('2d')!;
-    g.fillStyle = look.skin || '#c69472'; g.fillRect(0, 0, 4, 4);
+    // never a bare-skin placeholder: an instant flat-colour stand-in (clothes + face) until the real paint lands
+    let ph: HTMLCanvasElement, mk: HTMLCanvasElement | null = null;
+    try { const q = paintQuick(look); ph = q.cv; mk = q.mask; }
+    catch { ph = document.createElement('canvas'); ph.width = ph.height = 4; const g = ph.getContext('2d')!; g.fillStyle = look.skin || '#c69472'; g.fillRect(0, 0, 4, 4); }
     const tex = new THREE.CanvasTexture(ph);
     tex.flipY = false;
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = 4;
     e = { tex, cv: ph, refs: 0, painted: false, look: JSON.parse(JSON.stringify(look)), variant: v, size, cur: 0, prio: sync };
+    if (mk) { e.mtex = new THREE.CanvasTexture(mk); e.mtex.flipY = false; e.mtex.colorSpace = THREE.NoColorSpace; }
     atlasCache.set(key, e);
-    if (sync) { runJobSync(e, size); }
-    else { e.queued = true; queue.push(e); }
+    if (sync) runJobSync(e, size);
+    else {
+      // face-variant swaps of an already painted look: cheap copy + face repaint right now (no flash)
+      const base = v !== 'neutral' ? atlasCache.get(atlasKey(look, size, 'neutral')) : null;
+      if (base?.painted) { try { beginPaint(e, base.cur); } catch (err) { console.error('[characters] atlas paint failed', err); } }
+      if (!e.painted) { e.queued = true; queue.push(e); }
+    }
   }
   if (at && !e.at) e.at = at;
   e.refs++;
@@ -141,7 +147,7 @@ function finishPaint(e: AtlasEntry, cv: HTMLCanvasElement, res: number) {
   const mk: HTMLCanvasElement | undefined = (cv as any).__skinMask;
   if (mk) {
     if (!e.mtex) { e.mtex = new THREE.CanvasTexture(mk); e.mtex.flipY = false; e.mtex.colorSpace = THREE.NoColorSpace; }
-    else { e.mtex.image = mk; e.mtex.needsUpdate = true; }
+    else if (e.mtex.image !== mk) { e.mtex.dispose(); e.mtex.image = mk; e.mtex.needsUpdate = true; }
   }
   // the GPU texture was allocated at the previous size (immutable storage) → re-create it
   e.tex.dispose();

@@ -85,7 +85,9 @@ export class Game {
     this.npcs = new NpcMover(this);
     let saved: any = null;
     try { saved = JSON.parse(localStorage.getItem('hp.profile') || 'null'); } catch {}
-    this.profile = saved ?? { name: 'เฮีย' + Math.floor(Math.random() * 90 + 10), look: null };
+    // v2 outfits: everyone starts in the chef whites once (older saved looks predate them)
+    if (saved && (saved.lookVer ?? 1) < 2) { saved.look = null; saved.lookVer = 2; try { localStorage.setItem('hp.profile', JSON.stringify(saved)); } catch {} }
+    this.profile = saved ?? { name: 'เฮีย' + Math.floor(Math.random() * 90 + 10), look: null, lookVer: 2 };
     engine.onFixed((f) => this.fixed(f.dt));
     engine.onFrame((f) => this.frame(f.dt, f.rawDt));
   }

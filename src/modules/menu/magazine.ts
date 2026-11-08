@@ -13,6 +13,7 @@ import { sfx } from './sfx';
  * a model from game.chars. Sticky-note tabs jump to sections, pages curl when flipped.
  * ========================================================================================== */
 
+const accSlot = (raw: string) => { const id = raw.split('#')[0]; return /cap|hat|helmet|bucket|straw|toque|skull/.test(id) ? 'hat' : /glass/.test(id) ? 'eyes' : /chain|towel|lanyard|neckerchief|scarf/.test(id) ? 'neck' : /watch/.test(id) ? 'wrist' : /mask/.test(id) ? 'face' : /apron|sash|backpack/.test(id) ? 'body' : id; };
 export type Section = 'cover' | 'tops' | 'bottoms' | 'shoes' | 'acc' | 'hair' | 'faces' | 'skins';
 export interface MagItem { id: string; name: { th: string; en?: string }; price?: number; colors?: string[]; kind: Section; color?: string; sex?: string }
 interface Cell { x: number; y: number; w: number; h: number; item: MagItem }
@@ -335,7 +336,13 @@ export class Magazine {
       case 'tops': L.top = { id: it.id, color: col ?? L.top.color }; break;
       case 'bottoms': L.bottom = { id: it.id, color: col ?? L.bottom.color }; break;
       case 'shoes': L.shoes = { id: it.id, color: col ?? L.shoes.color }; break;
-      case 'acc': L.acc = it.id === '__none' ? [] : [it.id]; break;
+      case 'acc': {
+        // toggle per body slot (hat / neck / body …) so picking sunglasses keeps the chef hat + neckerchief
+        if (it.id === '__none') { L.acc = []; break; }
+        const has = L.acc.some((a) => a.split('#')[0] === it.id);
+        L.acc = has ? L.acc.filter((a) => a.split('#')[0] !== it.id) : [...L.acc.filter((a) => accSlot(a) !== accSlot(it.id)), it.id].slice(-6);
+        break;
+      }
       case 'hair': L.hair = { style: it.id, color: L.hair.color }; break;
       case 'faces': L.face = it.id; if (it.sex === 'f' || it.sex === 'm') L.sex = it.sex as any; break;
       case 'skins': L.skin = it.color ?? it.id; break;
@@ -350,7 +357,7 @@ export class Magazine {
       case 'tops': return L.top.id === it.id;
       case 'bottoms': return L.bottom.id === it.id;
       case 'shoes': return L.shoes.id === it.id;
-      case 'acc': return it.id === '__none' ? !L.acc.length : L.acc.includes(it.id);
+      case 'acc': return it.id === '__none' ? !L.acc.length : L.acc.some((a) => a.split('#')[0] === it.id);
       case 'hair': return L.hair.style === it.id;
       case 'faces': return L.face === it.id;
       case 'skins': return L.skin.toLowerCase() === (it.color ?? it.id).toLowerCase();

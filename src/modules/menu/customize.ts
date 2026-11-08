@@ -222,8 +222,8 @@ export class CustomizeView {
       case 'shoes': L.shoes = { id: it.id, color: col ?? L.shoes.color }; break;
       case 'acc': {
         if (it.id === '__none') { L.acc = []; break; }
-        const slot = (id: string) => (/cap|hat|helmet|bucket|straw/.test(id) ? 'hat' : /glass/.test(id) ? 'eyes' : /chain|towel|lanyard/.test(id) ? 'neck' : /watch/.test(id) ? 'wrist' : /mask/.test(id) ? 'face' : id);
-        if (L.acc.includes(it.id)) L.acc = L.acc.filter((a) => a !== it.id);
+        const slot = (raw: string) => { const id = raw.split('#')[0]; return /cap|hat|helmet|bucket|straw|toque|skull/.test(id) ? 'hat' : /glass/.test(id) ? 'eyes' : /chain|towel|lanyard|neckerchief|scarf/.test(id) ? 'neck' : /watch/.test(id) ? 'wrist' : /mask/.test(id) ? 'face' : /apron|sash|backpack/.test(id) ? 'body' : id; };
+        if (L.acc.some((a) => a.split('#')[0] === it.id)) L.acc = L.acc.filter((a) => a.split('#')[0] !== it.id);
         else { const s = slot(it.id); L.acc = [...L.acc.filter((a) => slot(a) !== s), it.id].slice(-6); }
         break;
       }
