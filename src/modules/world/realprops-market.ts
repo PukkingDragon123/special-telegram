@@ -1,9 +1,8 @@
 import * as THREE from 'three';
 import { DetailCull, splitByGrid } from '../../core/detailcull';
 import { ClothSpots, type V3 } from '../cloth/api';
-import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier.js';
 import { Assets } from '../../core/assets';
 import { F } from '../../core/fonts';
 import { RNG } from '../../core/rng';
@@ -387,28 +386,6 @@ export class SeafoodBatch {
   }
 }
 
-/** pile pieces are tiny and there are thousands: a decimated copy (≈30 % of the vertices, uvs kept), made once */
-const pileGeoCache = new Map<string, THREE.BufferGeometry>();
-function pileGeo(g: THREE.BufferGeometry): THREE.BufferGeometry {
-  let out = pileGeoCache.get(g.uuid);
-  if (out) return out;
-  out = g;
-  try {
-    const n = g.getAttribute('position').count;
-    const tris = (g.index ? g.index.count : n) / 3;
-    if (tris > 160) {
-      const src = g.clone();
-      for (const k of Object.keys(src.attributes)) if (!['position', 'normal', 'uv'].includes(k)) src.deleteAttribute(k);
-      const merged = mergeVertices(src).getAttribute('position').count;   // the modifier works on welded vertices
-      const s = new SimplifyModifier().modify(src, Math.floor(merged * 0.68));
-      const t2 = (s.index ? s.index.count : s.getAttribute('position').count) / 3;
-      if (t2 >= 24 && t2 < tris) { s.computeVertexNormals(); s.computeBoundingSphere(); out = s; }
-    }
-  } catch { out = g; }
-  pileGeoCache.set(g.uuid, out);
-  return out;
-}
-
 export class PileBatch {
   private inst = new Map<string, { id: string; tint?: [number, number, number]; m: THREE.Matrix4[] }>();
   private leaves: THREE.BufferGeometry[] = [];
@@ -416,7 +393,7 @@ export class PileBatch {
   /** can this key be piled? */
   static has(key: string) { return !!PILES[key] || key === 'heap_basil' || key === 'heap_eggs' || key === 'pork_table' || key === 'bananas'; }
   /** a pile of `key` centred at p (world, bottom), radius rw × rd (local), facing yaw */
-  add(key: string, p: THREE.Vector3, yaw: number, rw: number, rd: number, seed: number) {
+  add(key: string, p: THREE.Vector3, yaw: number, rw: number, rd: number, seed: number, maxN = Infinity) {
     const r = (k: number) => { const v = Math.sin(seed * 91.7 + k * 12.9898) * 43758.5453; return v - Math.floor(v); };
     const rot = (lx: number, lz: number) => new THREE.Vector3(lx, 0, lz).applyAxisAngle(_UP, yaw);
     if (key === 'heap_eggs') { for (let k = 0; k < 3; k++) this.obj('egg_tray', p.clone().add(rot((r(k) - 0.5) * 0.04, (r(k + 9) - 0.5) * 0.04)).setY(p.y + 0.02 + k * 0.055), yaw + (r(k + 3) - 0.5) * 0.3); return; }
@@ -440,7 +417,7 @@ export class PileBatch {
     }
     const P = PILES[key];
     if (!P) return;
-    const n = Math.max(6, Math.round(P.per * rw * rd));
+    const n = Math.min(maxN, Math.max(6, Math.round(P.per * rw * rd)));
     const ck = P.id + ':' + (P.tint ?? []).join(',');
     let e = this.inst.get(ck); if (!e) this.inst.set(ck, (e = { id: P.id, tint: P.tint, m: [] }));
     for (let k = 0; k < n; k++) {
@@ -463,7 +440,7 @@ export class PileBatch {
         for (const part of mdl.parts) {
           let mat = part.mat;
           if (e.tint) { const c = (part.mat as THREE.MeshStandardMaterial).clone(); c.color.multiply(new THREE.Color(e.tint[0], e.tint[1], e.tint[2])); mat = c; }
-          const im = new THREE.InstancedMesh(pileGeo(part.geom), mat, mats.length);
+          const im = new THREE.InstancedMesh(part.geom, mat, mats.length);
           mats.forEach((M, i) => im.setMatrixAt(i, M));
           // fruit/veg in piles: no shadow casting, split per 10 m cell, hidden beyond ~38 m
           im.castShadow = false; im.receiveShadow = true;

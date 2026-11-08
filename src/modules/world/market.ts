@@ -300,7 +300,7 @@ export function produce(c: ShopCtx, kind: string, x: number, y: number, z: numbe
   const pk = KIND_PILE[kind];
   if (pk && PileBatch.has(pk)) {
     marketPiles ??= new PileBatch();
-    marketPiles.add(pk, new THREE.Vector3(x, hy - 0.01, z), yaw, r * 0.85, r * (container === 'tray' ? 0.6 : 0.85), Math.floor(x * 31 + z * 17));
+    marketPiles.add(pk, new THREE.Vector3(x, hy - 0.01, z), yaw, r * 0.85, r * (container === 'tray' ? 0.6 : 0.85), Math.floor(x * 31 + z * 17), 14);   // capped: thousands of decor heaps
     return;
   }
   // … else a soft photo dome (fish on ice, dried goods, flowers, rice): 12 sectors × 3 rings, not a 6-sided cone

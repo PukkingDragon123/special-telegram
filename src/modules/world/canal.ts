@@ -205,9 +205,11 @@ function stiltHouse(c: SpecialCtx, x: number, rng: RNG) {
   w.quad(x, fy, z1, x, fy, z0, x, fy + wallH, z0, x, fy + wallH, z1);
   w.quad(x + W, fy, z0, x + W, fy, z1, x + W, fy + wallH, z1, x + W, fy + wallH, z0);
   w.quad(x + W, fy, z1, x, fy, z1, x, fy + wallH, z1, x + W, fy + wallH, z1);
-  // dark interior behind the openings
-  w.mat('wood_old', { tint: 0x2a2620, ao: 0.4 });
-  w.quad(x + 0.2, fy, z0 - 1.5, x + W - 0.2, fy, z0 - 1.5, x + W - 0.2, fy + wallH, z0 - 1.5, x + 0.2, fy + wallH, z0 - 1.5);
+  // rooms behind the door + window holes (interior-mapped panes: floor, walls, furniture, a lamp at night) — the old
+  // flat dark plane read as black holes from the canal road
+  for (const [hx0, hx1, hy0, hy1] of holesF) w.roomPane(hx0, hy0, hx1, hy1, z0 - 0.04, 0.0, 0.3, rng.range(0.05, 0.6));
+  w.mat('wood_old', { tint: 0x4a4038, ao: 0.6 });
+  w.quad(x + 0.2, fy, z0 - 2.6, x + W - 0.2, fy, z0 - 2.6, x + W - 0.2, fy + wallH, z0 - 2.6, x + 0.2, fy + wallH, z0 - 2.6);
   // window shutters (one open)
   w.mat('wood_paint', { tint: rng.pick([0x3a5a4a, 0x6a3a2a, 0x2a4a6a]), uv: 'local' });
   w.box(x + W - 2.4 - 0.75, fy + 0.9, z0 + 0.02, x + W - 2.4, fy + 1.9, z0 + 0.06, ALL);

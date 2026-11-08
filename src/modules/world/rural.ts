@@ -94,7 +94,14 @@ export function buildRural(c: SpecialCtx) {
     grassPatch(w, F, 8, -250, 74, -184, RURAL_Y, 0.25, rng, 'grass');
     grassPatch(w, F, 74, -262, 128, -184, RURAL_Y, 0.15, rng, 'grass');
     // tree line at the north boundary
-    for (let x = -126; x < 128; x += rng.range(9, 15)) canopyTree(w, F, x, RURAL_Y, rng.range(-268, -262), rng, { h: rng.range(9, 14), r: rng.range(4.5, 7), trunk: 0.5 });
+    // (mixed species, irregular spacing and depth — the old even row of identical canopy trees looked planted)
+    for (let x = -126; x < 128; x += rng.range(6, 19)) {
+      const z = rng.range(-269, -256), k = rng.next();
+      if (k < 0.55) canopyTree(w, F, x, RURAL_Y, z, rng, { h: rng.range(7, 15), r: rng.range(3.5, 7.5), trunk: rng.range(0.35, 0.6) });
+      else if (k < 0.8) coconutPalm(w, F, x, RURAL_Y, z, rng, rng.range(0.8, 1.25));
+      else { bananaTree(w, F, x, RURAL_Y, z, rng, rng.range(0.9, 1.3)); if (rng.chance(0.6)) bananaTree(w, F, x + rng.range(1.2, 2.2), RURAL_Y, z + rng.range(-1.5, 1.5), rng, rng.range(0.7, 1.1)); }
+      if (rng.chance(0.25)) x += rng.range(8, 16);   // open gaps (fields seen through)
+    }
   }
   stiltHome(c, 20, -195, rng);
   stiltHome(c, 46, -226, rng);
