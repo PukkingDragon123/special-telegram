@@ -8,6 +8,7 @@ import { G } from '../../sim/physics';
 import { DialogueView, DlgViewOption } from '../../ui3d/dialogue3d';
 import { PERSONALITIES, SHOP_BY_ID } from '../shops/data';
 import { Dialogues, Dialogue, DlgCtx, DlgNode, DlgOption, Line, Quests, TalkTarget } from './api';
+import { banterFor } from './content/banter';
 import { questAvailable, questState } from './runtime';
 import { headOfTarget } from './targets';
 
@@ -130,6 +131,18 @@ export class DialogueSession {
     if (!dlg) this.nodes.set('__root', { id: '__root', say: tl('ว่าไง?', "What's up?") });
     let first = '__root';
     if (dlg) { try { first = dlg.start(ctx); } catch (e) { console.warn('[quests] start', dlg.id, e); first = dlg.nodes[0]?.id; } }
+    // quick comeback cards (banter.ts) on the opening line of everyday conversations
+    this.banter = [];
+    if (dlg && first) {
+      const n0 = this.nodes.get(first);
+      const have = (n0?.options?.length ?? 0) + ex.options.length;
+      if (n0 && have > 0) {
+        try {
+          const b = banterFor(dlg.id, t, first, have <= 2 ? 2 : have <= 3 ? 1 : 0);
+          if (b) { for (const n of b.nodes) this.nodes.set(n.id, n); this.banter = b.options; }
+        } catch (e) { console.warn('[quests] banter', e); }
+      }
+    }
     // camera: from the current first-person pose
     const cam = game.camera;
     this.camFrom.p.copy(cam.getWorldPosition(_a)); this.camFrom.q.copy(cam.getWorldQuaternion(new THREE.Quaternion())); this.camFrom.fov = cam.fov;
@@ -170,7 +183,7 @@ export class DialogueSession {
     // options (first node also gets the quest extras + a goodbye)
     let opts = (n.options ?? []).filter((o) => { try { return !o.if || o.if(c); } catch { return false; } });
     if (this.firstNode) {
-      opts = [...this.extra.filter((o) => { try { return !o.if || o.if(c); } catch { return false; } }), ...opts];
+      opts = [...this.extra.filter((o) => { try { return !o.if || o.if(c); } catch { return false; } }), ...opts, ...this.banter];
       if (opts.length && !opts.some((o) => o.end)) opts.push({ text: tl('ไปละ!', 'Bye!'), end: true });
       this.firstNode = false;
     }
@@ -178,6 +191,7 @@ export class DialogueSession {
     this.optsPending = true;
   }
   private optsPending = false;
+  private banter: DlgOption[] = [];
 
   private showOptions() {
     const c = this.ctx!;

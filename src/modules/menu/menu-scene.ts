@@ -193,7 +193,7 @@ export class MenuScene implements SceneDef {
   /** the game title + tagline in the clean menu face (no pre-rendered hand lettering) */
   private addTitle(delay: number) {
     this.stickers.title = this.ui.add({ lines: [{ text: 'เฮียผัด!', size: 150, font: MF, weight: MW }], anchor: 'b', x: 0, y: 182, width: 470, passive: true, delay, z: 2 });
-    this.stickers.tagline = this.ui.add({ lines: [{ text: 'ร้อยบาทสร้างตัว', size: 50, font: MF, weight: MW }, { text: 'FROM 100 BAHT TO A REAL RESTAURANT', size: 15, font: MF, weight: MW, gap: -6, band: 0.8, spacing: 2 }], anchor: 'b', x: 0, y: 46, width: 230, passive: true, delay: delay + 0.3, tilt: -1.5, z: 2 });
+    // (no tagline: less text on the cover)
   }
 
   private setupCamera() {
@@ -356,11 +356,10 @@ export class MenuScene implements SceneDef {
         const follow = () => this.project(this.tagAnchor(s.i));
         if (!p) {
           // small, quiet "waiting…" note floating over the free seat (online rooms only)
-          if (online) s.tag = this.ui.add({ lines: [{ text: 'รอเพื่อน…', size: 34, font: MF, weight: MW }, { text: 'FREE SEAT', size: 12, font: MF, weight: MW, gap: -5, band: 0.7, spacing: 2 }], style: DISABLED, width: 92, follow, passive: true, bob: 2.5, delay: 0.2, tilt: s.i % 2 ? 3 : -3 });
+          if (online) s.tag = this.ui.add({ lines: [{ text: 'รอเพื่อน…', size: 34, font: MF, weight: MW }], style: DISABLED, width: 92, follow, passive: true, bob: 2.5, delay: 0.2, tilt: s.i % 2 ? 3 : -3 });
         } else {
           const lines: any[] = [{ text: this.nameEdit && isMe ? (this.nameDraft || ' ') + '|' : p.name, size: 34, font: MF, weight: MW }];
           if (p.peer === hostPeer && online) lines.push({ text: 'หัวห้อง', size: 18, font: MF, weight: MW, gap: -6, band: 0.8, style: GOLD });
-          else if (isMe && !this.nameEdit) lines.push({ text: 'คลิกแก้ชื่อ', size: 15, font: MF, weight: MW, gap: -6, band: 0.7 });
           s.tag = this.ui.add({ lines, follow, passive: !isMe, tilt: (s.i % 2 ? 2 : -2), onClick: isMe ? () => this.editName() : undefined, delay: this.firstSync ? 0.6 + s.i * 0.08 : 0.25 });
         }
       }
@@ -723,9 +722,10 @@ export class MenuScene implements SceneDef {
 
   private buildUI(add: (k: string, o: any) => Sticker) {
     const g = this.game, s = g.session;
+    // less text: the small English gloss only on the big primary buttons (START / HOST / JOIN / LEAVE)
     const L = (text: string, en?: string, size = 54): any[] => {
       const a: any[] = [{ text, size, font: MF, weight: MW }];
-      if (en) a.push({ text: en, size: Math.round(size * 0.36), font: MF, weight: MW, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
+      if (en && size >= 56) a.push({ text: en, size: Math.max(17, Math.round(size * 0.34)), font: MF, weight: MW, gap: -Math.round(size * 0.12), band: 0.9, spacing: 1.5 });
       return a;
     };
     const next = () => (g.scenes.has('casino') && !params.has('skipintro') ? 'casino' : 'world');
@@ -853,11 +853,8 @@ export class MenuScene implements SceneDef {
   }
 
   private buildSettings(add: (k: string, o: any) => Sticker) {
-    const L = (text: string, en?: string, size = 40): any[] => {
-      const a: any[] = [{ text, size, font: MF, weight: MW }];
-      if (en) a.push({ text: en, size: Math.round(size * 0.38), font: MF, weight: MW, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
-      return a;
-    };
+    // settings: Thai labels only (less text)
+    const L = (text: string, _en?: string, size = 40): any[] => [{ text, size, font: MF, weight: MW }];
     const g = this.game;
     add('s_title', { lines: L('ตั้งค่า', 'SETTINGS', 70), anchor: 'c', x: 0, y: -250, passive: true, tilt: -2 });
     add('s_q', { lines: L('ความสวยของภาพ', 'GRAPHICS QUALITY', 30), anchor: 'c', x: 0, y: -165, passive: true });
@@ -970,7 +967,7 @@ export class MenuScene implements SceneDef {
     for (const k of Object.keys(this.stickers)) if (k !== 'title') { this.ui.remove(this.stickers[k]); this.stickers[k] = null; }
     for (const s of this.slots) { this.ui.remove(s.tag); s.tag = null; this.ui.remove(s.ready); s.ready = null; }
     this.ui.remove(this.arrowTag); this.arrowTag = null;
-    if (this.stickers.title) { this.stickers.title.vs += 8; this.stickers.title.vr += 90; }
+    if (this.stickers.title) { this.stickers.title.vs += 8;  }
     this.uiKey = 'starting';
     Sound.music('', 1.2);
   }

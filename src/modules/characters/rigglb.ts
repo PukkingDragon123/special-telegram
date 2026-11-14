@@ -3,7 +3,7 @@ import type { AnimName, AttachPoint, CarryPose, CharacterRig, Expression, FaceVa
 import { B, NB, PARENT, REF_H, RestSkel, restSkel, restDir } from './skel';
 import { bodySpec, BodySpec, Lod } from './body';
 import { hairThickAt } from './hair';
-import { Pose, PoseBuilder, blendPose, sm, HS_N } from './pose';
+import { Pose, PoseBuilder, blendPose, sm, HS_N, HAND_SHAPES } from './pose';
 import { ANIMS, AnimCtx, AnimDef, FIDGETS, Personality, Posture } from './anims';
 import { FaceRig, FACE_EXPR_PARS, FACE_EXPR_WARP, variantExpr, ExprKey } from './face-expr';
 import { lookKey } from './atlas';
@@ -114,7 +114,8 @@ function templateData(t: BodyTemplate): TData {
 const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion(), _q4 = new THREE.Quaternion();
 const _m4 = new THREE.Matrix4(), _w1 = new THREE.Vector3(), _w2 = new THREE.Vector3(), _w3 = new THREE.Vector3(), _w4 = new THREE.Vector3(), _w5 = new THREE.Vector3();
 const _qa = new THREE.Quaternion(), _qb = new THREE.Quaternion();
-const IK_T = [new THREE.Vector3(), new THREE.Vector3()];   // foot targets (never used as scratch)
+const IK_T = [new THREE.Vector3(), new THREE.Vector3()];
+const _m4r = new THREE.Matrix4(), _wR = new THREE.Vector3();   // foot targets (never used as scratch)
 const _ikT = new THREE.Vector3();
 const warned = new Set<string>();
 const GRIP2 = (() => { const a = new Float32Array(HS_N * 2); const g = [0.55, 0.62, 0.7, 0.76, 0.82, 0]; a.set(g, 0); a.set(g, HS_N); return a; })();
@@ -225,6 +226,45 @@ const CHAR_LIGHT_F = THREE.ShaderChunk.lights_physical_pars_fragment
 	}
 }`);
 
+/* First-person body (camera pass only — shadows use the depth material, so the full body + head still cast):
+ * every vertex carries fpCull = (region, hidden weight) baked from its skin weights. With uFpOn the upper
+ * torso / neck / head / clavicles collapse onto the spine_02 joint (closing the waist into a small cap), the
+ * upper arms onto their elbows — so looking down you see only hips, legs, feet, forearms and hands, never the
+ * inside of the chest, the neck stump or shoulders clipping the near plane. */
+const FP_PARS = `attribute vec2 fpCull;
+uniform float uFpOn;
+uniform vec3 uFpC[3];`;
+const FP_MAIN = `if (uFpOn > 0.5 && fpCull.y > 0.001) {
+  vec3 fpc = fpCull.x < 1.5 ? uFpC[0] : (fpCull.x < 2.5 ? uFpC[1] : uFpC[2]);
+  transformed = mix(transformed, fpc, clamp(fpCull.y * 1.15, 0.0, 1.0));
+}`;
+const FP_TORSO = ['spine_02', 'spine_03', 'neck_01', 'Head', 'clavicle_l', 'clavicle_r'];
+/** bake the fpCull attribute (region 1 torso, 2 left upper arm, 3 right upper arm) from the skin weights */
+function ensureFpCull(geo: THREE.BufferGeometry, index: Record<string, number>) {
+  if (geo.getAttribute('fpCull')) return;
+  const si = geo.getAttribute('skinIndex'), sw = geo.getAttribute('skinWeight');
+  const n = geo.getAttribute('position').count;
+  const out = new Float32Array(n * 2);
+  if (si && sw) {
+    const reg = new Map<number, number>();
+    for (const b of FP_TORSO) if (index[b] !== undefined) reg.set(index[b], 1);
+    if (index.upperarm_l !== undefined) reg.set(index.upperarm_l, 2);
+    if (index.upperarm_r !== undefined) reg.set(index.upperarm_r, 3);
+    for (let v = 0; v < n; v++) {
+      const w = [0, 0, 0, 0];
+      for (let k = 0; k < 4; k++) {
+        const r = reg.get(si.getComponent(v, k));
+        if (r) w[r] += sw.getComponent(v, k);
+      }
+      const tot = w[1] + w[2] + w[3];
+      if (tot <= 0.001) continue;
+      const r = w[1] >= w[2] && w[1] >= w[3] ? 1 : w[2] >= w[3] ? 2 : 3;
+      out[v * 2] = r; out[v * 2 + 1] = Math.min(1, tot);
+    }
+  }
+  geo.setAttribute('fpCull', new THREE.BufferAttribute(out, 2));
+}
+
 function makeAtlasMaterial() {
   const m = new THREE.MeshStandardMaterial({ roughness: 0.84, metalness: 0, envMapIntensity: 0.85, bumpScale: 1.4 });
   m.name = 'char-atlas';
@@ -232,14 +272,19 @@ function makeAtlasMaterial() {
   m.userData.uSkin = { value: WHITE1 };
   m.userData.uFace = { value: new Float32Array(20) };
   m.userData.uFaceOn = { value: 0 };
+  m.userData.uFpOn = { value: 0 };
+  m.userData.uFpC = { value: [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()] };
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uFat = m.userData.uFat;
     sh.uniforms.uSkinMask = m.userData.uSkin;
     sh.uniforms.uFace = m.userData.uFace;
     sh.uniforms.uFaceOn = m.userData.uFaceOn;
+    sh.uniforms.uFpOn = m.userData.uFpOn;
+    sh.uniforms.uFpC = m.userData.uFpC;
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nattribute float afat;\nuniform float uFat;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += normal * afat * uFat;');
+      .replace('#include <common>', '#include <common>\nattribute float afat;\nuniform float uFat;\n' + FP_PARS)
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed += normal * afat * uFat;')
+      .replace('#include <skinning_vertex>', '#include <skinning_vertex>\n' + FP_MAIN);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', '#include <common>\n' + CHAR_PARS_F)
       .replace('#include <map_fragment>', CHAR_MAP_F)
@@ -248,7 +293,7 @@ function makeAtlasMaterial() {
       .replace('#include <bumpmap_pars_fragment>', CHAR_BUMP_F)
       .replace('#include <lights_physical_pars_fragment>', CHAR_LIGHT_F);
   };
-  m.customProgramCacheKey = () => 'char-atlas-skin3-face';
+  m.customProgramCacheKey = () => 'char-atlas-skin3-face-fp1';
   return m;
 }
 
@@ -451,6 +496,7 @@ export class Rig implements CharacterRig {
   }
 
   private makeMesh(geo: THREE.BufferGeometry) {
+    ensureFpCull(geo, this.t.index);
     const m = new THREE.SkinnedMesh(geo, [this.mat, accessoryMaterial()]);
     m.name = 'character-mesh';
     m.bind(this.skeleton, new THREE.Matrix4());
@@ -463,18 +509,40 @@ export class Rig implements CharacterRig {
     return m;
   }
 
-  /** First person: the camera pass sees the body without the head (hair, hats, glasses), shadows keep everything.
-   *  The head bone is collapsed only for the camera draws of this frame (bone texture refreshed), restored after. */
+  /** First person: camera draws collapse the upper body (see FP_MAIN) — shadow draws don't run onBeforeRender and
+   *  use the depth material, so the shadow keeps the whole body. Centres are refreshed once per frame. */
   private fpHooks(m: THREE.Mesh) {
     m.onBeforeRender = (renderer: THREE.WebGLRenderer) => {
-      if (this.mode !== 'fp') return;
+      const on = this.mode === 'fp' ? 1 : 0;
+      for (const mat of [this.mat, this.fpAcc]) { const u = mat?.userData?.uFpOn; if (u) u.value = on; }
+      if (!on) return;
       const f = renderer.info.render.frame;
       if (this.fpFrame === f) return;
       this.fpFrame = f;
-      this.setHeadScale(1e-4);
-      this.skeleton.update();
+      const C = this.mat.userData.uFpC.value as THREE.Vector3[];
+      const I = this.t.index;
+      const bone = (n: string, o: THREE.Vector3) => { const i = I[n]; if (i === undefined) return false; this.bones[i].getWorldPosition(o); m.worldToLocal(o); return true; };
+      if (!bone('spine_02', C[0])) bone('pelvis', C[0]);
+      if (!bone('lowerarm_l', C[1])) C[1].copy(C[0]);
+      if (!bone('lowerarm_r', C[2])) C[2].copy(C[0]);
+      if (this.fpAcc) for (let k = 0; k < 3; k++) (this.fpAcc.userData.uFpC.value as THREE.Vector3[])[k].copy(C[k]);
     };
-    m.onAfterRender = () => { if (this.mode === 'fp') this.setHeadScale(1); };
+  }
+  /** first person: a private copy of the shared accessory material carrying the same cull (hats, glasses, chains) */
+  private fpAcc: THREE.MeshStandardMaterial | null = null;
+  private fpAccMat() {
+    if (this.fpAcc) return this.fpAcc;
+    const base = accessoryMaterial() as THREE.MeshStandardMaterial;
+    const m = base.clone();
+    m.userData = { uFpOn: { value: 0 }, uFpC: { value: [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()] } };
+    m.onBeforeCompile = (sh: any) => {
+      sh.uniforms.uFpOn = m.userData.uFpOn; sh.uniforms.uFpC = m.userData.uFpC;
+      sh.vertexShader = sh.vertexShader
+        .replace('#include <common>', '#include <common>\n' + FP_PARS)
+        .replace('#include <skinning_vertex>', '#include <skinning_vertex>\n' + FP_MAIN);
+    };
+    m.customProgramCacheKey = () => 'char-acc-fp1';
+    return (this.fpAcc = m);
   }
   private headScaled = false;
   private setHeadScale(k: number) {
@@ -503,10 +571,9 @@ export class Rig implements CharacterRig {
   private applyMaterials() {
     let mats: THREE.Material[];
     if (this.mode === 'sil') mats = [silMat, silMat];
-    else mats = [this.mat, accessoryMaterial()];   // first person: the body stays visible (head hidden per draw, see fpHooks)
+    else mats = [this.mat, this.mode === 'fp' ? this.fpAccMat() : accessoryMaterial()];   // first person: upper body culled per camera draw (fpHooks)
     for (const m of [this.mesh, this.meshLo]) if (m) m.material = mats;
     if (this.face3d) { this.face3d.material = this.mode !== 'sil' && this.faceMat ? this.faceMat : mats[0]; this.face3d.visible = this.mode !== 'fp' && this.lodLevel === 'high'; }
-    if (this.mode !== 'fp' && this.headScaled) this.setHeadScale(1);
   }
 
   // ---------------------------------------------------------------- contract API
@@ -575,6 +642,37 @@ export class Rig implements CharacterRig {
     void s;
     this.inner.updateWorldMatrix(true, false);
     return out.copy(_v3).applyMatrix4(this.inner.matrixWorld);
+  }
+  /**
+   * Scripted hand reach: two-bone IK (upper arm → forearm) puts the WRIST of `side` (1 = left, -1 = right) on a
+   * world point, blended by `w` over the animation (elbow bend plane follows the anim). `shape` sets the fingers
+   * (HAND_SHAPES name or curl vector) with the same weight. Pass null to release. Persists until changed.
+   */
+  reach(side: 1 | -1, target: THREE.Vector3 | null, o: { w?: number; shape?: string | number[] } = {}) {
+    const k = side > 0 ? 0 : 1;
+    if (!target || (o.w ?? 1) <= 0.001) { this.reachT[k] = null; return; }
+    const r = this.reachT[k] ?? (this.reachT[k] = { p: new THREE.Vector3(), w: 1, hs: null });
+    r.p.copy(target); r.w = Math.min(1, o.w ?? 1);
+    const sh = typeof o.shape === 'string' ? (HAND_SHAPES as any)[o.shape] : o.shape;
+    if (sh) { const hs = r.hs ?? (r.hs = new Float32Array(HS_N * 2)); hs.set(sh, k * HS_N); } else r.hs = null;
+  }
+  private reachT: ({ p: THREE.Vector3; w: number; hs: Float32Array | null } | null)[] = [null, null];
+  private applyReach() {
+    if (!this.reachT[0] && !this.reachT[1]) return;
+    this.inner.updateWorldMatrix(true, false);
+    const inv = _m4r.copy(this.inner.matrixWorld).invert();
+    for (let k = 0; k < 2; k++) {
+      const r = this.reachT[k];
+      if (!r) continue;
+      const sfx = k === 0 ? 'l' : 'r', I = this.t.index;
+      const ia = I['upperarm_' + sfx], ib = I['lowerarm_' + sfx], ic = I['hand_' + sfx];
+      if (ia === undefined || ib === undefined || ic === undefined) continue;
+      const tgt = _wR.copy(r.p).applyMatrix4(inv);
+      tgt.lerpVectors(this.Fp[ic], tgt, r.w);
+      this.solve2(ia, ib, ic, tgt);
+      this.fk();
+      if (r.hs && this.near) this.applyFingers(r.hs, k === 0 ? r.w : 0, k === 1 ? r.w : 0);
+    }
   }
   /** queue an inertial blend of the whole skeleton from its current output (pop-free changes) */
   inertialize(dur = 0.28) { this.inPending = Math.max(this.inPending, dur); }
@@ -840,6 +938,8 @@ export class Rig implements CharacterRig {
     if (dt > 0) { this.inertia(dt); this.fk(); }
     // ---- planted feet & ground fitting
     if (dt > 0) this.footIK(dt, this.near > 0 && this.posture === 'stand' && this.mode !== 'sil' && (!!c.plan.loco || standLegs || IK_OK.has(c.name)) && c.name !== 'tpose');
+    // ---- scripted hand reach (two-bone arm IK onto a world point, e.g. pinching a Jenga block)
+    this.applyReach();
     // ---- first person: keep hands out of the camera
     if (this.mode === 'fp') { this.fpHands(); this.fk(); }
     this.updateAttach();

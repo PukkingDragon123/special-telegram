@@ -90,18 +90,19 @@ export class Sticker {
     const el = (this.el = document.createElement('div'));
     el.className = 'stk' + (o.passive ? ' passive' : '');
     if (o.z) el.style.zIndex = String(o.z);
-    this.r = (o.tilt ?? 0) + (Math.random() < 0.5 ? -18 : 18);
-    this.tr = o.tilt ?? 0;
+    // all lettering stays level (no tilt / rotation wobble anywhere): the slap-in is scale-only
+    this.r = 0;
+    this.tr = 0;
     this.render();
     if (!o.passive) {
-      el.addEventListener('pointerenter', () => { if (this.opts.disabled || this.leaving) return; this.hover = true; this.vr += (Math.random() < 0.5 ? -1 : 1) * 60; sfx.hover(); this.render(); });
+      el.addEventListener('pointerenter', () => { if (this.opts.disabled || this.leaving) return; this.hover = true; sfx.hover(); this.render(); });
       el.addEventListener('pointerleave', () => { this.hover = false; this.pressed = false; this.render(); });
       el.addEventListener('pointerdown', (e) => { e.stopPropagation(); if (this.opts.disabled || this.leaving) { if (this.opts.disabled) { this.shake = 0.4; sfx.error(); } return; } this.pressed = true; this.vs -= 2; this.render(); });
       el.addEventListener('pointerup', (e) => {
         e.stopPropagation();
         if (!this.pressed || this.opts.disabled || this.leaving) return;
         this.pressed = false;
-        this.vs += 6; this.vr += (Math.random() - 0.5) * 120;
+        this.vs += 6;
         this.render();
         if (this.opts.clickSound !== '') sfx.click(this.opts.clickSound);
         try { this.opts.onClick?.(); } catch (err) { console.error('[menu ui]', err); }
@@ -151,7 +152,7 @@ export class Sticker {
   leave() {
     if (this.leaving) return;
     this.leaving = true;
-    this.ts = 0; this.ta = 0; this.vr += (Math.random() - 0.5) * 300;
+    this.ts = 0; this.ta = 0;
     this.el.style.pointerEvents = 'none';
   }
 }
@@ -230,8 +231,7 @@ export class StickerUI {
       s.vs += ((tgt - s.s) * 260 - s.vs * 15) * dt;
       s.s += s.vs * dt;
       const tr = s.tr + (s.hover ? Math.sin(s.age * 9) * 1.6 : 0);
-      s.vr += ((tr - s.r) * 180 - s.vr * 12) * dt;
-      s.r += s.vr * dt;
+      s.vr = 0; s.r = 0;
       s.a += ((s.leaving ? 0 : s.ta) - s.a) * Math.min(1, dt * (s.leaving ? 10 : 14));
       if (s.shake > 0) s.shake = Math.max(0, s.shake - dt);
       const shx = s.shake > 0 ? Math.sin(s.age * 70) * 9 * s.shake * this.u : 0;

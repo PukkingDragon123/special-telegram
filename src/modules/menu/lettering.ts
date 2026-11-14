@@ -12,12 +12,14 @@ export interface LetterStyle {
   fill: string; fillLo: string; inner: string; green: string; greenHi: string; greenLo: string; outer: string; shadow: string;
 }
 
-export const COVER: LetterStyle = { fill: '#FBFDF8', fillLo: '#E9EBDF', inner: '#0F1A0B', green: '#6CBF4B', greenHi: '#86CF66', greenLo: '#4E9E3A', outer: '#1E3314', shadow: '#0F1A0B' };
-export const HOVER: LetterStyle = { ...COVER, fill: '#FFE96A', fillLo: '#FFD23A' };
-export const PRESSED: LetterStyle = { ...COVER, fill: '#F2C230', fillLo: '#E0A820', green: '#5AAE3C', greenHi: '#6CBF4B', greenLo: '#3F8A2E' };
+// readable on the bright yellow backdrop: white glyphs, a near-black contour and a DARK green band (was light green that melted into the glow)
+export const COVER: LetterStyle = { fill: '#FFFFFF', fillLo: '#F3F5EE', inner: '#0A1207', green: '#2F7A24', greenHi: '#3A8C2C', greenLo: '#25661C', outer: '#0A1207', shadow: '#0A1207' };
+export const HOVER: LetterStyle = { ...COVER, fill: '#FFFFFF', fillLo: '#FFFFFF', green: '#47A336', greenHi: '#56B444', greenLo: '#3A8C2C' };
+export const PRESSED: LetterStyle = { ...COVER, fill: '#E4E8DC', fillLo: '#D6DACB', green: '#4E9E3A', greenHi: '#5DB040', greenLo: '#3F8A2E' };
 export const DISABLED: LetterStyle = { ...COVER, fill: '#D9D6CC', fillLo: '#C9C6BA', green: '#8FA088', greenHi: '#A3B19C', greenLo: '#768871', outer: '#3A4236', shadow: '#1d2119' };
 export const DANGER: LetterStyle = { ...COVER, fill: '#FFF4EC', fillLo: '#F6DCCF', green: '#E0583A', greenHi: '#F27552', greenLo: '#B8402A', outer: '#3A140C', inner: '#2a0d06', shadow: '#2a0d06' };
-export const GOLD: LetterStyle = { ...COVER, fill: '#FFF7D6', fillLo: '#FFE79A', green: '#E8A33D', greenHi: '#F5C25A', greenLo: '#C47F22', outer: '#3A2408', inner: '#2a1804', shadow: '#2a1804' };
+/** 'selected / highlighted' — was gold; the user wants NO yellow text: same white fill on a deeper green band */
+export const GOLD: LetterStyle = { ...COVER, fill: '#FFFFFF', fillLo: '#F2F4EC', green: '#1F5A17', greenHi: '#276B1D', greenLo: '#184A12' };
 
 export interface LineSpec {
   text: string;
@@ -77,8 +79,8 @@ export function albumText(input: string | LineSpec | LineSpec[], o: AlbumOpts = 
     const m = ctx.measureText(l.text || ' ');
     const s = l.size;
     const bandK = l.band ?? 1;
-    const total = s * ((o.fat ?? 0.03) + (o.inner ?? 0.012) + (o.band ?? 0.085) * bandK + (o.edge ?? 0.018));
-    const sh: [number, number] = [s * (o.shadow?.[0] ?? 0.03), s * (o.shadow?.[1] ?? 0.045)];
+    const total = s * ((o.fat ?? 0.004) + (o.inner ?? 0.032) + (o.band ?? 0.06) * bandK + (o.edge ?? 0.02));
+    const sh: [number, number] = [s * (o.shadow?.[0] ?? 0.0), s * (o.shadow?.[1] ?? 0.04)];
     const asc = Math.max(m.actualBoundingBoxAscent || s * 0.8, s * 0.72);
     const desc = Math.max(m.actualBoundingBoxDescent || s * 0.2, s * 0.08);
     let w = (m.actualBoundingBoxRight ?? m.width) + (m.actualBoundingBoxLeft ?? 0);
@@ -134,7 +136,7 @@ export function albumText(input: string | LineSpec | LineSpec[], o: AlbumOpts = 
   const st = (i: number) => ms[i].l.style ?? o.style ?? COVER;
   const W_ = (i: number) => {
     const s = ms[i].l.size, k = ms[i].l.band ?? 1;
-    const fat = s * (o.fat ?? 0.03), inn = s * (o.inner ?? 0.012), band = s * (o.band ?? 0.085) * k, edge = s * (o.edge ?? 0.018);
+    const fat = s * (o.fat ?? 0.004), inn = s * (o.inner ?? 0.032), band = s * (o.band ?? 0.06) * k, edge = s * (o.edge ?? 0.02);
     return { fat, inn, band, edge };
   };
   // 1) shadow (whole silhouette, offset)
@@ -172,6 +174,11 @@ export function albumText(input: string | LineSpec | LineSpec[], o: AlbumOpts = 
     g.addColorStop(0, s.fill); g.addColorStop(0.55, s.fill); g.addColorStop(1, s.fillLo);
     ctx.strokeStyle = ctx.fillStyle = g;
     draw(i, 'stroke', 2 * w.fat);
+  }
+  // 6) crisp glyph pass on top (keeps Thai loops / vowels / tone marks sharp: the fattened fill can merge them)
+  for (let i = 0; i < ms.length; i++) {
+    ctx.fillStyle = st(i).fill;
+    draw(i, 'fill', 0);
   }
   return cv;
 }

@@ -586,9 +586,11 @@ void t3dSetup(){
     off.y += sin(ph) * uT3dC.x * w;
     az += cos(ph) * uT3dC.x * 0.8 * w;
   }
-  vT3dGlint = uT3dC.z * (tl < 0.0 ? ka * ka : exp(-tl * 6.5));
+  vT3dGlint = 0.0;   // no glint flash (user: never glowing text)
   vT3dKv = kv * dis;
   vT3dP = position.xy + vec2(seed * 7.0, seed * 3.0);
+  // lettering always stays level: no roll / tilt / flip from pop-in, vanish, wobble, shake or wave
+  az = 0.0; ax = 0.0;
   float cz = cos(az), sz = sin(az), cx = cos(ax), sx2 = sin(ax);
   mat3 rz = mat3(cz, sz, 0.0, -sz, cz, 0.0, 0.0, 0.0, 1.0);
   mat3 rx = mat3(1.0, 0.0, 0.0, 0.0, cx, sx2, 0.0, -sx2, cx);
@@ -635,7 +637,7 @@ function patchFrag(src: string) {
   return `uniform vec3 uT3dSide; uniform vec4 uT3dRim; uniform float uT3dKey; varying float vT3dFace;\n` + FRAG_NOISE + src
     .replace('#include <clipping_planes_fragment>', FRAG_DISSOLVE + '\n#include <clipping_planes_fragment>')
     .replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( mix( uT3dSide, diffuse, vT3dFace ), opacity );')
-    .replace('vec3 totalEmissiveRadiance = emissive;', 'vec3 totalEmissiveRadiance = emissive * mix( 0.3, 1.0, vT3dFace ) + diffuse * vT3dGlint * 1.3 + vec3( 1.0, 0.7, 0.36 ) * t3dEdge * 2.6;')
+    .replace('vec3 totalEmissiveRadiance = emissive;', 'vec3 totalEmissiveRadiance = emissive * mix( 0.3, 1.0, vT3dFace );')
     .replace('#include <opaque_fragment>', `{
         vec3 t3dV = normalize( vViewPosition );
         outgoingLight += uT3dRim.rgb * uT3dRim.a * pow( 1.0 - clamp( dot( normal, t3dV ), 0.0, 1.0 ), 2.0 );
@@ -643,7 +645,11 @@ function patchFrag(src: string) {
         vec3 t3dL = normalize( vec3( -0.45, 0.75, 0.55 ) );
         float t3dNd = max( dot( normal, t3dL ), 0.0 );
         float t3dSp = pow( max( dot( normal, normalize( t3dL + t3dV ) ), 0.0 ), 40.0 ) * ( 1.0 - roughnessFactor * 0.8 );
-        outgoingLight += uT3dKey * ( diffuseColor.rgb * t3dNd * ( 1.0 - metalnessFactor * 0.6 ) + mix( vec3( 0.5 ), diffuseColor.rgb * 1.05, metalnessFactor ) * t3dSp );
+        outgoingLight += uT3dKey * ( diffuseColor.rgb * t3dNd * ( 1.0 - metalnessFactor * 0.6 ) + mix( vec3( 0.5 ), diffuseColor.rgb * 1.05, metalnessFactor ) * t3dSp * 0.4 );
+        // burning edge of the dissolve reads as a dark char line (no hot glow)
+        outgoingLight *= 1.0 - t3dEdge * 0.8;
+        // never bright enough for the bloom pass to make lettering glow
+        outgoingLight = min( outgoingLight, vec3( 0.84 ) );
       }
       #include <opaque_fragment>`);
 }
@@ -707,6 +713,14 @@ function lookOf(k: LookKey): LookMats {
 // ============================================================================ Text3D
 
 const DEF = { font: 'talk' as Font3D, size: 0.12, depth: 0.18, bevel: 0.04, metalness: 0.05, roughness: 0.42, emissive: 0.06, lineHeight: 1.3 };
+
+/** gold / yellow / amber lettering becomes clean off-white (the user wants no yellow words) */
+const _hsl = { h: 0, s: 0, l: 0 };
+function noYellow(hex: number): number {
+  new THREE.Color(hex).getHSL(_hsl);
+  if (_hsl.h > 0.085 && _hsl.h < 0.2 && _hsl.s > 0.25 && _hsl.l > 0.3) return 0xfaf6ee;
+  return hex;
+}
 
 function colorNum(c: THREE.ColorRepresentation | undefined, def: number) {
   if (c === undefined || c === null) return def;
@@ -825,16 +839,17 @@ export class Text3D extends THREE.Group {
   // ---------------------------------------------------------------- internals
   private look(): LookMats {
     const o = this.o;
-    const color = colorNum(o.color, 0xfff3dc);
-    const sideDef = new THREE.Color(color).multiplyScalar(0.42).getHex();
+    // user rules for ALL 3D lettering: no glow, no rim light, no gold/yellow, clean solid fill with a dark edge
+    const color = noYellow(colorNum(o.color, 0xfaf6ee));
+    const sideDef = new THREE.Color(color).multiplyScalar(0.22).getHex();
     const a = o.anim ?? {};
     return lookOf({
-      color, side: colorNum(o.side, sideDef), metal: o.metalness ?? DEF.metalness, rough: o.roughness ?? DEF.roughness,
-      emis: o.emissive ?? DEF.emissive, opacity: o.opacity ?? 1, xray: !!o.xray, rim: colorNum(o.rim, 0xffffff), rimS: o.rimStrength ?? 0,
+      color, side: colorNum(o.side, sideDef), metal: Math.min(0.15, o.metalness ?? DEF.metalness), rough: Math.max(0.45, o.roughness ?? DEF.roughness),
+      emis: Math.min(0.08, o.emissive ?? DEF.emissive), opacity: o.opacity ?? 1, xray: !!o.xray, rim: 0xffffff, rimS: 0,
       key: o.keyLight ?? 0.45, shadow: o.shadow ?? 0, bevelFace: !!o.bevelFace,
-      a: [a.pop ?? 0.32, a.vanish ?? 0.28, a.wobble ?? 0, a.shake ?? 0],
+      a: [a.pop ?? 0.32, a.vanish ?? 0.28, 0, a.shake ?? 0],
       b: [a.rise ?? 0.35, a.drift ?? 0.5, a.spin ?? 1, o.bevelFace ? 0.9 : 0.35],
-      c: [a.wave ?? 0, a.squash ?? 1, a.glint ?? 0.45, a.dissolve === false ? 0 : 1],
+      c: [a.wave ?? 0, a.squash ?? 1, 0, a.dissolve === false ? 0 : 1],
     });
   }
 

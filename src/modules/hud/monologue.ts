@@ -16,6 +16,8 @@ const BROKE: L[] = [
   ['กระเป๋าตังค์เบากว่าใจกูอีก', 'My wallet is lighter than my soul'],
   ['ถ้ามีมาม่าซักซองก็ดีนะ… ไม่มีเว้ย', 'A pack of instant noodles would be nice… nope'],
   ['เจ้าหนี้โทรมาอีกแล้ว ห่าเอ๊ย ไม่รับ', 'The loan shark is calling again. Hell no'],
+  ['เงินเหลือแค่ค่ามาม่า… ซองเดียว', 'Money left for one pack of noodles'],
+  ['บัญชีกูติดลบจนธนาคารโทรมาปลอบ', 'Bank called to comfort me'],
 ];
 const RICH: L[] = [
   ['เชี่ย… ตังค์เยอะขนาดนี้ ใครจะเชื่อว่ากูเคยหมดตัว', 'Damn… who would believe I was broke'],
@@ -27,6 +29,8 @@ const NIGHT: L[] = [
   ['ตีสามแล้ว คนปกติเขานอนกันหมดแล้วมั้ง', 'It\'s 3 a.m., normal people are asleep'],
   ['หมาเห่าอีกแล้ว เงียบหน่อยได้ไหมไอ้ด่าง', 'The dogs again. Shut up, you spotty mutt'],
   ['ง่วงฉิบหาย แต่ต้องไปต่อ', 'Sleepy as hell, but I have to keep going'],
+  ['มืดจนเห็นแต่ฟันหมา', 'So dark I only see dog teeth'],
+  ['ผีมาก็ดี จะได้มีลูกค้า', "Ghosts are welcome, they're customers too"],
 ];
 const DAWN: L[] = [
   ['ฟ้าเริ่มสว่างแล้ว ตลาดเปิดแน่ๆ', 'The sky is getting light, the market must be open'],
@@ -37,6 +41,8 @@ const DAY: L[] = [
   ['คนเยอะดีวะ ขายของได้แน่', 'Lots of people, I can sell for sure'],
   ['ป้าร้านข้างๆ มองกูแปลกๆ หรือกูคิดไปเอง', 'Is the auntie next door giving me looks or is it just me'],
   ['ทำไมกะเพราร้านอื่นขายดีกว่าวะ… ต้องสู้!', 'Why does the other stall sell more krapow… fight!'],
+  ['การผัดคือศิลปะ… ศิลปะที่ร้อนชิบหาย', 'Frying is art… very hot art'],
+  ['ถ้าวันนี้ขายหมด จะซื้อพัดลมให้ตัวเอง', "Sell out today, I'm buying myself a fan"],
 ];
 const EVENING: L[] = [
   ['ชั่วโมงเร่งด่วน คนหิวเยอะ โอกาสทองมาแล้ว', 'Rush hour, hungry people everywhere — golden chance'],
@@ -45,6 +51,7 @@ const EVENING: L[] = [
 const HEAVY: L[] = [
   ['หนักฉิบหาย หลังจะหักแล้ว', 'Heavy as hell, my back is breaking'],
   ['ขนอะไรมาเยอะแยะวะกู ไอ้ควาย', 'Why am I carrying so much, you idiot'],
+  ['ขนของเยอะยังกับย้ายบ้าน', "Carrying like I'm moving house"],
 ];
 const HOLD: L[] = [
   ['ถือ{x}อยู่ เอาไปทำอะไรดีวะ', 'Holding the {x} — what do I do with it'],

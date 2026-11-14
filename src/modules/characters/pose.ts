@@ -25,6 +25,10 @@ export const HAND_SHAPES = {
   vsign: [0.8, 0, 0, 1, 1, 0.6],
   thumb: [0, 1, 1, 1, 1, 0],
   frame: [0.1, 0.08, 0.14, 0.2, 0.26, 0.95],
+  /** thumb + index tips meeting (picking up a small block / coin), other fingers tucked */
+  pinch: [0.5, 0.52, 0.78, 0.86, 0.92, 0.12],
+  /** thumb/index apart, ready to pinch */
+  prepinch: [0.18, 0.2, 0.55, 0.7, 0.8, 0.35],
 } satisfies Record<string, number[]>;
 export type HandShape = keyof typeof HAND_SHAPES;
 export const HS_N = 6;

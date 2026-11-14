@@ -146,7 +146,9 @@ export class LocalPlayer {
       const s = Input.sensitivity;
       this.lookDX = Input.mouseDX; this.lookDY = Input.mouseDY;
       this.yaw -= Input.mouseDX * s;
-      this.pitch = clamp(this.pitch - Input.mouseDY * s * (Input.invertY ? -1 : 1), -1.45, 1.45);
+      // first person: down to ~55° (you see your legs, not your own chest), up to ~75°; third person keeps more range
+      const lo = this.view === 'fp' ? -0.96 : -1.2, hi = this.view === 'fp' ? 1.31 : 1.2;
+      this.pitch = clamp(this.pitch - Input.mouseDY * s * (Input.invertY ? -1 : 1), lo, hi);
     } else { this.lookDX = 0; this.lookDY = 0; }
 
     // ---- camera view toggle
@@ -232,7 +234,9 @@ export class LocalPlayer {
     items.updateViewModel(dt, this.speedNow, this.lookDX, this.lookDY);
     this.placeCamera(dt, false);
     // ---- interaction (third person aims from the eyes toward whatever is under the crosshair)
-    if (playing) this.game.interact.update(dt, this.view === 'tp' ? this.aimFromEyes() : this.camera);
+    // cooking close-up (cooking module): may dolly the camera onto the wok; returns true while it owns the view
+    const camAdj = !!(this.game as any).camAdjust?.(this.camera, dt);
+    if (playing) this.game.interact.update(dt, this.view === 'tp' && !camAdj ? this.aimFromEyes() : this.camera);
   }
 
   private _o = new THREE.Vector3();
@@ -323,6 +327,7 @@ export class LocalPlayer {
       const rig = this.rig() as any;
       if (rig?.root && !rig.root.visible) rig.root.visible = true;
       if (rig && this.fpSet !== rig) { this.fpSet = rig; rig.setFirstPerson(true); }
+      if (this.pitch < -0.96) this.pitch = -0.96;   // first-person look-down limit (also after views/cutscenes set pitch)
       const bobY = Math.abs(Math.sin(this.bobT)) * 0.045 * this.bob;
       const bobX = Math.cos(this.bobT) * 0.025 * this.bob;
       // eyes of the actual body (stable chest-based FK, so it matches crouch/lean/height), else the capsule estimate

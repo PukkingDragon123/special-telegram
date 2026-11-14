@@ -12,6 +12,7 @@ import { buildCasino, CasinoSet, makeBottle, makeGlass, ROULETTE, SLOTS_POS, TAB
 import { Chips, Particles, makeCard } from './casino-fx';
 import { CASINO } from './lines';
 import { CineCam, Menace, ScreenFX, CINE_LINES, SHOUT, animPicker, path } from './casino-cine';
+import { buildCasinoGags, coatTail, GagSet } from './casino-gags';
 import { RigWorld } from '../characters/rig';
 import { clamp01, ease, key, lerp, play, smooth, suitLook } from './util';
 
@@ -93,6 +94,15 @@ export class CasinoScene implements SceneDef {
   private ambientCamWas = true;
   private posesAt: { a: Actor; t: number; pose: string; side: number; done?: boolean }[] = [];
   private walkWaitress: ((dt: number) => void) | null = null;
+  // homage gags: the tall coat guy in the back, the slap-drama couple by the karaoke, parody posters
+  private gags: GagSet | null = null;
+  private coat: Actor | null = null;
+  private drama: [Actor, Actor] | null = null;
+  private gagBeat = '';
+  private gagT = 0;
+  private sighT = 6;
+  private dramaT = 0;
+  private dramaPhase = 0;
 
   constructor(private game: Game) {}
 
@@ -116,6 +126,8 @@ export class CasinoScene implements SceneDef {
 
     this.set = buildCasino();
     s.add(this.set.root);
+    this.gags = buildCasinoGags();
+    s.add(this.gags.root);
     this.chips = new Chips();
     s.add(this.chips.group);
     this.parts = new Particles();
@@ -180,6 +192,7 @@ export class CasinoScene implements SceneDef {
     this.chips.dispose();
     this.parts.dispose();
     this.set.dispose();
+    this.gags?.dispose(); this.gags = null;
     this.envTex?.dispose();
     this.scene.traverse((o: any) => o.geometry?.dispose?.());
   }
@@ -250,6 +263,16 @@ export class CasinoScene implements SceneDef {
     }
     this.addActor(look('security_guard', 61), V(3.9, 0, -11.2), 0.2, 'stand_cool');
     this.waitress = this.addActor(look('office_worker_f', 71, { top: { id: 'blouse_office', color: '#1d1d1f' }, bottom: { id: 'skirt', color: '#1d1d1f' } }), V(10, 0, 3), -Math.PI / 2);
+    // background homage: a very tall guy in a long dark coat + black cap, holding a menacing stand pose all night
+    this.coat = this.addActor(look('office_worker_m', 81, {
+      height: 1.93, top: { id: 'suit_black', color: '#1b1d26' }, bottom: { id: 'slacks', color: '#1b1d26' }, shoes: { id: 'leather', color: '#121212' },
+      acc: ['cap_black', 'gold_chain'], physique: { muscle: 0.85, shoulders: 0.8, belly: 0.3 },
+    }), V(9.4, 0, -8.6), yawTo(-9.4, 8.6), 'cine_menace');
+    try { this.coat.rig.attach('hip').add(coatTail()); } catch { /* no hip attach: suit only */ }
+    // a prime-time slap-drama couple arguing by the karaoke TV
+    const wife = this.addActor(look('auntie_vendor', 91, { top: { id: 'shirt_satin', color: '#c8287a' } }), V(7.3, 0, 7.7), yawTo(0.8, 0), 'angry');
+    const hub = this.addActor(look('office_worker_m', 92), V(8.1, 0, 7.7), yawTo(-0.8, 0), 'sad');
+    this.drama = [wife, hub];
     const tray = makeBottle('champagne');
     tray.rotation.set(-0.15, 0, 0); tray.position.set(0, -0.04, 0.02);
     this.waitress.rig.attach('hand_r').add(tray);
@@ -833,6 +856,8 @@ export class CasinoScene implements SceneDef {
     for (const a of [...this.players, ...this.extras]) a.rig.update(dt);
     this.menace.update(raw, this.camera);
     this.fx.update(raw);
+    this.gags?.update(this.t);
+    try { this.gagTick(b.name, k, raw); } catch (e) { console.warn('[intro] gags', e); }
 
     // skip (hold Space / E)
     const holding = Input.isDown('Space') || Input.isDown('KeyE');
@@ -861,6 +886,61 @@ export class CasinoScene implements SceneDef {
     s.ball.position.x = ROULETTE.wheelX + Math.cos(a) * this.ballR;
     s.ball.position.y = ROULETTE.y + 0.085 + bounce;
     s.ball.position.z = Math.sin(a) * this.ballR;
+  }
+
+  /** background homage gags, timed by beat (all local, purely visual) */
+  private gagTick(beat: string, k: number, raw: number) {
+    const c = this.coat, d = this.drama;
+    const say = (a: Actor | null | undefined, th: string, en: string, expr?: string) => {
+      if (!a) return;
+      this.bubble(a, { th, en });
+      if (expr) this.expr(a, expr, 1.6);
+      try { a.rig.setTalking?.(true); } catch {}
+      setTimeout(() => { try { a.rig.setTalking?.(false); } catch {} }, 1200);
+    };
+    const play1 = (a: Actor | null | undefined, name: string, loop = true, speed = 1) => a?.rig.play(name as any, { loop, fade: 0.2, speed });
+    if (beat !== this.gagBeat) {
+      this.gagBeat = beat; this.gagT = 0;
+      if (c) {
+        if (beat === 'pose') {
+          play1(c, 'cine_menace');
+          this.menace.emit(() => this.head(c).clone().add(V(0, 0.15, 0)), 'go', 1.4, -1);
+        } else if (beat === 'win') {
+          // rapid "punch flurry" at nobody, Thai sound-effect parody
+          play1(c, 'slap', true, 3.2);
+          say(c, 'โอะระๆๆๆๆๆๆ!!', 'O-RAH-RAH-RAH-RAH!!', 'angry');
+          this.menace.emit(() => this.head(c).clone().add(V(0, 0.1, 0)), 'do', 3, -1);
+        } else if (beat === 'slowmo') {
+          play1(c, 'cine_cross');
+        } else if (beat === 'lose') {
+          play1(c, 'facepalm', false);
+          say(c, '…ยาเระๆ ซวยละพวกนี้', '…good grief. These guys are done', 'sad');
+        } else if (beat === 'bet' || beat === 'drink') play1(c, 'cine_menace');
+      }
+    }
+    this.gagT += raw;
+    // the coat guy sighs every so often
+    if (c && beat !== 'win' && beat !== 'lose' && beat !== 'black') {
+      this.sighT -= raw;
+      if (this.sighT <= 0) { this.sighT = 9 + Math.random() * 6; say(c, 'เฮ้อ… ยาเระๆ', '*sigh* … good grief'); }
+    }
+    if (c && beat === 'win' && this.gagT > 2.2 && this.gagT - raw <= 2.2) { play1(c, 'cine_point'); this.menace.stop(); }
+    // slap-drama loop (from the drinks to the roulette): slap → reel → sob, every ~4.5 s
+    if (d && (beat === 'drink' || beat === 'roulette' || beat === 'slowmo')) {
+      const [w, h] = d;
+      this.dramaT += raw;
+      const lines: [string, string, string, string][] = [
+        ['แกเอาเงินค่าเทอมลูกมาเล่นบาคาร่าเหรอ!!', 'You gambled our kid\'s school fees?!', 'ฮืออออ ชั้นผิดไปแล้ววว', 'Waaah, I was wrong!'],
+        ['คืนเงินผ่อนรถชั้นมาเดี๋ยวนี้!!', 'Give me back the car payment NOW!', 'แม่จ๋าาาา', 'Mommyyyy'],
+        ['ตบให้สุด! หยุดที่รัก!!', 'Slap till I love you!!', 'เจ็บแต่จบ… ไม่จบสักที', 'It hurts and it never ends'],
+      ];
+      const L = lines[this.dramaPhase % lines.length];
+      const t = this.dramaT;
+      if (t > 0.1 && t - raw <= 0.1) { play1(w, 'slap', false); say(w, L[0], L[1], 'angry'); }
+      if (t > 0.45 && t - raw <= 0.45) { play1(h, 'get_slapped', false); play(['slap_hard'], { vol: 0.55 }); this.expr(h, 'pain', 1.2); }
+      if (t > 1.5 && t - raw <= 1.5) { play1(h, 'sad'); say(h, L[2], L[3], 'sad'); play1(w, 'angry'); }
+      if (t > 4.6) { this.dramaT = 0; this.dramaPhase++; }
+    }
   }
 
   private bubble(a: Actor, text: { th: string; en?: string }) {

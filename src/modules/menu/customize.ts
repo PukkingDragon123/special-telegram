@@ -113,7 +113,7 @@ export class CustomizeView {
     // ---- stickers
     const L = (text: string, en?: string, size = 54): any[] => {
       const a: any[] = [{ text, size, font: MF, weight: MW }];
-      if (en) a.push({ text: en, size: Math.round(size * 0.36), font: MF, weight: MW, gap: -Math.round(size * 0.14), band: 0.9, spacing: 2 });
+      if (en && size >= 56) a.push({ text: en, size: Math.max(17, Math.round(size * 0.34)), font: MF, weight: MW, gap: -Math.round(size * 0.12), band: 0.9, spacing: 1.5 });
       return a;
     };
     this.stickers.push(this.ui.add({ lines: L('แต่งตัว', 'CUSTOMIZE', 58), anchor: 'tl', x: 135, y: 62, passive: true, tilt: -4, delay: 0.3 }));
