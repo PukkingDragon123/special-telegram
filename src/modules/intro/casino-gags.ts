@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { F } from '../../core/fonts';
+import { weatherSign } from '../world/signfx';
 
 /* ============================================================================================
  * Casino set gags (homage only — original names, no real people, no copied characters):
@@ -24,9 +25,11 @@ function canvasMat(w: number, h: number, draw: Draw, rough = 0.75) {
 }
 
 /** a framed print: canvas picture + thin dark frame, origin at the picture centre, facing +z */
+let posterSeed = 11;
 function framed(wm: number, hm: number, px: number, draw: Draw, frameCol = 0x1c1410) {
   const g = new THREE.Group();
-  const { mat } = canvasMat(px, Math.round((px * hm) / wm), draw);
+  const seed = posterSeed++;
+  const { mat } = canvasMat(px, Math.round((px * hm) / wm), (x, w, h) => { draw(x, w, h); weatherSign(x, w, h, { seed, surface: 'paper', wear: 0.35 }); });
   const pic = new THREE.Mesh(new THREE.PlaneGeometry(wm, hm), mat);
   pic.position.z = 0.012;
   const fr = new THREE.Mesh(new THREE.BoxGeometry(wm + 0.06, hm + 0.06, 0.02), new THREE.MeshStandardMaterial({ color: frameCol, roughness: 0.5, metalness: 0.3 }));

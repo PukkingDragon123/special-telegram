@@ -7,7 +7,9 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 |---|---|---|---|
 | Bananas (`bananas`) | https://polyhaven.com/a/bananas | Alexander Shulha | 77 KB |
 | Barrel_01 (`Barrel_01`) | https://polyhaven.com/a/Barrel_01 | Jorge Camacho | 120 KB |
+| Barrel 02 (`Barrel_02`) | https://polyhaven.com/a/Barrel_02 | Jorge Camacho | 76 KB |
 | Barrel 03 (`barrel_03`) | https://polyhaven.com/a/barrel_03 | Serhii Khromov | 91 KB |
+| Barrel Stove (`barrel_stove`) | https://polyhaven.com/a/barrel_stove | MP | 119 KB |
 | Boombox (`boombox`) | https://polyhaven.com/a/boombox | Thomas Paul Mouilleron | 188 KB |
 | Can Rusted (`can_rusted`) | https://polyhaven.com/a/can_rusted | Rahul Chaudhary | 113 KB |
 | Cardboard Box 01 (`cardboard_box_01`) | https://polyhaven.com/a/cardboard_box_01 | Rahul Chaudhary | 80 KB |
@@ -25,41 +27,59 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Food Lychee 01 (`food_lychee_01`) | https://polyhaven.com/a/food_lychee_01 | Oliver Harries | 36 KB |
 | Garden Hose Wall Mounted 01 (`garden_hose_wall_mounted_01`) | https://polyhaven.com/a/garden_hose_wall_mounted_01 | Kuutti Siitonen | 153 KB |
 | Hand Truck (`hand_truck`) | https://polyhaven.com/a/hand_truck | Mutanzom3D | 203 KB |
+| Hanging Industrial Lamp (`hanging_industrial_lamp`) | https://polyhaven.com/a/hanging_industrial_lamp | Kuutti Siitonen | 161 KB |
 | Industrial Plastic Container (`industrial_pastic_container`) | https://polyhaven.com/a/industrial_pastic_container | Galo Benivegna | 134 KB |
 | Island Tree 02 (`island_tree_02`) | https://polyhaven.com/a/island_tree_02 | Rob Tuytel, Rico Cilliers | 552 KB |
 | Ladder Sectioned 01 (`ladder_sectioned_01`) | https://polyhaven.com/a/ladder_sectioned_01 | MP | 111 KB |
 | Lightbulb 01 (`lightbulb_01`) | https://polyhaven.com/a/lightbulb_01 | Josh Dean | 24 KB |
 | Metal Jerrycan (`metal_jerrycan`) | https://polyhaven.com/a/metal_jerrycan | Sean Buckley | 138 KB |
+| Metal Jerrycan Green (`metal_jerrycan_green`) | https://polyhaven.com/a/metal_jerrycan_green | Ulan Cabanilla | 144 KB |
+| Metal Stool 01 (`metal_stool_01`) | https://polyhaven.com/a/metal_stool_01 | Ulan Cabanilla | 106 KB |
 | Metal Stool 02 (`metal_stool_02`) | https://polyhaven.com/a/metal_stool_02 | Ulan Cabanilla | 117 KB |
 | Metal Trash Can (`metal_trash_can`) | https://polyhaven.com/a/metal_trash_can | GurJas Studios | 273 KB |
 | Multi Cleaner 5 Litre (`multi_cleaner_5_litre`) | https://polyhaven.com/a/multi_cleaner_5_litre | James Ray Cock | 50 KB |
 | Old Tyre (`old_tyre`) | https://polyhaven.com/a/old_tyre | MP | 111 KB |
+| Outdoor Table Chair Set 01 (`outdoor_table_chair_set_01`) | https://polyhaven.com/a/outdoor_table_chair_set_01 | James Ray Cock | 183 KB |
 | Painted Wooden Bench (`painted_wooden_bench`) | https://polyhaven.com/a/painted_wooden_bench | Kirill Sannikov | 253 KB |
+| Painted Wooden Chair 01 (`painted_wooden_chair_01`) | https://polyhaven.com/a/painted_wooden_chair_01 | Kuutti Siitonen | 78 KB |
+| Painted Wooden Chair 02 (`painted_wooden_chair_02`) | https://polyhaven.com/a/painted_wooden_chair_02 | Kirill Sannikov | 108 KB |
 | Painted Wooden Stool (`painted_wooden_stool`) | https://polyhaven.com/a/painted_wooden_stool | Kirill Sannikov | 88 KB |
+| Painted Wooden Table (`painted_wooden_table`) | https://polyhaven.com/a/painted_wooden_table | Kirill Sannikov | 50 KB |
+| Planter Box 01 (`planter_box_01`) | https://polyhaven.com/a/planter_box_01 | James Ray Cock | 117 KB |
 | Planter Box 02 (`planter_box_02`) | https://polyhaven.com/a/planter_box_02 | James Ray Cock | 131 KB |
 | Planter Box 03 (`planter_box_03`) | https://polyhaven.com/a/planter_box_03 | James Ray Cock | 137 KB |
 | Planter Pot Clay (`planter_pot_clay`) | https://polyhaven.com/a/planter_pot_clay | Amal Kumar | 64 KB |
 | Plastic Bottle Gallon (`plastic_bottle_gallon`) | https://polyhaven.com/a/plastic_bottle_gallon | Rahul Chaudhary | 36 KB |
 | Plastic Broom (`plastic_broom`) | https://polyhaven.com/a/plastic_broom | L | 55 KB |
+| Plastic Container (`plastic_container`) | https://polyhaven.com/a/plastic_container | PierreB3D | 77 KB |
 | Plastic Crate 01 (`plastic_crate_01`) | https://polyhaven.com/a/plastic_crate_01 | PierreB3D | 272 KB |
 | Plastic Crate 02 (`plastic_crate_02`) | https://polyhaven.com/a/plastic_crate_02 | Fabi_G | 110 KB |
 | Plastic Crate 03 (`plastic_crate_03`) | https://polyhaven.com/a/plastic_crate_03 | Pacific Penguin | 281 KB |
 | Plastic Jerrycan (`plastic_jerrycan`) | https://polyhaven.com/a/plastic_jerrycan | Ulan Cabanilla | 128 KB |
 | Plastic Monobloc Chair 01 (`plastic_monobloc_chair_01`) | https://polyhaven.com/a/plastic_monobloc_chair_01 | Kuutti Siitonen | 122 KB |
+| Portable Generator (`portable_generator`) | https://polyhaven.com/a/portable_generator | James Ray Cock | 261 KB |
 | Potted Plant 01 (`potted_plant_01`) | https://polyhaven.com/a/potted_plant_01 | Rico Cilliers | 328 KB |
 | Potted Plant 02 (`potted_plant_02`) | https://polyhaven.com/a/potted_plant_02 | Rico Cilliers | 165 KB |
 | Potted Plant 04 (`potted_plant_04`) | https://polyhaven.com/a/potted_plant_04 | James Ray Cock | 146 KB |
 | Power Box 01 (`power_box_01`) | https://polyhaven.com/a/power_box_01 | Rico Cilliers, Yann Kervran | 136 KB |
 | Propane Tank (`propane_tank`) | https://polyhaven.com/a/propane_tank | Slinc | 97 KB |
+| Rusted Wheel Rim 01 (`rusted_wheel_rim_01`) | https://polyhaven.com/a/rusted_wheel_rim_01 | John Hutcheson | 108 KB |
 | Security Camera 01 (`security_camera_01`) | https://polyhaven.com/a/security_camera_01 | Alexander Otterbeck, Yann Kervran | 89 KB |
 | Security Light (`security_light`) | https://polyhaven.com/a/security_light | Maximilian Schuster | 141 KB |
+| Shrub 03 (`shrub_03`) | https://polyhaven.com/a/shrub_03 | Rico Cilliers | 108 KB |
 | Small Lpg Tank (`small_lpg_tank`) | https://polyhaven.com/a/small_lpg_tank | Ulan Cabanilla | 137 KB |
+| Small Wooden Table 01 (`small_wooden_table_01`) | https://polyhaven.com/a/small_wooden_table_01 | Ulan Cabanilla | 53 KB |
+| Standing Chalkboard 01 (`standing_chalkboard_01`) | https://polyhaven.com/a/standing_chalkboard_01 | ParzivalCG | 91 KB |
 | Steel Frame Shelves 02 (`steel_frame_shelves_02`) | https://polyhaven.com/a/steel_frame_shelves_02 | James Ray Cock | 79 KB |
+| Steel Frame Shelves 03 (`steel_frame_shelves_03`) | https://polyhaven.com/a/steel_frame_shelves_03 | Ulan Cabanilla | 132 KB |
 | Street Rat (`street_rat`) | https://polyhaven.com/a/street_rat | Sean Buckley | 117 KB |
+| Tire Pump (`tire_pump`) | https://polyhaven.com/a/tire_pump | Garrison Gager | 87 KB |
 | Trashbag (`trashbag`) | https://polyhaven.com/a/trashbag | Benny Weimer | 108 KB |
 | Tree Small 02 (`tree_small_02`) | https://polyhaven.com/a/tree_small_02 | Rico Cilliers | 478 KB |
 | Utility Box 01 (`utility_box_01`) | https://polyhaven.com/a/utility_box_01 | James Ray Cock | 88 KB |
+| Utility Box 02 (`utility_box_02`) | https://polyhaven.com/a/utility_box_02 | James Ray Cock | 92 KB |
 | Watering Can Metal 01 (`watering_can_metal_01`) | https://polyhaven.com/a/watering_can_metal_01 | Charles Nderitu | 150 KB |
+| Weed Plant 02 (`weed_plant_02`) | https://polyhaven.com/a/weed_plant_02 | Rob Tuytel, Rico Cilliers | 96 KB |
 | Wet Floor Sign 01 (`WetFloorSign_01`) | https://polyhaven.com/a/WetFloorSign_01 | Fran Calvente | 46 KB |
 | Wicker Basket 01 (`wicker_basket_01`) | https://polyhaven.com/a/wicker_basket_01 | Kuutti Siitonen | 135 KB |
 | Wicker Basket 02 (`wicker_basket_02`) | https://polyhaven.com/a/wicker_basket_02 | Kuutti Siitonen | 175 KB |
@@ -69,7 +89,7 @@ Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptim
 | Wooden Stool 02 (`wooden_stool_02`) | https://polyhaven.com/a/wooden_stool_02 | Kuutti Siitonen | 137 KB |
 | Worn Metal Rack (`worn_metal_rack`) | https://polyhaven.com/a/worn_metal_rack | Luca B | 102 KB |
 
-Total: 9.7 MB in 70 models.
+Total: 11.0 MB in 83 models.
 
 
 ## Photo-derived textures (props agent)

@@ -12,13 +12,13 @@ const L = (th: string, en?: string): TL => ({ th, en });
 
 export const GREET: Record<string, Pool> = {
   deadpan_clerk: [L('ยินดีต้อนรับครับ เดินดูตามสบาย… อย่าเดินลึกเกินไปนะครับ', 'Welcome. Browse freely… not too deep, please.'), L('สวัสดีครับ ทุกชิ้นมีอยู่จริงครับ', 'Hello. Every piece here is real.'), L('เชิญครับ ร้านเราเปิดตลอด… ในทางหนึ่ง', 'Come in. We are always open… in a way.')],
-  soft_auntie: [L('มาจ้ะ{c} ซื้ออะไรดี', 'Come, dear, what are you buying?'), L('ผักสดๆ หมูสดๆ จ้า', 'Fresh veg, fresh pork!'), L('เลือกเลยจ้ะ ของป้าสดทุกอย่าง', 'Pick anything, all fresh')],
+  soft_auntie: [L('มาจ้ะ{c} ซื้ออะไรดี', 'Come, dear, what are you buying?'), L('ผักสดๆ หมูสดๆ จ้า', 'Fresh veg, fresh pork!'), L('เลือกเลยจ้ะ ของป้าสดทุกอย่าง', 'Pick anything, all fresh'), L('ต่อราคาอีก ป้าจะร้องไห้ให้ดู', "Haggle more and I'll cry for you")],
   chatty_auntie: [L('มาๆ น้อง ดูก่อนได้ ไม่ซื้อไม่ว่า', "Come look, no need to buy"), L('วันนี้ผักสวยมาก ปลูกเองกับมือ!', 'Veg is gorgeous today, grew it myself!'), L('เอาอะไรจ๊ะ บอกเจ๊มา', 'Tell me what you need'), L('เชี่ย เจ๊พูดคำหยาบอีกแล้ว ขอโทษนะน้อง', 'Oops, swore again, sorry dear'), L('ผัวเจ๊แม่งนอนทั้งวัน', 'My husband sleeps all damn day')],
   stingy_uncle: [L('จะเอาอะไร ว่ามา', "What d'you want? Say it."), L('หมูสดเพิ่งเชือดเมื่อเช้า', 'Fresh pork, this morning'), L('ดูได้ จับได้ แต่ซื้อด้วยนะ', 'Look, touch… but buy'), L('ต่อมากเดี๋ยวกูสับหัวมึงแทนหมู', "Haggle more and I'll mince you instead"), L('ห่าเอ๊ย ร้อนชิบหายวันนี้', 'Damn, hot as hell today')],
-  polite_hia: [L('เชิญครับอาตี๋ ดูตามสบาย', 'Welcome, take your time'), L('กระทะเหล็กแท้ ใช้ได้ยันหลาน', 'Real steel wok, lasts generations')],
+  polite_hia: [L('เชิญครับอาตี๋ ดูตามสบาย', 'Welcome, take your time'), L('กระทะเหล็กแท้ ใช้ได้ยันหลาน', 'Real steel wok, lasts generations'), L('ต่อราคาแบบนี้ เฮียต้องขายบ้านแล้ว', "At this price I'll have to sell my house")],
   gruff_uncle: [L('แก๊สเหรอ น้ำเหรอ', 'Gas? Water?'), L('ถังเปล่ามีไหม เอามาแลก', 'Got an empty tank? Bring it to swap'), L('แก๊สหมดก็ไม่ต้องมาร้องไห้นะไอ้หนู', "Don't come crying when the gas runs out"), L('ร้อนจนถังแก๊สจะระเบิดเองแล้ว แม่ง', 'So hot the tanks might blow, dammit')],
   business_jeh: [L('ไข่สดค่ะ ฟองใหญ่ ไม่แตก', 'Fresh eggs, big, no cracks'), L('ของแห้งครบค่ะ น้ำปลา ซอส น้ำมัน', 'All dry goods here')],
-  robot_clerk: [L('สวัสดีค่ะ ยินดีต้อนรับค่ะ', 'Hello, welcome!')],
+  robot_clerk: [L('สวัสดีค่ะ ยินดีต้อนรับค่ะ', 'Hello, welcome!'), L('รับมุกตลกเพิ่มไหมคะ… ไม่มีค่ะ', "Want a joke too? …We're out of stock")],
   cashier: [L('เชิญค่ะ ช่องนี้ว่างค่ะ', 'This lane is free'), L('มีบัตรสมาชิกไหมคะ', 'Member card?')],
   _: [L('มาจ้า เลือกได้เลย', 'Welcome, pick anything')],
 };
@@ -55,8 +55,8 @@ export const QUOTE: Record<string, Pool> = {
 export const REPLIES: Record<ReplyCat, Pool> = {
   polite: [L('ลดหน่อยได้ไหมครับ{k}', 'Could you lower it a bit?'), L('ปัดเศษให้หน่อยได้ไหมครับ', 'Round it down for me?'), L('ซื้อหลายอย่างเลย ลดนิดนึงนะครับ', "I'm buying a lot, small discount?"), L('รบกวนลดให้หน่อยนะครับ{k}', 'Please, a little discount')],
   sweet: [L('{k}{s}ที่สุดในตลาดเลย ลดให้หน่อยน้า', 'Best-looking in the market, discount?'), L('ของ{k}สดที่สุดในโลก!', 'Freshest stuff in the world!'), L('เดี๋ยวมาอุดหนุนทุกวันเลยครับ', "I'll come every single day"), L('ใจดีที่สุดในซอยเลย{k}', 'Kindest in the whole soi')],
-  funny: [L('ผมจนกว่าหมาข้างทางอีกครับ', "I'm poorer than the street dog"), L('เพิ่งหมดตัวที่บ่อนมาครับ ลดหน่อย', 'Just lost it all at the casino…'), L('ลดให้ เดี๋ยวผมเต้นให้ดูเลย', "Discount and I'll dance for you"), L('ถ้าลด ผมจะเรียก{k}ว่าแม่!', "Discount and I'll call you Mom!"), L('ลดให้ เดี๋ยวผมด่าคู่แข่งให้ฟรี', "Discount and I'll trash your rivals for free"), L('การต่อราคาคือศิลปะครับ', 'Haggling is an art'), L('ผมไม่ได้งก ผมประหยัดอย่างมีสไตล์', "I'm not cheap, I'm thrifty with style")],
-  rude: [L('แพงชิบ! ปล้นกันเหรอ', 'So expensive! Is this a robbery?'), L('ราคานี้ ไปแม็กโคร่งดีกว่า', "At this price I'd go to Makrong"), L('ของแค่นี้ ขายแพงจัง', 'This little for that much?'), L('โกงชัวร์ๆ', "You're totally ripping me off"), L('แพงชิบหาย ทองหรือหมูวะ', 'Pricey as hell, is it gold or pork?'), L('ห่าเอ๊ย ราคาขึ้นทุกวันเลย', 'Damn, prices go up every day')],
+  funny: [L('ผมจนกว่าหมาข้างทางอีกครับ', "I'm poorer than the street dog"), L('เพิ่งหมดตัวที่บ่อนมาครับ ลดหน่อย', 'Just lost it all at the casino…'), L('ลดให้ เดี๋ยวผมเต้นให้ดูเลย', "Discount and I'll dance for you"), L('ถ้าลด ผมจะเรียก{k}ว่าแม่!', "Discount and I'll call you Mom!"), L('ลดให้ เดี๋ยวผมด่าคู่แข่งให้ฟรี', "Discount and I'll trash your rivals for free"), L('การต่อราคาคือศิลปะครับ', 'Haggling is an art'), L('ผมไม่ได้งก ผมประหยัดอย่างมีสไตล์', "I'm not cheap, I'm thrifty with style"), L('ลดให้ผม ผีในซอยจะไม่หลอกป้า', 'Discount and the soi ghost leaves you alone'), L('ผมจ่ายเป็นมุกได้ไหม', 'Can I pay in jokes?'), L('ตังค์ผมหายไปกับบาคาร่า ช่วยหน่อย', 'My money died at baccarat, help')],
+  rude: [L('แพงชิบ! ปล้นกันเหรอ', 'So expensive! Is this a robbery?'), L('ราคานี้ ไปแม็กโคร่งดีกว่า', "At this price I'd go to Makrong"), L('ของแค่นี้ ขายแพงจัง', 'This little for that much?'), L('โกงชัวร์ๆ', "You're totally ripping me off"), L('แพงชิบหาย ทองหรือหมูวะ', 'Pricey as hell, is it gold or pork?'), L('ห่าเอ๊ย ราคาขึ้นทุกวันเลย', 'Damn, prices go up every day'), L('ราคานี้ ผมขายไตยังไม่พอ', "At that price, my kidney isn't enough"), L('แพงจนหมูยังอาย', 'So pricey the pig is embarrassed')],
 };
 export const CAT_COLORS: Record<ReplyCat, number> = { polite: 0xfffbf2, sweet: 0xffe3ec, funny: 0xfff1b8, rude: 0xffd6c8 };
 

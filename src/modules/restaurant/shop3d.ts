@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { weatherSign } from '../world/signfx';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import type { Game } from '../../game/game';
@@ -162,6 +163,7 @@ function canvasTex(w: number, h: number, draw: (c: CanvasRenderingContext2D) => 
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
   const c = cv.getContext('2d')!;
   draw(c);
+  try { weatherSign(c, w, h, { seed: w * 31 + h, surface: 'vinyl', wear: 0.3 }); } catch { /* cosmetic */ }
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
   return { t, cv, c };

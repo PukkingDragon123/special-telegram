@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { weatherSign } from './signfx';
 import { DetailCull, splitByGrid } from '../../core/detailcull';
 import { ClothSpots, type V3 } from '../cloth/api';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -194,6 +195,7 @@ export class PriceCards {
         if (it.sub) { ctx.font = `400 40px ${F.hand2 ?? F.hand}`; ctx.fillText(it.sub, 0, 48); }
         ctx.restore();
       });
+      try { weatherSign(ctx, cv.width, cv.height, { seed: 77, surface: 'card', wear: 0.45 }); } catch { /* cosmetic */ }
       tex.needsUpdate = true;
     };
     const tex = new THREE.CanvasTexture(cv);

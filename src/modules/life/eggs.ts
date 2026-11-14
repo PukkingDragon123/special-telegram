@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { weatherSign } from '../world/signfx';
 import type { Game } from '../../game/game';
 import type { CharacterRig } from '../../game/contracts';
 import type { SoundHandle } from '../../core/audio';
@@ -141,6 +142,7 @@ export class Eggs {
       ctx.font = `700 60px ${F.fancy}`;
       ctx.strokeText(d.th, 192, 470); ctx.fillText(d.th, 192, 470);
       ctx.font = `600 26px ${F.hand}`; ctx.fillStyle = '#2a1a1a'; ctx.lineWidth = 6; ctx.strokeText('ขอให้มีความสุขมากๆ นะคะ', 192, 500); ctx.fillText('ขอให้มีความสุขมากๆ นะคะ', 192, 500);
+      weatherSign(ctx, 384, 512, { seed: day + 3, surface: 'paper', wear: 0.5 });
       tex.needsUpdate = true;
     };
     loadImage('rose_yellow.jpg').then((im) => { rose = im; draw(this.weekday()); });

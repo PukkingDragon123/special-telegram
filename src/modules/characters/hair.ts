@@ -27,7 +27,7 @@ interface Style {
   /** curtain only for |θ| ≥ gap */
   gap?: number;
   flare?: number;
-  extra?: 'ponytail' | 'bun';
+  extra?: 'ponytail' | 'bun' | 'twintails' | 'sidelocks';
   /** only columns |θ| ≥ this (bald horseshoe) */
   minA?: number;
   /** upper ry bound (bald horseshoe top edge) */
@@ -62,6 +62,15 @@ export const STYLES: Record<string, Style> = {
   bun: { line: lineStd(0.18, 0.162, 0.124, 0.098, 0.045), thick: () => 0.007, extra: 'bun' },
   bald: { line: lineStd(0.17, 0.15, 0.104, 0.085, 0.035), thick: () => 0.006, minA: 72, top: 0.148, noise: [0.001, 20] },
   shaved: { line: () => 1, thick: () => 0 },
+  // ---- anime-style (original looks for the cosplayers / students at the night market)
+  /** huge gravity-defying spikes */
+  anime_spikes: { line: lineStd(0.17, 0.152, 0.12, 0.094, 0.035), thick: (_a, ry) => lerp(0.034, 0.012, smooth(0.2, 0.12, ry)), spikes: 0.062, noise: [0.003, 9] },
+  /** blunt-fringe twin tails */
+  twin_tails: { line: (a) => (a < 48 ? lerp(0.128, 0.134, a / 48) : lineStd(0.17, 0.156, 0.124, 0.096, 0.04)(a)), thick: (_a, ry) => lerp(0.012, 0.009, smooth(0.2, 0.12, ry)), extra: 'twintails', noise: [0.0012, 14] },
+  /** princess cut: blunt fringe, cheek-length side locks, long straight back */
+  hime: { line: (a) => (a < 50 ? lerp(0.13, 0.136, a / 50) : lineStd(0.17, 0.156, 0.122, 0.096, 0.04)(a)), thick: (_a, ry) => lerp(0.014, 0.011, smooth(0.2, 0.12, ry)), curtain: (a) => (a < 58 ? 1 : a < 100 ? lerp(-0.015, -0.03, smooth(58, 100, a)) : lerp(-0.12, -0.3, smooth(100, 160, a))), gap: 56, flare: 0.01, extra: 'sidelocks', noise: [0.0012, 12] },
+  /** long swept fringe over one eye */
+  long_fringe: { line: (a) => (a < 60 ? lerp(0.122, 0.142, a / 60) : lineStd(0.17, 0.156, 0.122, 0.096, 0.035)(a)), thick: (a, ry) => lerp(0.02, 0.01, smooth(0.2, 0.12, ry)) + (a < 60 ? 0.006 : 0), sweep: 0.012, curtain: (a) => (a > 120 ? -0.02 : 1), gap: 118, flare: 0.006, noise: [0.002, 12] },
 };
 
 export function hairStyle(id: string): Style { return STYLES[id] ?? STYLES.short; }
@@ -227,6 +236,38 @@ function buildHair(c: HCtx, id: string, hat: AccSpec | null) {
   }
   if (st.extra === 'ponytail' && (!hat || hat.kind === 'cap' || hat.kind === 'cap_back')) buildPonytail(c);
   if (st.extra === 'bun' && !hat) buildBun(c);
+  if (st.extra === 'twintails' && (!hat || hat.kind === 'cap' || hat.kind === 'cap_back')) { buildTail(c, 1); buildTail(c, -1); }
+  if (st.extra === 'sidelocks') { buildLock(c, 1); buildLock(c, -1); }
+}
+
+/** one anime twin tail: tied high at the side-back, swinging out then down to the waist */
+function buildTail(c: HCtx, side: number) {
+  const { G, hs, Hd, hi } = c;
+  const path: V3[] = [[0.07, 0.17, -0.05], [0.11, 0.175, -0.07], [0.15, 0.14, -0.08], [0.17, 0.06, -0.075], [0.17, -0.06, -0.06], [0.155, -0.2, -0.05], [0.13, -0.33, -0.04]]
+    .map((p) => [Hd[0] + side * p[0] * hs, Hd[1] + p[1] * hs, Hd[2] + p[2] * hs]);
+  const rad = [0.018, 0.03, 0.036, 0.034, 0.03, 0.022, 0.006];
+  const n = hi ? 7 : 5;
+  const rings: Ring[] = path.map((p, i) => {
+    const a = v3norm(v3sub(path[Math.min(path.length - 1, i + 1)], path[Math.max(0, i - 1)]));
+    const fr = frame(a, [0, 0, -1]);
+    const ry = (p[1] - Hd[1]) / hs;
+    const w: W = ry > 0.02 ? wb(B.head) : wmix(wb(B.head), wb(B.neck), smooth(0.02, -0.15, ry));
+    return { c: p, f: fr.f, s: fr.s, r: new Array(n).fill(rad[i] * hs), t: 0.7 + (i / (path.length - 1)) * 0.3, w };
+  });
+  loft(G, rings, { n, uv: (u, v) => ruv(R.hair, u, v), capStart: { depth: 0.004 }, capEnd: { depth: 0.01 } });
+  // hair tie
+  const tie = path[1];
+  const tr: Ring[] = [-1, 1].map((k) => ({ c: [tie[0] + side * k * 0.006 * hs, tie[1], tie[2]] as V3, f: [side, 0, 0] as V3, s: [0, 0, 1] as V3, r: new Array(n).fill(0.034 * hs), t: 0.05, w: wb(B.head) }));
+  loft(G, tr, { n, uv: () => ruv(R.band, 0.5, 0.5) });
+}
+
+/** cheek-length side lock (princess cut) */
+function buildLock(c: HCtx, side: number) {
+  const { G, hs, Hd, hi } = c;
+  const path: V3[] = [[0.078, 0.13, 0.03], [0.086, 0.08, 0.035], [0.088, 0.03, 0.03], [0.085, -0.01, 0.025]].map((p) => [Hd[0] + side * p[0] * hs, Hd[1] + p[1] * hs, Hd[2] + p[2] * hs]);
+  const n = hi ? 6 : 4;
+  const rings: Ring[] = path.map((p, i) => ({ c: p, f: [0, -1, 0] as V3, s: [side, 0, 0] as V3, r: new Array(n).fill([0.012, 0.014, 0.013, 0.006][i] * hs), t: 0.75 + i * 0.08, w: wb(B.head) }));
+  loft(G, rings, { n, uv: (u, v) => ruv(R.hair, u, v), capEnd: { depth: 0.004 } });
 }
 
 function buildPonytail(c: HCtx) {
@@ -274,8 +315,71 @@ function buildAcc(c: HCtx, a: AccSpec, hairId: string, hat: AccSpec | null) {
     case 'chain': buildChain(c, a); break;
     case 'watch': buildWatch(c, a); break;
     case 'earrings': buildEarrings(c, a, hairId); break;
+    case 'cat_ears': buildCatEars(c, hairId, 0.004, R.band); break;
+    case 'stand_helm': buildStandHelm(c); break;
     default: break;
   }
+}
+
+/** two pointed cat ears on top of the head (cosplay / the stand's helm) */
+function buildCatEars(c: HCtx, hairId: string, extra: number, reg: { x: number; y: number; w: number; h: number }) {
+  const { G, hs } = c;
+  for (const side of [1, -1]) {
+    const th = side * 0.62, ry = 0.196 * hs;
+    const hp = headPt(c, th, ry);
+    const ht = hairThickAt(hairId, (Math.abs(th) * 180) / Math.PI, ry / hs) + extra;
+    const base = v3add(hp.p, v3mul(hp.n, ht));
+    const up = v3norm(v3add(hp.n, [0, 0.9, 0]));
+    const fwd: V3 = v3norm([Math.sin(th), 0, Math.cos(th)]);
+    const lat = v3norm([Math.cos(th), 0, -Math.sin(th)]);
+    const h = 0.068 * hs, w = 0.034 * hs, d = 0.012 * hs;
+    const tip = v3add(base, v3add(v3mul(up, h), v3mul(lat, side * 0.008 * hs)));
+    const a = v3add(base, v3mul(lat, -w)), b = v3add(base, v3mul(lat, w));
+    const af = v3add(a, v3mul(fwd, d)), bf = v3add(b, v3mul(fwd, d)), tf = v3add(tip, v3mul(fwd, d * 0.3));
+    const ab = v3add(a, v3mul(fwd, -d)), bb = v3add(b, v3mul(fwd, -d));
+    const [u0, v0] = ruv(reg, 0.2, 0.9), [u1, v1] = ruv(reg, 0.8, 0.9), [ut, vt] = ruv(reg, 0.5, 0.05), [ui, vi] = ruv(reg, 0.5, 0.5);
+    const W0 = wb(B.head);
+    // front face (inner ear shade at the centre via the 'vi' sample), back face, sides
+    const i0 = G.v(af, fwd, u0, v0, W0), i1 = G.v(bf, fwd, u1, v1, W0), i2 = G.v(tf, fwd, ui, vi, W0);
+    G.triOut(i0, i1, i2, fwd);
+    const k0 = G.v(ab, v3mul(fwd, -1), u0, v0, W0), k1 = G.v(bb, v3mul(fwd, -1), u1, v1, W0), k2 = G.v(tip, v3mul(fwd, -1), ut, vt, W0);
+    G.triOut(k0, k2, k1, v3mul(fwd, -1));
+    for (const [p, q, n] of [[af, ab, v3mul(lat, -1)], [bb, bf, lat]] as [V3, V3, V3][]) {
+      const j0 = G.v(p, n, u0, v0, W0), j1 = G.v(q, n, u0, v0, W0), j2 = G.v(tip, n, ut, vt, W0), j3 = G.v(tf, n, ut, vt, W0);
+      G.triOut(j0, j1, j2, n); G.triOut(j0, j2, j3, n);
+    }
+  }
+}
+
+/** the stand's full helm: a smooth shell over the whole head down to the chin + cat ears (atlas 'stand_helm' paints
+ *  the face plate, eye slits and the skull crest) */
+function buildStandHelm(c: HCtx) {
+  const { G, hs, Hd, hi } = c;
+  const J = hi ? 20 : 12, K = hi ? 9 : 6;
+  const grid: number[][] = [];
+  const top = HEAD_TOP * hs + 0.008;
+  for (let j = 0; j <= J; j++) {
+    const th = -Math.PI + (2 * Math.PI * j) / J;
+    const ad = (Math.abs(th) * 180) / Math.PI;
+    const bottom = lerp(-0.006, 0.03, smooth(40, 160, ad)) * hs;
+    const col: number[] = [];
+    for (let k = 0; k <= K; k++) {
+      const t = k / K;
+      const ry = lerp(top, bottom, Math.pow(t, 0.85));
+      const hp = headPt(c, th, Math.min(ry, HEAD_TOP * hs - 0.004));
+      let p = v3add(hp.p, v3mul(hp.n, 0.009 * hs));
+      if (k === 0) p = [Hd[0], Hd[1] + top, Hd[2] + headAt(0, HEAD_TOP - 0.01, hs).cz];
+      const [u, v] = ruv(R.hat, (j / J) * 0.66, t);
+      col.push(G.v(p, hp.n, u, v, wb(B.head)));
+    }
+    grid.push(col);
+  }
+  for (let j = 0; j < J; j++) for (let k = 0; k < K; k++) {
+    const th = -Math.PI + (2 * Math.PI * (j + 0.5)) / J;
+    const out: V3 = v3norm([Math.sin(th), 0.6 * (1 - k / K), Math.cos(th)]);
+    G.triOut(grid[j][k], grid[j][k + 1], grid[j + 1][k], out); G.triOut(grid[j + 1][k], grid[j][k + 1], grid[j + 1][k + 1], out);
+  }
+  buildCatEars(c, 'shaved', 0.01 * hs, { x: R.hat.x + R.hat.w * 0.7, y: R.hat.y, w: R.hat.w * 0.28, h: R.hat.h });
 }
 
 function buildHat(c: HCtx, a: AccSpec, hairId: string) {

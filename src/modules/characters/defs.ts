@@ -49,7 +49,7 @@ export interface ShoeSpec { id: string; name: TL; price?: number; colors?: strin
 
 export type AccKind = 'sunglasses' | 'glasses' | 'headband' | 'cap' | 'cap_back' | 'bucket' | 'straw' | 'helmet' | 'police_cap'
   | 'chain' | 'watch' | 'towel' | 'mask' | 'backpack' | 'apron' | 'lanyard' | 'sash' | 'earrings'
-  | 'toque' | 'skullcap' | 'neckerchief' | 'apron_waist';
+  | 'toque' | 'skullcap' | 'neckerchief' | 'apron_waist' | 'cat_ears' | 'stand_helm';
 export interface AccSpec { id: string; name: TL; price?: number; colors?: string[]; color: string; kind: AccKind; slot: 'hat' | 'eyes' | 'neck' | 'wrist' | 'face' | 'back' | 'body' | 'band' | 'ears'; hidden?: boolean; sex?: Sex | 'u' }
 
 export interface HairSpec { id: string; name: TL; price?: number; sex?: Sex | 'u'; hidden?: boolean }
@@ -104,6 +104,11 @@ export const TOPS: TopSpec[] = [
   T('chef_jacket', 'เสื้อเชฟกระดุมสองแถว', 'double-breasted chef jacket', { price: 690, sleeve: 'long', loose: 0.02, sleeveLoose: 0.012, hem: 0.82, collar: 'mandarin', pattern: 'chef', color: '#f4f3ee', color2: '#f4f3ee', colors: ['#f4f3ee', '#1d1d1f', '#2a3550', '#7d7466'] }),
   T('chef_jacket_rolled', 'เสื้อเชฟพับแขน', 'chef jacket, rolled sleeves', { price: 650, sleeve: 'rolled', loose: 0.02, sleeveLoose: 0.016, hem: 0.82, collar: 'mandarin', pattern: 'chef', color: '#f4f3ee', color2: '#f4f3ee', colors: ['#f4f3ee', '#1d1d1f', '#2a3550', '#7d7466'] }),
   T('chef_jacket_piped', 'เสื้อเชฟขลิบสี', 'piped chef jacket', { price: 790, sleeve: 'long', loose: 0.02, sleeveLoose: 0.012, hem: 0.82, collar: 'mandarin', pattern: 'chef', color: '#f4f3ee', color2: '#1d1d1f', colors: ['#f4f3ee'] }),
+  // ---- anime-style (original): high-collar school jacket, sailor top, magical-girl cosplay; the stand's bodysuit
+  T('gakuran', 'เสื้อนักเรียนญี่ปุ่นคอตั้ง', 'high-collar school jacket', { price: 590, sleeve: 'long', loose: 0.028, sleeveLoose: 0.016, hem: 0.8, collar: 'mandarin', pattern: 'gakuran', color: '#15171d', color2: '#d8b04a', colors: ['#15171d', '#1f2a4a', '#3a1d3f'] }),
+  T('sailor_top', 'เสื้อกะลาสี', 'sailor-collar top', { price: 390, sex: 'f', sleeve: 'short', loose: 0.016, hem: 0.95, collar: 'mandarin', pattern: 'sailor', color: '#f5f4f0', color2: '#1f2a4a', colors: ['#f5f4f0'] }),
+  T('magical_top', 'ชุดสาวน้อยเวทมนตร์ (คอสเพลย์)', 'magical-girl cosplay top', { price: 890, sex: 'f', sleeve: 'cap', loose: 0.016, sleeveLoose: 0.03, hem: 0.98, collar: 'scoop', pattern: 'magical', color: '#f2a3c4', color2: '#f8f4f6', colors: ['#f2a3c4', '#9fc8f2', '#c9a8f0', '#f6d36a'] }),
+  T('stand_suit', 'ชุดสแตนด์', 'stand bodysuit', { hidden: true, sleeve: 'long', loose: 0.002, sleeveLoose: 0.002, hem: 0.98, collar: 'crew', pattern: 'stand_suit', color: '#e9a2bf', color2: '#f2e6d4' }),
   T('monk_robe', 'จีวร', 'saffron robe', { hidden: true, sleeve: 'none', loose: 0.028, hem: 0.8, collar: 'robe', pattern: 'robe', color: '#d9781f' }),
 ];
 
@@ -131,6 +136,8 @@ export const BOTTOMS: BottomSpec[] = [
   B('khakuay', 'กางเกงขาก๊วย', 'fisherman pants', { price: 129, kind: 'trousers', hem: 0.24, loose: 0.04, pattern: 'plain_fabric', color: '#2a2a2e', colors: ['#2a2a2e', '#3a4a6a', '#6a4a3a'] }),
   B('chef_pants', 'กางเกงเชฟลายตาราง', 'chef check trousers', { price: 450, kind: 'trousers', hem: 0.05, loose: 0.024, pattern: 'chef_check', color: '#1d1d1f', color2: '#efede6', colors: ['#1d1d1f', '#24305a', '#5a2a2a'] }),
   B('chef_pants_black', 'กางเกงเชฟสีดำ', 'black chef trousers', { price: 390, kind: 'trousers', hem: 0.05, loose: 0.024, pattern: 'twill_fine', color: '#1f1f22', colors: ['#1f1f22', '#2a3550', '#f2f0ea'] }),
+  B('skirt_frill', 'กระโปรงฟูระบาย', 'frilly flared skirt', { price: 390, sex: 'f', kind: 'skirt', hem: 0.5, loose: 0.03, flare: 0.1, pattern: 'pleat', color: '#f6c6da', colors: ['#f6c6da', '#c8e0f6', '#e6d2f6', '#1d1d1f'] }),
+  B('stand_legs', 'ขาสแตนด์', 'stand tights', { hidden: true, kind: 'trousers', hem: 0.05, loose: 0.002, pattern: 'stand_suit', color: '#e9a2bf', color2: '#f2e6d4' }),
   B('monk_robe_lower', 'สบง', 'robe (lower)', { hidden: true, kind: 'wrap', hem: 0.2, loose: 0.03, flare: 0.02, pattern: 'robe', color: '#d9781f' }),
 ];
 
@@ -180,6 +187,8 @@ export const ACCS: AccSpec[] = [
   A('chef_skullcap', 'หมวกเชฟผ้า', 'chef skull cap', 'skullcap', 'hat', '#1d1d1f', 150, ['#1d1d1f', '#f6f5f0', '#2a3550', '#c8423a', '#4f7d3c']),
   A('neckerchief', 'ผ้าพันคอเชฟ', 'chef neckerchief', 'neckerchief', 'neck', '#c8423a', 90, ['#c8423a', '#2f5fa8', '#1d1d1f', '#e8a33d', '#f6f5f0', '#4f9a62']),
   A('apron_waist', 'ผ้ากันเปื้อนครึ่งตัว', 'bistro waist apron', 'apron_waist', 'body', '#1d1d1f', 190, ['#1d1d1f', '#f6f5f0', '#3e5578', '#6b5b4a']),
+  A('cat_ears', 'ที่คาดหูแมว', 'cat-ear headband', 'cat_ears', 'band', '#1d1d1f', 129, ['#1d1d1f', '#f2efe8', '#f2a3c4', '#8a6a44']),
+  A('stand_helm', 'หมวกสแตนด์', 'stand helm', 'stand_helm', 'hat', '#e9a2bf', undefined, undefined, { hidden: true }),
 ];
 
 // ------------------------------------------------------------------ hair
@@ -203,6 +212,10 @@ export const HAIRS: HairSpec[] = [
   { id: 'salt_pepper', name: tl('ผมสั้นสีดอกเลา', 'salt & pepper'), price: 100 },
   { id: 'bald', name: tl('หัวล้าน', 'bald (with fringe)'), price: 0 },
   { id: 'shaved', name: tl('โกนเกลี้ยง', 'shaved'), price: 0 },
+  { id: 'anime_spikes', name: tl('ทรงชี้ฟูแบบการ์ตูน', 'anime spikes'), price: 390 },
+  { id: 'twin_tails', name: tl('ผมแกละสองข้าง', 'twin tails'), price: 290 },
+  { id: 'hime', name: tl('ผมหน้าม้าเจ้าหญิง', 'princess cut'), price: 290 },
+  { id: 'long_fringe', name: tl('ผมหน้าม้ายาวปิดตา', 'long fringe'), price: 250 },
 ];
 
 // ------------------------------------------------------------------ lookup helpers
@@ -415,6 +428,8 @@ const SKIN_FAIR = SKINS.slice(0, 5), SKIN_MID = SKINS.slice(2, 7), SKIN_TAN = SK
 const HAIR_BLACK = ['#141110', '#1c1511', '#2a1d16'];
 const HAIR_DYED = ['#3b281c', '#4d3021', '#5c2c1c', '#8a6a44'];
 const HAIR_OLD = ['#8f8b86', '#c8c4bd', '#6e6a66'];
+/** bright anime hair dyes (cosplay wigs) */
+const ANIME_HAIR = ['#f08a3a', '#e8d26a', '#4a7fe0', '#f29ac0', '#7fd4d8', '#c8c4bd', '#d84a4a', '#8a5ad8'];
 
 function base(r: RNG, sex: Sex, o: Partial<Look> = {}): Look {
   const h = sex === 'm' ? range(r, 1.58, 1.84) : range(r, 1.48, 1.69);
@@ -575,6 +590,42 @@ export const ARCHETYPES: Record<string, { name: TL; gen: Gen }> = {
     hair: { style: pick(r, ['short', 'buzz']), color: '#141110' }, top: { id: pick(r, ['singlet_white', 'tshirt', 'polo']), color: pick(r, ['#f1eee6', '#1d1d1f', '#5b6b7a']) },
     bottom: { id: pick(r, ['cloth_shorts', 'slacks']), color: pick(r, DULL) }, shoes: { id: pick(r, ['flipflops', 'rubber_boots']), color: '#1d1d1f' }, acc: ['apron', ...(chance(r, 0.5) ? ['towel_neck'] : [])],
   }) },
+  // ---- anime-style cosplayers & students (original looks; they show up at the night market and around the soi)
+  anime_spiky: { name: tl('หนุ่มผมชี้สายการ์ตูน', 'spiky-haired anime kid'), gen: (r) => base(r, 'm', {
+    height: +range(r, 1.6, 1.78).toFixed(3), build: +range(r, 0.15, 0.45).toFixed(2), skin: pick(r, SKIN_FAIR), face: pickFace(r, 'm', ['teen', 'young'], ['student']),
+    hair: { style: 'anime_spikes', color: pick(r, ANIME_HAIR) },
+    top: chance(r, 0.5) ? { id: 'gakuran', color: '#15171d' } : { id: 'school_shirt' }, bottom: { id: 'slacks', color: '#1d1d1f' },
+    shoes: { id: 'sneakers', color: pick(r, ['#f2f1ee', '#c8423a']) }, acc: chance(r, 0.25) ? ['headband_white'] : [],
+  }) },
+  anime_twintail: { name: tl('สาวผมแกละ', 'twin-tail girl'), gen: (r) => base(r, 'f', {
+    height: +range(r, 1.48, 1.62).toFixed(3), build: +range(r, 0.12, 0.38).toFixed(2), skin: pick(r, SKIN_FAIR), face: pickFace(r, 'f', ['teen', 'young'], ['student']),
+    hair: { style: 'twin_tails', color: pick(r, ANIME_HAIR) },
+    top: { id: 'sailor_top' }, bottom: { id: 'skirt_school', color: '#1f2a4a' }, shoes: { id: 'school_shoes', color: '#1a1512' }, acc: chance(r, 0.35) ? ['cat_ears'] : [],
+  }) },
+  anime_delinquent: { name: tl('นักเลงเสื้อคลุมยาว', 'long-coat delinquent'), gen: (r) => base(r, 'm', {
+    height: +range(r, 1.76, 1.92).toFixed(3), build: +range(r, 0.3, 0.55).toFixed(2), face: pickFace(r, 'm', ['young'], ['gangster', 'student']),
+    hair: { style: pick(r, ['long_fringe', 'anime_spikes', 'short']), color: '#141110' },
+    top: { id: 'gakuran', color: pick(r, ['#15171d', '#1f2a4a']) }, bottom: { id: 'slacks', color: '#15171d' }, shoes: { id: 'leather', color: '#1a1512' },
+    acc: ['cap_black', ...(chance(r, 0.5) ? ['gold_chain'] : [])],
+  }) },
+  anime_ninja: { name: tl('สายนินจาคาดหัว', 'headband ninja fan'), gen: (r) => base(r, chance(r, 0.7) ? 'm' : 'f', {
+    build: +range(r, 0.2, 0.5).toFixed(2), face: pickFace(r, 'm', ['teen', 'young'], ['student']),
+    hair: { style: pick(r, ['anime_spikes', 'spiky', 'shaggy']), color: pick(r, [...ANIME_HAIR, '#141110']) },
+    top: { id: 'work_shirt', color: pick(r, ['#2a3550', '#1d1d1f', '#4a5a3a']) }, bottom: { id: 'khakuay', color: '#2a2a2e' }, shoes: { id: 'sandals', color: '#1d1d1f' },
+    acc: ['headband_white#2a3550'],
+  }) },
+  anime_magical: { name: tl('คอสเพลย์สาวน้อยเวทมนตร์', 'magical-girl cosplayer'), gen: (r) => base(r, 'f', {
+    height: +range(r, 1.5, 1.66).toFixed(3), build: +range(r, 0.15, 0.4).toFixed(2), skin: pick(r, SKIN_FAIR), face: pickFace(r, 'f', ['teen', 'young'], ['student']),
+    hair: { style: pick(r, ['twin_tails', 'hime', 'hime']), color: pick(r, ['#f29ac0', '#9fc8f2', '#e8d26a', '#c9a8f0', '#141110']) },
+    top: { id: 'magical_top', color: pick(r, ['#f2a3c4', '#9fc8f2', '#c9a8f0', '#f6d36a']) }, bottom: { id: 'skirt_frill', color: pick(r, ['#f6c6da', '#c8e0f6', '#e6d2f6']) },
+    shoes: { id: 'rubber_boots', color: '#f2f0ea' }, acc: chance(r, 0.6) ? ['cat_ears#f2efe8'] : [],
+  }) },
+  anime_hime: { name: tl('สาวผมหน้าม้า', 'princess-cut girl'), gen: (r) => base(r, 'f', {
+    build: +range(r, 0.15, 0.42).toFixed(2), skin: pick(r, SKIN_FAIR), face: pickFace(r, 'f', ['teen', 'young'], ['student', 'office']),
+    hair: { style: 'hime', color: pick(r, ['#141110', '#141110', '#2a1d16', '#c9a8f0']) },
+    top: { id: chance(r, 0.5) ? 'sailor_top' : 'blouse_cute', color: pick(r, PASTEL) }, bottom: { id: chance(r, 0.5) ? 'skirt_school' : 'skirt', color: '#1d1d1f' },
+    shoes: { id: 'school_shoes', color: '#1a1512' }, acc: [],
+  }) },
   shop_girl: { name: tl('พนักงานร้านสะดวกซื้อ', 'convenience store clerk'), gen: (r) => base(r, chance(r, 0.6) ? 'f' : 'm', {
     face: pickFace(r, 'f', ['young'], ['shop_staff', 'office']), hair: { style: pick(r, ['ponytail', 'bun', 'short']), color: '#1c1511' },
     top: { id: 'polo', color: pick(r, ['#2f7a4a', '#c8423a']) }, bottom: { id: 'slacks', color: '#1d1d1f' }, shoes: { id: 'sneakers', color: '#1d1d1f' }, acc: ['lanyard'],
@@ -586,6 +637,8 @@ const COMMON: [string, number][] = [
   ['office_worker_m', 8], ['office_worker_f', 8], ['student_m', 6], ['student_f', 6], ['uncle_singlet', 7], ['auntie_vendor', 4], ['housewife', 6],
   ['moto_taxi', 4], ['delivery_rider', 5], ['construction_worker', 5], ['teen_gamer', 4], ['gangster_lite', 3], ['grandpa', 3], ['old_lady', 3],
   ['tourist_backpacker', 3], ['karaoke_uncle', 2], ['security_guard', 2], ['temple_lady', 2], ['street_sweeper', 1], ['shop_girl', 2],
+  // anime cosplayers / students: rare enough to be a fun spot, common enough to meet a few per walk
+  ['anime_spiky', 1.2], ['anime_twintail', 1.2], ['anime_delinquent', 0.8], ['anime_ninja', 0.7], ['anime_magical', 0.8], ['anime_hime', 0.8],
 ];
 
 export function resolveArchetype(a: string | undefined, r: RNG): string {
@@ -597,6 +650,7 @@ export function resolveArchetype(a: string | undefined, r: RNG): string {
     [/student|school/, ['student_m', 'student_f']], [/moto|win/, 'moto_taxi'], [/rider|deliver/, 'delivery_rider'], [/construct|worker|labour/, 'construction_worker'],
     [/tourist|farang|backpack/, 'tourist_backpacker'], [/grandma|old_lady|yai/, 'old_lady'], [/grandpa|ta\b/, 'grandpa'], [/house|mom/, 'housewife'],
     [/gamer|teen/, 'teen_gamer'], [/gang|waen/, 'gangster_lite'], [/temple|merit/, 'temple_lady'], [/sweep|clean/, 'street_sweeper'], [/guard|security|yam/, 'security_guard'],
+    [/anime|cosplay|otaku/, ['anime_spiky', 'anime_twintail', 'anime_delinquent', 'anime_ninja', 'anime_magical', 'anime_hime']],
     [/karaoke|uncle_rich|boss/, 'karaoke_uncle'], [/scream|girl/, 'sexy_girl_who_screams'], [/uncle|lung/, 'uncle_singlet'], [/clerk|shop/, 'shop_girl'],
   ];
   for (const [re, v] of rules) if (re.test(s)) return Array.isArray(v) ? pick(r, v) : v;
@@ -636,7 +690,23 @@ const PHYS: Record<string, PhysBias> = {
   homeless_man: { muscle: [0.1, 0.25], shoulders: -0.1, belly: -0.3 },
   vendor_cook: { muscle: [0.42, 0.68], belly: 0.2 },
   shop_girl: { muscle: [0.2, 0.45] },
+  anime_spiky: { muscle: [0.2, 0.45], belly: -0.15, head: 0.08 },
+  anime_twintail: { muscle: [0.1, 0.3], belly: -0.15, head: 0.1 },
+  anime_delinquent: { muscle: [0.5, 0.75], shoulders: 0.18, belly: -0.2, tall: 0.3 },
+  anime_ninja: { muscle: [0.4, 0.62], belly: -0.15 },
+  anime_magical: { muscle: [0.1, 0.3], belly: -0.15, legs: 0.1, head: 0.08 },
+  anime_hime: { muscle: [0.1, 0.3], belly: -0.12, head: 0.06 },
 };
+
+/** the burnt-rice stand (module `stand`): tall, sleek, pink & cream, cat-eared helm */
+export function standLook(): Look {
+  return {
+    sex: 'm', height: 2.05, build: 0.18, skin: '#e7a6c0', face: 'm01',
+    hair: { style: 'shaved', color: '#e7a6c0' },
+    top: { id: 'stand_suit', color: '#e9a2bf' }, bottom: { id: 'stand_legs', color: '#e9a2bf' }, shoes: { id: 'barefoot', color: '#000000' },
+    acc: ['stand_helm'], physique: { muscle: 0.85, shoulders: 0.75, belly: 0.1, legs: 0.7, head: 0.45 },
+  } as Look;
+}
 
 const cl01 = (v: number) => +Math.max(0, Math.min(1, v)).toFixed(2);
 

@@ -1,6 +1,6 @@
 import type { TL } from '../../../core/util';
 import type { DlgNode, DlgOption, TalkTarget } from '../api';
-import { T, pick } from './common';
+import { T } from './common';
 
 /* ============================================================================================
  * BANTER — quick player comebacks injected into the first node of every everyday conversation

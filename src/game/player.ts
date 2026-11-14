@@ -59,6 +59,9 @@ export class LocalPlayer {
   private wasGrounded = true;
   /** virtual eye camera used for interaction rays in third person */
   readonly aimCam = new THREE.PerspectiveCamera(72, 1, 0.04, 50);
+  private wasLocked = false;
+  private lockSettle = 0;
+  private mouseAvg = 20;
   private _eye = new THREE.Vector3();
   private eyeY = 0;
   private fpSet: any = null;
@@ -142,13 +145,30 @@ export class LocalPlayer {
     const playing = this.mode === 'play';
 
     // ---- look
-    if (this.mode !== 'external' && Input.locked) {
+    // spinning-screen guard: browsers emit bogus giant movementX/Y right after pointer lock is (re)gained and on
+    // some Windows mice/DPI setups mid-play; ignore the first frames after a lock and single-frame outliers far
+    // above the recent average, cap what is left, and never let NaN into the view angles.
+    const lockedNow = Input.locked;
+    if (lockedNow && !this.wasLocked) this.lockSettle = 3;
+    this.wasLocked = lockedNow;
+    let mdx = Input.mouseDX, mdy = Input.mouseDY;
+    if (this.lockSettle > 0) { this.lockSettle--; mdx = mdy = 0; }
+    const mag = Math.hypot(mdx, mdy);
+    if (mag > Math.max(420, this.mouseAvg * 9)) { mdx = mdy = 0; }
+    else this.mouseAvg += (mag - this.mouseAvg) * 0.15;
+    const capPx = 900;
+    if (mag > capPx) { mdx *= capPx / mag; mdy *= capPx / mag; }
+    if (!Number.isFinite(this.yaw)) this.yaw = this.bodyYaw && Number.isFinite(this.bodyYaw) ? this.bodyYaw : 0;
+    if (!Number.isFinite(this.pitch)) this.pitch = 0;
+    if (this.mode !== 'external' && lockedNow) {
       const s = Input.sensitivity;
-      this.lookDX = Input.mouseDX; this.lookDY = Input.mouseDY;
-      this.yaw -= Input.mouseDX * s;
+      this.lookDX = mdx; this.lookDY = mdy;
+      this.yaw -= mdx * s;
       // first person: down to ~55° (you see your legs, not your own chest), up to ~75°; third person keeps more range
       const lo = this.view === 'fp' ? -0.96 : -1.2, hi = this.view === 'fp' ? 1.31 : 1.2;
-      this.pitch = clamp(this.pitch - Input.mouseDY * s * (Input.invertY ? -1 : 1), lo, hi);
+      this.pitch = clamp(this.pitch - mdy * s * (Input.invertY ? -1 : 1), lo, hi);
+      // keep yaw bounded (float precision over long sessions; TP body damping wraps by shortest angle anyway)
+      if (Math.abs(this.yaw) > 1000) { const w = Math.round(this.yaw / (Math.PI * 2)) * Math.PI * 2; this.yaw -= w; this.bodyYaw -= w; }
     } else { this.lookDX = 0; this.lookDY = 0; }
 
     // ---- camera view toggle

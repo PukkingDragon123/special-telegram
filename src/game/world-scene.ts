@@ -5,6 +5,7 @@ import { Physics } from '../sim/physics';
 import { LocalPlayer, playerView } from './player';
 import { buildStubWorld } from './stubs/world-stub';
 import { Overlay } from '../ui3d/overlay';
+import { PauseMenu, loadExtra, applyExtra } from '../modules/menu/pause';
 import { Input } from '../core/input';
 import { Sound } from '../core/audio';
 import { disposeObject } from '../core/util';
@@ -63,6 +64,17 @@ export class WorldScene implements SceneDef {
     player.spawn(hasPos ? me!.p! : a.p, hasPos ? me!.yaw ?? 0 : a.yaw ?? 0);
     player.setMode('play');
     Input.onUnlock = () => this.pause(true);
+    applyExtra(game, loadExtra());
+    // Esc while the pointer is already free (e.g. after closing a dialog) also opens the pause menu
+    {
+      const onKey = (e: KeyboardEvent) => {
+        // only from free play: an Esc that closes a dialog / the book / a choice must not also open the pause menu
+        if (e.code !== 'Escape' || this.pauseMenu?.open || Input.locked || this.game.player?.mode !== 'play' || this.game.ui.choosing || (this.game as any).questTalking?.()) return;
+        setTimeout(() => this.pause(true), 0);
+      };
+      window.addEventListener('keydown', onKey);
+      this.offs.push(() => window.removeEventListener('keydown', onKey));
+    }
     this.offs.push(game.engine.onFrame((f) => player.update(f.dt)));
     game.events.emit('world:ready', this.scene);
     // compile every visible material now (behind the scene fade), not when it first enters the view — on
@@ -70,25 +82,23 @@ export class WorldScene implements SceneDef {
     await prewarmShaders(game.engine.renderer, this.scene, this.camera, 8000);
   }
 
-  private pauseEl: HTMLDivElement | null = null;
+  // ---- pause (Esc / pointer lock lost) → the in-game pause menu (menu/pause.ts; ui4 owns this function)
+  private pauseMenu: PauseMenu | null = null;
+  private pauseKeyOff: (() => void) | null = null;
   pause(on: boolean) {
     const game = this.game;
-    if (on === !!this.pauseEl) return;
+    const menu = (this.pauseMenu ??= new PauseMenu(game, () => this.pause(false)));
+    if (on === menu.open) return;
     if (on) {
-      game.player?.setMode('frozen');
+      // dialogs / the recipe book / choices / cutscenes own Esc first: never stack the pause menu on them
+      const pl = game.player;
+      if (!pl || pl.mode === 'external' || (pl.mode === 'frozen' && !menu.open) || game.ui.choosing || (game as any).questTalking?.()) return;
+      pl.setMode('frozen');
       Input.setWantLock(false);
-      const d = (this.pauseEl = document.createElement('div'));
-      d.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,8,6,.55);backdrop-filter:blur(3px);z-index:20;cursor:pointer';
-      d.innerHTML = `<div style="text-align:center;color:#fff6e2;font-family:'IBM Plex Sans Thai Looped',sans-serif">
-        <div style="font:700 64px Kodchasan;-webkit-text-stroke:2px #2f7d32;paint-order:stroke fill;text-shadow:0 4px 0 #1b4d1e">พักก่อน</div>
-        <div style="opacity:.8;margin-top:8px">คลิกเพื่อเล่นต่อ · click to resume</div>
-        ${game.session.online ? `<div style="margin-top:14px;font:800 20px K2D">ห้อง ROOM: ${game.session.room}</div>` : ''}</div>`;
-      d.onclick = () => this.pause(false);
-      document.body.appendChild(d);
+      menu.show();
       if (!game.session.online) game.g.paused = true;
     } else {
-      this.pauseEl?.remove();
-      this.pauseEl = null;
+      menu.hide();
       game.g.paused = false;
       game.player?.setMode('play');
     }

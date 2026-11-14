@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { weatherSign, hashStr } from '../world/signfx';
 import { Assets } from '../../core/assets';
 import { F } from '../../core/fonts';
 
@@ -66,6 +67,8 @@ export function composed(key: string, w: number, h: number, base: string | null,
     ctx.clearRect(0, 0, w, h);
     if (!alpha) { ctx.fillStyle = '#ddd5c4'; ctx.fillRect(0, 0, w, h); }
     try { draw(ctx, w, h, img); } catch (e) { console.warn('[shops] tex draw', key, e); }
+    // real-signage wear (emboss, grain, fade, grime) — not for the calculator LCD
+    if (!key.startsWith('calc:')) { try { weatherSign(ctx, w, h, { seed: hashStr(key), surface: key.startsWith('sign:') ? 'card' : 'paper' }); } catch { /* cosmetic */ } }
     tex.needsUpdate = true;
   };
   const path = base ? (base.includes('/') ? base : photoPath(base)) : null;

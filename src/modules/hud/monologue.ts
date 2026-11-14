@@ -18,6 +18,9 @@ const BROKE: L[] = [
   ['เจ้าหนี้โทรมาอีกแล้ว ห่าเอ๊ย ไม่รับ', 'The loan shark is calling again. Hell no'],
   ['เงินเหลือแค่ค่ามาม่า… ซองเดียว', 'Money left for one pack of noodles'],
   ['บัญชีกูติดลบจนธนาคารโทรมาปลอบ', 'Bank called to comfort me'],
+  ['ตังค์ในกระเป๋าเหลือแต่ใบเสร็จ', 'My wallet only holds receipts now'],
+  ['ถ้าความจนเป็นกีฬา กูได้เหรียญทอง', "If being broke were a sport, I'd win gold"],
+  ['บาคาร่าเอาเงินไป ทิ้งไว้แต่บทเรียน', 'Baccarat took my money, left me a lesson'],
 ];
 const RICH: L[] = [
   ['เชี่ย… ตังค์เยอะขนาดนี้ ใครจะเชื่อว่ากูเคยหมดตัว', 'Damn… who would believe I was broke'],
@@ -31,6 +34,8 @@ const NIGHT: L[] = [
   ['ง่วงฉิบหาย แต่ต้องไปต่อ', 'Sleepy as hell, but I have to keep going'],
   ['มืดจนเห็นแต่ฟันหมา', 'So dark I only see dog teeth'],
   ['ผีมาก็ดี จะได้มีลูกค้า', "Ghosts are welcome, they're customers too"],
+  ['ผีในซอยคงหิวเหมือนกู', 'The soi ghost is probably as hungry as me'],
+  ['มืดแบบนี้ หมาขโมยหมูง่ายชิบหาย', 'This dark, the dog can steal pork so easily'],
 ];
 const DAWN: L[] = [
   ['ฟ้าเริ่มสว่างแล้ว ตลาดเปิดแน่ๆ', 'The sky is getting light, the market must be open'],
@@ -43,10 +48,14 @@ const DAY: L[] = [
   ['ทำไมกะเพราร้านอื่นขายดีกว่าวะ… ต้องสู้!', 'Why does the other stall sell more krapow… fight!'],
   ['การผัดคือศิลปะ… ศิลปะที่ร้อนชิบหาย', 'Frying is art… very hot art'],
   ['ถ้าวันนี้ขายหมด จะซื้อพัดลมให้ตัวเอง', "Sell out today, I'm buying myself a fan"],
+  ['ร้อนจนเหงื่อผมเค็มกว่าน้ำปลา', 'So hot my sweat is saltier than fish sauce'],
+  ['รถติดจนผมนั่งสมาธิได้', 'Traffic so bad I meditated'],
+  ['ข้าวไหม้อีกแล้ว… เรียกว่าเมนูพิเศษละกัน', 'Burnt again… call it a special'],
 ];
 const EVENING: L[] = [
   ['ชั่วโมงเร่งด่วน คนหิวเยอะ โอกาสทองมาแล้ว', 'Rush hour, hungry people everywhere — golden chance'],
   ['รถติดชิบหาย ดีแล้วที่กูเดิน', 'Traffic is a nightmare, good thing I walk'],
+  ['ลูกค้าหิว กูก็หิว ใครจะได้กินก่อน', 'Customers are hungry, so am I. Who eats first?'],
 ];
 const HEAVY: L[] = [
   ['หนักฉิบหาย หลังจะหักแล้ว', 'Heavy as hell, my back is breaking'],
