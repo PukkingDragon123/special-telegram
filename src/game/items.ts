@@ -6,6 +6,7 @@ import type { AttachPoint, CarryPose, CharacterRig } from './contracts';
 import { ShapeDesc, G } from '../sim/physics';
 import { TL, clamp, damp, dist3, round } from '../core/util';
 import { followEnt } from './views';
+import { ViewHands } from './viewhands';
 
 /**
  * ITEMS — every grabbable thing (ingredients, tools, dishes, chairs, money bags, cardboard…).
@@ -74,9 +75,14 @@ export class ItemSystem {
   private vmItem: number | null = null;
   private vmSwitch = 0;
   private vmBob = 0;
+  /** first-person forearm/hand(s) holding the selected item */
+  private hands: ViewHands;
+  /** holder object of the item currently in the view model (set by the item views) */
+  private vmHolder: THREE.Object3D | null = null;
 
   constructor(private game: Game) {
     this.viewModel.name = 'viewmodel';
+    this.hands = new ViewHands(game, this.viewModel);
     this.installIntents();
     game.on('physics:post', () => this.syncBodies());
     this.bindState();
@@ -411,6 +417,7 @@ export class ItemSystem {
     let wobV = new THREE.Vector2();
     let lastParent: THREE.Object3D | null = null;
     let state: 'free' | 'held' | 'in' | 'vm' = 'free';
+    let dropT = 1;
     game.interact?.register(holder);
     return {
       object: holder,
@@ -449,9 +456,19 @@ export class ItemSystem {
         }
         if (mode !== 'held') holder.visible = true;
         if (parent && local) {
-          if (lastParent !== parent) { parent.add(holder); lastParent = parent; if (mode === 'vm') this.vmSwitch = 0; }
-          const k = mode === 'vm' ? 1 : damp(18, dt);
+          if (lastParent !== parent) {
+            // keep the world position across the re-parent, so a thing put into the wok / onto a plate flies there
+            const fromWorld = lastParent && mode === 'in' ? holder.getWorldPosition(new THREE.Vector3()) : null;
+            parent.add(holder); lastParent = parent;
+            if (mode === 'vm') this.vmSwitch = 0;
+            if (fromWorld) { parent.updateWorldMatrix(true, false); holder.position.copy(parent.worldToLocal(fromWorld)); dropT = 0; }
+          }
+          if (mode === 'vm') this.vmHolder = holder;
+          else if (this.vmHolder === holder) this.vmHolder = null;
+          const k = mode === 'vm' ? 1 : damp(dropT < 1 ? 9 : 18, dt);
           holder.position.lerp(local.pos, k);
+          // little toss arc while flying into a container
+          if (mode === 'in' && dropT < 1) { dropT = Math.min(1, dropT + dt * 3); holder.position.y += Math.sin(dropT * Math.PI) * 0.09 * dt * 8; }
           // wobble when carried
           if (mode === 'held') {
             wobV.x += (-wob.x * 60 - wobV.x * 6) * dt + (Math.random() - 0.5) * 0.4 * dt * (game.views.of(e.holder)[0] ? 1 : 0);
@@ -546,6 +563,16 @@ export class ItemSystem {
     const sw = (1 - this.vmSwitch) ** 2;
     vm.position.set(0.3 + Math.cos(this.vmBob * 0.5) * bobAmp - lookDX * 0.0006, -0.3 + Math.abs(Math.sin(this.vmBob)) * bobAmp - sw * 0.35 + lookDY * 0.0004, -0.55);
     vm.rotation.set(-lookDY * 0.0008, -lookDX * 0.0008, 0);
+    // cooking close-up: bring the held tool / ingredient in over the wok
+    const ck = (this.game as any).cookCam?.k ?? 0;
+    if (ck > 0) { vm.position.x -= 0.12 * ck; vm.position.y += 0.04 * ck; vm.position.z += 0.08 * ck; }
+    // the player's own hand(s) holding it
+    const me = this.game.me;
+    const sel = me ? this.selected(me) : null;
+    const holder = sel && this.vmHolder?.parent === vm ? this.vmHolder : null;
+    const two = !!(sel && me && this.carrySpot(me, sel).point === 'chest');
+    const show = !!this.game.player?.firstPerson && vm.visible;
+    try { this.hands.update(dt, holder, holder ? sel!.id : null, two, show); } catch (err) { console.warn('[items] hands', err); }
   }
 }
 

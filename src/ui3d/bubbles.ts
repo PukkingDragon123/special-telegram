@@ -6,6 +6,7 @@ import { Ease, TL, clamp } from '../core/util';
 import { ChoicePrompt, ChoiceOpts } from './choice';
 import { Speaker, speakStart, speakStop } from './mood';
 import type { Expression } from '../game/contracts';
+import { F } from '../core/fonts';
 
 /**
  * Diegetic 3D UI — NO bubbles, panels or plates: every line is real extruded 3D lettering floating in the
@@ -44,6 +45,8 @@ export interface SayOpts {
   speaker?: Speaker | null;
   /** expression for the line (default: guessed from the text; null = leave the face alone) */
   mood?: Expression | null;
+  /** speaker's name (shown on the screen-space subtitle when the speaker is off-screen) */
+  name?: string;
 }
 
 export interface BubbleHandle { close(): void; readonly alive: boolean; mesh: THREE.Object3D }
@@ -76,6 +79,11 @@ interface Live {
   init: boolean;
   rise: number;
   speaker?: Speaker | null;
+  /** full line + speaker name for the off-screen subtitle */
+  th?: string;
+  name?: string;
+  /** screen-space subtitle element while the speaker is off-screen / too far */
+  sub2d?: HTMLDivElement | null;
 }
 
 /** looks (letter sizes are metres at the reference distance; lines grow with distance like before) */
@@ -180,7 +188,8 @@ export class UI3D {
   /** Speech above an anchor — floating 3D words. One line per anchor: saying again replaces it. */
   say(anchor: Anchor, text: string | TL, o: SayOpts = {}): BubbleHandle {
     const th = typeof text === 'string' ? text : text.th;
-    const subText = o.sub ?? (typeof text === 'string' ? undefined : text.en);
+    // less text: world speech shows the Thai line only (no English gloss under it)
+    const subText: string | undefined = undefined;
     const key = (anchor as any).isObject3D || typeof anchor === 'function' ? anchor : null;
     if (key && this.byKey.has(key)) {
       const old = this.byKey.get(key)!;
@@ -213,6 +222,7 @@ export class UI3D {
       onDone: o.onDone, baseScale: o.scale ?? 1,
     });
     if (key) this.byKey.set(key, L);
+    L.th = th; L.name = o.name;
     if (o.speaker && kind !== 'think') {
       L.speaker = o.speaker;
       speakStart(o.speaker, th, subText, o.mood, th.length / L.cps + 1.2);
@@ -285,6 +295,72 @@ export class UI3D {
 
   private posOf(L: Live) { anchorPos(L.anchor, this.tmp); return this.tmp; }
 
+  // ------------------------------------------------------------------ off-screen subtitles
+  private subRoot: HTMLDivElement | null = null;
+  private _ndc = new THREE.Vector3();
+  /** -1 = speaker to the left, +1 = to the right, 0 = in front but too far; null = readable on screen */
+  private offscreen(p: THREE.Vector3, dist: number, cam: THREE.Camera): number | null {
+    const v = this._ndc.copy(p).project(cam);
+    const behind = v.z > 1;
+    if (behind) return v.x > 0 ? -1 : 1;
+    if (v.x < -1.02 || v.x > 1.02 || v.y < -1.05 || v.y > 1.08) return v.x < 0 ? -1 : 1;
+    if (dist > 24) return 0;
+    return null;
+  }
+  private subRootEl(): HTMLDivElement {
+    if (this.subRoot) return this.subRoot;
+    const st = document.createElement('style');
+    const sh = '1px 0 0 #0b0907,-1px 0 0 #0b0907,0 1px 0 #0b0907,0 -1px 0 #0b0907,1px 1px 0 #0b0907,-1px 1px 0 #0b0907,1px -1px 0 #0b0907,-1px -1px 0 #0b0907,0 2px 3px rgba(0,0,0,.55)';
+    st.textContent = `
+      .ui3d-subs{position:fixed;left:0;right:0;bottom:calc(13vh + 64px);pointer-events:none;z-index:8;font-family:${F.ui},sans-serif}
+      .ui3d-subs .col{position:absolute;bottom:0;display:flex;flex-direction:column;gap:6px;max-width:min(34vw,420px)}
+      .ui3d-subs .col.l{left:clamp(12px,2vw,28px);align-items:flex-start;text-align:left}
+      .ui3d-subs .col.r{right:clamp(12px,2vw,28px);align-items:flex-end;text-align:right}
+      .ui3d-subs .col.c{left:50%;transform:translateX(-50%);align-items:center;text-align:center}
+      .ui3d-sub{color:#fff;font:600 clamp(13px,1.15vw,16px)/1.3 ${F.ui};text-shadow:${sh};opacity:0;transition:opacity .25s}
+      .ui3d-sub.on{opacity:1}
+      .ui3d-sub b{display:block;font:700 11px/1.2 ${F.ui};opacity:.75}
+      .ui3d-sub i{font-style:normal;font-weight:800;margin:0 .35em}`;
+    document.head.appendChild(st);
+    const r = (this.subRoot = document.createElement('div'));
+    r.className = 'ui3d-subs';
+    r.innerHTML = '<div class="col l"></div><div class="col c"></div><div class="col r"></div>';
+    document.body.appendChild(r);
+    return r;
+  }
+  private subOn(L: Live, side: number) {
+    const root = this.subRootEl();
+    const col = root.querySelector(side < 0 ? '.col.l' : side > 0 ? '.col.r' : '.col.c') as HTMLDivElement;
+    let el = L.sub2d;
+    if (!el) {
+      el = L.sub2d = document.createElement('div');
+      el.className = 'ui3d-sub';
+      const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!));
+      const text = esc(L.th ?? '');
+      el.dataset.side = '';
+      el.innerHTML = (L.name ? `<b>${esc(L.name)}</b>` : '') + `<span>${text}</span>`;
+      requestAnimationFrame(() => el?.classList.add('on'));
+    }
+    const sk = String(side);
+    if (el.dataset.side !== sk || el.parentElement !== col) {
+      el.dataset.side = sk;
+      const span = el.querySelector('span')!;
+      const raw = span.textContent ?? '';
+      span.innerHTML = side < 0 ? `<i>◀</i>${raw.replace(/^[◀▶]\s*/, '')}` : side > 0 ? `${raw.replace(/\s*[◀▶]$/, '')}<i>▶</i>` : raw;
+      col.appendChild(el);
+    }
+    // at most 3 off-screen lines on screen: the oldest go first
+    const all = root.querySelectorAll('.ui3d-sub');
+    if (all.length > 3) all[0].remove();
+  }
+  private subOff(L: Live) {
+    const el = L.sub2d;
+    if (!el) return;
+    L.sub2d = null;
+    el.classList.remove('on');
+    setTimeout(() => el.remove(), 260);
+  }
+
   private kill(L: Live, instant: boolean, stagger = 0.012) {
     if (instant) { this.dispose(L); return; }
     if (L.closing >= 0) return;
@@ -295,6 +371,7 @@ export class UI3D {
 
   private dispose(L: Live) {
     speakStop(L.speaker); L.speaker = null;
+    this.subOff(L);
     const i = this.live.indexOf(L);
     if (i >= 0) this.live.splice(i, 1);
     if (L.key && this.byKey.get(L.key) === L) this.byKey.delete(L.key);
@@ -363,7 +440,7 @@ export class UI3D {
         s *= clamp(1 - (dist - 22) / 8, 0, 1); // far lines shrink away (keeps the screen clean)
       }
       if (L.kind === 'think') p.y += Math.min(L.age, 6) * 0.03 * s;
-      if (L.kind !== 'tag') p.y += Math.sin(L.age * 1.7 + L.seed) * 0.012 * s;
+
       if (L.kind === 'shout') {
         // slam in: starts big, lands with a punch + tiny recoil
         const k = Math.min(1, L.age / 0.17);
@@ -373,6 +450,12 @@ export class UI3D {
         L.closing += dt;
         if (L.closing >= L.closeDur) { const cb = L.onDone; this.dispose(L); cb?.(); continue; }
       }
+      // ---- speaker off-screen / behind / too far to read → the line moves to a small screen subtitle
+      if (L.kind === 'say' || L.kind === 'shout' || L.kind === 'think') {
+        const off = this.offscreen(p, dist, cam);
+        if (off !== null && L.closing < 0) { this.subOn(L, off); g.visible = false; continue; }
+        this.subOff(L);
+      }
       if (s < 0.004) { g.visible = false; continue; }
       g.scale.setScalar(s);
 
@@ -380,10 +463,9 @@ export class UI3D {
       // Screen-parallel base: off-centre lines naturally show their inner side through perspective.
       cam.getWorldQuaternion(_q);
       const t = L.age, sd = L.seed, side = sd % 2 < 1 ? 1 : -1;
-      if (L.kind === 'tag') _e.set(0, 0, 0);
-      else if (L.kind === 'shout') _e.set(-0.1 + Math.sin(t * 2.3 + sd) * 0.06, side * 0.3 + Math.sin(t * 1.9 + sd) * 0.1, side * 0.05 + Math.sin(t * 2.7 + sd) * 0.05);
-      else if (L.kind === 'think') _e.set(-0.08 + Math.sin(t * 0.7 + sd * 2) * 0.08, side * 0.22 + Math.sin(t * 0.6 + sd) * 0.18, Math.sin(t * 0.8 + sd) * 0.07);
-      else _e.set(-0.12 + Math.sin(t * 0.6 + sd * 2) * 0.05, side * 0.26 + Math.sin(t * 0.8 + sd) * 0.12, Math.sin(t * 0.9 + sd) * 0.035);
+      // lettering always faces the camera straight and level (user: no tilting text)
+      void t; void sd; void side;
+      _e.set(0, 0, 0);
       _q.multiply(_qt.setFromEuler(_e));
       if (!L.init) { L.quat.copy(_q); L.init = true; }
       else L.quat.slerp(_q, 1 - Math.exp(-dt * (L.kind === 'tag' ? 14 : 5)));
@@ -406,8 +488,7 @@ export class UI3D {
       if (L.closing >= L.closeDur) { this.dispose(L); return; }
     }
     (this.camera as THREE.Camera).getWorldQuaternion(_q);
-    const spin = (1 - Ease.outBack(Math.min(1, L.age / 0.6), 2.4)) * 2.4 + 0.22 + Math.sin(L.age * 3 + L.seed) * 0.12;
-    _q.multiply(_qt.setFromEuler(_e.set(-0.1, spin, Math.sin(L.age * 2.2 + L.seed) * 0.05)));
+    // level, no spin / roll
     g.quaternion.copy(_q);
   }
 }

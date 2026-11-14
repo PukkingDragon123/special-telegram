@@ -12,6 +12,7 @@ import { libModel } from '../world/lib';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { tl } from '../../core/util';
 import { LocalTalkers, type TalkTarget } from '../quests/api';
+import { Secrets } from './egg-secrets';
 
 /* ============================================================================================
  * THAI MEME EASTER EGGS & small life (every peer, local):
@@ -42,6 +43,7 @@ export class Eggs {
   private crows: { obj: THREE.Object3D; mixer: THREE.AnimationMixer; act: THREE.AnimationAction | null; home: THREE.Vector3; fly: number }[] = [];
   private posters: { tex: THREE.CanvasTexture; day: number; draw: (d: number) => void }[] = [];
   private night = false;
+  private secrets: Secrets | null = null;
 
   constructor(private game: Game, private life: Life) {}
   init() {}
@@ -65,6 +67,9 @@ export class Eggs {
     this.addCrow(new THREE.Vector3(-18, 0.15, -84));
     this.addCrow(new THREE.Vector3(-16.6, 0.15, -85.3));
     this.addCrow(new THREE.Vector3(38, 0.15, -79));
+    // secrets: the baby photo shelf (only if the photo file exists) + the snow-leopard kitten
+    this.secrets = new Secrets(game);
+    this.secrets.build(g);
   }
 
   /** a talkable seller by role ('lottery_lady' | 'amulet_grandpa'), for the ritual module */
@@ -77,6 +82,7 @@ export class Eggs {
     for (const n of this.npcs) { if (n.talk?.on) { LocalTalkers.remove(n.talk.target.key); this.game.interact.unregister(n.rig.root); } n.rig.dispose(); }
     this.npcs = [];
     this.karaoke?.stop(0.5); this.karaoke = null;
+    this.secrets?.dispose(); this.secrets = null;
     this.group?.removeFromParent(); this.group = null;
     this.geckos = []; this.crows = []; this.posters = [];
   }
@@ -266,6 +272,7 @@ export class Eggs {
 
   frame(dt: number) {
     if (!this.group) return;
+    this.secrets?.frame(dt);
     const game = this.game;
     const h = game.clock.time;
     const cam = game.camera.getWorldPosition(new THREE.Vector3());
