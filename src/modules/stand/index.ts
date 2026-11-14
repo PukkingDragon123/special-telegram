@@ -283,7 +283,7 @@ class StandShow {
     const k = t < 0.6 ? 0 : t < 1.4 ? (t - 0.6) / 0.8 : t < 5.8 ? 1 : Math.max(0, 1 - (t - 5.8) / 0.8);
     if (this.rig && o) {
       const yaw = o.getWorldQuaternion(new THREE.Quaternion());
-      const back = new THREE.Vector3(0, 0, -0.55).applyQuaternion(yaw);
+      const back = new THREE.Vector3(0, 0, 0.55).applyQuaternion(yaw);   // characters face -Z: +Z is behind them
       const base = o.getWorldPosition(new THREE.Vector3()).add(back).add(new THREE.Vector3(0, 0.22 + Math.sin(t * 2.2) * 0.04, 0));
       this.rig.root.position.copy(base);
       this.rig.root.quaternion.copy(yaw);
@@ -325,7 +325,7 @@ class StandShow {
       const cam = game.camera;
       const head = this.userHead();
       const yawQ = o ? o.getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion();
-      const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(yawQ);
+      const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(yawQ);   // the direction the user faces
       const side = new THREE.Vector3(1, 0, 0).applyQuaternion(yawQ);
       let p: THREE.Vector3, look: THREE.Vector3;
       if (t < 3.0) {
@@ -440,6 +440,6 @@ export default defineModule({
     try { host?.update(dt); flair?.update(dt); } catch (e) { console.warn('[stand] host', e); }
   },
   frame(game: Game, dt: number) {
-    try { show?.frame(Math.min(0.1, dt)); } catch (e) { console.warn('[stand] frame', e); }
+    try { show?.frame(Math.min(params.has('standfast') ? 0.6 : 0.1, dt)); } catch (e) { console.warn('[stand] frame', e); }
   },
 });

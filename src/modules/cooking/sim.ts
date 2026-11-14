@@ -524,7 +524,8 @@ function stepAct(game: Game, pl: Ent, a: Act, src: Ent | null | undefined, dst: 
       const have = amountOf(src);
       if (have <= 0.01) return;
       const ramp = Math.min(1, a.t / Math.max(0.05, d.ramp ?? 0.2));
-      const amt = Math.min(have, d.rate * (0.15 + 0.85 * ramp) * dt);
+      // a whole cut is ONE piece: it goes onto the board all at once
+      const amt = d.cutOnly ? have : Math.min(have, d.rate * (0.15 + 0.85 * ramp) * dt);
       if (amt <= 0) return;
       const field = d.unit === 'ml' ? 'ml' : 'g';
       src.data = { ...src.data, [field]: rd(have - amt, 2) };

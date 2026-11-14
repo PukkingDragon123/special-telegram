@@ -74,9 +74,9 @@ export function buildMeatTray(kind: string) {
     heap.add(mesh(sl, rawMeatMat(0xffd8d0)));
   } else if (kind === 'pork_whole') {
     // one big boneless leg cut: lean block with a fat cap + rind edge (raw, glossy)
-    const lean = gc('porkWholeLean', () => planarUV(mound(0.075, 0.045, { seed: 23, detail: 3, rough: 0.12, squash: [1.25, 0.8], flat: true }), 1 / 0.12));
-    heap.add(mesh(lean, rawMeatMat(0xffe2dc), [0, 0.006, 0]));
-    heap.add(mesh(gc('porkWholeFat', () => planarUV(mound(0.07, 0.014, { seed: 29, detail: 3, rough: 0.08, squash: [1.25, 0.8], flat: true }), 1 / 0.12)), rawMeatMat(0xfff6ea), [0.004, 0.038, -0.004]));
+    const lean = gc('porkWholeLean2', () => planarUV(rbox(0.15, 0.04, 0.095, 0.016, 1), 1 / 0.2));
+    heap.add(mesh(lean, rawMeatMat(0xffe8e2), [0, 0.026, 0]));
+    heap.add(mesh(gc('porkWholeFat2', () => planarUV(rbox(0.145, 0.012, 0.09, 0.005, 1), 1 / 0.2)), rawMeatMat(0xfff8f0), [0, 0.051, 0]));
   } else if (kind === 'chicken_whole') {
     // two whole skinless breasts side by side (tear-drop mounds, pale pink)
     const br = gc('chickenBreast', () => planarUV(mound(0.05, 0.026, { seed: 41, detail: 3, rough: 0.1, squash: [1.5, 0.75], flat: true }), 1 / 0.12));

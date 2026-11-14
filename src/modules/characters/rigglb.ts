@@ -28,7 +28,7 @@ interface Plan { clip?: string; sitClip?: string; loco?: boolean; proc?: boolean
 const PLANS: Partial<Record<AnimName, Plan>> = {
   idle: { loco: true }, walk: { loco: true, minSpeed: 1.3 }, run: { loco: true, minSpeed: 4.8 },
   tpose: { clip: 'A_TPose' }, sit: { clip: 'Sitting_Idle_Loop' }, talk: { clip: 'Idle_Talking_Loop', sitClip: 'Sitting_Talking_Loop' },
-  dance: { clip: 'Dance_Loop' }, push_cart: { clip: 'Push_Loop' }, fall: { clip: 'Death01', once: true },
+  dance: { clip: 'Dance_Loop' }, push_cart: { clip: 'Push_Loop' }, fall: { clip: 'Death01', once: true }, punch: { clip: 'Punch_Cross', once: true }, kick: { proc: true, mask: 'full' },
   sit_floor: { proc: true, mask: 'full' }, sleep: { proc: true, mask: 'full' }, lie_cardboard: { proc: true, mask: 'full' },
   celebrate: { proc: true, mask: 'full' }, casino_cheer: { proc: true, mask: 'full' }, tug: { proc: true, mask: 'full' },
   wake_up: { proc: true, mask: 'full' }, stand_cool: { proc: true, mask: 'full' },
@@ -529,7 +529,8 @@ export class Rig implements CharacterRig {
       const I = this.t.index;
       const bone = (n: string, o: THREE.Vector3) => { const i = I[n]; if (i === undefined) return false; this.bones[i].getWorldPosition(o); m.worldToLocal(o); return true; };
       // the torso folds into the hips: waist cap sits at the belt (pelvis joint, nudged forward a touch)
-      if (bone('pelvis', C[0])) { const sp = new THREE.Vector3(); if (bone('spine_01', sp)) C[0].lerp(sp, 0.25); }
+      // (pushed back toward the spine and down a little: the cap tilts away from the eyes, the front of the hips/legs stays)
+      if (bone('pelvis', C[0])) { C[0].z -= 0.16 / Math.max(0.5, m.getWorldScale(_w5).y); C[0].y -= 0.04; }
       if (!bone('lowerarm_l', C[1])) C[1].copy(C[0]);
       if (!bone('lowerarm_r', C[2])) C[2].copy(C[0]);
       if (this.fpAcc) for (let k = 0; k < 3; k++) (this.fpAcc.userData.uFpC.value as THREE.Vector3[])[k].copy(C[k]);

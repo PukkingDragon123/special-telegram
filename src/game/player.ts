@@ -362,7 +362,10 @@ export class LocalPlayer {
       cam.position.addScaledVector(right, bobX);
       // a little in front of the eyes, along the view, so the (head-less) body never fills the view when looking down
       const fwdX = -Math.sin(this.yaw) * Math.cos(this.pitch), fwdZ = -Math.cos(this.yaw) * Math.cos(this.pitch);
-      cam.position.x += fwdX * 0.07; cam.position.z += fwdZ * 0.07; cam.position.y += Math.sin(this.pitch) * 0.05;
+      // looking down, the eyes sit a bit further out over the toes (you see your legs/feet, not your own belly)
+      const outK = 0.07 + 0.035 * Math.max(0, Math.min(1, -this.pitch / 0.96));
+      cam.position.x += -Math.sin(this.yaw) * outK; cam.position.z += -Math.cos(this.yaw) * outK; cam.position.y += Math.sin(this.pitch) * 0.05;
+      void fwdX; void fwdZ;
       cam.rotation.set(this.pitch, this.yaw, Math.cos(this.bobT) * 0.004 * this.bob, 'YXZ');
     }
     this.fovKick += (run * 6 - this.fovKick) * damp(4, dt);

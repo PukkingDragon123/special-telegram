@@ -108,7 +108,7 @@ export class CombatHost {
     if (!this.enabled || !pl?.p || pl.cbDown) return;
     if ((pl._cbPunchAt ?? -9) > this.now - 0.32) return;     // swing rate
     pl._cbPunchAt = this.now;
-    this.anim(pl, 'slap');
+    this.anim(pl, Math.random() < 0.22 ? 'kick' : 'punch');
     const yaw = typeof d?.yaw === 'number' ? d.yaw : pl.yaw ?? 0;
     const dir = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
     const o = V(pl.p);
@@ -479,7 +479,7 @@ export class CombatHost {
     b.next -= dt;
     if (b.next > 0) return;
     b.next = 1.05 + Math.random() * 0.6;
-    this.anim(e, e.cbKind === 'auntie' ? 'slap' : 'slap');
+    this.anim(e, e.cbKind === 'auntie' ? 'slap' : Math.random() < 0.2 ? 'kick' : 'punch');
     this.game.sfx('whoosh_swing', e.p, { vol: 0.5 });
     const id = e.id, pid = pl.id;
     setTimeout(() => {

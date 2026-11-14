@@ -43,7 +43,9 @@ export type AnimName =
   /** stretch-yawn after waking, look around, nod, laugh, facepalm */
   | 'stretch' | 'look_around' | 'nod' | 'laugh' | 'facepalm'
   /** two-person: firm handshake (right hand forward, pumps twice); tiptoe sneaking walk; lecturing finger-wag */
-  | 'handshake' | 'sneak' | 'lecture';
+  | 'handshake' | 'sneak' | 'lecture'
+  /** fighting: mocap cross punch (weight shift, fist) and a procedural front kick */
+  | 'punch' | 'kick';
 
 /** Animated facial expressions (blending brows / eyelids / mouth); blinking and talk mouth-flap are automatic. */
 export type Expression =

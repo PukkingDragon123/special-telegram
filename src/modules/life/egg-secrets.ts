@@ -67,6 +67,7 @@ interface Kitten {
   root: THREE.Group;
   head: THREE.Group;
   paw: THREE.Group;
+  pad: THREE.Group;
   tail: THREE.Group;
   eyes: THREE.Mesh[];
   body: THREE.Mesh;
@@ -146,11 +147,14 @@ function buildKitten(): Kitten {
   const nose = new THREE.Mesh(new THREE.SphereGeometry(0.011, 10, 8), new THREE.MeshStandardMaterial({ color: 0x5a4a48, roughness: 0.5 }));
   nose.position.set(0, -0.018, 0.08); nose.scale.set(1.2, 0.8, 0.7); head.add(nose);
   // front paws: left resting, right on a pivot (raised toward you)
-  const pawGeo = new THREE.CapsuleGeometry(0.022, 0.1, 4, 10);
-  const left = new THREE.Mesh(pawGeo, fur); left.position.set(-0.04, 0.06, 0.07); root.add(left);
-  const paw = new THREE.Group(); paw.position.set(0.045, 0.19, 0.06); root.add(paw);
-  const arm = new THREE.Mesh(pawGeo, fur); arm.position.set(0, -0.06, 0); paw.add(arm);
-  const pad = new THREE.Group(); pad.position.set(0, -0.12, 0.012); paw.add(pad);
+  // chubby front legs: short thick fur capsules ending in round mitts
+  const pawGeo = new THREE.CapsuleGeometry(0.028, 0.07, 4, 12);
+  const mittGeo = new THREE.SphereGeometry(0.032, 14, 10);
+  const lm = new THREE.Mesh(mittGeo, fur); lm.scale.set(1.05, 0.75, 1.25); lm.position.set(-0.04, 0.022, 0.095); root.add(lm);
+  const paw = new THREE.Group(); paw.position.set(0.045, 0.17, 0.07); root.add(paw);
+  const arm = new THREE.Mesh(pawGeo, fur); arm.position.set(0, -0.05, 0); paw.add(arm);
+  shells(arm, 3, 0.006);
+  const pad = new THREE.Group(); pad.position.set(0, -0.105, 0.006); paw.add(pad);
   const mitt = new THREE.Mesh(new THREE.SphereGeometry(0.03, 14, 10), fur); mitt.scale.set(1, 0.9, 0.7); pad.add(mitt);
   const padMat = new THREE.MeshStandardMaterial({ color: 0x1a1614, roughness: 0.6 });
   const big = new THREE.Mesh(new THREE.SphereGeometry(0.014, 10, 8), padMat); big.position.set(0, -0.006, 0.019); big.scale.set(1.2, 0.9, 0.4); pad.add(big);
@@ -166,7 +170,7 @@ function buildKitten(): Kitten {
   const hx = hc.getContext('2d')!; hx.font = `700 52px ${F.ui}`; hx.textAlign = 'center'; hx.textBaseline = 'middle'; hx.fillStyle = '#ff5a8a'; hx.fillText('♥', 32, 34);
   const ht = new THREE.CanvasTexture(hc); ht.colorSpace = THREE.SRGBColorSpace;
   const heartMat = new THREE.SpriteMaterial({ map: ht, transparent: true, depthWrite: false });
-  return { root, head, paw, tail, eyes, body, raise: 0, bump: 0, blink: 3, meowT: 2, hearts: [], heartMat, purr: null, purrT: 0 };
+  return { root, head, paw, pad, tail, eyes, body, raise: 0, bump: 0, blink: 3, meowT: 2, hearts: [], heartMat, purr: null, purrT: 0 };
 }
 
 // ------------------------------------------------------------------ the class
@@ -339,8 +343,9 @@ export class Secrets {
         k.raise += ((near ? 1 : 0) - k.raise) * Math.min(1, dt * (near ? 3 : 1.5));
         k.bump = Math.max(0, k.bump - dt * 2.5);
         // raised paw: forearm up and forward, pad facing you; the bump pushes it forward
-        k.paw.rotation.x = -k.raise * 2.3 - Math.sin(k.bump * Math.PI) * 0.35;
-        k.paw.rotation.z = -k.raise * 0.25;
+        k.paw.rotation.x = -k.raise * 2.0 - Math.sin(k.bump * Math.PI) * 0.35;
+        k.paw.rotation.z = -k.raise * 0.3;
+        k.pad.rotation.x = k.raise * 1.75;   // the pink-black toe beans face you, like a high-five
         k.paw.position.z = 0.06 + Math.sin(k.bump * Math.PI) * 0.05;
         k.tail.rotation.y = Math.sin(this.t * 1.3) * 0.12;
         k.blink -= dt;

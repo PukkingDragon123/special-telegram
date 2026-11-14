@@ -35,7 +35,10 @@ export class ViewHands {
   private lastHeld: number | null = null;
   private last = { r: new THREE.Matrix4(), l: new THREE.Matrix4(), two: false };
   /** forearm direction (toward the elbow, view-model space) + roll — exposed for tuning */
-  tune = { x: 0.3, y: -0.8, z: 0.5, roll: -0.6 };
+  tune = { x: 0.12, y: -0.95, z: 0.3, roll: -0.4, gx: 0.3, gy: 0.15, gz: 0.25 };
+  /** while a hand is shown the view model moves in a bit (so the hand is in frame, not cut by the screen edge) */
+  readonly vmShift = new THREE.Vector3(-0.09, 0.07, 0.02);
+  get holding() { return !!this.meshR?.visible; }
   private _bb = new THREE.Box3();
   private _bt = new THREE.Box3();
 
@@ -177,7 +180,9 @@ export class ViewHands {
         this.place(this.bakes.l!, gl, new THREE.Vector3(-0.35, -0.55, 0.75), -1.2, this.last.l);
       } else {
         // wrap the right side of the item, a little below its middle
-        const gr = new THREE.Vector3(bb.max.x - Math.min(0.05, sz.x * 0.3), bb.min.y + Math.min(0.06, sz.y * 0.25), c.z + sz.z * 0.2);
+        // grip toward the lower right of the item (palm under/behind it), forearm running down toward the camera
+        const T = this.tune;
+        const gr = new THREE.Vector3(c.x + sz.x * T.gx, bb.min.y + sz.y * T.gy, c.z + sz.z * T.gz);
         this.place(this.bakes.r!, gr, new THREE.Vector3(this.tune.x, this.tune.y, this.tune.z), this.tune.roll, this.last.r);
       }
       this.last.two = two;

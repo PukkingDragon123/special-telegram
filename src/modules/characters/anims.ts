@@ -523,6 +523,30 @@ def('carry_heavy', { loop: true, dur: 1, loco: true, posture: 'stand', pose: (c)
   pb.add(B.spine, 6, 0, wob * 0.6); pb.add(B.chest, 4, 0, 0); pb.neck(-14, 0, 0); pb.head(-8, 0, wob);
 } });
 
+def('punch', { loop: false, dur: 0.75, fade: 0.06, face: 'shock', pose: (c) => {
+  // the body comes from the Punch_Cross mocap clip; this procedural pose is only the fallback (no clips yet)
+  base(c);
+  const pb = c.pb, k = c.k;
+  const out = track(k, [[0, 0], [0.18, -0.25], [0.38, 1], [0.5, 0.95], [1, 0]]);
+  pb.arm(R, 30 + 55 * pos(out), -10, 70 * pos(out), 120 - 110 * pos(out), 0);
+  pb.arm(L, 60, -30, 40, 120, 0);
+  pb.chest(4, -30 * out, 0); pb.spine(6, -12 * out, 0);
+  pb.hands('fist');
+} });
+def('kick', { loop: false, dur: 0.95, fade: 0.08, face: 'shock', posture: 'stand', pose: (c) => {
+  loco({ ...c, moveW: 0 });
+  const pb = c.pb, k = c.k;
+  // chamber the knee, snap the foot out, recoil, set it down; lean back for balance, guard up
+  const chamber = track(k, [[0, 0], [0.22, 1], [0.42, 1], [0.62, 0.85], [0.86, 0.15], [1, 0]]);
+  const ext = track(k, [[0, 0], [0.24, 0], [0.4, 1], [0.52, 0.9], [0.68, 0], [1, 0]]);
+  pb.leg(R, 95 * chamber, 0, 115 * chamber * (1 - ext) + 6, 20 * ext);
+  pb.leg(L, 6, 6, 12 + 6 * chamber, 0);
+  pb.spine(-14 * chamber, 0, 4 * chamber); pb.chest(-6 * chamber, 0, 0); pb.head(14 * chamber, 0, 0);
+  pb.arm(R, 40 + 20 * chamber, -25, 50, 120, 0); pb.arm(L, 50 + 25 * chamber, -35, 40, 125, 0);
+  pb.hands('fist');
+  pb.p.hp[2] += -0.05 * chamber; pb.p.hp[1] += -0.02 * chamber;
+} });
+
 def('fall', { loop: false, dur: 1.3, hold: true, look: false, face: 'shock', posture: 'lie', fade: 0.06, pose: (c) => {
   const pb = c.pb, k = c.k;
   if (k < 0.55) {

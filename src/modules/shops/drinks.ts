@@ -188,7 +188,7 @@ function latheUV(profile: [number, number, number, number][], seg: number, brand
   for (let i = 0; i < uv.count; i++) {
     const s = Math.floor(i / rows), j = i % rows;
     const [, , lv, util] = profile[j];
-    const around = (s / seg + 0.25) % 1;   // u = 0.5 (logo) faces +z
+    const around = (s / seg + 0.5) % 1;   // lathe φ=0 faces +z → u = 0.5 (the logo) faces the front
     if (lv >= 0) uv.setXY(i, c.u0 + around * (c.u1 - c.u0), c.v0 + lv * (c.v1 - c.v0));
     else if (util === UTIL.alu) {
       // top / bottom: polar mapping onto the ring-pull disc

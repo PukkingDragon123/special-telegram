@@ -79,6 +79,7 @@ export class ItemSystem {
   private hands: ViewHands;
   /** holder object of the item currently in the view model (set by the item views) */
   private vmHolder: THREE.Object3D | null = null;
+  private handK = 0;
 
   constructor(private game: Game) {
     this.viewModel.name = 'viewmodel';
@@ -563,9 +564,18 @@ export class ItemSystem {
     const sw = (1 - this.vmSwitch) ** 2;
     vm.position.set(0.3 + Math.cos(this.vmBob * 0.5) * bobAmp - lookDX * 0.0006, -0.3 + Math.abs(Math.sin(this.vmBob)) * bobAmp - sw * 0.35 + lookDY * 0.0004, -0.55);
     vm.rotation.set(-lookDY * 0.0008, -lookDX * 0.0008, 0);
+    // a visible hand holds it: bring the item in from the screen edge
+    this.handK += ((this.hands.holding ? 1 : 0) - this.handK) * Math.min(1, dt * 8);
+    if (this.handK > 0.001) vm.position.addScaledVector(this.hands.vmShift, this.handK);
     // cooking close-up: bring the held tool / ingredient in over the wok
     const ck = (this.game as any).cookCam?.k ?? 0;
-    if (ck > 0) { vm.position.x -= 0.12 * ck; vm.position.y += 0.04 * ck; vm.position.z += 0.08 * ck; }
+    if (ck > 0) { vm.position.x -= 0.1 * ck; vm.position.y += 0.03 * ck; vm.position.z += 0.06 * ck; }
+    // keep the view model in the same place on screen when the FOV narrows (close-ups) or widens (sprint)
+    const cam = this.game.camera as THREE.PerspectiveCamera | undefined;
+    if (cam?.isPerspectiveCamera) {
+      const k = Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2) / Math.tan(THREE.MathUtils.degToRad(72) / 2);
+      vm.position.x *= k; vm.position.y *= k;
+    }
     // the player's own hand(s) holding it
     const me = this.game.me;
     const sel = me ? this.selected(me) : null;

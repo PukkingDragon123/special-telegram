@@ -110,7 +110,7 @@ export function cookingProvider(game: Game) {
       const name = hdef.name.th;
       const unit = hdef.unit === 'ml' ? 'มล.' : 'ก.';
       let base = 0;
-      const a = holdAct('pour', held, t, tl(`${hdef.verb}${name}`, 'pour'), 7, () => {
+      const a = holdAct('pour', held, t, hdef.cutOnly ? tl(`วาง${name}บนเขียง`, 'put it on the board') : tl(`${hdef.verb}${name}`, 'pour'), 7, () => {
         const have = amountOf(get(held.id));
         if (have <= 0.05) return `${name} หมดแล้ว!`;
         const d = amountIn(get(t.id), hk!) - base;
