@@ -28,10 +28,15 @@ export class WorldScene implements SceneDef {
     this.scene.add(this.camera);
     game.physics = await Physics.create();
     game.world = null;
+    const marks = (window as any).__hpMarks ?? {};
+    const tw = performance.now();
     for (const m of game.modules) {
       if (!m.buildWorld) continue;
+      const t = performance.now();
       try { await m.buildWorld(game); } catch (e) { console.error(`[module ${m.id}] buildWorld failed`, e); }
+      marks['bw:' + m.id] = Math.round(performance.now() - t);
     }
+    marks.buildWorld = Math.round(performance.now() - tw);
     if (!game.world) game.world = buildStubWorld(game);
     game.engine.setView(this.scene, this.camera);
     game.ui.setScene(this.scene, this.camera);
