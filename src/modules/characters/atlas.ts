@@ -911,12 +911,15 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
       const g = P.g; g.save(); P.clipRegion(T, 0, 0, 1, 1);
       g.fillStyle = nav;
       g.beginPath();
-      const f1 = P.pt(T, 0.5 - 0.13, neckF - 0.03), f2 = P.pt(T, 0.5 + 0.13, neckF - 0.03), f3 = P.pt(T, 0.5, vb);
-      g.moveTo(...f1); g.lineTo(...f2); g.lineTo(...f3); g.closePath(); g.fill();
-      for (const s0 of [0, 0.86]) { const [x, y, w, h] = P.rect(T, s0, 0, s0 + 0.14, torsoT(1.3)); g.fillRect(x, y, w, h); }
+      // wide collar: from the shoulder seams (s 0.5 ± 0.24) down to the V; back flap = the whole upper back (s < 0.2 / > 0.8)
+      const sh = torsoT(1.4);
+      const f1 = P.pt(T, 0.5 - 0.24, 0), f2 = P.pt(T, 0.5 + 0.24, 0), f3 = P.pt(T, 0.5 + 0.24, sh), f4 = P.pt(T, 0.5, vb), f5 = P.pt(T, 0.5 - 0.24, sh);
+      g.moveTo(...f1); g.lineTo(...f2); g.lineTo(...f3); g.lineTo(...f4); g.lineTo(...f5); g.closePath(); g.fill();
+      for (const [s0, s1] of [[0, 0.2], [0.8, 1]]) { const [x, y, w, h] = P.rect(T, s0, 0, s1, torsoT(1.28)); g.fillRect(x, y, w, h); }
       g.restore();
-      P.fill(T, col, 0.5 - 0.075, neckF - 0.02, 0.5 + 0.075, neckF + 0.01);
-      for (const sd of [-1, 1]) P.line(T, [[0.5 + sd * 0.115, neckF - 0.02], [0.5 + sd * 0.012, vb - 0.03]], '#f4f2ee', 1.6, 0.9);
+      neckline(neckF + 0.004, neckB, skin);
+      for (const sd of [-1, 1]) P.line(T, [[0.5 + sd * 0.215, sh - 0.005], [0.5 + sd * 0.012, vb - 0.035]], '#f4f2ee', 2, 0.95);
+      for (const s0 of [0.185, 0.815]) P.line(T, [[s0, 0], [s0, torsoT(1.29)]], '#f4f2ee', 2, 0.95);
       P.blob(T, 0.5, vb - 0.01, 0.035, 0.03, '#c8303a', 1);
       for (const sd of [-1, 1]) P.line(T, [[0.5, vb], [0.5 + sd * 0.025, vb + 0.07]], '#c8303a', 4, 1);
       P.band(A, armT(0.27), armT(0.3), nav, 1); P.band(A, armT(0.285), armT(0.29), '#f4f2ee', 1);
@@ -927,19 +930,25 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
       const fr = c2;
       for (let i = 0; i < 26; i++) P.dot(T, i / 25, neckF + 0.008, 4.5, fr);
       for (let i = 0; i < 30; i++) P.dot(T, i / 29, tH - 0.01, 5, fr);
-      const by = torsoT(1.3);
-      P.blob(T, 0.45, by, 0.05, 0.035, '#d8304a', 1); P.blob(T, 0.55, by, 0.05, 0.035, '#d8304a', 1);
-      for (const sd of [-1, 1]) P.line(T, [[0.5, by], [0.5 + sd * 0.03, by + 0.09]], '#d8304a', 5, 1);
-      P.dot(T, 0.5, by, 6, '#f6d36a', '#fff8d0');
+      // one big ribbon bow right under the collar, tails hanging down, gold star brooch in the knot
+      const by = neckF + 0.045;
+      const g2 = P.g; g2.save(); P.clipRegion(T, 0, 0, 1, 1); g2.fillStyle = '#d8304a';
+      for (const sd of [-1, 1]) { g2.beginPath(); const a = P.pt(T, 0.5, by), b = P.pt(T, 0.5 + sd * 0.11, by - 0.04), c = P.pt(T, 0.5 + sd * 0.11, by + 0.05); g2.moveTo(...a); g2.lineTo(...b); g2.lineTo(...c); g2.closePath(); g2.fill(); }
+      g2.restore();
+      for (const sd of [-1, 1]) P.line(T, [[0.5, by], [0.5 + sd * 0.04, by + 0.16]], '#d8304a', 6, 1);
+      P.dot(T, 0.5, by, 7, '#f6d36a', '#fff8d0');
       P.band(A, armT(0.24), armT(0.27), fr, 1);
       break;
     }
     case 'stand_suit': {
       // cream shoulder plates and a gold skull motif on the belt line and over the heart
       for (const s0 of [0.18, 0.72]) P.blob(T, s0 + 0.05, torsoT(1.4), 0.1, 0.08, c2, 1);
-      skullMark(P, T, 0.5, torsoT(0.98), 0.03);
-      skullMark(P, T, 0.62, torsoT(1.3), 0.022);
-      P.band(T, torsoT(1.0), torsoT(0.96), '#7a3a56', 1);
+      // dark belt with a big gold skull buckle + skulls on the hips; gold-studded cuffs
+      P.band(T, torsoT(1.02), torsoT(0.95), '#6a2a48', 1);
+      skullMark(P, T, 0.5, torsoT(0.985), 0.045);
+      for (const s0 of [0.32, 0.68]) skullMark(P, T, s0, torsoT(0.985), 0.028);
+      P.band(A, armT(0.47), armT(0.52), '#6a2a48', 1);
+      for (const s0 of [0.25, 0.5, 0.75]) P.dot(A, s0, armT(0.495), 3, '#d9b24a');
       break;
     }
     case 'chef': paintChefJacket(P, look, top, col, c2, neckF, tH, se, tSleeve, r); break;
@@ -1595,7 +1604,7 @@ function paintStandSuit(P: Painter, rn: string, reg: Region, t0: number, t1: num
   P.fill(reg, col, 0, t0, 1, t1);
   P.fabric(rn, reg, 0, t0, 1, t1, 'satin', col, { contrast: 0.3, scale: 0.6 });
   for (const s0 of [0.12, 0.38, 0.62, 0.88]) P.line(reg, [[s0, t0], [s0 + 0.02, t1]], shade(col, 0.7), 1.6, 0.55);
-  P.band(reg, t0 + (t1 - t0) * 0.45, t0 + (t1 - t0) * 0.5, c2, 0.85, 0.42, 0.58);
+  void c2;
 }
 
 /** small gold skull motif */

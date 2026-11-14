@@ -342,11 +342,11 @@ export class Crowd {
       }
     }
     if (w.chk <= 0) {
-      w.chk = 0.16 + (w.seed % 9) * 0.01;
+      w.chk = 0.12 + (w.seed % 9) * 0.008;
       const at = (a: number) => [target.x + nx * a, target.z + nz * a] as const;
       const free = (a: number) => {
         const [qx, qz] = at(a);
-        return !insideStatic(phys, qx, y, qz) && blockedAhead(phys, qx, y, qz, tx, tz, 1.25) === null;
+        return !insideStatic(phys, qx, y, qz, 0.26) && blockedAhead(phys, qx, y, qz, tx, tz, 1.7) === null;
       };
       if (!free(w.avT)) {
         let best: number | null = null;
@@ -364,7 +364,7 @@ export class Crowd {
     }
     // fully blocked: wait (the schedule is delayed) — far away walkers that stay stuck just leave
     if (w.stuck > 0) { w.delay += dt; if (w.stuck > 5 && dcam > 16) w.gone = true; }
-    w.av += (w.avT - w.av) * Math.min(1, dt * 2.6);
+    w.av += (w.avT - w.av) * Math.min(1, dt * 4);
     this.nearNow.push({ w, x: target.x + nx * w.av, z: target.z + nz * w.av });
     // metrics
     if (dcam < 30) {

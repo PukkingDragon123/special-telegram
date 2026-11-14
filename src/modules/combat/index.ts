@@ -5,7 +5,7 @@ import { Input } from '../../core/input';
 import { Sound } from '../../core/audio';
 import { CombatHost } from './host';
 import { CombatFX } from './fx';
-import { defineProps } from './props';
+import { defineProps, pistolModel, slipperModel } from './props';
 
 /* ============================================================================================
  * MODULE `combat` — punch people (F). Street characters react by personality: cowards flee or
@@ -25,6 +25,36 @@ let host: CombatHost | null = null;
 let fx: CombatFX | null = null;
 let cooldown = 0;
 let downLocal = false;
+/** pistols / slippers shown in npc hands (placed at the hand every frame, aimed along the body or at the target) */
+const props = new Map<number, { kind: string; obj: THREE.Object3D }>();
+const _q = new THREE.Quaternion(), _m = new THREE.Matrix4(), _up = new THREE.Vector3(0, 1, 0), _t = new THREE.Vector3(), _fw = new THREE.Vector3();
+
+function updateProps(game: Game) {
+  const seen = new Set<number>();
+  for (const e of game.state.all('npc')) {
+    if (typeof e.role !== 'string' || !e.role.startsWith('cb_')) continue;
+    const want = e.gunOut ? 'pistol' : e.slipper ? 'slipper' : null;
+    let pr = props.get(e.id);
+    if (pr && pr.kind !== want) { pr.obj.removeFromParent(); props.delete(e.id); pr = undefined; }
+    if (!want) continue;
+    const rig = rigOf(game, e.id);
+    const hand = rig?.attach?.('hand_r');
+    if (!hand) continue;
+    seen.add(e.id);
+    if (!pr) { pr = { kind: want, obj: want === 'pistol' ? pistolModel() : slipperModel() }; fx!.attach(); fx!.root.add(pr.obj); props.set(e.id, pr); }
+    hand.getWorldPosition(_o);
+    // facing: the rig root's +Z, or toward the aimed-at player's chest
+    rig.root.getWorldDirection(_fw);
+    const tgt = e.aimAt != null ? game.state.get(e.aimAt) : null;
+    if (tgt?.p && want === 'pistol') _t.set(tgt.p[0], tgt.p[1] + 1.2, tgt.p[2]); else _t.copy(_o).addScaledVector(_fw, 2);
+    _m.lookAt(_t, _o, _up);
+    _q.setFromRotationMatrix(_m);
+    pr.obj.quaternion.copy(_q);
+    // grip sits in the palm: the model's origin is the grip, nudge it a little along the barrel
+    pr.obj.position.copy(_o);
+  }
+  for (const [id, pr] of props) if (!seen.has(id)) { pr.obj.removeFromParent(); props.delete(id); }
+}
 
 const _o = new THREE.Vector3(), _d = new THREE.Vector3(), _h = new THREE.Vector3();
 
@@ -128,7 +158,7 @@ export default defineModule({
       const w = (game as any).life?.crowd?.walkers?.get?.(d.key);
       if (w) w.gone = true;
     });
-    game.events.on('world:exit', () => { fx?.clear(); downLocal = false; });
+    game.events.on('world:exit', () => { fx?.clear(); downLocal = false; for (const pr of props.values()) pr.obj.removeFromParent(); props.clear(); });
   },
   hostUpdate(game: Game, dt: number) {
     host?.update(dt);
@@ -151,6 +181,7 @@ export default defineModule({
       if (typeof e.role !== 'string' || !e.role.startsWith('cb_')) continue;
       fx.setStars(e.id, e.cbSt === 'ko');
     }
+    updateProps(game);
     fx.frame(dt, (id) => headOf(game, id));
   },
 });

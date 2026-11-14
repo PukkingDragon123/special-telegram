@@ -181,7 +181,7 @@ export class CombatHost {
       if (kind === 'coward') { this.say(e, 'flee'); this.flee(e, b, by); }
       else { this.say(e, 'push'); this.anim(e, 'angry'); }
     } else {
-      if (kind === 'auntie') { e.hold = 'cb_slipper'; this.say(e, 'auntie'); }
+      if (kind === 'auntie') { e.slipper = true; this.say(e, 'auntie'); }
       else if (kind === 'cop') this.say(e, 'police');
       else this.say(e, b.hits === 1 ? 'push' : 'fight');
       this.engage(e, b, by.id);
@@ -210,7 +210,7 @@ export class CombatHost {
   private knockOut(e: Ent, b: Brain, by: Ent) {
     this.set(e, b, 'ko');
     e.cbSt = 'ko';
-    e.hold = null;
+    e.hold = null; e.gunOut = false; e.slipper = false; e.aimAt = null;
     e.expr = 'drunk';
     this.game.npcs.stop(e);
     this.anim(e, 'fall');
@@ -223,7 +223,7 @@ export class CombatHost {
   private kill(e: Ent, b: Brain, by: Ent) {
     this.set(e, b, 'dead');
     e.cbSt = 'dead';
-    e.hold = null;
+    e.hold = null; e.gunOut = false; e.slipper = false; e.aimAt = null;
     e.expr = 'sleep';
     e.talking = false;
     this.game.npcs.stop(e);
@@ -313,7 +313,7 @@ export class CombatHost {
   private leave(e: Ent, b: Brain) {
     this.set(e, b, 'leave');
     b.target = null;
-    setTimeout(() => { if (this.game.state.get(e.id) && b.st === 'leave') { e.hold = null; e.expr = null; this.anim(e, 'walk', true); this.game.npcs.go(e, this.near(V(e.p), 24), { speed: 1.6 }); } }, 1400);
+    setTimeout(() => { if (this.game.state.get(e.id) && b.st === 'leave') { e.hold = null; e.gunOut = false; e.slipper = false; e.aimAt = null; e.expr = null; this.anim(e, 'walk', true); this.game.npcs.go(e, this.near(V(e.p), 24), { speed: 1.6 }); } }, 1400);
   }
 
   // ------------------------------------------------------------------ per tick
@@ -460,7 +460,7 @@ export class CombatHost {
     const d = this.dist(e, pl);
     if (d > 26) { this.say(e, 'fight'); this.leave(e, b); return; }
     // thugs with a pistol draw it when they're losing
-    if (e.gun && (e.hp ?? 100) < 70 && e.cbKind === 'thug') { this.set(e, b, 'aim'); e.hold = 'cb_pistol'; this.say(e, 'gun'); return; }
+    if (e.gun && (e.hp ?? 100) < 70 && e.cbKind === 'thug') { this.set(e, b, 'aim'); e.gunOut = true; e.aimAt = pl.id; this.say(e, 'gun'); return; }
     const reach = 1.25;
     if (d > reach) {
       b.next -= dt;

@@ -234,7 +234,7 @@ const CHAR_LIGHT_F = THREE.ShaderChunk.lights_physical_pars_fragment
 
 /* First-person body (camera pass only — shadows use the depth material, so the full body + head still cast):
  * every vertex carries fpCull = (region, hidden weight) baked from its skin weights. With uFpOn the upper
- * torso / neck / head / clavicles collapse onto the spine_02 joint (closing the waist into a small cap), the
+ * torso / neck / head / clavicles collapse onto the pelvis (closing the waist into a small cap at the belt), the
  * upper arms onto their elbows — so looking down you see only hips, legs, feet, forearms and hands, never the
  * inside of the chest, the neck stump or shoulders clipping the near plane. */
 const FP_PARS = `attribute vec2 fpCull;
@@ -244,7 +244,7 @@ const FP_MAIN = `if (uFpOn > 0.5 && fpCull.y > 0.001) {
   vec3 fpc = fpCull.x < 1.5 ? uFpC[0] : (fpCull.x < 2.5 ? uFpC[1] : uFpC[2]);
   transformed = mix(transformed, fpc, clamp(fpCull.y * 1.15, 0.0, 1.0));
 }`;
-const FP_TORSO = ['spine_02', 'spine_03', 'neck_01', 'Head', 'clavicle_l', 'clavicle_r'];
+const FP_TORSO = ['spine_01', 'spine_02', 'spine_03', 'neck_01', 'Head', 'clavicle_l', 'clavicle_r'];
 /** bake the fpCull attribute (region 1 torso, 2 left upper arm, 3 right upper arm) from the skin weights */
 function ensureFpCull(geo: THREE.BufferGeometry, index: Record<string, number>) {
   if (geo.getAttribute('fpCull')) return;
@@ -528,7 +528,8 @@ export class Rig implements CharacterRig {
       const C = this.mat.userData.uFpC.value as THREE.Vector3[];
       const I = this.t.index;
       const bone = (n: string, o: THREE.Vector3) => { const i = I[n]; if (i === undefined) return false; this.bones[i].getWorldPosition(o); m.worldToLocal(o); return true; };
-      if (!bone('spine_02', C[0])) bone('pelvis', C[0]);
+      // the torso folds into the hips: waist cap sits at the belt (pelvis joint, nudged forward a touch)
+      if (bone('pelvis', C[0])) { const sp = new THREE.Vector3(); if (bone('spine_01', sp)) C[0].lerp(sp, 0.25); }
       if (!bone('lowerarm_l', C[1])) C[1].copy(C[0]);
       if (!bone('lowerarm_r', C[2])) C[2].copy(C[0]);
       if (this.fpAcc) for (let k = 0; k < 3; k++) (this.fpAcc.userData.uFpC.value as THREE.Vector3[])[k].copy(C[k]);

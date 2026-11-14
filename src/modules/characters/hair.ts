@@ -34,6 +34,8 @@ interface Style {
   top?: number;
   /** spikes amplitude */
   spikes?: number;
+  /** spike noise frequency (fewer, bigger spikes when lower; default 9) */
+  spikeF?: number;
   /** asymmetric volume (side part) */
   sweep?: number;
   /** headband should sit under this hair (afro) */
@@ -64,7 +66,7 @@ export const STYLES: Record<string, Style> = {
   shaved: { line: () => 1, thick: () => 0 },
   // ---- anime-style (original looks for the cosplayers / students at the night market)
   /** huge gravity-defying spikes */
-  anime_spikes: { line: lineStd(0.17, 0.152, 0.12, 0.094, 0.035), thick: (_a, ry) => lerp(0.034, 0.012, smooth(0.2, 0.12, ry)), spikes: 0.062, noise: [0.003, 9] },
+  anime_spikes: { line: lineStd(0.17, 0.152, 0.12, 0.094, 0.035), thick: (_a, ry) => lerp(0.034, 0.012, smooth(0.2, 0.12, ry)), spikes: 0.16, spikeF: 4.2, noise: [0.003, 9] },
   /** blunt-fringe twin tails */
   twin_tails: { line: (a) => (a < 48 ? lerp(0.128, 0.134, a / 48) : lineStd(0.17, 0.156, 0.124, 0.096, 0.04)(a)), thick: (_a, ry) => lerp(0.012, 0.009, smooth(0.2, 0.12, ry)), extra: 'twintails', noise: [0.0012, 14] },
   /** princess cut: blunt fringe, cheek-length side locks, long straight back */
@@ -129,7 +131,7 @@ function buildHair(c: HCtx, id: string, hat: AccSpec | null) {
     const hp = headPt(c, th, ry);
     let t = st.thick(a, ry / hs) * (ry / hs > underHat ? 0.25 : 1);
     if (nz) t += N3.n3(hp.n[0] * nz[1], hp.n[1] * nz[1], hp.n[2] * nz[1]) * nz[0] + (nz[2] ? N3.n3(hp.n[0] * nz[3]! + 9, hp.n[1] * nz[3]!, hp.n[2] * nz[3]!) * nz[2] : 0);
-    if (st.spikes && ry / hs > 0.15) t += Math.max(0, N3.n3(hp.n[0] * 9, hp.n[1] * 9, hp.n[2] * 9)) * st.spikes * smooth(0.15, 0.21, ry / hs);
+    if (st.spikes && ry / hs > (st.spikeF ? 0.11 : 0.15)) { const f = st.spikeF ?? 9; t += Math.pow(Math.max(0, N3.n3(hp.n[0] * f, hp.n[1] * f, hp.n[2] * f)), st.spikeF ? 1.6 : 1) * st.spikes * smooth(st.spikeF ? 0.11 : 0.15, 0.21, ry / hs); }
     if (st.sweep) t += Math.sin(th) * st.sweep * smooth(0.13, 0.19, ry / hs);
     t = Math.max(0.0025, t) + extraOut;
     return { p: v3add(hp.p, v3mul(hp.n, t)), n: hp.n };

@@ -35,6 +35,27 @@ function fitText(x: CanvasRenderingContext2D, t: string, maxW: number, px: numbe
 
 function rnd(s: number) { const v = Math.sin(s * 91.37 + 17.1) * 43758.5453; return v - Math.floor(v); }
 
+/** parody snack brands (the repo is public: puns only, no real trademarks) */
+const SNACK_BRANDS = ['เลย์ซ่า', 'ตะวันตก', 'เถ้าแก่น้อยหน่า', 'ปาปริก้าก้า', 'โปเต้โต้', 'ฮานามิมิ', 'คอนเน่', 'ทวิสตี้ๆ'];
+const CUP_BRANDS = ['มาม่าซ่า', 'ไว้ไว', 'ยำยำยำ', 'ซือดะ'];
+
+/** tiny Thai GDA badge (พลังงาน · น้ำตาล · ไขมัน · โซเดียม) */
+function gdaMini(x: CanvasRenderingContext2D, ox: number, oy: number, w: number, seed: number) {
+  const cw = w / 4;
+  x.fillStyle = '#ffffff'; x.fillRect(ox, oy, w, 18);
+  x.strokeStyle = '#111'; x.lineWidth = 0.8; x.strokeRect(ox + 0.5, oy + 0.5, w - 1, 17);
+  ['พลังงาน', 'น้ำตาล', 'ไขมัน', 'โซเดียม'].forEach((l, i) => {
+    x.fillStyle = '#111'; x.textAlign = 'center'; x.font = `600 4.6px ${F.ui}`; x.fillText(l, ox + cw * (i + 0.5), oy + 6);
+    x.font = `800 6px ${F.ui}`; x.fillText(String(Math.round(rnd(seed + i) * (i ? 25 : 160))), ox + cw * (i + 0.5), oy + 13);
+  });
+}
+
+function barcodeMini(x: CanvasRenderingContext2D, ox: number, oy: number, w: number, h: number, seed: number) {
+  x.fillStyle = '#fff'; x.fillRect(ox, oy, w, h);
+  let px = ox + 2;
+  for (let k = 0; px < ox + w - 2; k++) { const bw = 1 + Math.floor(rnd(seed * 7 + k) * 2.5); if (rnd(seed + k * 3) > 0.42) { x.fillStyle = '#111'; x.fillRect(px, oy + 1, bw, h - 2); } px += bw; }
+}
+
 function bag(x: CanvasRenderingContext2D, ox: number, oy: number, i: number) {
   const c = BAG_COL[i % BAG_COL.length];
   const g = x.createLinearGradient(ox, oy, ox + CW, oy + CH);
@@ -67,6 +88,16 @@ function bag(x: CanvasRenderingContext2D, ox: number, oy: number, i: number) {
     x.beginPath(); for (let k = 0; k < 24; k++) { const a = (k / 24) * Math.PI * 2, r = k % 2 ? 13 : 21; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.fill();
     x.fillStyle = '#d0141a'; x.font = `900 11px ${F.heavy}`; x.fillText(i % 2 ? 'ใหม่!' : 'NEW', 0, 1); x.restore();
   }
+  // parody brand logo oval at the top (above the product name band)
+  x.save();
+  x.fillStyle = '#d8141a'; x.strokeStyle = '#ffe14a'; x.lineWidth = 3;
+  x.beginPath(); x.ellipse(cx, oy + 22, 40, 12, 0, 0, Math.PI * 2); x.fill(); x.stroke();
+  x.fillStyle = '#fff'; fitText(x, SNACK_BRANDS[i % SNACK_BRANDS.length], 70, 16); x.fillText(SNACK_BRANDS[i % SNACK_BRANDS.length], cx, oy + 23);
+  x.restore();
+  // GDA badge (front, as on real Thai snacks) + registration box
+  gdaMini(x, ox + 8, oy + CH - 66, 64, i);
+  x.fillStyle = 'rgba(255,255,255,0.85)'; x.fillRect(ox + CW - 52, oy + CH - 66, 44, 18);
+  x.fillStyle = '#111'; x.font = `700 6px ${F.ui}`; x.textAlign = 'center'; x.fillText('อย. 10-1-' + (4400 + i * 17), ox + CW - 30, oy + CH - 57);
   // weight / price strip
   x.fillStyle = 'rgba(0,0,0,0.35)'; x.fillRect(ox, oy + CH - 40, CW, 22);
   x.fillStyle = '#fff'; x.font = `700 12px ${F.ui}`; x.fillText(`${[20, 30, 48, 62, 75][i % 5]} g  •  ${[5, 10, 20][i % 3]} ฿`, cx, oy + CH - 29);
@@ -88,9 +119,12 @@ function cup(x: CanvasRenderingContext2D, ox: number, oy: number, i: number) {
   x.fillStyle = '#e04a2a'; x.beginPath(); x.arc(cx + 18, cy - 6, 7, 0, Math.PI * 2); x.fill();
   x.fillStyle = '#3a8a2a'; x.beginPath(); x.ellipse(cx - 14, cy - 8, 8, 4, 0.6, 0, Math.PI * 2); x.fill();
   x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle';
-  fitText(x, 'มาม่าซ่า', CW - 20, 24); x.fillText('มาม่าซ่า', cx, oy + 70);
+  const cb = CUP_BRANDS[i % CUP_BRANDS.length];
+  fitText(x, cb, CW - 20, 24); x.fillText(cb, cx, oy + 70);
   x.fillStyle = '#fff6c8'; fitText(x, CUP_NAMES[i % CUP_NAMES.length], CW - 18, 20, 800, F.ui); x.fillText(CUP_NAMES[i % CUP_NAMES.length], cx, oy + 100);
   x.fillStyle = c; x.font = `800 12px ${F.ui}`; x.fillText('CUP 60g', cx, oy + 24);
+  gdaMini(x, ox + 10, oy + CH - 58, 62, i + 40);
+  barcodeMini(x, ox + CW - 50, oy + CH - 58, 40, 18, i + 40);
 }
 
 function carton(x: CanvasRenderingContext2D, ox: number, oy: number, i: number) {
@@ -105,6 +139,9 @@ function carton(x: CanvasRenderingContext2D, ox: number, oy: number, i: number) 
   x.fillStyle = ['#7ac85a', '#ffffff', '#d9a05a', '#e8e8e8', '#f2a21a', '#f7e8c8', '#c89a5a', '#6a3a1a'][i % 8];
   x.fillRect(cx - 22, cy - 6, 44, 36);
   x.fillStyle = '#fff'; x.font = `700 11px ${F.ui}`; x.fillText(['250 ml', '1 L', '6 ชิ้น', '200 แผ่น'][i % 4], cx, oy + CH - 18);
+  gdaMini(x, ox + 6, oy + 8, 60, i + 80);
+  barcodeMini(x, ox + CW - 46, oy + 8, 38, 16, i + 80);
+  x.fillStyle = 'rgba(255,255,255,0.9)'; x.font = `800 10px ${F.ui}`; x.textAlign = 'center'; x.fillText(['ฟาร์มโชคดี', 'นมวัวยิ้ม', 'บิสกิตป้า', 'ทิชชู่นุ่มนิ่ม', 'ส้มสดใส', 'ดัชหมู', 'ขนมปังฟาร์มฮ่า', 'เขาช่องโหว่'][i % 8], cx, oy + CH * 0.12);
 }
 
 /** the shared package atlas texture (built once) */
