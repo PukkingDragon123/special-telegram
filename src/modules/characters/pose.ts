@@ -27,6 +27,18 @@ export const HAND_SHAPES = {
   frame: [0.1, 0.08, 0.14, 0.2, 0.26, 0.95],
   /** thumb + index tips meeting (picking up a small block / coin), other fingers tucked */
   pinch: [0.5, 0.52, 0.78, 0.86, 0.92, 0.12],
+  /** wrapped round a cylindrical handle (wok, pan, spatula, ladle), thumb over the index */
+  handle: [0.72, 0.8, 0.86, 0.9, 0.94, -0.1],
+  /** knife: handle in the palm, index along the spine of the blade */
+  knife: [0.62, 0.38, 0.86, 0.92, 0.95, -0.05],
+  /** plate / tray: flat palm under, thumb over the rim */
+  plate: [0.3, 0.08, 0.1, 0.12, 0.16, 0.4],
+  /** bottle / cup: C-shaped wrap */
+  bottle: [0.48, 0.55, 0.6, 0.64, 0.7, 0.05],
+  /** plastic bag handles hooked on the fingers */
+  bag: [0.15, 0.66, 0.72, 0.76, 0.8, -0.1],
+  /** crate / box held from the sides: open curled hand */
+  crate: [0.2, 0.32, 0.36, 0.4, 0.44, 0.3],
   /** thumb/index apart, ready to pinch */
   prepinch: [0.18, 0.2, 0.55, 0.7, 0.8, 0.35],
 } satisfies Record<string, number[]>;
@@ -190,12 +202,29 @@ export const sm = (a: number, b: number, x: number) => { const t = Math.max(0, M
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 /** 0→1 between a..b, hold, 1→0 between c..d */
 export const env = (k: number, a: number, b: number, c: number, d: number) => sm(a, b, k) * (1 - sm(c, d, k));
-/** keyframe track: [[t, v], ...] with smoothstep interpolation */
+/**
+ * keyframe track: [[t, v], ...]. Cubic Hermite with Catmull-Rom tangents (velocity carries THROUGH inner keys —
+ * no robotic stop-start at every key), eased in/out at the first/last key. Holds (two equal neighbouring values)
+ * stay flat: the tangent next to a hold is zeroed so it doesn't overshoot.
+ */
 export function track(k: number, keys: [number, number][]) {
+  const n = keys.length;
   if (k <= keys[0][0]) return keys[0][1];
-  for (let i = 0; i < keys.length - 1; i++) {
-    const [t0, v0] = keys[i], [t1, v1] = keys[i + 1];
-    if (k <= t1) return lerp(v0, v1, sm(t0, t1, k));
-  }
-  return keys[keys.length - 1][1];
+  if (k >= keys[n - 1][0]) return keys[n - 1][1];
+  let i = 0;
+  while (i < n - 2 && k > keys[i + 1][0]) i++;
+  const [t0, v0] = keys[i], [t1, v1] = keys[i + 1];
+  const h = Math.max(1e-6, t1 - t0);
+  const tan = (j: number) => {
+    if (j <= 0 || j >= n - 1) return 0;
+    const [ta, va] = keys[j - 1], [tb, vb] = keys[j + 1], vj = keys[j][1];
+    if (Math.abs(vj - va) < 1e-6 || Math.abs(vb - vj) < 1e-6) return 0;   // next to a hold
+    if ((vj - va) * (vb - vj) < 0) return 0;                                // local extreme: no overshoot
+    return (vb - va) / Math.max(1e-6, tb - ta);
+  };
+  const m0 = tan(i) * h, m1 = tan(i + 1) * h;
+  const u = (k - t0) / h, u2 = u * u, u3 = u2 * u;
+  return (2 * u3 - 3 * u2 + 1) * v0 + (u3 - 2 * u2 + u) * m0 + (-2 * u3 + 3 * u2) * v1 + (u3 - u2) * m1;
 }
+/** smooth max(0, x) (no velocity kink at 0) */
+export const pos = (x: number, soft = 0.12) => 0.5 * (x + Math.sqrt(x * x + soft * soft)) - 0.5 * soft;

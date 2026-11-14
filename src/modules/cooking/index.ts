@@ -16,6 +16,7 @@ import { ANCHORS } from '../../game/mapplan';
 import { pickKey } from './util';
 import { preloadRealFood } from './realfood';
 import { registerFoodSounds, setJuiceFX } from './juice';
+import { CookCam } from './cookcam';
 
 /* =============================================================================================
  * MODULE: cooking — the food cart, every ingredient / tool / dish item, the cooking simulation,
@@ -89,6 +90,7 @@ export default defineModule({
     game.interact.provide(cartProvider(game, heatState), 10);
     game.interact.provide(cookingProvider(game), 11);
     book = new RecipeBook(game);
+    new CookCam(game);
     game.events.on('cook:openBook', (id: number) => book?.openBook(id));
     game.on('cook:flare', (d: { wok: number; k: number }) => {
       const w = game.state.get(d.wok);

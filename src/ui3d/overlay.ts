@@ -29,18 +29,18 @@ class OverlaySys {
       .hp-bar{position:absolute;left:0;right:0;height:0;background:#000;transition:height .8s cubic-bezier(.6,0,.2,1);}
       .hp-bar.t{top:0}.hp-bar.b{bottom:0}
       .hp-subs{position:absolute;left:50%;bottom:9vh;transform:translateX(-50%);max-width:min(82vw,980px);text-align:center;
-        color:#fff8e6;font:500 clamp(18px,2.3vw,30px)/1.35 ${F.ui};text-shadow:0 2px 6px rgba(0,0,0,.85),0 0 2px #000;opacity:0;transition:opacity .35s}
+        color:#fff8e6;font:500 clamp(18px,2.3vw,30px)/1.35 ${F.ui};text-shadow:1px 0 0 #0b0907,-1px 0 0 #0b0907,0 1px 0 #0b0907,0 -1px 0 #0b0907,1px 1px 0 #0b0907,-1px 1px 0 #0b0907,1px -1px 0 #0b0907,-1px -1px 0 #0b0907,0 2px 3px rgba(0,0,0,.55);opacity:0;transition:opacity .35s}
       .hp-subs small{display:block;font:400 clamp(12px,1.3vw,17px)/1.3 ${F.body};color:#e2d8c6;opacity:.9;margin-top:4px}
       .hp-subs.on{opacity:1}
       .hp-hint{position:absolute;left:50%;bottom:4.2vh;transform:translateX(-50%);color:#f5ecd9;font:400 clamp(12px,1.15vw,16px) ${F.body};
-        text-shadow:0 1px 3px #000;opacity:0;transition:opacity .4s;white-space:nowrap}
+        text-shadow:1px 0 0 #0b0907,-1px 0 0 #0b0907,0 1px 0 #0b0907,0 -1px 0 #0b0907,1px 1px 0 #0b0907,-1px 1px 0 #0b0907,1px -1px 0 #0b0907,-1px -1px 0 #0b0907,0 2px 3px rgba(0,0,0,.55);opacity:0;transition:opacity .4s;white-space:nowrap}
       .hp-hint.on{opacity:.85}
       .hp-hint kbd{display:inline-block;min-width:1.4em;padding:0 .35em;margin:0 .15em;border:1px solid rgba(255,255,255,.55);border-bottom-width:2px;
         border-radius:4px;font:600 .9em ${F.tech};background:rgba(0,0,0,.35)}
       .hp-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0d0a07;
         color:#f2e6cf;transition:opacity .8s;pointer-events:auto}
       .hp-loading h1{font:900 clamp(48px,9vw,120px)/1 ${F.heavy};margin:0;color:#fff;
-        -webkit-text-stroke:3px #2f7d32;paint-order:stroke fill;text-shadow:0 6px 0 #1b4d1e,0 10px 24px rgba(0,0,0,.6)}
+        -webkit-text-stroke:3px #2f7d32;paint-order:stroke fill;text-shadow:0 5px 0 #1b4d1e}
       .hp-loading p{font:400 16px ${F.body};opacity:.75;margin-top:18px}
       .hp-loading .bar{width:min(320px,60vw);height:4px;background:rgba(255,255,255,.12);border-radius:3px;margin-top:22px;overflow:hidden}
       .hp-loading .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#e8b54a,#ffe28a);transition:width .3s}

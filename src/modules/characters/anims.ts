@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { AnimName, CarryPose, FaceVariant } from '../../game/contracts';
-import { PoseBuilder, env, lerp, sm, track } from './pose';
+import { PoseBuilder, env, lerp, sm, track, pos } from './pose';
 import type { ExprKey } from './face-expr';
 import { B } from './skel';
 
@@ -129,7 +129,7 @@ export function loco(c: AnimCtx, st: LocoStyle = {}) {
     for (const side of [1, -1]) {
       const u = side > 0 ? uR : uL; // opposite leg
       const sw = armSwing * cos(TAU * u);
-      const elbow = lerp(12 + v * 5 + Math.max(0, sw) * 0.35, 88, rw) * mw + idle * (10 + age * 8) + drunk * 10;
+      const elbow = lerp(12 + v * 5 + pos(sw, 4) * 0.35, 88, rw) * mw + idle * (10 + age * 8) + drunk * 10;
       const abd = 7 + bld * 11 + rw * 4 + drunk * 14 * (0.5 + 0.5 * sin(gt * 1.3 + side));
       pb.armSA(side, sw + idle * 1.5 * sin(gt * 0.7 + side), abd, -8, elbow, idle * 4, 0);
     }
@@ -240,7 +240,7 @@ def('slap', { loop: false, dur: 1.15, fade: 0.08, face: 'shock', pose: (c) => {
   pb.spine(-4 * wind, -14 * wind, 0);
   pb.head(4, 18 * wind, 0);
   pb.arm(L, 25 + 15 * abs(wind), 25, 0, 40, 0);
-  if (c.posture === 'stand') { pb.legSA(R, -12 * Math.max(0, wind) + 18 * Math.max(0, -wind), 6, 10, 0); pb.p.hp[2] += -0.04 * wind; }
+  if (c.posture === 'stand') { pb.legSA(R, -12 * pos(wind) + 18 * pos(-wind), 6, 10, 0); pb.p.hp[2] += -0.04 * wind; }
 } });
 
 def('get_slapped', { loop: false, dur: 1.2, fade: 0.04, face: 'shock', pose: (c) => {
@@ -256,7 +256,7 @@ def('get_slapped', { loop: false, dur: 1.2, fade: 0.04, face: 'shock', pose: (c)
   const hand = env(k, 0.2, 0.42, 0.82, 1);
   pb.arm(L, lerp(10, 70, hand), lerp(10, -20, hand), lerp(0, 40, hand), lerp(15, 150, hand), lerp(0, -30, hand));
   pb.arm(R, 20 + 30 * snap, 40 * snap + 10, 0, 30 + 40 * snap, 0);
-  if (c.posture === 'stand') { pb.p.hp[0] += -0.08 * snap; pb.p.hp[1] += 0.03 * Math.max(0, snap - 0.9); pb.legSA(L, 0, 18 * snap + 4, 16 * snap, 0); }
+  if (c.posture === 'stand') { pb.p.hp[0] += -0.08 * snap; pb.p.hp[1] += 0.03 * pos(snap - 0.9, 0.05); pb.legSA(L, 0, 18 * snap + 4, 16 * snap, 0); }
 } });
 
 def('highfive', { loop: false, dur: 0.95, fade: 0.1, pose: (c) => {
@@ -372,11 +372,12 @@ def('drunk', { loop: true, dur: 1, loco: true, face: 'drunk', posture: 'stand', 
 def('celebrate', { loop: true, dur: 0.9, posture: 'stand', fade: 0.15, pose: (c) => {
   const pb = c.pb, t = c.t;
   const u = (t / 0.9) % 1;
-  const jump = Math.max(0, sin(u * TAU)) * 0.14;
-  const crouch = Math.max(0, -sin(u * TAU)) * 0.08;
+  const jump = pos(sin(u * TAU)) * 0.14;
+  const crouch = pos(-sin(u * TAU)) * 0.08;
   pb.hips(0, jump - crouch, 0, 4, 0, 0);
   const kn = crouch * 500;
-  pb.leg(L, kn * 0.5, 8, kn, jump > 0.02 ? 15 : 0); pb.leg(R, kn * 0.5, 8, kn, jump > 0.02 ? 15 : 0);
+  const toe = 15 * sm(0.0, 0.05, jump);
+  pb.leg(L, kn * 0.5, 8, kn, toe); pb.leg(R, kn * 0.5, 8, kn, toe);
   const pump = sin(u * TAU * 2) * 12;
   pb.arm(L, 160 + pump, 30, 30, 40 + pump, 20); pb.arm(R, 160 - pump, 30, 30, 40 - pump, 20);
   pb.spine(-4, 0, 0); pb.chest(-8, 0, 0); pb.neck(-10, 0, 0); pb.head(-14, 0, 6 * sin(t * 4));
@@ -409,8 +410,8 @@ def('dance', { loop: true, dur: 2, posture: 'stand', fade: 0.25, pose: (c) => {
   const bounce = 0.5 + 0.5 * sin(beat * 2);
   const sway = sin(beat);
   pb.hips(0.05 * sway, -0.03 * bounce, 0, 4, 18 * sin(beat * 0.5), 8 * sway);
-  pb.leg(L, 8 + 10 * Math.max(0, sway), 8, 12 + 20 * bounce + 25 * Math.max(0, sway), 0);
-  pb.leg(R, 8 + 10 * Math.max(0, -sway), 8, 12 + 20 * bounce + 25 * Math.max(0, -sway), 0);
+  pb.leg(L, 8 + 10 * pos(sway), 8, 12 + 20 * bounce + 25 * pos(sway), 0);
+  pb.leg(R, 8 + 10 * pos(-sway), 8, 12 + 20 * bounce + 25 * pos(-sway), 0);
   // ram wong style hands circling at shoulder height
   pb.arm(L, 85 + 18 * sin(beat), 55 + 15 * cos(beat), 80, 95 + 15 * sin(beat), -50 + 25 * sin(beat * 2));
   pb.arm(R, 85 - 18 * sin(beat), 55 - 15 * cos(beat), 80, 95 - 15 * sin(beat), -50 - 25 * sin(beat * 2));
@@ -422,7 +423,7 @@ def('eat', { loop: true, dur: 2.4, look: false, pose: (c) => {
   base(c);
   const pb = c.pb, k = c.k;
   const lift = track(k, [[0, 0], [0.2, 0], [0.42, 1], [0.6, 1], [0.8, 0], [1, 0]]);
-  const chew = lift > 0.9 ? sin(c.t * 14) * 2 : 0;
+  const chew = sin(c.t * 14) * 2 * sm(0.85, 0.97, lift);
   pb.arm(L, 30, -18, 50, 92, 0);
   pb.arm(R, lerp(28, 42, lift), lerp(-12, -38, lift), lerp(20, 50, lift), lerp(78, 142, lift), lerp(10, -30, lift));
   pb.chest(10 - 4 * lift, 0, 0); pb.neck(10 - 6 * lift, 0, 0); pb.head(14 - 10 * lift + chew, -6 * lift, 0);
@@ -439,7 +440,7 @@ def('drink', { loop: true, dur: 3.2, look: false, pose: (c) => {
 def('cook_stir', { loop: true, dur: 1.2, look: false, pose: (c) => {
   base(c);
   const pb = c.pb, t = c.t;
-  const toss = Math.max(0, sin(t * TAU / 1.2 * 2)) ;
+  const toss = pos(sin(t * TAU / 1.2 * 2));
   const stir = t * TAU * 1.4;
   pb.arm(L, 42 + 10 * toss, 12, 20, 60 - 20 * toss, -10);
   pb.arm(R, 44 + 6 * sin(stir), -12 + 14 * cos(stir), 30, 72 + 12 * sin(stir), -15);
@@ -719,7 +720,7 @@ def('laugh', { loop: true, dur: 2.6, fade: 0.2, expr: 'laugh', mouth: 'laugh', p
   base(c);
   const pb = c.pb, t = c.t + c.rnd * 3, k = c.k;
   const big = 0.5 + 0.5 * sin(k * TAU - 1);              // swells and fades within the loop
-  const ha = Math.abs(sin(t * 15)) * (0.4 + 0.6 * big);  // "ha-ha-ha" shoulder bounce
+  const ha = Math.sqrt(sin(t * 15) ** 2 + 0.04) * (0.4 + 0.6 * big);  // "ha-ha-ha" shoulder bounce
   const slap = env((k * 2) % 1, 0.3, 0.42, 0.46, 0.6) * big;
   pb.add(B.spine, -4 * big + 3 * ha, 0, 0); pb.add(B.chest, -8 * big + 4 * ha, 3 * sin(t * 1.3), 0);
   pb.neck(-10 * big, 0, 3 * sin(t * 1.1)); pb.head(-16 * big + 5 * ha, 6 * sin(t * 0.9), 5 * sin(t * 1.4));
@@ -784,7 +785,7 @@ def('lecture', { loop: true, dur: 4.2, fade: 0.28, expr: 'angry', mouth: 'talk',
   const tap = env(k, 0.44, 0.52, 0.8, 0.88);
   const sigh = env(k, 0.84, 0.9, 0.97, 1);
   const wig = sin(t * 13) * wag;
-  pb.arm(R, lerp(14, 52, wag) + lerp(0, 44, tap), lerp(10, -8, wag) + lerp(0, -36, tap), lerp(0, 40, wag), lerp(14, 128, wag) + lerp(0, 70, tap) - 40 * tap * Math.max(0, sin(t * 9)), lerp(0, -10, wag) + 18 * tap * Math.max(0, sin(t * 9)), 22 * wig);
+  pb.arm(R, lerp(14, 52, wag) + lerp(0, 44, tap), lerp(10, -8, wag) + lerp(0, -36, tap), lerp(0, 40, wag), lerp(14, 128, wag) + lerp(0, 70, tap) - 40 * tap * pos(sin(t * 9)), lerp(0, -10, wag) + 18 * tap * pos(sin(t * 9)), 22 * wig);
   pb.hand(R, wag + tap > 0.3 ? 'point' : 'relax');
   pb.arm(L, lerp(18, 42, tap), lerp(10, -28, tap), lerp(0, -80, tap), lerp(18, 88, tap), lerp(0, -10, tap)); pb.hand(L, 'flat', tap);
   pb.add(B.spine, 6 * (wag + tap) + 4 * sigh, 0, 0); pb.add(B.chest, 4 * wag, 0, 0);

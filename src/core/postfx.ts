@@ -314,6 +314,8 @@ export class PostFX {
     this.camera = camera;
     this.composer = new EffectComposer(renderer, { frameBufferType: THREE.HalfFloatType, multisampling: 0 });
     this.composer.autoRenderToScreen = false;
+    // shader warm-up compiles against this target (same output colour space as the real scene render)
+    (renderer as any).__hpScene = this.composer.inputBuffer;
     this.renderPass = new RenderPass(scene, camera);
     this.composer.addPass(this.renderPass);
 

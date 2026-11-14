@@ -26,7 +26,8 @@ const OPT: Text3DOpts = {
   font: 'talk', size: 0.019, depth: 0.32, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.34, shadow: 0.5,
   xray: true, castShadow: false, maxWidth: 0.36, valign: 'bottom', anim: { pop: 0.3, rise: 0.4, spin: 1, vanish: 0.3, drift: 0.35, wave: 0.03, squash: 1.1, glint: 0.6 },
 };
-const OPT_HOT: Partial<Text3DOpts> = { color: 0xffe28a, side: 0x8a3c0a, emissive: 0.85, rim: 0xffb347, rimStrength: 1.3 };
+// hovered option: bright white with a deep green edge (no yellow, no glow)
+const OPT_HOT: Partial<Text3DOpts> = { color: 0xffffff, side: 0x1f5a17, emissive: 0.08, rim: undefined, rimStrength: 0 };
 const SUB: Text3DOpts = {
   font: 'ui', size: 0.0092, depth: 0.2, bevel: 0.05, color: 0xe9dfcd, side: 0x33271f, roughness: 0.5, emissive: 0.3, shadow: 0.5,
   xray: true, castShadow: false, maxWidth: 0.36, valign: 'top', anim: { pop: 0.25, rise: 0.3, spin: 0.5, vanish: 0.26, drift: 0.2 },
@@ -153,7 +154,7 @@ export class ChoicePrompt {
       root.position.set(baseX, -0.2, -0.9);
       const tint = o.colors?.[i] !== undefined ? new THREE.Color(o.colors[i]).lerp(new THREE.Color(0xfff0d2), 0.45).getHex() : (OPT.color as number);
       const main = new Text3D(opt.th, { ...OPT, color: tint });
-      const sub = opt.en ? new Text3D(opt.en, SUB) : null;
+      const sub: Text3D | null = null; void SUB;
       const num = new Text3D(String(i + 1), NUM);
       main.popIn(0.025);
       sub?.popIn(0.012);
@@ -202,7 +203,7 @@ export class ChoicePrompt {
       r.position.y = -0.2 + (hot ? 0.022 : 0) + Math.sin(this.t * 2.2 + i * 1.7) * 0.004;
       r.position.z = -0.9 + (hot ? 0.06 : 0);
       r.position.x = b.baseX + (panic ? Math.sin(this.t * 60 + i) * 0.004 * panic : 0);
-      r.rotation.set(Math.sin(this.t * 1.3 + i) * 0.06 - 0.05, -b.baseX * 0.35 + Math.sin(this.t * 0.9 + i * 2) * 0.08, Math.sin(this.t * 1.1 + i) * 0.03);
+      r.rotation.set(0, 0, 0);
       // number sits above the line, the English gloss under it
       b.num.position.set(0, b.main.height + 0.006, 0.004);
       if (b.sub) b.sub.position.y = -0.004;
@@ -241,7 +242,7 @@ export class ChoicePrompt {
         r.position.y += dt * 0.08;
       } else {
         r.position.y -= dt * (0.05 + k * 0.25);
-        r.rotation.z += dt * (i < this.picked ? 1.5 : -1.5);
+        // exit: drop straight down, no spin
       }
     });
     if (k >= 1) { this.dispose(); return false; }

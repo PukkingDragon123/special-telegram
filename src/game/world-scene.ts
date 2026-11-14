@@ -30,12 +30,24 @@ export class WorldScene implements SceneDef {
     game.world = null;
     const marks = (window as any).__hpMarks ?? {};
     const tw = performance.now();
-    for (const m of game.modules) {
-      if (!m.buildWorld) continue;
+    // the `world` module (map, game.world) builds first; every other module then STARTS its buildWorld in the usual
+    // order (so their synchronous parts run in the same sequence as before) but their asynchronous tails — model
+    // downloads, dressing — overlap instead of queueing one after another
+    const run = async (m: (typeof game.modules)[number]) => {
       const t = performance.now();
-      try { await m.buildWorld(game); } catch (e) { console.error(`[module ${m.id}] buildWorld failed`, e); }
+      try { await m.buildWorld!(game); } catch (e) { console.error(`[module ${m.id}] buildWorld failed`, e); }
       marks['bw:' + m.id] = Math.round(performance.now() - t);
+    };
+    // dependency-aware: a module still waits for the buildWorld of every module it declares in `deps`
+    const withBuild = game.modules.filter((m) => m.buildWorld);
+    const done = new Map<string, Promise<void>>();
+    for (const m of withBuild.filter((x) => x.id === 'world')) { const p = run(m); done.set(m.id, p); await p; }
+    for (const m of withBuild) {
+      if (done.has(m.id)) continue;
+      const deps = ((m as any).deps as string[] | undefined ?? []).map((d) => done.get(d)).filter(Boolean) as Promise<void>[];
+      done.set(m.id, (deps.length ? Promise.all(deps) : Promise.resolve()).then(() => run(m)));
     }
+    await Promise.all(done.values());
     marks.buildWorld = Math.round(performance.now() - tw);
     if (!game.world) game.world = buildStubWorld(game);
     game.engine.setView(this.scene, this.camera);
@@ -102,11 +114,24 @@ export class WorldScene implements SceneDef {
   }
 }
 
+/** The render target the scene is drawn into each frame (post-processing input), or null (canvas). */
+export function compileTarget(renderer: THREE.WebGLRenderer): THREE.WebGLRenderTarget | null {
+  return ((renderer as any).__hpScene as THREE.WebGLRenderTarget | undefined) ?? null;
+}
+
 /** renderer.compileAsync (KHR_parallel_shader_compile when available) with a time cap. */
 export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE.Object3D, camera: THREE.Camera, capMs = 6000) {
   const t0 = performance.now();
   try {
-    await Promise.race([renderer.compileAsync(scene, camera), new Promise((r) => setTimeout(r, capMs))]);
+    // compile for the target the scene really renders into (the composer's linear half-float buffer): compiling
+    // against the canvas made three build the sRGB-output variant of every program — never used — while the real
+    // variants still compiled mid-game (double the load-time compile work AND the hitches it was meant to avoid)
+    const target = compileTarget(renderer);
+    const prev = renderer.getRenderTarget();
+    renderer.setRenderTarget(target);
+    let p: Promise<unknown>;
+    try { p = renderer.compileAsync(scene, camera); } finally { renderer.setRenderTarget(prev); }
+    await Promise.race([p, new Promise((r) => setTimeout(r, capMs))]);
   } catch (e) { console.warn('[world] shader prewarm', e); }
   // upload every loaded texture of visible objects now (also behind the fade): no texImage2D + mipmap hitch
   // the first time something turns into view. Time-sliced so the page stays responsive.

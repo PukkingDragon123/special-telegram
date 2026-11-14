@@ -517,16 +517,17 @@ export class RealProps {
     for (const o of this.objects) root.add(o);
     if (params.has('noreal')) { this.placements.length = 0; return; }
     const ids = [...new Set(this.placements.map((p) => p.id))];
-    const models = await Promise.all(ids.map((id) => loadModel(id)));
     const q = game.engine.quality;
     const baseFar = q === 'low' ? 34 : q === 'medium' ? 48 : q === 'high' ? 64 : 85;
     const phys = game.physics;
     const R = phys?.R;
     if (phys) phys.world.updateSceneQueries();
-    for (let k = 0; k < ids.length; k++) {
-      const model = models[k];
-      if (!model) continue;
-      const id = ids[k], def = MODELS[id];
+    // STREAMING: each library model is placed the moment its GLB arrives instead of waiting for all ~80 of them;
+    // the world becomes playable after a short grace period and the remaining decor pops in (behind the fade
+    // or at a distance) as it loads.
+    const add = (id: string, model: Awaited<ReturnType<typeof loadModel>>) => {
+      if (!model || this.root !== root || current !== this) return;
+      const def = MODELS[id];
       const list = this.placements.filter((p) => p.id === id);
       const n = list.length;
       const matAttr = new THREE.InstancedBufferAttribute(new Float32Array(n * 16), 16);
@@ -556,11 +557,15 @@ export class RealProps {
         if (phys && R && p.phys !== 'none') this.makeBody(inst, p.phys, phys);
         batch.inst.push(inst);
       }
-    }
-    this.stats.instances = this.placements.length;
-    this.stats.buildMs = Math.round(performance.now() - t0);
-    console.info(`[realprops] ${this.placements.length} props, ${this.batches.length} models, ${this.stats.bodies} bodies (${this.stats.dynamic} dynamic) in ${this.stats.buildMs} ms`);
+    };
+    const all = Promise.all(ids.map((id) => loadModel(id).then((m) => add(id, m), () => {}))).then(() => {
+      this.stats.instances = this.placements.length;
+      this.stats.buildMs = Math.round(performance.now() - t0);
+      console.info(`[realprops] ${this.placements.length} props, ${this.batches.length} models, ${this.stats.bodies} bodies (${this.stats.dynamic} dynamic) in ${this.stats.buildMs} ms`);
+    });
     (window as any).__realprops = this;
+    const grace = Number(params.get('propwait') ?? 2500);
+    await Promise.race([all, new Promise((r) => setTimeout(r, grace))]);
   }
 
   private makeBody(inst: Inst, kind: PhysKind, phys: NonNullable<Game['physics']>) {

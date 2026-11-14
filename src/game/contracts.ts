@@ -61,6 +61,9 @@ export interface CarryPose {
   head: boolean;
   /** 0..1 total load → hunched posture, wobble */
   load: number;
+  /** optional finger shape per hand for what is held (characters HAND_SHAPES name):
+   *  'handle' (wok / pan / spatula / ladle), 'knife', 'plate', 'bottle', 'bag', 'crate', 'pinch', 'grip' (default) */
+  gripR?: string; gripL?: string;
 }
 
 /** A posed, animated, textured low-poly person. */

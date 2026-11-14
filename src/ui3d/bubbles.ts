@@ -298,13 +298,14 @@ export class UI3D {
   // ------------------------------------------------------------------ off-screen subtitles
   private subRoot: HTMLDivElement | null = null;
   private _ndc = new THREE.Vector3();
-  /** -1 = speaker to the left, +1 = to the right, 0 = in front but too far; null = readable on screen */
+  /** -1 = speaker to the left, +1 = to the right; null = readable in the world (or too far away to matter) */
   private offscreen(p: THREE.Vector3, dist: number, cam: THREE.Camera): number | null {
+    // only people within earshot (~16 m): distant barks just stay in the world (no subtitle spam)
+    if (dist > 16) return null;
     const v = this._ndc.copy(p).project(cam);
     const behind = v.z > 1;
     if (behind) return v.x > 0 ? -1 : 1;
     if (v.x < -1.02 || v.x > 1.02 || v.y < -1.05 || v.y > 1.08) return v.x < 0 ? -1 : 1;
-    if (dist > 24) return 0;
     return null;
   }
   private subRootEl(): HTMLDivElement {

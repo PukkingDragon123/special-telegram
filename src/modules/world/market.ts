@@ -245,9 +245,18 @@ function stall(c: ShopCtx & { rng: RNG }, r: R4, y0: number, rng: RNG, goods: st
   if (rng.chance(0.55)) {
     const col = rng.pick([0x2a5ab0, 0xd03030, 0x2a8a4a, 0xe8c020, 0xe06a20]);
     const y = 3.1 + rng.range(-0.2, 0.3);
-    cloth.tarp(new THREE.Vector3(x0 - 0.2, y - 0.25, z1 + 0.3), new THREE.Vector3(x1 + 0.2, y - 0.25, z1 + 0.3), new THREE.Vector3(x1 + 0.2, y, z0 - 0.3), new THREE.Vector3(x0 - 0.2, y, z0 - 0.3), col, rng.range(0.1, 0.22));
+    // the tarp is tied to a real stall frame: 4 painted steel posts from the floor + a cross bar at each end
+    // (it used to hang on two 8 mm cords from the roof and read as a floating sheet)
+    const ex = 0.1, ez = 0.15, yb = y - 0.25;
+    cloth.tarp(new THREE.Vector3(x0 - ex, yb, z1 + ez), new THREE.Vector3(x1 + ex, yb, z1 + ez), new THREE.Vector3(x1 + ex, y, z0 - ez), new THREE.Vector3(x0 - ex, y, z0 - ez), col, rng.range(0.08, 0.16));
+    w.mat('metal_paint', { uv: 'local', tint: rng.pick([0x2a5a8a, 0x3a3a3a, 0x8a2a20]) });
+    for (const x of [x0 - ex, x1 + ex]) {
+      w.cyl(x, y0, z0 - ez, 0.022, 0.022, y - y0 + 0.02, 8, 1);
+      w.cyl(x, y0, z1 + ez, 0.022, 0.022, yb - y0 + 0.02, 8, 1);
+      w.tube([x, y, z0 - ez, x, yb, z1 + ez], 0.016, 6);
+    }
     w.mat('rubber', { uv: 'local' });
-    for (const x of [x0 - 0.2, x1 + 0.2]) { w.tube([x, y, z0 - 0.3, x, 4.85, z0 - 0.3], 0.004, 3); w.tube([x, y - 0.25, z1 + 0.3, x, 4.85, z1 + 0.3], 0.004, 3); }
+    for (const x of [x0 - ex, x1 + ex]) w.tube([x, y + 0.01, z0 - ez, x, 4.85, z0 - ez], 0.004, 3);   // a tie-up cord to the roof truss too
   } else if (rng.chance(0.5)) {
     const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
     w.mat('steel_rust', { uv: 'local' }); w.cyl(cx, y0, cz, 0.022, 0.022, 2.3, 6, 1);

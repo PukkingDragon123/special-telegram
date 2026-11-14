@@ -37,7 +37,7 @@ const PLANS: Partial<Record<AnimName, Plan>> = {
   jenga_pull: { clip: 'Sitting_Idle_Loop', proc: true, mask: 'upper' },
   cine_point: { proc: true, mask: 'full' }, cine_twist: { proc: true, mask: 'full' }, cine_lean: { proc: true, mask: 'full' },
   cine_menace: { proc: true, mask: 'full' }, cine_cross: { proc: true, mask: 'full' }, cine_hair: { proc: true, mask: 'full' },
-  stretch: { proc: true, mask: 'full' }, sneak: { proc: true, mask: 'full' },
+  stretch: { proc: true, mask: 'full' }, sneak: { clip: 'Crouch_Fwd_Loop' },
 };
 /** anims whose feet stay planted (foot locking / ground IK allowed) besides locomotion */
 const IK_OK = new Set<AnimName>(['stand_cool', 'cine_point', 'cine_twist', 'cine_lean', 'cine_menace', 'cine_cross', 'cine_hair', 'sneak']);
@@ -115,6 +115,12 @@ const _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion(), _q3 = new THREE
 const _m4 = new THREE.Matrix4(), _w1 = new THREE.Vector3(), _w2 = new THREE.Vector3(), _w3 = new THREE.Vector3(), _w4 = new THREE.Vector3(), _w5 = new THREE.Vector3();
 const _qa = new THREE.Quaternion(), _qb = new THREE.Quaternion();
 const IK_T = [new THREE.Vector3(), new THREE.Vector3()];
+/** follow-through time constants (1/s): higher = tighter */
+const LAG_RATES: [number, number][] = [
+  [B.spine, 28], [B.chest, 24], [B.neck, 18], [B.head, 14], [B.clav_l, 22], [B.clav_r, 22],
+  [B.upperarm_l, 22], [B.upperarm_r, 22], [B.forearm_l, 15], [B.forearm_r, 15], [B.hand_l, 11], [B.hand_r, 11],
+];
+const LAG_PASS = Array.from({ length: NB }, (_, i) => i).filter((i) => !LAG_RATES.some(([b]) => b === i));
 const _m4r = new THREE.Matrix4(), _wR = new THREE.Vector3();   // foot targets (never used as scratch)
 const _ikT = new THREE.Vector3();
 const warned = new Set<string>();
@@ -819,6 +825,8 @@ export class Rig implements CharacterRig {
       else if (this.posture === 'stand') wantLoco = 1;
     }
     if (plan.clip === 'Sitting_Idle_Loop' && plan.sitClip === undefined && c.name === 'talk') baseClip = 'Sitting_Talking_Loop';
+    // sneaking: mocap crouch walk while moving, crouch idle when still (cross-faded by the clip weights below)
+    if (c.name === 'sneak') baseClip = v > 0.15 ? 'Crouch_Fwd_Loop' : 'Crouch_Idle_Loop';
     if (baseClip) this.action(baseClip);
     this.wLoco += (wantLoco - this.wLoco) * fadeK;
     for (const name of new Set([...this.acts.keys()])) {
@@ -830,6 +838,7 @@ export class Rig implements CharacterRig {
       a.enabled = w > 0.002;
       a.setEffectiveWeight(w);
       if (name === 'Push_Loop') a.timeScale = Math.max(0.35, Math.min(1.6, v / 1.1 + 0.35));
+      if (name === 'Crouch_Fwd_Loop') a.timeScale = Math.max(0.4, Math.min(1.7, v / 0.9));
     }
     // locomotion blend (manually phase-synced)
     const hs = this.height / this.t.height;
@@ -886,6 +895,7 @@ export class Rig implements CharacterRig {
         const w = this.fadeT * this.fadeT * (3 - 2 * this.fadeT);
         blendPose(this.out, this.fadeFrom, this.target, w);
       } else this.out.copy(this.target);
+      if (this.near && plan.proc) this.followThrough(dt); else this.lagOn = false;
       if (this.wProc > 0.002) {
         const upperW = locoOnly ? this.wProc * (1 - this.moveW) : this.wProc;
         if (this.procMask === 'full' && !standLegs) this.applyProc(this.out, 'full', upperW);
@@ -920,7 +930,15 @@ export class Rig implements CharacterRig {
     // ---- carry layer
     if (cw.r + cw.l + cw.two + cw.head > 0.01 && c.name !== 'tpose' && this.posture !== 'lie') {
       this.applyCarry();
-      if (this.near) { const gl = Math.max(cw.two, cw.l, cw.head), gr = Math.max(cw.two, cw.r); this.applyFingers(GRIP2, gl, gr); }
+      if (this.near) {
+        const gl = Math.max(cw.two, cw.l, cw.head), gr = Math.max(cw.two, cw.r);
+        const shL = cp.gripL ? (HAND_SHAPES as any)[cp.gripL] : null, shR = cp.gripR ? (HAND_SHAPES as any)[cp.gripR] : null;
+        if (shL || shR) {
+          const hs = this.gripHs;
+          hs.set(shL ?? HAND_SHAPES.grip, 0); hs.set(shR ?? HAND_SHAPES.grip, HS_N);
+          this.applyFingers(hs, gl, gr);
+        } else this.applyFingers(GRIP2, gl, gr);
+      }
     }
     // load hunch & wobble
     if (cw.load > 0.02 && this.posture === 'stand') {
@@ -955,6 +973,29 @@ export class Rig implements CharacterRig {
     }
   }
 
+
+  // ---------------------------------------------------------------- follow-through on procedural poses
+  /** Overlapping action: each upper-body bone of the procedural pose chases its target with its own time constant
+   *  (proximal fast, distal slower), so wrists trail forearms, forearms trail upper arms and the head settles after
+   *  the chest — procedural motion stops looking like rigid in-phase sine waves. Fingers ease too. */
+  private lagPose = new Pose();
+  private gripHs = new Float32Array(HS_N * 2);
+  private lagOn = false;
+  private followThrough(dt: number) {
+    const out = this.out, lag = this.lagPose;
+    if (!this.lagOn || dt > 0.25) { lag.copy(out); this.lagOn = true; return; }
+    for (const [bi, rate] of LAG_RATES) {
+      const k = 1 - Math.exp(-rate * dt);
+      const o = bi * 4;
+      _qa.set(lag.q[o], lag.q[o + 1], lag.q[o + 2], lag.q[o + 3]);
+      _qb.set(out.q[o], out.q[o + 1], out.q[o + 2], out.q[o + 3]);
+      _qa.slerp(_qb, k);
+      lag.q[o] = out.q[o] = _qa.x; lag.q[o + 1] = out.q[o + 1] = _qa.y; lag.q[o + 2] = out.q[o + 2] = _qa.z; lag.q[o + 3] = out.q[o + 3] = _qa.w;
+    }
+    const kf = 1 - Math.exp(-16 * dt);
+    for (let i = 0; i < HS_N * 2; i++) { lag.hs[i] += (out.hs[i] - lag.hs[i]) * kf; out.hs[i] = lag.hs[i]; }
+    for (const bi of LAG_PASS) { const o = bi * 4; for (let j = 0; j < 4; j++) lag.q[o + j] = out.q[o + j]; }
+  }
 
   // ---------------------------------------------------------------- hands
 

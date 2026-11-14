@@ -288,9 +288,11 @@ export class MenuScene implements SceneDef {
         const sq = 1 + wob;
         s.rig.root.scale.set(grow / Math.sqrt(sq), grow * sq, grow / Math.sqrt(sq));
       } else s.rig.root.scale.setScalar(1);
+      if (s === this.puller()) this.jengaHand(s); else if ((s as any).jgOn) { (s.rig as any).reach?.(-1, null); (s as any).jgOn = false; }
       s.rig.update(rdt);
       if (s.fit !== undefined && --s.fit <= 0) { s.fit = undefined; this.fitSeat(s); }
     }
+    if (!this.puller()) this.jenga.setPull(null);
     this.updateArrow(rdt);
     this.updatePaper(rdt);
     this.updateBits(rdt);
@@ -370,6 +372,50 @@ export class MenuScene implements SceneDef {
       }
     }
     this.firstSync = false;
+  }
+
+  // ------------------------------------------------------------------ jenga: a real hand pull (body fork)
+  /** who pulls: G3 when seated, else the first seated jenga player (single player: your own guy, slot 0) */
+  private puller(): SlotView | null {
+    for (const i of [2, 3, 0]) { const s = this.slots[i]; if (s?.rig && s.out === undefined && s.pop <= 0 && SLOTS[i].pose === 'jenga_pull') return s; }
+    return null;
+  }
+  private jgEnd = new THREE.Vector3(); private jgAx = new THREE.Vector3(); private jgTmp = new THREE.Vector3(); private jgExpr = '';
+  /**
+   * Hand-driven pull with arm IK onto the real block: reach (fingers open), settle around the block end and pinch,
+   * careful wiggling slide-out while the tower sways, a nervous hesitation when it wobbles, push it gently back,
+   * let go, sit back relieved. Loops (8.5 s) — no block ever teleports.
+   */
+  private jengaHand(s: SlotView) {
+    const rig: any = s.rig!;
+    if (!rig.reach) return;
+    (s as any).jgOn = true;
+    if (s.block) s.block.visible = false;   // both hands are needed for the real thing
+    const P = 8.5, u = (this.t + s.i * 1.7) % P;
+    const from = rig.attach('hand_r').getWorldPosition(this.jgTmp);
+    if (!this.jenga.grip(from, this.jgEnd, this.jgAx)) { rig.reach(-1, null); return; }
+    const ease = (a: number, b: number, x: number) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    // block slide-out (m)
+    const out = 0.04 * ease(2.1, 4.2, u) * (1 - ease(4.9, 6.2, u)) + 0.003 * ease(4.9, 6.2, u)
+      + 0.0025 * Math.sin(u * 7.0) * ease(2.1, 2.5, u) * (1 - ease(4.0, 4.2, u));   // stick-slip
+    this.jenga.setPull(out);
+    this.jenga.grip(from, this.jgEnd, this.jgAx);   // end point follows the block
+    const nervous = ease(4.0, 4.3, u) * (1 - ease(4.8, 5.6, u));
+    this.jenga.wobble(Math.max(this.game.players().length >= 4 ? 1 : 0, out / 0.04 * 0.35 + nervous * 0.9));
+    // arm weight + wrist target (wrist sits ~7.5 cm behind the pinching fingertips, a little above the block)
+    const w = ease(0.6, 1.6, u) * (1 - ease(6.6, 7.6, u));
+    const back = 0.075 + 0.05 * (1 - ease(1.6, 2.1, u)) + 0.03 * ease(6.2, 6.7, u);
+    const wig = Math.sin(u * 23) * 0.0018 * ease(2.1, 2.4, u) * (1 - ease(4.6, 4.9, u)) + Math.sin(u * 31) * 0.002 * nervous;
+    const side = this.jgTmp.set(0, 1, 0).cross(this.jgAx).normalize();
+    const tgt = this.jgEnd.clone().addScaledVector(this.jgAx, back).add(new THREE.Vector3(0, 0.026 + 0.02 * (1 - ease(1.3, 2.0, u)), 0)).addScaledVector(side, wig);
+    // fingers: open → pinch → (release) open
+    const pinch = ease(1.8, 2.1, u) * (1 - ease(6.2, 6.6, u));
+    const A = [0.18, 0.2, 0.55, 0.7, 0.8, 0.35], Bp = [0.5, 0.52, 0.78, 0.86, 0.92, 0.12];
+    const shape = A.map((a, i) => a + (Bp[i] - a) * pinch);
+    rig.reach(-1, w > 0.002 ? tgt : null, { w, shape });
+    rig.lookAt(w > 0.05 ? this.jgEnd : TOWER_LOOK);
+    const ex = u < 0.6 ? 'neutral' : nervous > 0.4 ? 'scared' : u > 6.6 && u < 8 ? 'happy' : w > 0.3 ? 'determined' : 'neutral';
+    if (ex !== this.jgExpr) { this.jgExpr = ex; rig.setExpression?.(ex, { fade: 0.25 }); }
   }
 
   /** (re)build a seat's character for a look, posed like the album cover */

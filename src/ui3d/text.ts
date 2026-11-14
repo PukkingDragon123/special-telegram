@@ -102,7 +102,7 @@ export function renderText(blocks: TextBlock[], opts: { pad?: number; scale?: nu
     if (st.shadow) {
       ctx.save();
       ctx.shadowColor = st.shadow;
-      ctx.shadowBlur = (st.shadowBlur ?? 8) * scale;
+      ctx.shadowBlur = (st.shadowBlur ?? 0) * scale;
       ctx.shadowOffsetX = (st.shadowOffset?.[0] ?? 0) * scale;
       ctx.shadowOffsetY = (st.shadowOffset?.[1] ?? 3) * scale;
       ctx.fillStyle = st.shadow;
@@ -138,7 +138,7 @@ export const TS = {
   bubbleSub: { font: F.body, size: 26, weight: 400, color: '#6b6258', maxWidth: 560 } as TextStyle,
   tag: { font: F.ui, size: 34, weight: 500, color: '#f6f1e7', maxWidth: 520 } as TextStyle,
   tagSub: { font: F.body, size: 22, weight: 400, color: '#cfc5b5' } as TextStyle,
-  popup: { font: F.heavy, size: 64, weight: 800, color: '#fff7e0', stroke: '#2a1a08', strokeWidth: 7, shadow: 'rgba(0,0,0,0.45)', shadowBlur: 10 } as TextStyle,
+  popup: { font: F.heavy, size: 64, weight: 800, color: '#fff7e0', stroke: '#2a1a08', strokeWidth: 7, shadow: 'rgba(0,0,0,0.45)', shadowBlur: 0 } as TextStyle,
   sign: { font: F.heavy, size: 72, weight: 800, color: '#ffffff' } as TextStyle,
   hand: { font: F.ui, size: 44, weight: 600, color: '#1b2b6b' } as TextStyle,
 };

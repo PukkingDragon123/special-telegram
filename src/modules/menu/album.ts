@@ -271,6 +271,11 @@ export interface Jenga {
   collapse(): void;
   reset(): void;
   wobble(k: number): void;
+  /** hand-driven pull (menu jenga IK): choose the block whose exposed end is nearest `from` (world) — mid-height,
+   *  not missing — and return that end point + the world pull direction (out of the tower). Stable once chosen. */
+  grip(from: THREE.Vector3, end: THREE.Vector3, axis: THREE.Vector3): boolean;
+  /** slide the gripped block out by d metres (0 = home); null hands it back to the idle sine pull */
+  setPull(d: number | null): void;
 }
 
 export function buildJenga(levels = 18): Jenga {
@@ -304,6 +309,8 @@ export function buildJenga(levels = 18): Jenga {
   const pullIdx = blocks.findIndex((b, i) => i > 21 && !b.missing && b.rot === 0 && i % 3 === 0);
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(1, 1, 1), p = new THREE.Vector3();
   let wob = 0;
+  let gripIdx = -1, gripSign = 1, extPull: number | null = null;
+  const axisG = (b: B) => (b.rot ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0));
   let collapsing = false, ct = 0;
   const place = (t: number) => {
     blocks.forEach((b, i) => {
@@ -313,7 +320,8 @@ export function buildJenga(levels = 18): Jenga {
         p.copy(b.pos);
       } else {
         let out = b.out;
-        if (i === pullIdx) out = 0.006 + Math.max(0, Math.sin(t * 0.55)) * 0.03;
+        if (i === gripIdx && extPull !== null) out = gripSign * extPull;
+        else if (i === pullIdx && gripIdx < 0) out = 0.006 + Math.max(0, Math.sin(t * 0.55)) * 0.03;
         p.copy(b.pos);
         if (b.rot) p.z += out; else p.x += out;
         // wobble: the higher, the more sway
@@ -370,6 +378,30 @@ export function buildJenga(levels = 18): Jenga {
       }
     },
     wobble(k) { wob = k; },
+    grip(from, end, axis) {
+      if (collapsing) return false;
+      group.updateWorldMatrix(true, false);
+      if (gripIdx < 0) {
+        let best = Infinity;
+        blocks.forEach((b, i) => {
+          const lv = Math.round((b.pos.y - H / 2) / H);
+          if (b.missing || b.fall || lv < 5 || lv > levels - 5) return;
+          for (const sg of [1, -1]) {
+            const e = b.pos.clone().addScaledVector(axisG(b), sg * L / 2);
+            const d = group.localToWorld(e).distanceTo(from);
+            if (d < best) { best = d; gripIdx = i; gripSign = sg; }
+          }
+        });
+        if (gripIdx < 0) return false;
+      }
+      const b = blocks[gripIdx];
+      const ax = axisG(b).multiplyScalar(gripSign);
+      end.copy(b.pos).addScaledVector(ax, L / 2 + (extPull ?? 0));
+      group.localToWorld(end);
+      axis.copy(ax).transformDirection(group.matrixWorld);
+      return true;
+    },
+    setPull(d) { extPull = d; },
   };
   return api;
 }

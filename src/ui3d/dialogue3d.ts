@@ -45,7 +45,8 @@ const OPT: Text3DOpts = {
   font: 'talk', size: 0.021, depth: 0.3, bevel: 0.07, color: 0xfff0d2, side: 0x5a2c14, roughness: 0.38, emissive: 0.36, shadow: 0.5,
   xray: true, castShadow: false, align: 'left', valign: 'middle', maxWidth: 0.62, anim: { pop: 0.26, rise: 0.4, spin: 0.9, vanish: 0.26, drift: 0.3, squash: 0.9 },
 };
-const OPT_HOT: Partial<Text3DOpts> = { color: 0xffe28a, side: 0x8a3c0a, emissive: 0.85, rim: 0xffb347, rimStrength: 1.3 };
+// hovered option: bright white with a deep green edge (no yellow, no glow)
+const OPT_HOT: Partial<Text3DOpts> = { color: 0xffffff, side: 0x1f5a17, emissive: 0.08, rim: undefined, rimStrength: 0 };
 const OPT_LOCK: Partial<Text3DOpts> = { color: 0x8f8780, side: 0x2a2522, emissive: 0.12, rim: undefined, rimStrength: 0 };
 const OPT_EN: Text3DOpts = {
   font: 'ui', size: 0.0105, depth: 0.2, bevel: 0.05, color: 0xd6cbb9, side: 0x2e241d, roughness: 0.5, emissive: 0.3, shadow: 0.5,
@@ -133,7 +134,8 @@ export class DialogueView {
     const maxW = LINE_W;
     this.line = new Text3D(spec.th, { ...LINE, maxWidth: maxW });
     this.line.reveal = 0;
-    this.lineEn = spec.en ? new Text3D(spec.en, { ...LINE_EN, maxWidth: maxW }) : null;
+    // less text: no English gloss lines under the NPC's words / the answers
+    this.lineEn = null; void LINE_EN;
     this.lineEn && (this.lineEn.reveal = 0);
     this.name = new Text3D(spec.name, { ...NAME, color: spec.color ?? (NAME.color as number) });
     this.name.popIn(0.03);
@@ -162,7 +164,7 @@ export class DialogueView {
       const locked = !!o.locked;
       const tint = locked ? (OPT_LOCK.color as number) : o.tone ? new THREE.Color(TONE[o.tone]).lerp(new THREE.Color(0xfff0d2), 0.35).getHex() : (OPT.color as number);
       const main = new Text3D(o.th, { ...OPT, color: tint, ...(locked ? OPT_LOCK : {}) });
-      const sub = o.en ? new Text3D(o.en, OPT_EN) : null;
+      const sub: Text3D | null = null; void OPT_EN;
       const num = new Text3D(n === 1 && !o.en && o.th.length < 12 ? 'E' : String(i + 1), { ...NUM, ...(locked ? { color: 0x7d746c, metalness: 0.2, emissive: 0.05 } : {}) });
       const reason = locked ? new Text3D('🔒 ' + o.locked, { ...OPT_EN, color: 0xff9a7a, size: 0.0115 }) : null;
       main.popIn(0.018); sub?.popIn(0.01); num.popIn(0); reason?.popIn(0.01);
@@ -267,7 +269,6 @@ export class DialogueView {
         this.name!.position.set(0, 0.014, 0);
         this.line.position.set(0, 0, 0);
         if (this.lineEn) this.lineEn.position.set(0, -this.line.height - 0.014, 0);
-        holder.rotateZ(Math.sin(this.t * 0.9) * 0.004);
       }
     }
     // ---- cards: stacked bottom-centre of the view
@@ -320,7 +321,7 @@ export class DialogueView {
       const slide = (1 - Math.min(1, Math.max(0, (this.t - c.t0) / 0.32))) ** 2;   // staggered slide-in from the left
       const x = leftX + (hot ? 0.014 : 0) - slide * 0.12;
       r.position.set(r.position.x ? r.position.x + (x - r.position.x) * Math.min(1, dt * 12) : x, y + c.h / 2 + Math.sin(this.t * 2 + i * 1.3) * 0.0016, zBase + (hot ? 0.025 : 0));
-      r.rotation.set(Math.sin(this.t * 1.2 + i) * 0.025 - 0.03, Math.sin(this.t * 0.8 + i * 2) * 0.03, 0);
+      r.rotation.set(0, 0, 0);
       // plate behind the text block (local origin = left edge, vertical centre)
       c.plate.scale.set(c.w + 0.03, c.h, 1);
       c.plate.position.set(c.w / 2 - 0.005, 0, -0.004);

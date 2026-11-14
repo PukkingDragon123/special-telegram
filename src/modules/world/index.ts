@@ -216,7 +216,7 @@ async function buildWorld(game: Game) {
   tf = performance.now();
   try {
     atmo.update(0.016, game.camera);
-    game.engine.renderer.compile(game.scene!, game.camera);
+    // (the real shader compile happens in world-scene prewarmShaders, against the post-processing target)
   } catch (e) { console.warn('[world] precompile', e); }
   TIMES.compile = Math.round(performance.now() - tf);
   releaseCpuCopies(game, assets);
