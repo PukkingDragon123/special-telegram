@@ -105,8 +105,8 @@ const LOOK: Record<string, Text3DOpts> = {
     maxWidth: 1.05, valign: 'bottom', anim: { pop: 0.2, rise: 0.2, spin: 0.5, vanish: 0.3, drift: 0.3 },
   },
   think: {
-    font: 'ui', size: 0.04, depth: 0.22, bevel: 0.06, color: 0xe3ebff, side: 0x5a66a6, roughness: 0.3, emissive: 0.42,
-    opacity: 0.88, rim: 0xc9b8ff, rimStrength: 0.55, shadow: 0.42, castShadow: false, maxWidth: 0.86, valign: 'bottom',
+    font: 'ui', size: 0.04, depth: 0.22, bevel: 0.06, color: 0xf2f3ff, side: 0x262a4a, roughness: 0.5, emissive: 0.05,
+    shadow: 0.5, castShadow: false, maxWidth: 0.86, valign: 'bottom',
     anim: { pop: 0.5, rise: 0.25, spin: 0.5, vanish: 0.5, drift: 0.9, wobble: 0.035, squash: 0.6, glint: 0.3 },
   },
   thinkSub: {

@@ -14,7 +14,7 @@ import { sfx } from './sfx';
 
 const SH = '1px 0 0 #0b0907,-1px 0 0 #0b0907,0 1px 0 #0b0907,0 -1px 0 #0b0907,0 2px 3px rgba(0,0,0,.5)';
 const CSS = `
-.pz{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(8,7,6,.62);font-family:${F.ui},sans-serif;color:#fff;animation:pzIn .18s ease-out}
+.pz{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(8,7,6,.8);font-family:${F.ui},sans-serif;color:#fff;animation:pzIn .18s ease-out}
 .pz *{box-sizing:border-box}
 .pz-box{width:min(92vw,520px);max-height:90vh;overflow:auto;padding:28px 30px 24px}
 .pz h1{margin:0 0 18px;font:800 clamp(30px,3.4vw,44px)/1.1 ${F.ui};text-shadow:${SH};letter-spacing:.01em}
