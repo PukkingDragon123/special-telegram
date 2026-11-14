@@ -15,3 +15,6 @@ references/food/labels_parody/
 *.zip
 dist-itch/
 *.z0[0-9]
+
+# private photo for the baby easter egg: local only until the owner confirms it may be published (repo is public)
+public/assets/gen/eggs/baby_photo.jpg
