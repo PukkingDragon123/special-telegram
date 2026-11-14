@@ -47,7 +47,7 @@ export class RewindOverlay {
   update(raw: number) {
     const ease = (c: number, t: number, k: number) => c + (t - c) * (1 - Math.exp(-raw * k));
     this.grayK = ease(this.grayK, this.grayTo, 8);
-    this.desat.style.opacity = (this.grayK * 0.85).toFixed(3);
+    this.desat.style.opacity = (this.grayK * 0.6).toFixed(3);   // keep some colour so the pink stand still reads
     this.ringK = ease(this.ringK, this.ringTo, 10);
     this.rings.style.opacity = this.ringK.toFixed(3);
     if (this.vhsOn) this.vhs.style.visibility = (Math.floor(performance.now() / 380) % 2) ? 'visible' : 'hidden';

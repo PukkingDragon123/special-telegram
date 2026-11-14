@@ -175,7 +175,7 @@ class StandHost {
 
   /** debug: rewind the nearest wok right now */
   test() {
-    const w = this.woks()[0];
+    const w = this.woks().sort((a, b) => this.maxBurn(b.data) - this.maxBurn(a.data))[0];
     if (w && !this.active) this.trigger(w);
   }
 }
@@ -286,8 +286,8 @@ class StandShow {
     const k = t < 0.6 ? 0 : t < 1.4 ? (t - 0.6) / 0.8 : t < 5.8 ? 1 : Math.max(0, 1 - (t - 5.8) / 0.8);
     if (this.rig && o) {
       const yaw = o.getWorldQuaternion(new THREE.Quaternion());
-      const back = new THREE.Vector3(0, 0, 0.55).applyQuaternion(yaw);   // characters face -Z: +Z is behind them
-      const base = o.getWorldPosition(new THREE.Vector3()).add(back).add(new THREE.Vector3(0, 0.22 + Math.sin(t * 2.2) * 0.04, 0));
+      const back = new THREE.Vector3(-0.42, 0, 0.5).applyQuaternion(yaw);   // characters face -Z: behind them and over their right shoulder
+      const base = o.getWorldPosition(new THREE.Vector3()).add(back).add(new THREE.Vector3(0, 0.38 + Math.sin(t * 2.2) * 0.04, 0));
       this.rig.root.position.copy(base);
       this.rig.root.quaternion.copy(yaw);
       this.rig.root.scale.setScalar(0.9 + 0.1 * k);
@@ -367,16 +367,28 @@ class StandShow {
 
   /** camera position looking at `target` from about `dist` m, preferring `pref` (horizontal), picking the
    *  direction with the clearest line of sight (static geometry / vehicles / carts don't block the shot) */
+  private ray = new THREE.Raycaster();
+  /** distance to the first blocker: physics (static/vehicles/items) + the cart's visual meshes (sign, roof, umbrella have no collider) */
+  private freeDist(from: THREE.Vector3, dir: THREE.Vector3, max: number): number {
+    const h = this.game.physics?.raycast(from, dir, max, G.STATIC | G.VEHICLE | G.ITEM);
+    let d = h ? h.toi : max;
+    const cartObj = this.run?.go.cart != null ? this.game.views.objectOf(this.run.go.cart) : null;
+    if (cartObj) {
+      this.ray.set(from, dir); this.ray.far = d;
+      const hit = this.ray.intersectObject(cartObj, true).find((x) => (x.object as any).visible !== false);
+      if (hit) d = Math.min(d, hit.distance);
+    }
+    return d;
+  }
+
   private clearShot(target: THREE.Vector3, pref: THREE.Vector3, dist: number, lift: number): THREE.Vector3 {
-    const phys = this.game.physics;
     if (!this.shotDir) {
       let best = pref.clone(), bestD = -1;
       for (const a of [0, 0.5, -0.5, 1.0, -1.0, 1.6, -1.6, 2.4, -2.4]) {
         const d = pref.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), a).normalize();
         const dir = d.clone().multiplyScalar(dist).add(new THREE.Vector3(0, lift, 0));
         const len = dir.length(); dir.normalize();
-        const h = phys?.raycast(target, dir, len + 0.3, G.STATIC | G.VEHICLE | G.ITEM);
-        const free = h ? h.toi : len + 0.3;
+        const free = this.freeDist(target, dir, len + 0.3);
         const score = Math.min(free, len) - Math.abs(a) * 0.15;
         if (score > bestD) { bestD = score; best = d; }
       }
@@ -384,8 +396,8 @@ class StandShow {
     }
     const dir = this.shotDir.clone().multiplyScalar(dist).add(new THREE.Vector3(0, lift, 0));
     const len = dir.length(); dir.normalize();
-    const h = phys?.raycast(target, dir, len, G.STATIC | G.VEHICLE | G.ITEM);
-    return target.clone().addScaledVector(dir, Math.max(0.6, (h ? h.toi - 0.25 : len)));
+    const free = this.freeDist(target, dir, len);
+    return target.clone().addScaledVector(dir, Math.max(0.6, free < len ? free - 0.25 : len));
   }
 
   private finish(silent = false) {
@@ -471,6 +483,8 @@ export default defineModule({
     (game as any).stand = {
       /** HOST: rewind the first wok now (debug / tests) */
       test: () => { if (game.isHost) host?.test(); else game.intent('stand.test', {}); },
+      /** debug: host internals */
+      host: () => host,
       /** seconds into the running sequence on this peer (-1 = none) */
       t: () => (show as any)?.run?.t ?? -1,
     };

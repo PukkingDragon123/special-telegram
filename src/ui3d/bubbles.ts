@@ -336,7 +336,7 @@ export class UI3D {
     if (!el) {
       el = L.sub2d = document.createElement('div');
       el.className = 'ui3d-sub';
-      const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!));
+      const esc = (v: any) => (typeof v === 'string' ? v : v && typeof v === 'object' ? String(v.th ?? '') : String(v ?? '')).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!));
       const text = esc(L.th ?? '');
       el.dataset.side = '';
       el.innerHTML = (L.name ? `<b>${esc(L.name)}</b>` : '') + `<span>${text}</span>`;
