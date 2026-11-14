@@ -412,6 +412,13 @@ export class MenuScene implements SceneDef {
     const pinch = ease(1.8, 2.1, u) * (1 - ease(6.2, 6.6, u));
     const A = [0.18, 0.2, 0.55, 0.7, 0.8, 0.35], Bp = [0.5, 0.52, 0.78, 0.86, 0.92, 0.12];
     const shape = A.map((a, i) => a + (Bp[i] - a) * pinch);
+    // scoot to the front edge of the seat while reaching (the tower is a long reach from the chair)
+    const base: THREE.Vector3 = (s as any).jgBase && (s as any).jgRig === rig ? (s as any).jgBase : ((s as any).jgRig = rig, (s as any).jgBase = rig.root.position.clone());
+    const toT = this.jgEnd.clone().sub(s.root.localToWorld(base.clone())).setY(0);
+    const scoot = toT.lengthSq() > 1e-6 ? toT.normalize().multiplyScalar(0.12 * ease(0.3, 1.4, u) * (1 - ease(6.8, 7.9, u))) : toT;
+    s.root.updateMatrixWorld(true);
+    const sl = s.root.worldToLocal(s.root.localToWorld(base.clone()).add(scoot));
+    rig.root.position.set(sl.x, rig.root.position.y, sl.z);
     rig.reach(-1, w > 0.002 ? tgt : null, { w, shape });
     rig.lookAt(w > 0.05 ? this.jgEnd : TOWER_LOOK);
     const ex = u < 0.6 ? 'neutral' : nervous > 0.4 ? 'scared' : u > 6.6 && u < 8 ? 'happy' : w > 0.3 ? 'determined' : 'neutral';

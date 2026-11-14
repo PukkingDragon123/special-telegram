@@ -665,6 +665,7 @@ export class Rig implements CharacterRig {
   }
   private reachT: ({ p: THREE.Vector3; w: number; hs: Float32Array | null } | null)[] = [null, null];
   private reachLean = [0, 0];
+  private leanAx = new THREE.Vector3(1, 0, 0);
   private applyReach() {
     if (!this.reachT[0] && !this.reachT[1]) return;
     this.reachLean[0] = this.reachLean[1] = 0;
@@ -692,7 +693,9 @@ export class Rig implements CharacterRig {
           if (ax.lengthSq() < 1e-8) break;
           ax.normalize();
           const ang = Math.min(0.32, deficit / Math.max(0.25, _w1.length())) * r.w;
-          if ((this.reachLean[k] += ang) > 1.05) break;
+          if (this.reachLean[k] + ang > 0.62) break;
+          this.reachLean[k] += ang;
+          this.leanAx.copy(ax);
           for (const [bn, f] of [['spine_01', 0.4], ['spine_02', 0.35], ['spine_03', 0.25]] as const) {
             const bi = I[bn]; if (bi === undefined) continue;
             const pa = this.t.parent[bi];
@@ -702,6 +705,17 @@ export class Rig implements CharacterRig {
             this.fk();
           }
         }
+      }
+      // keep the eyes on the target while leaning: the neck/head take back most of the bend
+      if (this.reachLean[k] > 0.01) {
+        for (const [bn, f] of [['neck_01', 0.35], ['Head', 0.35]] as const) {
+          const bi = I[bn]; if (bi === undefined) continue;
+          const pa = this.t.parent[bi];
+          _qa.setFromAxisAngle(this.leanAx, -this.reachLean[k] * f);
+          _qb.copy(this.Fq[pa]).multiply(this.bones[bi].quaternion).premultiply(_qa);
+          this.bones[bi].quaternion.copy(_q.copy(this.Fq[pa]).invert().multiply(_qb));
+        }
+        this.fk();
       }
       this.solve2(ia, ib, ic, tgt);
       this.fk();
