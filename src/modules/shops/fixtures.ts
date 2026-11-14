@@ -8,6 +8,7 @@ import { canvasMat, mat, photo, photoMat, signTex, CardStyle, CardAtlas } from '
 import { buildShape } from './items';
 import { libModel, libInstanced } from '../world/lib';
 import { rbox, tube, lathe, packRow, tagRail } from './kit';
+import { drinkRow, drinksMaterial, type DrinkKind } from './drinks';
 import { packCell, packMaterial } from './packs';
 import { realPropObject } from '../world/realprops';
 import { PileBatch } from '../world/realprops-market';
@@ -769,22 +770,31 @@ function drinksCooler(B: Batch, root: THREE.Object3D, fr: Frame, x: number, zc: 
   // lit white interior (back + LED columns) — the bottles in front are real 3D
   B.add(plane(len - 0.1, 1.62).translate(0, 0.16, 0), mat('cooler-back', () => new THREE.MeshStandardMaterial({ color: 0xf4f8fa, emissive: new THREE.Color(0xe8f4ff), emissiveIntensity: 0.55, roughness: 0.4 })), fr, x + 0.7, 0, zc, -Math.PI / 2);
   for (let k = 0; k <= 4; k++) B.add(rbox(0.02, 1.6, 0.025, 0.004, 1), glow(0xeef8ff, 1.4), fr, x + 0.68, 0.17, zc - len / 2 + 0.06 + k * ((len - 0.12) / 4));
-  const ids = ['bottle_beer_chang', 'bottle_beer_leo', 'bottle_beer_singha', 'bottle_fanta_red'];
-  const mats: Record<string, THREE.Matrix4[]> = {};
+  // shelves stocked like a real Thai convenience-store cooler: water + teas, soft-drink cans, coffee cans +
+  // energy shots, beer — parody brands (shops/drinks.ts), front facings tidy, a few bought-out gaps
   const shelfY = [0.17, 0.58, 0.99, 1.4];
+  const runs: [DrinkKind, number, number][][] = [
+    [['pet', 0.082, 5], ['pet', 0.082, 0]],             // bottom: big water + teas / milk drinks
+    [['can', 0.07, 0]],                                 // cans
+    [['energy', 0.056, 0], ['can', 0.064, 4]],          // energy shots + coffee cans
+    [['beer', 0.08, 0]],                                // beer
+  ];
+  const dmat = drinksMaterial();
+  const runLen = len - 0.2;
   for (const [si, y] of shelfY.entries()) {
     B.add(rbox(0.6, 0.012, len - 0.12, 0.003, 1), pbr('metal_painted_chipped', 0xf0f0ee, 0xf0f0ee), fr, x + 0.38, y - 0.012, zc);
     B.add(tagRail(len - 0.12, 0.03), pbr('plastic_glossy', 0xf4f4f0, 0xf4f4f0), fr, x + 0.075, y - 0.03, zc, -Math.PI / 2);
-    const id = ids[si % ids.length];
-    const step = 0.085;
-    const n = Math.floor((len - 0.2) / step);
-    for (let i = 0; i < n; i++) for (const dx of [0.13, 0.22, 0.31, 0.4]) {
-      if ((i * 7 + si * 3 + Math.round(dx * 100)) % 11 === 0) continue;   // a few gaps: people bought some
-      const p = fr.at(x + dx, y, zc - (len - 0.2) / 2 + i * step);
-      (mats[ids[(si + Math.floor(i / 9)) % ids.length]] ??= []).push(new THREE.Matrix4().makeRotationY(fr.yaw - Math.PI / 2 + Math.sin(i * 3.1) * 0.3).setPosition(p));
+    const segs = runs[si];
+    // rotY −π/2: the run's +x goes toward frame −z and the labels face −x (the aisle), so start at the far end
+    let z0 = zc + runLen / 2;
+    for (const [ri, [kind, pitch, first]] of segs.entries()) {
+      const L = runLen / segs.length;
+      const n = Math.floor(L / pitch);
+      const g = drinkRow(kind, n, 4, pitch, 0.085, first + si * 2 + ri, kind === 'beer' ? 3 : 4, 9);
+      B.add(g, dmat, fr, x + 0.13, y, z0, -Math.PI / 2);
+      z0 -= L;
     }
   }
-  for (const [id, m] of Object.entries(mats)) root.add(libInstanced(id, m, { shadow: false, cull: 32 }));
   // 4 glass doors with aluminium frames and long pull handles
   const dl = len / 4;
   for (let k = 0; k < 4; k++) {
@@ -877,7 +887,7 @@ function buildStore(game: Game, s: ShopDef, door: Frame, ctr: Frame, kinds: Map<
   const back = pbr('plastic_rough', 0xece9e2, 0xece9e2);
   C.add(rbox(3.0, 2.0, 0.42, 0.02, 1), back, ctr, 0, 0, 2.55, Math.PI / 2 * 0);
   const wall: Record<string, THREE.Matrix4[]> = {};
-  const WALL_IDS = ['bottle_light_soy', 'bottle_dark_soy', 'bottle_oyster_sauce', 'bottle_fish_sauce_tiparos', 'bottle_golden_mountain', 'bottle_fish_sauce_squid', 'bottle_beer_leo', 'bottle_beer_singha'];
+  const WALL_IDS = ['bottle_light_soy', 'bottle_dark_soy', 'bottle_oyster_sauce', 'bottle_fish_sauce_squid', 'bottle_light_soy', 'bottle_oyster_sauce'];
   for (const [li, y] of [0.5, 0.95, 1.4].entries()) {
     B.add(rbox(2.9, 0.025, 0.36, 0.006, 1), back, ctr, 0, y, 2.38);
     if (li === 2) {

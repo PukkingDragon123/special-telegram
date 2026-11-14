@@ -482,7 +482,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       else if (put(rf.chance(0.5) ? 'wood_table' : 'small_table', x, z, f.out + rf.range(-0.1, 0.1), { tag: 'eatery tables' })) {
         for (const s2 of [-1, 1]) {
           const [cx, cz] = f.at(A(rf.range(0.3, 0.7)) + s2 * 0.55, 0.85);
-          put(rf.chance(0.5) ? 'wood_chair_a' : (rf.chance(0.5) ? 'wood_chair_b' : 'metal_stool'), cx, cz, f.out + (s2 > 0 ? -Math.PI / 2 : Math.PI / 2) + rf.range(-0.3, 0.3), { tag: 'eatery chairs' });
+          put(rf.chance(0.5) ? 'wood_chair_a' : (rf.chance(0.5) ? 'wood_chair_b' : 'metal_stool_b'), cx, cz, f.out + (s2 > 0 ? -Math.PI / 2 : Math.PI / 2) + rf.range(-0.3, 0.3), { tag: 'eatery chairs' });
         }
       }
       if (rf.chance(0.6)) { const [mx, mz] = f.at(edge(0.05), 0.55); put('menu_board', mx, mz, f.out + rf.range(-0.3, 0.3), { tag: 'menu boards' }); }

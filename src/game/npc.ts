@@ -3,6 +3,7 @@ import type { Game } from './game';
 import type { Ent } from '../sim/state';
 import { angleDiff, damp, round } from '../core/util';
 import { yawTo } from './mapplan';
+import { blockedAhead } from './steer';
 
 /**
  * HOST helper that walks NPC-like entities (anything with p/yaw: 'npc', 'dog', 'cat', 'ghost')
@@ -30,6 +31,7 @@ export class NpcMover {
     e._onArrive = o.onArrive;
     e._face = o.face;
     e._radius = o.radius ?? 0.35;
+    e._stuck = 0; e._repathed = false;
     this.moving.add(e);
   }
 
@@ -74,7 +76,37 @@ export class NpcMover {
         const dd = dx * dx + dz * dz;
         if (dd < 0.7 && dd > 1e-4) sep.add(new THREE.Vector3(dx, 0, dz).multiplyScalar((0.7 - dd) / dd * 0.25));
       }
-      const dir = to.add(sep.clampLength(0, 0.8)).normalize();
+      let dir = to.add(sep.clampLength(0, 0.8)).normalize();
+      // ---- don't walk through props / walls / parked vehicles: deflect around them, re-path when stuck
+      const phys: any = this.game.physics;
+      if (phys && e.t === 'npc') {
+        const ahead = blockedAhead(phys, p.x, p.y, p.z, dir.x, dir.z, Math.min(0.9, d + 0.1));
+        if (ahead !== null && !(last && ahead > d - 0.05)) {
+          let found: THREE.Vector3 | null = null;
+          for (const a of [0.6, -0.6, 1.2, -1.2, 1.8, -1.8]) {
+            const c = Math.cos(a), sn = Math.sin(a);
+            const tdir = new THREE.Vector3(dir.x * c - dir.z * sn, 0, dir.x * sn + dir.z * c);
+            if (blockedAhead(phys, p.x, p.y, p.z, tdir.x, tdir.z, 0.8) === null) { found = tdir; break; }
+          }
+          if (found) { dir = found; e._stuck = Math.max(0, (e._stuck ?? 0) - dt); }
+          else e._stuck = (e._stuck ?? 0) + dt;
+        } else e._stuck = Math.max(0, (e._stuck ?? 0) - dt * 0.5);
+        if ((e._stuck ?? 0) > 1.5 && !e._repathed && this.game.world) {
+          // stuck: plan again from here (nav lanes go around buildings)
+          e._repathed = true; e._stuck = 0;
+          const fin = path[path.length - 1];
+          const np = this.game.world.nav.path(p, fin, {});
+          if (np.length) { if (np[np.length - 1].distanceTo(fin) > 0.3) np.push(fin); e._path = np; }
+          continue;
+        }
+        if ((e._stuck ?? 0) > 3) { e._stuck = 0; e._repathed = false; if (path.length > 1) path.shift(); continue; }
+        if ((e._stuck ?? 0) > 0.05 && blockedAhead(phys, p.x, p.y, p.z, dir.x, dir.z, 0.35) !== null) {
+          // nothing free: wait in place this frame (turn toward the goal)
+          const want = yawTo(to.x, to.z);
+          e.yaw = round((e.yaw ?? 0) + angleDiff(e.yaw ?? 0, want) * damp(6, dt), 3);
+          continue;
+        }
+      }
       const sp = Math.min(e._speed, d / dt);
       p.addScaledVector(dir, sp * dt);
       const gy = this.game.world?.groundY(p.x, p.z) ?? p.y;

@@ -152,6 +152,9 @@ export const SHOPS: ShopDef[] = [
       { id: 'pork', kinds: ['pork_minced'], fb: 'sfb_pork_minced', price: 70, unit: 'ถุงละ', qty: 14, show: 3 },
       { id: 'pork_sl', kinds: ['pork_sliced'], fb: 'sfb_pork_sliced', price: 85, unit: 'ถุงละ', qty: 10, show: 2, day: 2, recipes: [...R_GARLIC, ...R_SIIO, ...R_RATNA, ...R_CURRY] },
       { id: 'chicken', kinds: ['chicken_minced'], fb: 'sfb_chicken_minced', price: 55, unit: 'ถุงละ', qty: 10, show: 2, day: 2 },
+      // whole cuts: cheaper, but you rinse + slice / mince them yourself at the cart (cooking/butcher.ts)
+      { id: 'pork_whole', kinds: ['pork_whole'], fb: 'sfb_pork_minced', price: 55, unit: 'ชิ้นละ', qty: 8, show: 2, label: { th: 'หมูสะโพกทั้งชิ้น (หั่นเอง)', en: 'whole pork cut (cut it yourself)' } },
+      { id: 'chicken_whole', kinds: ['chicken_whole'], fb: 'sfb_chicken_minced', price: 40, unit: 'ชิ้นละ', qty: 8, show: 2, label: { th: 'อกไก่ทั้งชิ้น (สับเอง)', en: 'whole chicken breasts (mince yourself)' } },
       { id: 'shrimp', kinds: ['shrimp'], fb: 'sfb_shrimp', price: 95, unit: 'ถุงละ', qty: 6, show: 2, day: 99, recipes: R_TOMYAM },
     ],
   },

@@ -81,18 +81,46 @@ export class ViewManager {
     this.root.removeFromParent();
   }
 
+  /** per-entity accumulated time for distance-throttled views */
+  private acc = new Map<number, number>();
+  private frameN = 0;
+
+  /**
+   * Distance LOD: views farther than 40 m from the camera update every 3rd frame, beyond 90 m every 6th
+   * (with the skipped time accumulated, so animation/smoothing stays correct). The local player, held items and
+   * anything without a positioned object always update every frame. ?viewlod=0 disables it.
+   */
   update(dt: number) {
     if (!this.active) return;
+    this.frameN++;
+    const cam = this.game.camera;
+    const lod = this.lodOn;
+    if (lod && cam) cam.getWorldPosition(_cp);
+    const me = this.game.localPlayerId;
     for (const [id, a] of this.views) {
       const e = this.state.get(id);
       if (!e) continue;
+      let step = dt;
+      if (lod && cam && id !== me && e.holder == null && e.p) {
+        const dx = e.p[0] - _cp.x, dz = e.p[2] - _cp.z, d2 = dx * dx + dz * dz;
+        const every = d2 > 8100 ? 6 : d2 > 1600 ? 3 : 1;
+        if (every > 1) {
+          const t = (this.acc.get(id) ?? 0) + dt;
+          if ((this.frameN + id) % every !== 0) { this.acc.set(id, t); continue; }
+          this.acc.set(id, 0);
+          step = Math.min(t, 0.25);
+        } else if (this.acc.has(id)) { step = Math.min(dt + this.acc.get(id)!, 0.25); this.acc.delete(id); }
+      }
       for (const v of a) {
         if (!v.update) continue;
-        try { v.update(e, dt); } catch (err) { console.error(`[view update ${e.t}#${id}]`, err); }
+        try { v.update(e, step); } catch (err) { console.error(`[view update ${e.t}#${id}]`, err); }
       }
     }
   }
+  private lodOn = new URLSearchParams(location.search).get('viewlod') !== '0';
 }
+
+const _cp = new THREE.Vector3();
 
 /** Smoothly move an object toward an entity's replicated transform. */
 const _q = new THREE.Quaternion();

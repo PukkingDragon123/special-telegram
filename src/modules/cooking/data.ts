@@ -38,6 +38,12 @@ export interface IngDef {
   price: number;
   /** visual class for wok contents */
   vis?: 'meat' | 'meatSlice' | 'leaf' | 'bits' | 'veg' | 'noodle' | 'paste' | 'shrimp' | 'rice' | 'stick' | 'garnish';
+  /** BUTCHER whole cuts: must be rinsed (tap / wash tub / basin) before they go on the board */
+  needsWash?: boolean;
+  /** whole cut → what it becomes on the board at cut stage 1 (sliced) and 2 (minced); null = no product at that stage */
+  becomes?: (string | null)[];
+  /** only the chopping board takes it (not straight into the wok) */
+  cutOnly?: boolean;
   tags?: string[];
 }
 
@@ -54,6 +60,9 @@ export const ING: Record<string, IngDef> = {
   pork_minced: ing({ kind: 'pork_minced', name: { th: 'หมูสับ', en: 'minced pork' }, unit: 'g', amount: 500, into: 'it', rate: 65, ramp: 0.2, temp: 8, cook: { t: 26, b: 30, tMin: 75, loss: 0.25 }, cp: 0.8, verb: 'ใส่', snd: S_SOLID, weight: 0.55, price: 75, vis: 'meat', tags: ['meat'] }),
   chicken_minced: ing({ kind: 'chicken_minced', name: { th: 'ไก่สับ', en: 'minced chicken' }, unit: 'g', amount: 500, into: 'it', rate: 65, ramp: 0.2, temp: 8, cook: { t: 22, b: 28, tMin: 75, loss: 0.22 }, cp: 0.8, verb: 'ใส่', snd: S_SOLID, weight: 0.55, price: 60, vis: 'meat', tags: ['meat'] }),
   pork_sliced: ing({ kind: 'pork_sliced', name: { th: 'หมูสไลซ์', en: 'sliced pork' }, unit: 'g', amount: 500, into: 'it', rate: 55, ramp: 0.2, temp: 8, cook: { t: 24, b: 30, tMin: 75, loss: 0.25 }, cp: 0.8, board: true, verb: 'ใส่', snd: S_SOLID, weight: 0.55, price: 85, vis: 'meatSlice', tags: ['meat'] }),
+  // butcher whole cuts (cheaper): rinse → board → cleaver rhythm → sliced → minced
+  pork_whole: ing({ kind: 'pork_whole', name: { th: 'หมูสะโพกทั้งชิ้น', en: 'whole pork leg cut' }, unit: 'g', amount: 600, into: 'it', rate: 80, temp: 8, cook: { t: 40, b: 30, tMin: 75, loss: 0.25 }, cp: 0.8, board: true, prep: 'chop', needsWash: true, cutOnly: true, becomes: ['pork_sliced', 'pork_minced'], verb: 'ใส่', snd: S_SOLID, weight: 0.65, price: 60, vis: 'meat', tags: ['meat', 'raw_cut'] }),
+  chicken_whole: ing({ kind: 'chicken_whole', name: { th: 'อกไก่ทั้งชิ้น', en: 'whole chicken breasts' }, unit: 'g', amount: 600, into: 'it', rate: 80, temp: 8, cook: { t: 36, b: 28, tMin: 75, loss: 0.22 }, cp: 0.8, board: true, prep: 'chop', needsWash: true, cutOnly: true, becomes: [null, 'chicken_minced'], verb: 'ใส่', snd: S_SOLID, weight: 0.65, price: 45, vis: 'meat', tags: ['meat', 'raw_cut'] }),
   shrimp: ing({ kind: 'shrimp', name: { th: 'กุ้งสด', en: 'shrimp' }, unit: 'g', amount: 300, into: 'it', rate: 50, ramp: 0.2, temp: 6, cook: { t: 12, b: 18, tMin: 70, loss: 0.15 }, cp: 0.85, verb: 'ใส่', snd: S_SOLID, weight: 0.35, price: 95, vis: 'shrimp', tags: ['meat', 'seafood'] }),
   egg: ing({ kind: 'egg', name: { th: 'ไข่ไก่', en: 'egg' }, unit: 'g', amount: 60, into: 'egg', rate: 0, verb: 'ใส่', snd: ['egg_crack'], weight: 0.06, price: 5, tags: ['egg'] }),
   // ---- aromatics

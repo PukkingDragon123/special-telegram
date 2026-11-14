@@ -138,9 +138,17 @@ export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE
     // variants still compiled mid-game (double the load-time compile work AND the hitches it was meant to avoid)
     const target = compileTarget(renderer);
     const prev = renderer.getRenderTarget();
+    // three only compiles VISIBLE objects: distance-culled props, closed interiors, hidden-until-needed meshes
+    // would otherwise each link their program (a hitch) the first time they appear. Unhide every non-light
+    // object for the compile (lights keep their state: their count is part of every program key).
+    const hidden: THREE.Object3D[] = [];
+    scene.traverse((o) => { if (!o.visible && !(o as any).isLight) { hidden.push(o); o.visible = true; } });
     renderer.setRenderTarget(target);
     let p: Promise<unknown>;
-    try { p = renderer.compileAsync(scene, camera); } finally { renderer.setRenderTarget(prev); }
+    try { p = renderer.compileAsync(scene, camera); } finally {
+      renderer.setRenderTarget(prev);
+      for (const o of hidden) o.visible = false;
+    }
     await Promise.race([p, new Promise((r) => setTimeout(r, capMs))]);
   } catch (e) { console.warn('[world] shader prewarm', e); }
   // upload every loaded texture of visible objects now (also behind the fade): no texImage2D + mipmap hitch

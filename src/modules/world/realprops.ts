@@ -141,7 +141,7 @@ export const MODELS: Record<PropId, ModelDef> = {
   wood_table: M('painted_wooden_table', { phys: 'dyn', mass: 9, friction: 0.6, shadow: true, collider: 'box', far: 1.0 }),
   wood_chair_a: M('painted_wooden_chair_01', { phys: 'dyn', mass: 3, friction: 0.6, shadow: true, collider: 'box', far: 0.9 }),
   wood_chair_b: M('painted_wooden_chair_02', { phys: 'dyn', mass: 3, friction: 0.6, shadow: true, collider: 'box', far: 0.9 }),
-  metal_stool: M('metal_stool_01', { phys: 'dyn', mass: 2.5, friction: 0.5, shadow: true, collider: 'cyl', far: 0.8 }),
+  metal_stool_b: M('metal_stool_01', { phys: 'dyn', mass: 2.5, friction: 0.5, shadow: true, collider: 'cyl', far: 0.8 }),
   menu_board: M('standing_chalkboard_01', { phys: 'dyn', mass: 4, friction: 0.6, shadow: true, collider: 'box', far: 0.9 }),
   hang_lamp: M('hanging_industrial_lamp', { phys: 'none', far: 0.8, anchor: 'top' }),
   barrel_stove: M('barrel_stove', { phys: 'static', shadow: true, far: 1.0 }),

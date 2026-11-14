@@ -41,6 +41,10 @@ export class CookCam {
 
   get active() { return this.k > 0.02; }
 
+  /** a cleaver hit / toss: short downward punch of the close-up camera */
+  private shake = 0;
+  kick(a = 1) { this.shake = Math.min(1.2, this.shake + a); }
+
   /** world point to frame for an item (top of the vessel / board) */
   private pointOf(e: Ent, out: THREE.Vector3): boolean {
     const p = this.game.items.worldPos(e);
@@ -110,6 +114,7 @@ export class CookCam {
     // handheld life: tiny drift + breathing (position only, so the aim stays exact)
     const h = 0.0045 * k;
     _p.x += Math.sin(this.t * 1.31) * h; _p.y += Math.sin(this.t * 1.07 + 1.3) * h * 0.8; _p.z += Math.cos(this.t * 0.93) * h;
+    if (this.shake > 0.001) { _p.y -= this.shake * 0.011 * k; _p.addScaledVector(_fwd, this.shake * 0.008 * k); this.shake *= Math.exp(-dt * 16); }
     // first person: blend from the eye camera; third person: from the shoulder camera to the eye line
     cam.position.lerp(_p, k);
     const fov = cam.fov + (44 - cam.fov) * k;

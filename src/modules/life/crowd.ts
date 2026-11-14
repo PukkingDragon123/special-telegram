@@ -7,6 +7,7 @@ import { play } from './sounds';
 import type { Life } from './index';
 import { LocalTalkers, TalkTarget } from '../quests/api';
 import { ARCHETYPES } from '../characters/defs';
+import { blockedAhead, insideStatic } from '../../game/steer';
 
 /** set pieces being talked to (key 'f'+setPieceKey → anim): they stop walking, face the player and talk */
 export const CrowdHold = new Map<string, string>();
@@ -29,7 +30,11 @@ const talkProxyMat = new THREE.MeshBasicMaterial({ visible: false });
  * ========================================================================================== */
 
 interface Path { id: number; pts: THREE.Vector2[]; cum: number[]; len: number; gap: number; zone: string; width: number }
-interface Walker { key: string; path: Path; slot: number; dir: 1 | -1; speed: number; t0: number; lat: number; arch: string; seed: number; pos: THREE.Vector3; yaw: number; flee: number; fleeDir: THREE.Vector3 | null; laugh: number; gone: boolean }
+interface Walker {
+  key: string; path: Path; slot: number; dir: 1 | -1; speed: number; t0: number; lat: number; arch: string; seed: number; pos: THREE.Vector3; yaw: number; flee: number; fleeDir: THREE.Vector3 | null; laugh: number; gone: boolean;
+  /** obstacle avoidance: current / wanted lateral detour (m), hold timer, probe timer, time lost waiting, stuck timer */
+  av: number; avT: number; hold: number; chk: number; delay: number; stuck: number;
+}
 interface Fixed { key: string; arch: string; pos: THREE.Vector3; yaw: number; anim: string; from: number; to: number; seed: number; lines?: string; talkT?: number; walk?: { path: THREE.Vector2[]; speed: number; cum: number[]; len: number } ; bubble?: string }
 
 const SKIN = ['#d2a582', '#c4936d', '#a87652', '#8d5f3e', '#e0b896'];
@@ -311,6 +316,64 @@ export class Crowd {
     if (this.bakedReady() >= 3 && this.imp) for (const m of [this.imp.body, this.imp.legs, this.imp.head]) m.visible = false;
   }
 
+  // ------------------------------------------------------------------ obstacle avoidance
+
+  /** positions of near walkers from the previous frame (separation) */
+  private nearPrev: { w: Walker; x: number; z: number }[] = [];
+  private nearNow: { w: Walker; x: number; z: number }[] = [];
+  /** debug counters (window.__crowdStats): walker-frames inside static colliders / overlapping another walker */
+  stats = { frames: 0, checked: 0, inside: 0, insideLane: 0, overlap: 0, overlapLane: 0 };
+
+  private avoid(w: Walker, target: THREE.Vector3, nx: number, nz: number, tx: number, tz: number, lat: number, cam: THREE.Vector3, dt: number) {
+    const phys: any = this.game.physics;
+    const dcam = Math.hypot(target.x - cam.x, target.z - cam.z);
+    if (!phys || dcam > 55) { w.av += (0 - w.av) * Math.min(1, dt * 2); w.avT = 0; return; }
+    const y = w.pos.y || this.game.world?.groundY(target.x, target.z) || 0.15;
+    const half = w.path.width / 2 + 2.4;            // how far off the lane a detour may go
+    w.hold -= dt; w.chk -= dt;
+    // separation: someone close ahead/beside in my lane → slide to the free side
+    for (const o of this.nearPrev) {
+      if (o.w === w) continue;
+      const dx = o.x - target.x - nx * w.av, dz = o.z - target.z - nz * w.av;
+      const fwd = dx * tx + dz * tz, side = dx * nx + dz * nz;
+      if (fwd > -0.3 && fwd < 1.6 && Math.abs(side) < 0.62) {
+        const push = side >= 0 ? -0.7 : 0.7;
+        if (Math.abs(lat + w.av + push) < half) { w.avT = w.av + push; w.hold = Math.max(w.hold, 1.0); }
+      }
+    }
+    if (w.chk <= 0) {
+      w.chk = 0.16 + (w.seed % 9) * 0.01;
+      const at = (a: number) => [target.x + nx * a, target.z + nz * a] as const;
+      const free = (a: number) => {
+        const [qx, qz] = at(a);
+        return !insideStatic(phys, qx, y, qz) && blockedAhead(phys, qx, y, qz, tx, tz, 1.25) === null;
+      };
+      if (!free(w.avT)) {
+        let best: number | null = null;
+        for (const o of [0.45, -0.45, 0.9, -0.9, 1.35, -1.35, 1.8, -1.8, 2.4, -2.4]) {
+          const a = w.avT + o;
+          if (Math.abs(lat + a) > half) continue;
+          if (free(a)) { best = a; break; }
+        }
+        if (best !== null) { w.avT = best; w.hold = 1.4; w.stuck = 0; }
+        else w.stuck += 0.16;
+      } else {
+        w.stuck = 0;
+        if (w.hold <= 0 && Math.abs(w.avT) > 0.01 && free(0)) w.avT = 0;   // back to the lane once it's clear
+      }
+    }
+    // fully blocked: wait (the schedule is delayed) — far away walkers that stay stuck just leave
+    if (w.stuck > 0) { w.delay += dt; if (w.stuck > 5 && dcam > 16) w.gone = true; }
+    w.av += (w.avT - w.av) * Math.min(1, dt * 2.6);
+    this.nearNow.push({ w, x: target.x + nx * w.av, z: target.z + nz * w.av });
+    // metrics
+    if (dcam < 30) {
+      this.stats.checked++;
+      if (insideStatic(phys, target.x + nx * w.av, y, target.z + nz * w.av, 0.18)) this.stats.inside++;
+      if (insideStatic(phys, target.x, y, target.z, 0.18)) this.stats.insideLane++;   // where it would stand without avoidance
+    }
+  }
+
   // ------------------------------------------------------------------ frame
 
   private _m = new THREE.Matrix4();
@@ -333,7 +396,7 @@ export class Crowd {
 
     // ---- walkers from schedules
     for (const P of this.paths) {
-      const maxDur = P.len / 0.9;
+      const maxDur = P.len / 0.9 + 25;   // + slack for walkers that waited behind an obstacle
       const i0 = Math.max(0, Math.floor((T - maxDur) / P.gap)), i1 = Math.floor(T / P.gap);
       for (let i = i0; i <= i1; i++) {
         const t0 = i * P.gap + h01(this.seed, P.id, i, 1) * P.gap * 0.6;
@@ -341,13 +404,13 @@ export class Crowd {
         const hourAt = hour - (T - t0) / 66.7;
         if (h01(this.seed, P.id, i, 2) > this.density(P.zone, hourAt)) continue;
         const speed = 1.0 + h01(this.seed, P.id, i, 3) * 0.55;
-        const s = (T - t0) * speed;
-        if (s > P.len) continue;
         const key = P.id + ':' + i;
         let w = this.walkers.get(key);
+        const s = (T - t0 - (w?.delay ?? 0)) * speed;
+        if (s > P.len) continue;
         if (!w) {
           const dir: 1 | -1 = h01(this.seed, P.id, i, 4) < 0.5 ? 1 : -1;
-          w = { key, path: P, slot: i, dir, speed, t0, lat: (h01(this.seed, P.id, i, 5) - 0.5) * P.width, arch: this.archFor(P.zone, hourAt, this.seed, P.id, i, 6), seed: hashN(this.seed, P.id, i), pos: new THREE.Vector3(), yaw: 0, flee: 0, fleeDir: null, laugh: 0, gone: false };
+          w = { key, path: P, slot: i, dir, speed, t0, lat: (h01(this.seed, P.id, i, 5) - 0.5) * P.width, arch: this.archFor(P.zone, hourAt, this.seed, P.id, i, 6), seed: hashN(this.seed, P.id, i), pos: new THREE.Vector3(), yaw: 0, flee: 0, fleeDir: null, laugh: 0, gone: false, av: 0, avT: 0, hold: 0, chk: h01(this.seed, P.id, i, 7) * 0.2, delay: 0, stuck: 0 };
           this.walkers.set(key, w);
         }
         if (w.gone) { seen.add(key); continue; }
@@ -363,6 +426,9 @@ export class Crowd {
           if (fwd > -1 && fwd < 3 && Math.abs(side - lat) < 0.9) lat += side > lat ? -(0.9 - Math.abs(side - lat)) : 0.9 - Math.abs(side - lat);
         }
         const target = new THREE.Vector3(this.tmpV.x + nx * lat, 0, this.tmpV.y + nz * lat);
+        // ---- don't walk through things: steer around props / parked vehicles / walls / other walkers (near the camera)
+        if (w.flee <= 0) this.avoid(w, target, nx, nz, this.tmpT.x, this.tmpT.y, lat, cam, dt);
+        target.x += nx * w.av; target.z += nz * w.av;
         // flee from ghosts
         for (const g of ghosts) if (w.flee <= 0 && Math.hypot(g.x - target.x, g.z - target.z) < 12) { w.flee = 6; w.fleeDir = target.clone().sub(g).setY(0).normalize(); if (h01(w.seed, Math.floor(T)) < 0.4) this.say(w.pos, line('ghost_flee')); }
         if (w.flee > 0) {
@@ -380,6 +446,14 @@ export class Crowd {
       }
     }
     for (const k of [...this.walkers.keys()]) if (!seen.has(k)) this.walkers.delete(k);
+    // separation uses last frame's near positions; count walker overlaps for the stats
+    for (let a = 0; a < this.nearNow.length; a++) for (let b = a + 1; b < this.nearNow.length; b++) {
+      const A = this.nearNow[a], Bq = this.nearNow[b];
+      if (Math.abs(A.x - Bq.x) < 0.4 && Math.abs(A.z - Bq.z) < 0.4 && Math.hypot(A.x - Bq.x, A.z - Bq.z) < 0.38) this.stats.overlap++;
+    }
+    this.nearPrev = this.nearNow; this.nearNow = [];
+    this.stats.frames++;
+    (window as any).__crowdStats = this.stats;
 
     // ---- laugh at slaps
     if (this.laughAt) {

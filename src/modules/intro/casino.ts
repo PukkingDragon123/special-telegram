@@ -267,7 +267,7 @@ export class CasinoScene implements SceneDef {
     this.coat = this.addActor(look('office_worker_m', 81, {
       height: 1.93, top: { id: 'suit_black', color: '#1b1d26' }, bottom: { id: 'slacks', color: '#1b1d26' }, shoes: { id: 'leather', color: '#121212' },
       acc: ['cap_black', 'gold_chain'], physique: { muscle: 0.85, shoulders: 0.8, belly: 0.3 },
-    }), V(9.4, 0, -8.6), yawTo(-9.4, 8.6), 'cine_menace');
+    }), V(9.6, 0, -5.2), yawTo(-9.6, 5.2), 'cine_menace');   // by the end of the bar, clear of the column at (7.5, -6.5)
     try { this.coat.rig.attach('hip').add(coatTail()); } catch { /* no hip attach: suit only */ }
     // a prime-time slap-drama couple arguing by the karaoke TV
     const wife = this.addActor(look('auntie_vendor', 91, { top: { id: 'shirt_satin', color: '#c8287a' } }), V(7.3, 0, 7.7), yawTo(0.8, 0), 'angry');

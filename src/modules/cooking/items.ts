@@ -9,8 +9,9 @@ import { T } from './assets';
 import { M } from './mats';
 import {
   buildMeatTray, buildBasil, buildChiliBag, buildGarlic, buildLongBeans, buildKale, buildBundle, buildPile, buildEgg, buildEggTray,
-  buildBottle, buildPacket, buildPasteBag, buildCucumbers, buildMushrooms, buildKaffir, buildGalangal, buildNoodleBag, BottleSpec, foodPhoto,
+  buildBottle, buildPacket, buildPasteBag, buildCucumbers, buildMushrooms, buildKaffir, buildGalangal, buildNoodleBag, BottleSpec, foodPhoto, rawMeatMat,
 } from './models';
+import { rbox, mound, planarUV } from './geo';
 import {
   buildWok, buildFoodLayers, setFoodSet, FoodLayers, HeapKind, wokY, WOK_R, WOK_D, buildSpatula, buildLadle, buildCleaver, buildRicePaddle,
   buildSpoonFork, buildBoard, buildMortar, buildPlate, buildBowl, buildTakeaway, buildPlasticBag, buildRicePot, buildGasTank, buildBook, setFriedVariant,
@@ -219,7 +220,7 @@ export function defineCookingItems(game: Game) {
   def({ ...ingBase('rice_bag'), carry: 'underarm', tags: ['ingredient', 'starch', 'bag', 'heavy'], build: () => buildPacket('rice_bag', 0.3, 0.44, 0.12, { body: M.plasticRough(0xf6f2e2) }), animate: anim(), hold: HOLD.big });
   def({ ...ingBase('noodles_wide'), tags: ['ingredient', 'starch', 'bag'], build: () => buildNoodleBag(), refresh: refreshHeap(500), animate: anim(), hold: HOLD.tray });
   // ---- meat trays
-  for (const k of ['pork_minced', 'chicken_minced', 'pork_sliced', 'shrimp']) {
+  for (const k of ['pork_minced', 'chicken_minced', 'pork_sliced', 'shrimp', 'pork_whole', 'chicken_whole']) {
     def({ ...ingBase(k), build: () => buildMeatTray(k), refresh: refreshHeap(ING[k].amount), animate: anim(), hold: HOLD.tray });
   }
   // ---- produce
@@ -402,6 +403,7 @@ function refreshBoard(obj: THREE.Object3D, e: Ent) {
   for (const [k, v] of Object.entries(it)) {
     if (!v || v.g < 0.5) continue;
     const s = Math.min(1, Math.sqrt(v.g / 120));
+    if (MEAT_BOARD.has(k)) { boardMeat(top, k, v.g, e.data ?? {}, i); i++; continue; }
     const rel = boardRelief(k, chop);
     if (rel) {
       // real photo relief of the (chopped) ingredient, piling up as it is cut
@@ -428,6 +430,61 @@ function refreshBoard(obj: THREE.Object3D, e: Ent) {
     i++;
   }
 }
+const MEAT_BOARD = new Set(['pork_whole', 'chicken_whole', 'pork_sliced', 'pork_minced', 'chicken_minced']);
+const meatGeoCache = new Map<string, THREE.BufferGeometry>();
+const mg = (k: string, f: () => THREE.BufferGeometry) => { let g = meatGeoCache.get(k); if (!g) meatGeoCache.set(k, (g = f())); return g; };
+/**
+ * Butcher meat on the board: the whole cut is visibly split into slices that separate as the cut
+ * progresses (stage 0 → 1), sliced meat fans out, then collapses into a mince mound (stage 1 → 2).
+ */
+function boardMeat(top: THREE.Object3D, k: string, g: number, d: any, i: number) {
+  const cut = d.cutKind ? (d.cut ?? 0) : k === 'pork_sliced' ? 1 : 2;
+  const amt = Math.min(1.3, Math.sqrt(g / 500));
+  const chicken = k.startsWith('chicken');
+  const mat = rawMeatMat(chicken ? 0xfff0ea : 0xffe2dc);
+  const fat = rawMeatMat(0xfff6ea);
+  const off = i * 0.03;
+  if (k === 'pork_whole' || k === 'chicken_whole') {
+    // the slab, cut into n slices that drift apart with every chop
+    const n = 1 + Math.floor(Math.min(0.999, cut) * 9);
+    const L = 0.15 * amt, W = 0.085 * amt, H = (chicken ? 0.026 : 0.04) * amt;
+    const w = L / n;
+    const gap = 0.0012 + Math.min(1, cut) * 0.0045;
+    const sl = mg(`slab:${chicken}:${n}:${amt.toFixed(2)}`, () => planarUV(rbox(Math.max(0.006, w - 0.001), H, W, Math.min(0.006, w * 0.3), 1), 1 / 0.12));
+    const ft = chicken ? null : mg(`slabFat:${n}:${amt.toFixed(2)}`, () => planarUV(rbox(Math.max(0.006, w - 0.001), H * 0.28, W * 0.96, 0.003, 1), 1 / 0.12));
+    for (let j = 0; j < n; j++) {
+      const x = -L / 2 + (j + 0.5) * w + (j - (n - 1) / 2) * gap;
+      const m = new THREE.Mesh(sl, mat);
+      m.position.set(x, 0.004 + H / 2, off);
+      m.rotation.z = (j - (n - 1) / 2) * 0.015 * Math.min(1, cut);   // slices lean as they fall apart
+      top.add(m);
+      if (ft) { const f = new THREE.Mesh(ft, fat); f.position.set(x, 0.004 + H + H * 0.14, off); f.rotation.z = m.rotation.z; top.add(f); }
+    }
+    return;
+  }
+  if (k === 'pork_sliced' && cut < 1.35) {
+    // a fan of thin slices; as mincing starts they get chopped smaller and pile up
+    const n = 9;
+    const t = Math.max(0, (cut - 1) / 0.35);
+    const sl = mg('sliceThin', () => planarUV(rbox(0.06, 0.006, 0.04, 0.002, 1), 1 / 0.08));
+    for (let j = 0; j < n; j++) {
+      const m = new THREE.Mesh(sl, mat);
+      const a = (j / n) * 0.9 - 0.45;
+      m.position.set(Math.sin(a) * 0.05 * (1 - t), 0.006 + j * 0.003, Math.cos(a) * 0.02 - 0.01 + off);
+      m.rotation.set(0.05, a + j * 0.4 * t, 0);
+      m.scale.setScalar(1 - t * 0.45);
+      top.add(m);
+    }
+    return;
+  }
+  // mince: a crumbly mound growing as the cut finishes
+  const k2 = Math.min(1, Math.max(0.35, (cut - 1)));
+  const mm = new THREE.Mesh(mg('minceBoard', () => planarUV(mound(0.06, 0.024, { seed: 17, detail: 3, rough: 0.3, squash: [1.25, 0.85], flat: false }), 1 / 0.12)), mat);
+  mm.position.set(0, 0.004, off);
+  mm.scale.set((0.7 + 0.4 * k2) * amt, (0.6 + 0.4 * k2) * amt, (0.7 + 0.4 * k2) * amt);
+  top.add(mm);
+}
+
 /** which real relief photo shows an ingredient on the board at this chop progress */
 function boardRelief(k: string, chop: number): string | null {
   switch (k) {

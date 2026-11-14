@@ -46,6 +46,8 @@ export class LessonHost {
   onDone: ((dish: Ent | null, verdict: 'good' | 'ok' | 'bad') => void) | null = null;
 
   constructor(private game: Game, private ctx: LessonCtx) {
+    // the burnt-rice stand (module `stand`) just rewound time: give the cook a moment before yelling about burning again
+    game.events.on('stand:restored', () => { this.burnT = Math.max(this.burnT, 12); });
     game.events.on('cook:dish', (d: { player: number; dish: number }) => {
       if (this.stage !== 'plate' && this.stage !== 'basil' && this.stage !== 'season' && this.stage !== 'stir') return;
       this.dish = d.dish;

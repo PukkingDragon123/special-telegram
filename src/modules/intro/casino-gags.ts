@@ -84,7 +84,7 @@ export function buildCasinoGags(): GagSet {
   const H = 5.2, Z1 = 10, X0 = -14;
 
   // ---- south wall (behind the players), facing the room (-z)
-  const southWall = (o: THREE.Object3D, x: number, y: number) => { o.position.set(x, y, Z1 - 0.04); o.rotation.y = Math.PI; root.add(o); };
+  const southWall = (o: THREE.Object3D, x: number, y: number) => { o.scale.setScalar(1.35); o.position.set(x, y, Z1 - 0.05); o.rotation.y = Math.PI; root.add(o); };
 
   // 1) prime-time slap-kiss drama poster
   southWall(framed(1.1, 1.55, 512, (x, w, h) => {

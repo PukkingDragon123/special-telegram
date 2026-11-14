@@ -6,7 +6,8 @@ import { U } from './mats';
 
 /**
  * ATMOSPHERE — procedural sky dome (gradient, sun disc + corona, fbm clouds, humid horizon haze,
- * stars + textured moon at night), HDRI environment blended by time of day and baked to PMREM,
+ * stars + textured moon at night; at night the low sky and clouds carry Bangkok's warm sodium skyglow and the
+ * hemisphere ground term a warm street-lamp bounce), HDRI environment blended by time of day and baked to PMREM,
  * haze fog, sun / moon directional light with a tight shadow box that follows the camera,
  * hemisphere fill, and post-grade look blending (thaiDay → golden → night).
  */
@@ -162,17 +163,17 @@ interface Key {
 }
 
 const KEYS: Key[] = [
-  { t: 4.0, zenith: 0x060a16, horizon: 0x101a2c, haze: 0x161c28, ground: 0x0b0c10, cloudLit: 0x2a3142, cloudDark: 0x10131b, fog: 0x141822, fogD: 0.0105, hemiSky: 0x1d2640, hemiGround: 0x120f0c, hemiI: 0.16, env: ['night', 'night', 0], envI: 0.32 },
+  { t: 4.0, zenith: 0x070a16, horizon: 0x261e26, haze: 0x2a2228, ground: 0x0d0b0c, cloudLit: 0x4a3a36, cloudDark: 0x17131a, fog: 0x1f1b20, fogD: 0.0105, hemiSky: 0x232a44, hemiGround: 0x22170d, hemiI: 0.19, env: ['night', 'night', 0], envI: 0.32 },
   { t: 5.6, zenith: 0x1c2a4a, horizon: 0x7a6a78, haze: 0x6c6470, ground: 0x2a2624, cloudLit: 0x9a8aa0, cloudDark: 0x3a3a52, fog: 0x5a5866, fogD: 0.0085, hemiSky: 0x52608a, hemiGround: 0x2a221c, hemiI: 0.3, env: ['dusk', 'golden', 0.2], envI: 0.5 },
   { t: 6.6, zenith: 0x4f78a8, horizon: 0xe6b98a, haze: 0xd9b48e, ground: 0x6a5a4a, cloudLit: 0xffd2a0, cloudDark: 0x8a7a8a, fog: 0xcaa888, fogD: 0.0072, hemiSky: 0x9fb0c8, hemiGround: 0x6a5642, hemiI: 0.45, env: ['golden', 'day', 0.3], envI: 0.8 },
   { t: 8.5, zenith: 0x3f74b0, horizon: 0xb8bcb8, haze: 0xb4b2a6, ground: 0x7a7060, cloudLit: 0xf4f0e8, cloudDark: 0x8c929c, fog: 0xaeaca0, fogD: 0.0046, hemiSky: 0xb8c8dc, hemiGround: 0x6a5a48, hemiI: 0.42, env: ['day', 'day', 0], envI: 0.85 },
-  { t: 12.5, zenith: 0x3d70ae, horizon: 0xbcbeb6, haze: 0xb8b4a6, ground: 0x7e7464, cloudLit: 0xf8f6f0, cloudDark: 0x9298a0, fog: 0xb2aea0, fogD: 0.0048, hemiSky: 0xbccbdc, hemiGround: 0x6e604c, hemiI: 0.42, env: ['day', 'day', 0], envI: 0.85 },
+  { t: 12.5, zenith: 0x3d70ae, horizon: 0xbcbeb6, haze: 0xb8b4a6, ground: 0x7e7464, cloudLit: 0xf8f6f0, cloudDark: 0x9298a0, fog: 0xb2aea0, fogD: 0.0048, hemiSky: 0xbccbdc, hemiGround: 0x7c6a52, hemiI: 0.44, env: ['day', 'day', 0], envI: 0.85 },
   { t: 16.0, zenith: 0x3c6aa4, horizon: 0xc8bca0, haze: 0xc0b090, ground: 0x7a6a54, cloudLit: 0xf8ead4, cloudDark: 0x8e8884, fog: 0xb8aa8c, fogD: 0.005, hemiSky: 0xbcc2cc, hemiGround: 0x705c44, hemiI: 0.42, env: ['day', 'golden', 0.35], envI: 0.85 },
   { t: 17.6, zenith: 0x4a6a98, horizon: 0xf0a868, haze: 0xe0a070, ground: 0x6a5240, cloudLit: 0xffbe80, cloudDark: 0x8a6a72, fog: 0xc89670, fogD: 0.0072, hemiSky: 0xb0a8b8, hemiGround: 0x6a5038, hemiI: 0.42, env: ['golden', 'golden', 0], envI: 0.8 },
   { t: 18.4, zenith: 0x2c3e6a, horizon: 0xc0706a, haze: 0x9a6a6c, ground: 0x3a2e2c, cloudLit: 0xe08a78, cloudDark: 0x4a3c50, fog: 0x7a5c62, fogD: 0.0082, hemiSky: 0x6a6a90, hemiGround: 0x3a2c24, hemiI: 0.3, env: ['golden', 'dusk', 0.6], envI: 0.6 },
   { t: 19.2, zenith: 0x121c38, horizon: 0x40384e, haze: 0x3a3444, ground: 0x18161a, cloudLit: 0x4a4258, cloudDark: 0x1c1a26, fog: 0x2c2a36, fogD: 0.0095, hemiSky: 0x2c3454, hemiGround: 0x1c1612, hemiI: 0.2, env: ['dusk', 'night', 0.5], envI: 0.42 },
-  { t: 20.5, zenith: 0x070b18, horizon: 0x1a1c2a, haze: 0x1e1e2a, ground: 0x0e0d10, cloudLit: 0x2e2c38, cloudDark: 0x121218, fog: 0x1a1b24, fogD: 0.0105, hemiSky: 0x1e2640, hemiGround: 0x15110e, hemiI: 0.16, env: ['night', 'night', 0], envI: 0.34 },
-  { t: 24.5, zenith: 0x05080f, horizon: 0x141622, haze: 0x181a24, ground: 0x0b0b0d, cloudLit: 0x26262e, cloudDark: 0x0f0f14, fog: 0x15161e, fogD: 0.011, hemiSky: 0x1a2038, hemiGround: 0x120e0b, hemiI: 0.14, env: ['night', 'night', 0], envI: 0.3 },
+  { t: 20.5, zenith: 0x080b18, horizon: 0x2c2228, haze: 0x2e2428, ground: 0x0f0c0c, cloudLit: 0x523e36, cloudDark: 0x19141a, fog: 0x231d21, fogD: 0.0105, hemiSky: 0x242c46, hemiGround: 0x25180d, hemiI: 0.19, env: ['night', 'night', 0], envI: 0.34 },
+  { t: 24.5, zenith: 0x06090f, horizon: 0x241c22, haze: 0x272024, ground: 0x0c0a0b, cloudLit: 0x463630, cloudDark: 0x151117, fog: 0x1e191d, fogD: 0.011, hemiSky: 0x1f2640, hemiGround: 0x20150c, hemiI: 0.17, env: ['night', 'night', 0], envI: 0.3 },
 ];
 
 const _ca = new THREE.Color(), _cb = new THREE.Color(), _sc = new THREE.Color();

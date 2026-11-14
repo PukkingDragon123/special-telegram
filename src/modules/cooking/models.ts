@@ -72,6 +72,16 @@ export function buildMeatTray(kind: string) {
       m.setPosition((i % 3 - 1) * 0.055 + (r() - 0.5) * 0.01, 0.006 + Math.floor(i / 3) * 0.006, (Math.floor(i / 3) % 2 - 0.5) * 0.04);
     }, 3));
     heap.add(mesh(sl, rawMeatMat(0xffd8d0)));
+  } else if (kind === 'pork_whole') {
+    // one big boneless leg cut: lean block with a fat cap + rind edge (raw, glossy)
+    const lean = gc('porkWholeLean', () => planarUV(mound(0.075, 0.045, { seed: 23, detail: 3, rough: 0.12, squash: [1.25, 0.8], flat: true }), 1 / 0.12));
+    heap.add(mesh(lean, rawMeatMat(0xffe2dc), [0, 0.006, 0]));
+    heap.add(mesh(gc('porkWholeFat', () => planarUV(mound(0.07, 0.014, { seed: 29, detail: 3, rough: 0.08, squash: [1.25, 0.8], flat: true }), 1 / 0.12)), rawMeatMat(0xfff6ea), [0.004, 0.038, -0.004]));
+  } else if (kind === 'chicken_whole') {
+    // two whole skinless breasts side by side (tear-drop mounds, pale pink)
+    const br = gc('chickenBreast', () => planarUV(mound(0.05, 0.026, { seed: 41, detail: 3, rough: 0.1, squash: [1.5, 0.75], flat: true }), 1 / 0.12));
+    heap.add(mesh(br, rawMeatMat(0xfff0ea), [-0.004, 0.006, -0.03], [0, 0.25, 0]));
+    heap.add(mesh(br, rawMeatMat(0xffece6), [0.006, 0.006, 0.03], [0, -0.2, 0]));
   } else if (kind === 'shrimp') {
     // real raw-shrimp pile photo, displaced into a relief (wet, translucent pink-grey)
     heap.add(mesh(reliefGeo('shrimp_raw_pile', 0.18, 0.13, 0.026, 22), reliefMat('shrimp', 'shrimp_raw_pile', foodPhoto('shrimp_raw_pile'), { rough: 0.28, sss: { color: 0xffb8a8, wrap: 0.5, back: 0.5 }, nScale: 1.2 }), [0, 0.005, 0]));

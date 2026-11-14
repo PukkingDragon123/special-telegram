@@ -17,6 +17,7 @@ import { pickKey } from './util';
 import { preloadRealFood } from './realfood';
 import { registerFoodSounds, setJuiceFX } from './juice';
 import { CookCam } from './cookcam';
+import { installButcher } from './butcher';
 
 /* =============================================================================================
  * MODULE: cooking — the food cart, every ingredient / tool / dish item, the cooking simulation,
@@ -89,6 +90,7 @@ export default defineModule({
     game.registerView('cart', cartView(game, fx));
     game.interact.provide(cartProvider(game, heatState), 10);
     game.interact.provide(cookingProvider(game), 11);
+    game.interact.provide(installButcher(game), 12);
     book = new RecipeBook(game);
     new CookCam(game);
     game.events.on('cook:openBook', (id: number) => book?.openBook(id));

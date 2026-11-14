@@ -119,6 +119,63 @@ class SunShaftsEffect extends Effect {
 }
 
 /**
+ * Camera motion blur by reprojection: every pixel's world position (from depth) is projected with LAST frame's
+ * view-projection; the screen-space difference is the motion vector, sampled along both ways. Covers turning AND
+ * moving (parallax-correct). Pixels nearer than 1 m to the camera (first-person viewmodel, camera-attached 3D
+ * cards) are never blurred; the DOM HUD and the 3D hotbar are drawn after post, so they never smear either.
+ * Shutter: blur length = motion during `strength/60` s, so the look is the same at 30, 60 or 144 fps.
+ * Lives in the depth pass after the main pass (shares it with the sun shafts: one depth reader, no feedback loop).
+ */
+const _q4 = new THREE.Quaternion();
+class MotionBlurEffect extends Effect {
+  constructor(samples = 8) {
+    super('MotionBlurEffect', /* glsl */ `
+      uniform mat4 mbProjInv; uniform mat4 mbCamWorld; uniform mat4 mbPrevVP; uniform float mbScale; uniform float mbMax;
+      void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth, out vec4 outputColor) {
+        outputColor = inputColor;
+        if (mbScale <= 0.0) return;
+        vec4 fr = mbProjInv * vec4(uv * 2.0 - 1.0, 1.0, 1.0);
+        vec3 far = fr.xyz / fr.w;
+        float vz = depth >= 0.9999 ? far.z : getViewZ(depth);
+        if (-vz < 1.0) return;                         // viewmodel / camera-attached UI
+        vec3 vp = far * (vz / far.z);
+        vec4 wp = mbCamWorld * vec4(vp, 1.0);
+        vec4 pc = mbPrevVP * wp;
+        if (pc.w <= 0.0) return;
+        vec2 puv = pc.xy / pc.w * 0.5 + 0.5;
+        vec2 vel = (uv - puv) * mbScale;
+        float l = length(vel);
+        if (l < 0.0006) return;
+        vel *= min(1.0, mbMax / l);
+        vec3 acc = inputColor.rgb; float wsum = 1.0;
+        for (int i = 1; i <= MB_SAMPLES; i++) {
+          float t = float(i) / float(MB_SAMPLES) - 0.5 / float(MB_SAMPLES);
+          float w = 1.0 - t * 0.6;
+          vec2 a = clamp(uv - vel * t * 0.5, 0.001, 0.999), b = clamp(uv + vel * t * 0.5, 0.001, 0.999);
+          // don't drag the near viewmodel into the background blur
+          float da = readDepth(a), db = readDepth(b);
+          float wa = -getViewZ(da) < 1.0 ? 0.0 : w, wb = -getViewZ(db) < 1.0 ? 0.0 : w;
+          acc += texture2D(inputBuffer, a).rgb * wa + texture2D(inputBuffer, b).rgb * wb;
+          wsum += wa + wb;
+        }
+        outputColor = vec4(acc / wsum, inputColor.a);
+      }`, {
+      attributes: EffectAttribute.DEPTH | EffectAttribute.CONVOLUTION,
+      blendFunction: BlendFunction.NORMAL,
+      defines: new Map([['MB_SAMPLES', String(samples)]]),
+      uniforms: new Map<string, THREE.Uniform>([
+        ['mbProjInv', new THREE.Uniform(new THREE.Matrix4())],
+        ['mbCamWorld', new THREE.Uniform(new THREE.Matrix4())],
+        ['mbPrevVP', new THREE.Uniform(new THREE.Matrix4())],
+        ['mbScale', new THREE.Uniform(0)],
+        ['mbMax', new THREE.Uniform(0.035)],
+      ]),
+    });
+  }
+  u(name: string) { return this.uniforms.get(name)!; }
+}
+
+/**
  * Film grain whose cell is a fixed fraction of the screen height (1/1080), so it looks the same at 720p, 4K or
  * supersampled — never a fizzing per-pixel noise at high resolutions. Mid-tones only, very subtle.
  */
@@ -288,6 +345,15 @@ export class PostFX {
   private shaftsPass: EffectPass | null = null;
   private mainPass: EffectPass;
   private shaftsOn = true;
+  mblur!: MotionBlurEffect;
+  /** motion blur shutter (0 = off; 0.5 = half-frame at 60 fps). Off at low. ?mblur=<k> overrides. */
+  mblurStrength = 0.5;
+  private mbPrev = new THREE.Matrix4();
+  private mbCur = new THREE.Matrix4();
+  private mbPrevPos = new THREE.Vector3();
+  private mbPrevQ = new THREE.Quaternion();
+  private mbHave = false;
+  private mbOn = false;
   private sunStamp = 0;
   private caPass: EffectPass;
   private smaaPass: EffectPass;
@@ -370,7 +436,8 @@ export class PostFX {
     this.shafts = new SunShaftsEffect(28);
     this.mainPass = this.makeMainPass(camera, true);
     this.composer.addPass(this.mainPass);
-    this.shaftsPass = new EffectPass(camera, this.shafts);
+    this.mblur = new MotionBlurEffect(8);
+    this.shaftsPass = new EffectPass(camera, this.mblur, this.shafts);
     this.composer.addPass(this.shaftsPass);
 
     // subtle: crisp ink lines should not grow colour fringes
@@ -396,7 +463,7 @@ export class PostFX {
    *  off that is an even number of buffer swaps, so they read the buffer that owns the depth attachment and
    *  write the other one (no feedback loop). Any other pass layout → shafts off. (The ink pass never swaps.) */
   private syncShaftsPass() {
-    if (this.shaftsPass) this.shaftsPass.enabled = this.shaftsOn && this.ao.enabled && !this.dofPass.enabled;
+    if (this.shaftsPass) this.shaftsPass.enabled = (this.shaftsOn || this.mbOn) && this.ao.enabled && !this.dofPass.enabled;
   }
 
   /** The final resample/sharpen/impact pass only runs when it has something to do; otherwise SMAA goes to screen. */
@@ -459,6 +526,14 @@ export class PostFX {
     this.bloom.intensity = q === 'low' ? 0.35 : 0.55;
     // shafts/haze: off at low (and with ?noshafts)
     this.shaftsOn = q !== 'low' && !new URLSearchParams(location.search).has('noshafts');
+    {
+      const qp = new URLSearchParams(location.search);
+      const mbq = qp.get('mblur');
+      this.mblurStrength = mbq !== null ? Math.max(0, Number(mbq) || 0) : q === 'low' ? 0 : q === 'medium' ? 0.4 : 0.5;
+      this.mbOn = this.mblurStrength > 0;
+      this.mblur.defines.set('MB_SAMPLES', String(q === 'ultra' ? 12 : q === 'high' ? 10 : 6));
+      (this.mblur as any).setChanged?.();
+    }
     this.syncShaftsPass();
     // ink: creases are the expensive/noisy part → lighter at low; ultra gets the finest SMAA
     this.inkPass.setParams(q === 'low' ? { creaseK: 0.5, jitter: 0.4 } : { creaseK: 0.85, jitter: 0.6 });
@@ -566,13 +641,39 @@ export class PostFX {
   /** internal (render) resolution in pixels */
   get renderSize() { return { w: this.intW, h: this.intH }; }
 
+  /** feed the reprojection matrices; returns the blur scale this frame (0 = nothing to do) */
+  private updateMotionBlur(dt: number): number {
+    const cam = this.camera as THREE.PerspectiveCamera;
+    const u = (n: string) => this.mblur.u(n);
+    if (!this.mbOn || !cam.isPerspectiveCamera || dt <= 0) { u('mbScale').value = 0; this.mbHave = false; return 0; }
+    cam.updateMatrixWorld();
+    this.mbCur.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
+    cam.getWorldPosition(_v);
+    let k = 0;
+    if (this.mbHave) {
+      // cuts / teleports / respawns: no smear across them
+      const jump = _v.distanceTo(this.mbPrevPos) > 2.5 || cam.getWorldQuaternion(_q4).angleTo(this.mbPrevQ) > 0.9;
+      if (!jump) k = Math.min(1, (this.mblurStrength / 60) / Math.max(dt, 1e-3));
+    }
+    u('mbProjInv').value.copy(cam.projectionMatrixInverse);
+    u('mbCamWorld').value.copy(cam.matrixWorld);
+    u('mbPrevVP').value.copy(this.mbHave ? this.mbPrev : this.mbCur);
+    u('mbScale').value = k;
+    this.mbPrev.copy(this.mbCur);
+    this.mbPrevPos.copy(_v);
+    cam.getWorldQuaternion(this.mbPrevQ);
+    this.mbHave = true;
+    return k;
+  }
+
   render(dt: number) {
     // nobody fed the sun recently (menu / other scenes): no shafts or haze
     if (performance.now() - this.sunStamp > 400) { this.shafts.u('shaftK').value = 0; this.shafts.u('hazeK').value = 0; }
     else this.shafts.u('projInv').value.copy((this.camera as THREE.PerspectiveCamera).projectionMatrixInverse);
     // modules toggle ao / dof directly: re-check the buffer-swap parity every frame (and skip the pass when idle)
-    if (this.shaftsPass) this.shaftsPass.enabled = this.shaftsOn && this.ao.enabled && !this.dofPass.enabled
-      && (this.shafts.u('shaftK').value > 0.001 || this.shafts.u('hazeK').value > 0.001);
+    const mbK = this.updateMotionBlur(dt);
+    if (this.shaftsPass) this.shaftsPass.enabled = this.ao.enabled && !this.dofPass.enabled
+      && ((this.shaftsOn && (this.shafts.u('shaftK').value > 0.001 || this.shafts.u('hazeK').value > 0.001)) || mbK > 0);
     // impact frame clock (real time: slow-mo must not stretch the flash)
     if (this.impStart >= 0) {
       const t = performance.now() / 1000 - this.impStart;

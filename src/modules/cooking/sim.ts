@@ -24,7 +24,7 @@ export function canPourInto(srcKind: string, dst: Ent | null | undefined): boole
   if (!dst || dst.t !== 'item') return false;
   const d = ING[srcKind];
   switch (dst.k) {
-    case 'wok': return !!d ? d.into !== 'raw' && d.into !== 'egg' : ['mortar', 'chopping_board', 'bowl', 'plate', 'takeaway_box'].includes(srcKind);
+    case 'wok': return !!d ? d.into !== 'raw' && d.into !== 'egg' && !d.cutOnly : ['mortar', 'chopping_board', 'bowl', 'plate', 'takeaway_box'].includes(srcKind);
     case 'mortar': return !!d?.mortar;
     case 'chopping_board': return !!d?.board;
     case 'bowl': return !!d?.bowl;
@@ -122,6 +122,34 @@ function flare(game: Game, wok: Ent, k: number) {
 
 // ------------------------------------------------------------------ intents
 
+/** HOST: cut progress on a board holding a butcher whole cut. 0 → 1 = sliced (becomes[0]), 1 → 2 = minced (becomes[1]). */
+function advanceCut(game: Game, pl: Ent, b: Ent, s: any, inc: number) {
+  const whole = s.cutKind as string;
+  const def = ING[whole];
+  if (!def?.becomes) { s.cutKind = null; return; }
+  const before = s.cut ?? 0;
+  const after = Math.min(2, before + inc);
+  s.cut = after;
+  s.chop = Math.min(1, after / 2);
+  s.it ??= {};
+  const move = (from: string, to: string) => {
+    const v = s.it[from];
+    if (!v || v.g <= 0) return;
+    const cur = s.it[to] ?? { g: 0 };
+    cur.g += v.g;
+    s.it[to] = cur;
+    delete s.it[from];
+  };
+  if (before < 1 && after >= 1 && def.becomes[0]) { move(whole, def.becomes[0]); game.xp(pl.id, 'prep', 3); game.emit('cook:cutStage', { board: b.id, by: pl.id, stage: 1, kind: def.becomes[0] }); }
+  if (before < 2 && after >= 2 && def.becomes[1]) {
+    move(def.becomes[0] ?? whole, def.becomes[1]);
+    if (def.becomes[0]) move(whole, def.becomes[1]);
+    s.cutKind = null; s.cut = 0; s.chop = 1;
+    game.xp(pl.id, 'prep', 5);
+    game.emit('cook:cutStage', { board: b.id, by: pl.id, stage: 2, kind: def.becomes[1] });
+  }
+}
+
 export function installCookIntents(game: Game) {
   const items = game.items;
   const held = (pl: Ent, id: number | undefined) => { const e = game.state.get(id); return e && e.holder === pl.id ? e : null; };
@@ -139,6 +167,28 @@ export function installCookIntents(game: Game) {
     const act: Act = { a: d.a, src: d.src, dst: d.dst, t: 0, last: now, idle: 0 };
     acts.set(pl.id, act);
     startActFx(game, pl, act, src, dst);
+  });
+
+  // ---- BUTCHER: rinse a whole cut at a tap / wash tub / basin
+  game.onIntent('cook.wash', (pl, d: { id: number }) => {
+    const e = held(pl, d.id);
+    if (!e || !ING[e.k]?.needsWash) return;
+    e.data = { ...(e.data ?? {}), washed: 1 };
+    sfx(game, ['water_splash', 'splash_small', 'water_pour'], entPos(game, e), { vol: 0.7 });
+    game.emit('cook:washed', { by: pl.id, id: e.id });
+  });
+  // ---- BUTCHER: one cleaver hit in rhythm (q = timing quality 0..1, miss = off-beat slip)
+  game.onIntent('cook.chopHit', (pl, d: { board: number; cleaver: number; q: number }) => {
+    const b = game.state.get(d.board);
+    const cl = held(pl, d.cleaver);
+    if (!b || b.k !== 'chopping_board' || !cl || cl.k !== 'cleaver' || !nearPlayer(game, pl, b, 3.2)) return;
+    const s = S(b);
+    if (!s.cutKind) return;
+    const qq = clamp01(+d.q || 0);
+    advanceCut(game, pl, b, s, (0.025 + 0.075 * qq) * game.skillMul(pl, 'chop'));
+    sfx(game, ['knife_chop_board'], entPos(game, b), { vol: 0.6 + qq * 0.4, pitch: 0.9 + qq * 0.25 + Math.random() * 0.08 });
+    pl.anim = 'chop'; pl.animT = game.g.time + Math.random(); pl.animLoop = false;
+    publish(b);
   });
 
   game.onIntent('cook.crack', (pl, d: { egg: number; dst: number }) => {
@@ -470,6 +520,7 @@ function stepAct(game: Game, pl: Ent, a: Act, src: Ent | null | undefined, dst: 
       if (src.k === 'mortar' || src.k === 'chopping_board' || src.k === 'bowl' || src.k === 'plate' || src.k === 'takeaway_box' || src.k === 'wok') { transferContainer(game, pl, a, src, dst, dt); return; }
       const d = ING[src.k];
       if (!d || !canPourInto(src.k, dst)) return;
+      if (d.needsWash && !src.data?.washed) return;
       const have = amountOf(src);
       if (have <= 0.01) return;
       const ramp = Math.min(1, a.t / Math.max(0.05, d.ramp ?? 0.2));
@@ -490,6 +541,7 @@ function stepAct(game: Game, pl: Ent, a: Act, src: Ent | null | undefined, dst: 
           const tot = Object.values<any>(s.it).reduce((x, v) => x + (v?.g ?? 0), 0);
           const pk = dst.k === 'mortar' ? 'pound' : 'chop';
           s[pk] = (s[pk] ?? 0) * (tot / Math.max(0.01, tot + amt));
+          if (d.becomes && dst.k === 'chopping_board') { s.cutKind = src.k; s.cut = Math.min(s.cut ?? 0, 0.999); }
           cur.g += amt;
           s.it[src.k] = cur;
         } else if (dst.k === 'bowl') { s.sa ??= {}; s.sa[src.k] = (s.sa[src.k] ?? 0) + amt; }
@@ -515,6 +567,7 @@ function stepAct(game: Game, pl: Ent, a: Act, src: Ent | null | undefined, dst: 
       const s = S(dst);
       const tot = Object.values<any>(s.it ?? {}).reduce((x, v) => x + (v?.g ?? 0), 0);
       if (tot < 0.5) return;
+      if (s.cutKind) { advanceCut(game, pl, dst, s, dt * 0.12 * skill('chop')); if ((dst._pubT = (dst._pubT ?? 0) + dt) > 0.12) { dst._pubT = 0; publish(dst); } return; }
       const before = s.chop ?? 0;
       s.chop = Math.min(1, before + dt * 0.3 * skill('chop') / (1 + tot / 150));
       if (before < 1 && s.chop >= 1) { game.xp(pl.id, 'prep', 4); sfx(game, ['knife_chop_board'], entPos(game, dst), { vol: 0.9, pitch: 1.2 }); }
