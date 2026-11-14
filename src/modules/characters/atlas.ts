@@ -698,6 +698,7 @@ function baseBottomFabric(P: Painter, b: BottomSpec, rn: string, reg: Region, t0
   switch (b.pattern) {
     case 'denim': P.fabric(rn, reg, 0, t0, 1, t1, lum(col) < 0.12 ? 'denim_black' : 'denim', col, { mode: 'color', ppm }); break;
     case 'denim_light': P.fabric(rn, reg, 0, t0, 1, t1, 'denim_light', col, { mode: 'color', ppm }); break;
+    case 'stand_suit': paintStandSuit(P, rn, reg, t0, t1, col, c2); break;
     case 'plaid': case 'checker': {
       // real woven check photographs (Poly Haven fabric_pattern_07 colourways), recoloured only when needed
       const pc = pickCheck(col, 'check');
@@ -896,6 +897,51 @@ function paintTop(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
       break;
     }
     case 'school': case 'school_girl': break;
+    case 'gakuran': {
+      // high stiff collar, a row of brass buttons, piped cuffs
+      placket(neckF, tH, 5, '#d8b04a');
+      collarBand(neckF - 0.005, neckB - 0.004, shade(col, 0.7), 0.03);
+      P.band(A, armT(0.5), armT(0.52), shade(col, 0.6), 1);
+      for (const t of [armT(0.47), armT(0.49)]) P.dot(A, 0.75, t, 2, '#d8b04a');
+      break;
+    }
+    case 'sailor': {
+      // navy sailor collar: V at the front down to the chest with a red scarf knot, square flap at the back
+      const nav = c2, vb = torsoT(1.24);
+      const g = P.g; g.save(); P.clipRegion(T, 0, 0, 1, 1);
+      g.fillStyle = nav;
+      g.beginPath();
+      const f1 = P.pt(T, 0.5 - 0.13, neckF - 0.03), f2 = P.pt(T, 0.5 + 0.13, neckF - 0.03), f3 = P.pt(T, 0.5, vb);
+      g.moveTo(...f1); g.lineTo(...f2); g.lineTo(...f3); g.closePath(); g.fill();
+      for (const s0 of [0, 0.86]) { const [x, y, w, h] = P.rect(T, s0, 0, s0 + 0.14, torsoT(1.3)); g.fillRect(x, y, w, h); }
+      g.restore();
+      P.fill(T, col, 0.5 - 0.075, neckF - 0.02, 0.5 + 0.075, neckF + 0.01);
+      for (const sd of [-1, 1]) P.line(T, [[0.5 + sd * 0.115, neckF - 0.02], [0.5 + sd * 0.012, vb - 0.03]], '#f4f2ee', 1.6, 0.9);
+      P.blob(T, 0.5, vb - 0.01, 0.035, 0.03, '#c8303a', 1);
+      for (const sd of [-1, 1]) P.line(T, [[0.5, vb], [0.5 + sd * 0.025, vb + 0.07]], '#c8303a', 4, 1);
+      P.band(A, armT(0.27), armT(0.3), nav, 1); P.band(A, armT(0.285), armT(0.29), '#f4f2ee', 1);
+      break;
+    }
+    case 'magical': {
+      // white frills at the neckline and hem, big bow on the chest, star brooch, puff-sleeve trim
+      const fr = c2;
+      for (let i = 0; i < 26; i++) P.dot(T, i / 25, neckF + 0.008, 4.5, fr);
+      for (let i = 0; i < 30; i++) P.dot(T, i / 29, tH - 0.01, 5, fr);
+      const by = torsoT(1.3);
+      P.blob(T, 0.45, by, 0.05, 0.035, '#d8304a', 1); P.blob(T, 0.55, by, 0.05, 0.035, '#d8304a', 1);
+      for (const sd of [-1, 1]) P.line(T, [[0.5, by], [0.5 + sd * 0.03, by + 0.09]], '#d8304a', 5, 1);
+      P.dot(T, 0.5, by, 6, '#f6d36a', '#fff8d0');
+      P.band(A, armT(0.24), armT(0.27), fr, 1);
+      break;
+    }
+    case 'stand_suit': {
+      // cream shoulder plates and a gold skull motif on the belt line and over the heart
+      for (const s0 of [0.18, 0.72]) P.blob(T, s0 + 0.05, torsoT(1.4), 0.1, 0.08, c2, 1);
+      skullMark(P, T, 0.5, torsoT(0.98), 0.03);
+      skullMark(P, T, 0.62, torsoT(1.3), 0.022);
+      P.band(T, torsoT(1.0), torsoT(0.96), '#7a3a56', 1);
+      break;
+    }
     case 'chef': paintChefJacket(P, look, top, col, c2, neckF, tH, se, tSleeve, r); break;
     case 'rider': {
       P.band(T, torsoT(1.24), torsoT(1.21), '#d6d8d4', 1); P.band(A, armT(0.2), armT(0.23), '#d6d8d4', 1);
@@ -983,6 +1029,10 @@ function baseTopFabric(P: Painter, top: TopSpec, rn: string, reg: Region, t0: nu
   const pp = PPM[rn] ?? [500, 500];
   switch (top.pattern) {
     case 'rib': P.fabric(rn, reg, 0, t0, 1, t1, 'rib_knit', col, { contrast: 0.7, rot: 90, scale: 0.7 }); break;
+    case 'gakuran': P.fabric(rn, reg, 0, t0, 1, t1, 'twill_beige', col, { mode: 'color', scale: 0.7 }); P.noise(reg, 0.06, 0, t0, 1, t1); break;
+    case 'sailor': P.fabric(rn, reg, 0, t0, 1, t1, 'poplin', col, { contrast: 0.4 }); break;
+    case 'magical': P.fabric(rn, reg, 0, t0, 1, t1, 'satin', col, { contrast: 0.5 }); break;
+    case 'stand_suit': paintStandSuit(P, rn, reg, t0, t1, col, c2); break;
     case 'jersey': case 'tee_print': case 'gamer': case 'ragged': case 'cute': P.fabric(rn, reg, 0, t0, 1, t1, lum(col) < 0.3 ? 'melange' : 'jersey', col, { contrast: lum(col) < 0.3 ? 0.35 : 0.55 });
       if (top.pattern === 'cute') { const g = P.g; const [x, y, w, h] = P.rect(reg, 0, t0, 1, t1); g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip(); g.fillStyle = 'rgba(255,255,255,0.75)'; const st = 0.035 * pp[0]; for (let yy = y; yy < y + h; yy += st) for (let xx = x + ((yy / st) % 2) * st * 0.5; xx < x + w; xx += st) { g.beginPath(); g.arc(xx, yy, st * 0.12, 0, 7); g.fill(); } g.restore(); }
       break;
@@ -1278,6 +1328,26 @@ function paintAcc(P: Painter, look: Look, spec: BodySpec, skin: string, r: RNG) 
         for (let i = 0; i < 8; i++) P.line(H, [[0.84, 0.5], [0.84 + Math.cos(i * 0.785) * 0.13, 0.5 + Math.sin(i * 0.785) * 0.48]], shade(col, 0.8), 1, 0.45);
         break;
       }
+      case 'cat_ears': {
+        const Bd = R.band;
+        P.fill(Bd, col);
+        P.fabric('band', Bd, 0, 0, 1, 1, 'velvet', col, { contrast: 0.35 });
+        P.blob(Bd, 0.5, 0.55, 0.22, 0.3, lum(col) > 0.5 ? '#f2b8c8' : '#c87a8e', 0.9);   // pink inner ear
+        break;
+      }
+      case 'stand_helm': {
+        // pink helm, cream face plate with dark eye slits, gold skull crest on the forehead; ears pink with cream inside
+        const H = R.hat as Region;
+        P.fill(H, col, 0, 0, 0.66, 1);
+        P.fabric('hat', H, 0, 0, 0.66, 1, 'satin', col, { contrast: 0.35, scale: 0.6 });
+        P.blob(H, 0.33, 0.62, 0.11, 0.33, '#f4ead8', 1);
+        for (const sd of [-1, 1]) P.blob(H, 0.33 + sd * 0.045, 0.5, 0.032, 0.022, '#2a1420', 1);
+        P.line(H, [[0.33 - 0.03, 0.78], [0.33 + 0.03, 0.78]], '#7a3a56', 2, 0.9);
+        skullMark(P, H, 0.33, 0.24, 0.05);
+        for (let i = 0; i < 4; i++) P.line(H, [[i * 0.165, 0], [i * 0.165, 1]], shade(col, 0.72), 1.2, 0.5);
+        P.fill(H, col, 0.68, 0, 1, 1); P.blob(H, 0.84, 0.55, 0.08, 0.3, '#f4ead8', 1);
+        break;
+      }
       case 'skullcap': {
         // fitted chef skull cap: six-panel cotton crown with seams and a turned-up band
         const H = R.hat as Region;
@@ -1518,3 +1588,21 @@ export function accessoryPalette() {
 }
 
 export const _unused = { footT, neckT };
+
+
+/** the stand's pink/cream bodysuit: smooth satin with darker muscle-line seams and cream panels */
+function paintStandSuit(P: Painter, rn: string, reg: Region, t0: number, t1: number, col: string, c2: string) {
+  P.fill(reg, col, 0, t0, 1, t1);
+  P.fabric(rn, reg, 0, t0, 1, t1, 'satin', col, { contrast: 0.3, scale: 0.6 });
+  for (const s0 of [0.12, 0.38, 0.62, 0.88]) P.line(reg, [[s0, t0], [s0 + 0.02, t1]], shade(col, 0.7), 1.6, 0.55);
+  P.band(reg, t0 + (t1 - t0) * 0.45, t0 + (t1 - t0) * 0.5, c2, 0.85, 0.42, 0.58);
+}
+
+/** small gold skull motif */
+function skullMark(P: Painter, reg: Region, s: number, t: number, sz: number) {
+  const gold = '#d9b24a';
+  P.blob(reg, s, t, sz, sz * 0.9, gold, 1);
+  P.blob(reg, s, t + sz * 0.7, sz * 0.6, sz * 0.4, gold, 1);
+  for (const sd of [-1, 1]) P.blob(reg, s + sd * sz * 0.38, t - sz * 0.05, sz * 0.22, sz * 0.22, '#4a2a18', 1);
+  P.blob(reg, s, t + sz * 0.3, sz * 0.1, sz * 0.12, '#4a2a18', 1);
+}

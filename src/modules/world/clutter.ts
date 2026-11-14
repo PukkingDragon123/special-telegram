@@ -475,7 +475,54 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
       const [x, z] = f.at(edge(0.08), 0.24);
       put('jerry_metal', x, z, rf.range(0, 6), { tag: 'metal jerrycans' });
     }
-    if (/repair|hardware|closed|residence/.test(shop) && rf.chance(0.12)) {
+    // ---- round 4: street eateries (a wooden table + chairs or the parasol set, a menu board, a lamp under the awning)
+    if (/eatery|noodle|food|coffee/.test(shop) && f.depth >= 1.0 && rf.chance(0.7)) {
+      const [x, z] = f.at(A(rf.range(0.3, 0.7)), 0.85);
+      if (rf.chance(0.35) && has('eatery_set')) put('eatery_set', x, z, rf.range(0, 6), { tag: 'eatery sets', pad: 0.1 });
+      else if (put(rf.chance(0.5) ? 'wood_table' : 'small_table', x, z, f.out + rf.range(-0.1, 0.1), { tag: 'eatery tables' })) {
+        for (const s2 of [-1, 1]) {
+          const [cx, cz] = f.at(A(rf.range(0.3, 0.7)) + s2 * 0.55, 0.85);
+          put(rf.chance(0.5) ? 'wood_chair_a' : (rf.chance(0.5) ? 'wood_chair_b' : 'metal_stool'), cx, cz, f.out + (s2 > 0 ? -Math.PI / 2 : Math.PI / 2) + rf.range(-0.3, 0.3), { tag: 'eatery chairs' });
+        }
+      }
+      if (rf.chance(0.6)) { const [mx, mz] = f.at(edge(0.05), 0.55); put('menu_board', mx, mz, f.out + rf.range(-0.3, 0.3), { tag: 'menu boards' }); }
+      if (has('hang_lamp') && rf.chance(0.5)) { const [lx, lz] = f.at(A(0.5), 0.6); add('hang_lamp', lx, groundHeight(lx, lz) + 2.75, lz, f.out, { tag: 'hanging lamps' }); }
+    }
+    // ---- repair / hardware fronts: a rusty stove drum, old barrels, wheel rims, a tyre pump, green jerrycans
+    if (/repair|hardware|closed|gas/.test(shop) && rf.chance(0.55)) {
+      const [x, z] = f.at(edge(0.1), 0.45);
+      const pick = rf.int(0, 4);
+      if (pick === 0) put('barrel_old', x, z, rf.range(0, 6), { tag: 'old barrels' });
+      else if (pick === 1) put('wheel_rim', x, z, f.out + Math.PI / 2, { tag: 'wheel rims', rx: -1.3 });
+      else if (pick === 2) put('tire_pump', x, z, rf.range(0, 6), { tag: 'tyre pumps' });
+      else put('jerry_green', x, z, rf.range(0, 6), { tag: 'green jerrycans' });
+    }
+    if (/closed|residence|hardware/.test(shop) && rf.chance(0.12)) {
+      const [x, z] = f.at(edge(0.2), 0.55);
+      put('barrel_stove', x, z, rf.range(0, 6), { tag: 'stove drums' });
+    }
+    if (/grocery|hardware|plastic|kitchen/.test(shop) && f.depth >= 0.8 && rf.chance(0.35)) {
+      const [x, z] = f.at(edge(0.25), 0.32);
+      put('shelves_steel', x, z, f.out + Math.PI, { tag: 'steel shelves', pad: 0.05 });
+    }
+    // ---- walls: a second utility box, green on the residences (shrubs, wooden planters, weeds in the cracks)
+    if (has('utility_box2') && rf.chance(0.25)) {
+      const [x, z] = f.at(A(rf.chance(0.5) ? 0.04 : 0.96), 0.02);
+      add('utility_box2', x, groundHeight(x, z) + 1.4, z, f.out, { tag: 'utility boxes' });
+    }
+    if (resid && rf.chance(0.45)) {
+      const [x, z] = f.at(edge(0.18), 0.3);
+      put(rf.chance(0.5) ? 'shrub' : 'planter_wood', x, z, rf.range(0, 6), { tag: 'shrubs/planters' });
+    }
+    if (rf.chance(0.35)) {
+      const [x, z] = f.at(A(rf.chance(0.5) ? 0.02 : 0.98), 0.08);
+      put('weeds', x, z, rf.range(0, 6), { tag: 'weeds', pad: -0.1, probe: false });
+    }
+    if (/grocery|food|eatery|closed/.test(shop) && rf.chance(0.25)) {
+      const [x, z] = f.at(edge(0.3), 0.3);
+      put('plastic_tub', x, z, rf.range(0, 6), { tag: 'plastic tubs' });
+    }
+    if (/repair|hardware|residence|closed/.test(shop) && rf.chance(0.12)) {
       // a ladder leaning on the facade: its foot ~0.45 m out, top against the wall
       const lean = 0.2;
       const [x, z] = f.at(edge(0.02), 0.45);

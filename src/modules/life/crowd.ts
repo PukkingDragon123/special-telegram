@@ -63,7 +63,7 @@ export class Crowd {
   /** baked real-character impostors: VARIANTS looks × 2 stride frames (replace the capsule figures once ready) */
   private bakedImp: { frames: [THREE.InstancedMesh, THREE.InstancedMesh]; rig: CharacterRig; n: [number, number] }[] = [];
   private bakeTried = false;
-  private bakePending: { rig: CharacterRig; n: number }[] = [];
+  private bakePending: { rig: CharacterRig; n: number; vi: number }[] = [];
   private seed = 1;
   private nearCap = 12;
   private built = false;
@@ -121,7 +121,7 @@ export class Crowd {
     this.group?.removeFromParent();
     this.group = null;
     this.imp = null;
-    for (const b of this.bakedImp) { for (const f of b.frames) f.geometry.dispose(); b.rig.dispose(); }
+    for (const b of this.bakedImp) { if (!b) continue; for (const f of b.frames) f.geometry.dispose(); b.rig.dispose(); }
     this.bakedImp = [];
     for (const p of this.bakePending) p.rig.dispose();
     this.bakePending = [];
@@ -160,7 +160,11 @@ export class Crowd {
     return hweighted(A.map((a) => a[0]), A.map((a) => a[1]), ...n);
   }
 
+  private bakedReady() { let n = 0; for (const b of this.bakedImp) if (b) n++; return n; }
+
   private lookFor(key: string, arch: string, seed: number): Look {
+    // walkers are cast members (same person as their far impostor); set pieces keep their own looks
+    if (key.startsWith('w') && this.ensureVariants()) return this.variants[this.variantOf(arch, seed)].look;
     let L = this.looks.get(key);
     if (!L) {
       L = this.game.chars.randomLook(arch, seed);
@@ -225,24 +229,45 @@ export class Crowd {
    * shapes" at 15-40 m. Bake a handful of REAL character rigs (low LOD, real fabric atlas) into static meshes at two
    * opposite walk-cycle phases and draw them instanced; walkers alternate frames with their stride.
    */
+  /**
+   * The crowd's cast: a fixed list of variant looks (archetype + look), created once. EVERY walker is one of these
+   * people — the far baked impostor and the near real rig use the SAME look, so nobody "changes person" when the
+   * LOD swaps (it used to: impostor = variant look, rig = the walker's own random look).
+   */
+  private variants: { arch: string | undefined; look: Look }[] = [];
+  private ensureVariants() {
+    if (this.variants.length) return true;
+    const chars: any = this.game.chars;
+    if (!chars?.randomLook) return false;
+    const all: string[] = chars.archetypes?.() ?? [];
+    const want = ['office', 'auntie', 'student', 'worker', 'uncle', 'teen', 'grandma', 'vendor', 'tourist', 'rider', 'housewife', 'grandpa'];
+    const archs = [...want.map((w) => all.find((a) => a.includes(w))).filter(Boolean) as string[], ...all].filter((a, i, A) => A.indexOf(a) === i).slice(0, 12);
+    while (archs.length < 6) archs.push(undefined as any);
+    this.variants = archs.map((arch, i) => ({ arch, look: chars.randomLook(arch, 7919 * (i + 3) + this.seed) as Look }));
+    return true;
+  }
+  /** stable variant index for a walker: same archetype when the cast has one, else by seed */
+  private variantOf(arch: string, seed: number) {
+    const V = this.variants;
+    const same: number[] = [];
+    V.forEach((v, i) => { if (v.arch === arch) same.push(i); });
+    const pool = same.length ? same : V.map((_, i) => i);
+    return pool[seed % pool.length];
+  }
   private bakeImpostors() {
     if (this.bakeTried || !this.group) return;
-    this.bakeTried = true;
     const chars: any = this.game.chars;
-    if (!chars?.create) return;
-    const all: string[] = chars.archetypes?.() ?? [];
-    const want = ['office', 'auntie', 'student', 'worker', 'uncle', 'teen', 'grandma', 'vendor', 'tourist', 'rider'];
-    const archs = [...want.map((w) => all.find((a) => a.includes(w))).filter(Boolean) as string[], ...all].filter((a, i, A) => A.indexOf(a) === i).slice(0, 8);
-    while (archs.length < 6) archs.push(undefined as any);
-    for (let i = 0; i < archs.length; i++) {
+    if (!chars?.create || !this.ensureVariants()) return;
+    this.bakeTried = true;
+    this.bakedImp = this.variants.map(() => null as any);
+    this.variants.forEach((v, i) => {
       try {
-        const look = chars.randomLook(archs[i], 7919 * (i + 3) + this.seed);
-        const rig: CharacterRig = chars.create(look, { lod: 'low', castShadow: false });
+        const rig: CharacterRig = chars.create(v.look, { lod: 'low', castShadow: false });
         rig.play('idle' as any, { loop: true });
         rig.setMove(1.25);
-        this.bakePending.push({ rig, n: 0 });
+        this.bakePending.push({ rig, n: 0, vi: i });
       } catch (e) { console.warn('[life] impostor rig failed', e); }
-    }
+    });
   }
 
   /** Bake pending impostor rigs once their animation clips are really playing (clips stream in per body
@@ -279,11 +304,11 @@ export class Crowd {
         this.group!.add(im);
         return im;
       }) as [THREE.InstancedMesh, THREE.InstancedMesh];
-      this.bakedImp.push({ frames, rig: p.rig, n: [0, 0] });
+      this.bakedImp[p.vi] = { frames, rig: p.rig, n: [0, 0] };
       drop();
     }
     // capsules only stay as a fallback until a few real variants are ready
-    if (this.bakedImp.length >= 3 && this.imp) for (const m of [this.imp.body, this.imp.legs, this.imp.head]) m.visible = false;
+    if (this.bakedReady() >= 3 && this.imp) for (const m of [this.imp.body, this.imp.legs, this.imp.head]) m.visible = false;
   }
 
   // ------------------------------------------------------------------ frame
@@ -442,14 +467,15 @@ export class Crowd {
     // ---- impostors for the rest (real baked characters; capsules only as a fallback)
     if (!this.bakeTried && this.game.chars && T > 0.5) this.bakeImpostors();
     this.bakeStep();
-    if (this.bakedImp.length >= 3) {
+    if (this.bakedReady() >= 3) {
       const B = this.bakedImp;
-      for (const b of B) b.n[0] = b.n[1] = 0;
+      for (const b of B) if (b) b.n[0] = b.n[1] = 0;
       for (const w of this.walkers.values()) {
         if (w.gone || this.rigs.has('w' + w.key)) continue;
         const d = w.pos.distanceTo(cam);
         if (d > 130) continue;
-        const b = B[w.seed % B.length];
+        const b = B[this.variantOf(w.arch, w.seed)];
+        if (!b) continue;                          // that person's impostor isn't baked yet: never show someone else
         const stride = Math.floor((T * 1.9 * w.speed + (w.seed % 97) * 0.013) % 2) as 0 | 1;
         const im = b.frames[stride];
         if (b.n[stride] >= im.instanceMatrix.count) continue;
@@ -461,7 +487,7 @@ export class Crowd {
         this._m.compose(this._p.set(w.pos.x, w.pos.y + bob, w.pos.z), this._q, this._s);
         im.setMatrixAt(b.n[stride]++, this._m);
       }
-      for (const b of B) for (let f = 0; f < 2; f++) { const im = b.frames[f]; im.count = b.n[f]; im.instanceMatrix.needsUpdate = true; }
+      for (const b of B) if (b) for (let f = 0; f < 2; f++) { const im = b.frames[f]; im.count = b.n[f]; im.instanceMatrix.needsUpdate = true; }
       return;
     }
     // with real characters available, far walkers simply wait for their baked impostors (never capsules)

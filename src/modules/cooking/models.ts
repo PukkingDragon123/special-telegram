@@ -208,7 +208,7 @@ function bulbGeo(kind: 'onion' | 'lime' | 'tomato' | 'egg' | 'galangal') {
       case 'onion': return lathe([[0.0001, 0], [0.02, 0.004], [0.036, 0.022], [0.037, 0.04], [0.026, 0.06], [0.008, 0.072], [0.003, 0.08]], 12, { wobble: 0.05, freq: 12, seed: 3 });
       case 'lime': return lathe([[0.0001, 0], [0.016, 0.004], [0.024, 0.02], [0.024, 0.032], [0.016, 0.048], [0.003, 0.054]], 10, { wobble: 0.04, freq: 20, seed: 4 });
       case 'tomato': return lathe([[0.0001, 0], [0.02, 0.003], [0.03, 0.018], [0.029, 0.034], [0.018, 0.046], [0.0001, 0.048]], 12, { wobble: 0.07, freq: 14, seed: 5 });
-      case 'egg': return lathe([[0.0001, 0], [0.012, 0.002], [0.02, 0.012], [0.022, 0.026], [0.019, 0.042], [0.011, 0.054], [0.0001, 0.058]], 12, { wobble: 0.01, freq: 9, seed: 6 });
+      case 'egg': return eggGeo().clone();
       default: return dent(new THREE.CapsuleGeometry(0.012, 0.05, 3, 6).rotateZ(Math.PI / 2).translate(0, 0.012, 0), 0.004, 40, 7);
     }
   });

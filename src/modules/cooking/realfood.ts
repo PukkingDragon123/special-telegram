@@ -323,17 +323,21 @@ export function chiliBits(key: string, n: number, rad: number, seed = 5) {
 // ------------------------------------------------------------------ eggs
 
 export function eggGeo() {
-  return gc('egg3d', () => {
-    const prof: [number, number][] = [];
-    const N = 10;
+  // a real hen's egg (~5.5 × 4.3 cm): round blunt base, narrower ROUNDED top — not the pointy-both-ends
+  // "lemon" the old sine profile made. θ runs bottom → top; the (1 + k·cosθ) term moves the widest
+  // point toward the blunt end, and the ends stay spherical caps (y is quadratic in θ there).
+  return gc('egg3d:v2', () => {
+    const L = 0.055, R = 0.0215, K = 0.12;
+    const prof: THREE.Vector2[] = [];
+    const N = 24;
     for (let i = 0; i <= N; i++) {
-      const t = i / N; // bottom (blunt) → top (pointy)
-      const y = t * 0.057;
-      const s = Math.sin(Math.PI * t);
-      const r = 0.0215 * Math.pow(s, 0.85) * (1 - 0.13 * t) + (i === 0 || i === N ? 0 : 0.0004);
-      prof.push([Math.max(0.0001, r), y]);
+      const th = (i / N) * Math.PI;
+      const c = Math.cos(th);
+      const r = R * Math.sin(th) * (1 + K * c);
+      const y = (L / 2) * (1 - c) - (L / 2) * K * 0.35 * Math.sin(th) * Math.sin(th);
+      prof.push(new THREE.Vector2(Math.max(0.00005, r), Math.max(0, y)));
     }
-    const g = new THREE.LatheGeometry(prof.map(([r, y]) => new THREE.Vector2(r, y)), 16);
+    const g = new THREE.LatheGeometry(prof, 24);
     g.computeVertexNormals();
     return g;
   });
@@ -343,7 +347,7 @@ export function eggGeo() {
 export function eggGeoLying() {
   return gc('egg3dLying', () => {
     const g = eggGeo().clone();
-    g.translate(0, -0.0285, 0);
+    g.translate(0, -0.0275, 0);
     g.rotateZ(Math.PI / 2 + 0.08);
     g.computeBoundingBox();
     g.translate(0, -g.boundingBox!.min.y, 0);
@@ -352,10 +356,11 @@ export function eggGeoLying() {
 }
 
 export function eggShellMat(variant = 0) {
-  const tints = [0xfff4ec, 0xffeee2, 0xf2e6dc];
-  return cachedMat('eggShell3d:' + (variant % 3), () => withSSS(new THREE.MeshStandardMaterial({
-    map: RT.shell(), normalMap: RT.shellN(), roughness: 0.55, color: tints[variant % 3],
-  }), { color: 0xffc89a, wrap: 0.35, back: 0.25 }));
+  // Thai market eggs: mostly light-brown shells, some cream; matte-satin (not waxy) with a faint speckle
+  const tints = [0xe9c9a4, 0xdcb48c, 0xf3e6d4];
+  return cachedMat('eggShell3d:v2:' + (variant % 3), () => withSSS(new THREE.MeshStandardMaterial({
+    map: RT.shell(), normalMap: RT.shellN(), normalScale: new THREE.Vector2(0.35, 0.35), roughness: 0.68, color: tints[variant % 3],
+  }), { color: 0xffd8b8, wrap: 0.25, back: 0.12 }));
 }
 
 // ------------------------------------------------------------------ ไข่ดาว (fried egg)
