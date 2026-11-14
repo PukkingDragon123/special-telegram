@@ -9,6 +9,7 @@ import { buildShape } from './items';
 import { libModel, libInstanced } from '../world/lib';
 import { rbox, tube, lathe, packRow, tagRail } from './kit';
 import { drinkRow, drinksMaterial, type DrinkKind } from './drinks';
+import { shrineShelf } from './shrine-shelf';
 import { packCell, packMaterial } from './packs';
 import { realPropObject } from '../world/realprops';
 import { PileBatch } from '../world/realprops-market';
@@ -467,17 +468,8 @@ function shopRoom(game: Game, B: Batch, root: THREE.Object3D, fr: Frame, sid: st
   const clock = libModel('wall_clock'); clock.position.copy(fr.at(sw.off - halfW + 0.03, 2.35, zFront + 2.2)); clock.rotation.y = fr.yaw + Math.PI / 2; root.add(clock);
   B.add(plane(0.36, 0.5), calendarMat(), fr, sw.off + halfW - 0.025, 1.55, zFront + 2.0, -Math.PI / 2);
   const shX = sw.off + halfW - 0.4, shZ = zBack - 0.22, shY = 2.15;
-  const red = pbr('wood_painted_weathered', 0xb81c1c, 0xb81c1c);
-  B.add(rbox(0.62, 0.03, 0.32, 0.008, 1), red, fr, shX, shY, shZ);
-  B.add(rbox(0.62, 0.32, 0.02, 0.006, 1), red, fr, shX, shY, shZ + 0.15);
-  for (const dx of [-0.29, 0.29]) B.add(rbox(0.03, 0.32, 0.32, 0.006, 1), red, fr, shX + dx, shY, shZ);
-  B.add(rbox(0.66, 0.035, 0.34, 0.008, 1), pbr('metal_painted_chipped', 0xd8a838, 0xd8a838), fr, shX, shY + 0.32, shZ);
-  const cat = libModel('lucky_cat_gold'); cat.position.copy(fr.at(shX, shY + 0.03, shZ + 0.02)); cat.rotation.y = fr.yaw; root.add(cat);
-  for (const dx of [-0.2, 0.2]) {
-    B.add(new THREE.CylinderGeometry(0.012, 0.012, 0.09, 8).translate(0, 0.045, 0), flat(0xc8141a, 0.5), fr, shX + dx, shY + 0.03, shZ - 0.05);
-    B.add(new THREE.SphereGeometry(0.008, 6, 4).scale(1, 1.8, 1).translate(0, 0.105, 0), glow(0xffb040, 3), fr, shX + dx, shY + 0.03, shZ - 0.05);
-  }
-  B.add(new THREE.TorusGeometry(0.07, 0.016, 6, 16).rotateX(Math.PI / 2), mat('garland-orange', () => new THREE.MeshStandardMaterial({ color: 0xf0a020, roughness: 0.7 })), fr, shX - 0.12, shY + 0.045, shZ + 0.02);
+  // a proper หิ้งบูชา (stepped red-lacquer altar shelf, carved gold apron, lotus lamps, garland — shrine-shelf.ts)
+  { const shrine = shrineShelf(); shrine.position.copy(fr.at(shX, shY, shZ + 0.16)); shrine.rotation.y = fr.yaw; root.add(shrine); }   // local +z (front) faces the counter
   const sp = (game.world as any)?.addLightPoint?.(fr.at(shX, shY + 0.2, shZ - 0.15), 0xff9a40, 1.2, 1.6, 0.12);
   if (sp) sp.day = 0.6;
 }

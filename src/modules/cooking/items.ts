@@ -462,18 +462,27 @@ function boardMeat(top: THREE.Object3D, k: string, g: number, d: any, i: number)
     }
     return;
   }
-  if (k === 'pork_sliced' && cut < 1.35) {
-    // a fan of thin slices; as mincing starts they get chopped smaller and pile up
-    const n = 9;
-    const t = Math.max(0, (cut - 1) / 0.35);
+  if (k === 'pork_sliced' && cut < 1.999) {
+    // a loose spread of slices over the board; as the mincing goes on they get smaller and a mince mound grows
+    const t = Math.max(0, Math.min(1, cut - 1));
+    const n = Math.round(8 + 12 * Math.min(1.2, amt));
     const sl = mg('sliceThin', () => planarUV(rbox(0.06, 0.006, 0.04, 0.002, 1), 1 / 0.08));
-    for (let j = 0; j < n; j++) {
+    let seed = 7;
+    const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    for (let j = 0; j < n * (1 - t * 0.7); j++) {
       const m = new THREE.Mesh(sl, mat);
-      const a = (j / n) * 0.9 - 0.45;
-      m.position.set(Math.sin(a) * 0.05 * (1 - t), 0.006 + j * 0.003, Math.cos(a) * 0.02 - 0.01 + off);
-      m.rotation.set(0.05, a + j * 0.4 * t, 0);
-      m.scale.setScalar(1 - t * 0.45);
+      const a = r() * Math.PI * 2, rr = Math.sqrt(r()) * 0.075 * Math.min(1.2, amt) * (1 - t * 0.5);
+      m.position.set(Math.cos(a) * rr, 0.004 + r() * 0.012 + j * 0.0006, Math.sin(a) * rr * 0.75 + off);
+      m.rotation.set((r() - 0.5) * 0.3, r() * 6.28, (r() - 0.5) * 0.3);
+      m.scale.setScalar((0.8 + r() * 0.3) * (1 - t * 0.6));
       top.add(m);
+    }
+    if (t > 0.35) {
+      const mm = new THREE.Mesh(mg('minceBoard', () => planarUV(mound(0.06, 0.024, { seed: 17, detail: 3, rough: 0.3, squash: [1.25, 0.85], flat: false }), 1 / 0.12)), mat);
+      const q = (t - 0.35) / 0.65;
+      mm.position.set(0, 0.003, off);
+      mm.scale.set(q * amt, q * amt * 0.9, q * amt);
+      top.add(mm);
     }
     return;
   }

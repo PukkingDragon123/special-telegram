@@ -72,24 +72,10 @@ function headOf(game: Game, id: number): THREE.Vector3 | null {
 /** the crowd walker (client-local, life/crowd.ts) right in front of the player, if any */
 function walkerInFront(game: Game, yaw: number): any | null {
   const crowd: any = (game as any).life?.crowd;
-  const walkers: Map<string, any> | undefined = crowd?.walkers;
   const me = game.player;
-  if (!walkers || !me) return null;
-  _o.copy(me.pos);
+  if (!crowd?.find || !me) return null;
   _d.set(-Math.sin(yaw), 0, -Math.cos(yaw));
-  let best: any = null, bd = 1e9;
-  for (const w of walkers.values()) {
-    if (w.gone || !w.pos || w.pos.lengthSq() === 0) continue;
-    const dx = w.pos.x - _o.x, dz = w.pos.z - _o.z, d = Math.hypot(dx, dz);
-    if (d > 1.8 || d < 0.05) continue;
-    if ((dx * _d.x + dz * _d.z) / d < 0.45) continue;
-    if (d < bd) { bd = d; best = w; }
-  }
-  if (!best) return null;
-  let look: any = null;
-  try { look = crowd.lookFor?.('w' + best.key, best.arch, best.seed) ?? null; } catch { look = null; }
-  if (!look) return null;
-  return { key: best.key, p: [best.pos.x, best.pos.y, best.pos.z], yaw: best.yaw ?? 0, arch: best.arch, look };
+  return crowd.find(me.pos, 1.8, _d, 0.45);
 }
 
 function canPunch(game: Game) {
@@ -155,8 +141,7 @@ export default defineModule({
       if (d.fine > 0) (game as any).hud?.toast?.({ th: `ค่าหมอ −${d.fine} ฿`, en: 'hospital fee' }, { kind: 'bad', dur: 3 });
     });
     game.on('combat:takeover', (d: { key: string }) => {
-      const w = (game as any).life?.crowd?.walkers?.get?.(d.key);
-      if (w) w.gone = true;
+      (game as any).life?.crowd?.takeOver?.(d.key);
     });
     game.events.on('world:exit', () => { fx?.clear(); downLocal = false; for (const pr of props.values()) pr.obj.removeFromParent(); props.clear(); });
   },

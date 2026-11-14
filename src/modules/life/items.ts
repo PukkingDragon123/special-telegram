@@ -56,7 +56,7 @@ let garlandGeo: { buds: THREE.BufferGeometry; petals: THREE.BufferGeometry; ribb
  * three bands of red rose petals / orange marigold, and a tassel at the front: a rose bud of layered petal
  * cones over a short bud strand and two folded green ribbon tails. Built once (vertex colours, 3 draw calls).
  */
-function garlandModel(): THREE.Group {
+export function garlandModel(): THREE.Group {
   if (!garlandGeo) {
     const R = 0.072, tubeR = 0.017;
     const bud = new THREE.SphereGeometry(1, 6, 4).scale(0.0055, 0.011, 0.0055);

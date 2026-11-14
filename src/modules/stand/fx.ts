@@ -100,7 +100,7 @@ export class SmokeSuck {
   target = new THREE.Vector3();
   update(dt: number) {
     if (this.active) {
-      this.acc += dt * 26;
+      this.acc += dt * 18;
       while (this.acc >= 1) {
         this.acc -= 1;
         PUFF ??= puffTexture();
@@ -119,7 +119,7 @@ export class SmokeSuck {
       const e = k * k;                       // accelerates into the wok
       p.s.position.lerpVectors(p.from, this.target, e);
       p.s.scale.setScalar(Math.max(0.05, (1 - e) * 0.9));
-      (p.s.material as THREE.SpriteMaterial).opacity = Math.sin(k * Math.PI) * 0.7;
+      (p.s.material as THREE.SpriteMaterial).opacity = Math.sin(k * Math.PI) * 0.45;
     }
     this.puffs = this.puffs.filter((p) => { if (p.t < p.life) return true; p.s.removeFromParent(); (p.s.material as THREE.Material).dispose(); return false; });
   }

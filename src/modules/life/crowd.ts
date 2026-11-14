@@ -316,6 +316,31 @@ export class Crowd {
     if (this.bakedReady() >= 3 && this.imp) for (const m of [this.imp.body, this.imp.legs, this.imp.head]) m.visible = false;
   }
 
+  // ------------------------------------------------------------------ public hooks (combat / scripted scenes)
+
+  /** the walker nearest `p` within `r` (optionally inside a forward cone around `dir`), with its exact look */
+  find(p: THREE.Vector3, r: number, dir?: THREE.Vector3, cone = 0.45): { key: string; p: [number, number, number]; yaw: number; arch: string; look: Look } | null {
+    let best: Walker | null = null, bd = Infinity;
+    for (const w of this.walkers.values()) {
+      if (w.gone || w.pos.lengthSq() === 0) continue;
+      const dx = w.pos.x - p.x, dz = w.pos.z - p.z, d = Math.hypot(dx, dz);
+      if (d > r || d < 0.05) continue;
+      if (dir && (dx * dir.x + dz * dir.z) / d < cone) continue;
+      if (d < bd) { bd = d; best = w; }
+    }
+    if (!best) return null;
+    return { key: best.key, p: [best.pos.x, best.pos.y, best.pos.z], yaw: best.yaw, arch: best.arch, look: this.lookFor('w' + best.key, best.arch, best.seed) };
+  }
+  /** take a walker out of the ambient crowd (an entity takes its place); returns its data or null */
+  takeOver(key: string) {
+    const w = this.walkers.get(key);
+    if (!w || w.gone) return null;
+    w.gone = true;
+    return { key, p: [w.pos.x, w.pos.y, w.pos.z] as [number, number, number], yaw: w.yaw, arch: w.arch, look: this.lookFor('w' + w.key, w.arch, w.seed) };
+  }
+  /** give a taken-over walker back to the crowd (it resumes its schedule) */
+  release(key: string) { const w = this.walkers.get(key); if (w) { w.gone = false; w.stuck = 0; } }
+
   // ------------------------------------------------------------------ obstacle avoidance
 
   /** positions of near walkers from the previous frame (separation) */

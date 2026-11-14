@@ -7,6 +7,7 @@ import { Input } from '../../core/input';
 import { params, tl, type TL } from '../../core/util';
 import { standLook } from '../characters/defs';
 import { Menace, ScreenFX } from '../intro/casino-cine';
+import { G } from '../../sim/physics';
 import { RewindOverlay, SmokeSuck, Aura } from './fx';
 
 /* ============================================================================================
@@ -104,8 +105,10 @@ class StandHost {
     if (!A.restored && A.t > RESTORE_AT) {
       A.restored = true;
       const w = game.state.get(A.go.wok);
-      if (w && A.snap) {
-        w.data = JSON.parse(A.snap);
+      if (w) {
+        // the snapshot from before the burn; if the history doesn't reach back far enough, un-burn the current pan
+        const snapData = A.snap ? JSON.parse(A.snap) : null;
+        w.data = snapData && this.maxBurn(snapData) < BURN_AT * 0.6 ? snapData : unburn(w.data);
         delete (w as any)._s; delete (w as any)._pub;
         this.prevB.set(w.id, this.maxBurn(w.data));
       }
@@ -328,11 +331,12 @@ class StandShow {
       const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(yawQ);   // the direction the user faces
       const side = new THREE.Vector3(1, 0, 0).applyQuaternion(yawQ);
       let p: THREE.Vector3, look: THREE.Vector3;
+      const shotNo = t < 3.0 ? 0 : t < 3.45 ? 1 : t < 5.9 ? 2 : 3;
+      if (shotNo !== this.shotNo) { this.shotNo = shotNo; this.shotDir = null; }
       if (t < 3.0) {
-        // low hero angle on the user with the stand towering behind, slow push-in
-        const d = 2.8 - t * 0.22;
-        p = head.clone().addScaledVector(fwd, d).addScaledVector(side, 0.6).add(new THREE.Vector3(0, -0.7, 0));
-        look = head.clone().add(new THREE.Vector3(0, 0.35, 0));
+        // slightly low hero angle on the user with the stand towering behind, slow push-in (clear line of sight)
+        look = head.clone().add(new THREE.Vector3(0, 0.3, 0));
+        p = this.clearShot(look, fwd.clone().addScaledVector(side, 0.35).setY(0).normalize(), 3.0 - t * 0.2, -0.45);
       } else if (t < 3.45) {
         // snap close-up on the stand's hand pressing the switch
         const hand = this.rig ? this.rig.attach('hand_r').getWorldPosition(new THREE.Vector3()) : head;
@@ -342,12 +346,12 @@ class StandShow {
         // over the wok: smoke sucked back in, slow orbit
         const w = this.wokPos();
         const a = (t - 3.45) * 0.35;
-        p = w.clone().add(new THREE.Vector3(Math.cos(a) * 1.0, 0.85, Math.sin(a) * 1.0));
         look = w.clone().add(new THREE.Vector3(0, 0.05, 0));
+        p = this.clearShot(look, new THREE.Vector3(Math.cos(a), 0, Math.sin(a)), 1.0, 0.85);
       } else {
         // wide back on the user, then hand back
-        p = head.clone().addScaledVector(fwd, 3.0).add(new THREE.Vector3(0, 0.2, 0));
         look = head;
+        p = this.clearShot(look, fwd, 3.0, 0.2);
       }
       if (t > 3.0 && t < 3.08) this.shake = 0.06;
       this.shake *= Math.exp(-raw * 9);
@@ -358,6 +362,31 @@ class StandShow {
     if (t >= DUR) this.finish();
   }
   private shake = 0;
+  private shotNo = -1;
+  private shotDir: THREE.Vector3 | null = null;
+
+  /** camera position looking at `target` from about `dist` m, preferring `pref` (horizontal), picking the
+   *  direction with the clearest line of sight (static geometry / vehicles / carts don't block the shot) */
+  private clearShot(target: THREE.Vector3, pref: THREE.Vector3, dist: number, lift: number): THREE.Vector3 {
+    const phys = this.game.physics;
+    if (!this.shotDir) {
+      let best = pref.clone(), bestD = -1;
+      for (const a of [0, 0.5, -0.5, 1.0, -1.0, 1.6, -1.6, 2.4, -2.4]) {
+        const d = pref.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), a).normalize();
+        const dir = d.clone().multiplyScalar(dist).add(new THREE.Vector3(0, lift, 0));
+        const len = dir.length(); dir.normalize();
+        const h = phys?.raycast(target, dir, len + 0.3, G.STATIC | G.VEHICLE | G.ITEM);
+        const free = h ? h.toi : len + 0.3;
+        const score = Math.min(free, len) - Math.abs(a) * 0.15;
+        if (score > bestD) { bestD = score; best = d; }
+      }
+      this.shotDir = best;
+    }
+    const dir = this.shotDir.clone().multiplyScalar(dist).add(new THREE.Vector3(0, lift, 0));
+    const len = dir.length(); dir.normalize();
+    const h = phys?.raycast(target, dir, len, G.STATIC | G.VEHICLE | G.ITEM);
+    return target.clone().addScaledVector(dir, Math.max(0.6, (h ? h.toi - 0.25 : len)));
+  }
 
   private finish(silent = false) {
     const R = this.run;
@@ -376,6 +405,17 @@ class StandShow {
 }
 
 // ------------------------------------------------------------------ helpers
+
+/** the wok's contents as if they had never burnt: burn levels back to a light toast, pan off the smoke point */
+function unburn(d: any): any {
+  const o = JSON.parse(JSON.stringify(d ?? {}));
+  for (const v of Object.values<any>(o.it ?? {})) if (v) v.b = Math.min(v.b ?? 0, 0.12);
+  if (o.egg) o.egg.b = Math.min(o.egg.b ?? 0, 0.12);
+  if (o.om) o.om.b = Math.min(o.om.b ?? 0, 0.12);
+  if (typeof o.T === 'number') o.T = Math.min(o.T, 185);
+  o.sm = 0; o.ob = 0;
+  return o;
+}
 
 function pick<T>(a: T[]): T { return a[Math.floor(Math.random() * a.length)]; }
 

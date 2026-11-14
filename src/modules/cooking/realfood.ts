@@ -357,7 +357,7 @@ export function eggGeoLying() {
 
 export function eggShellMat(variant = 0) {
   // Thai market eggs: mostly light-brown shells, some cream; matte-satin (not waxy) with a faint speckle
-  const tints = [0xe9c9a4, 0xdcb48c, 0xf3e6d4];
+  const tints = [0xf6e4d0, 0xecd2b4, 0xfbf3ea];
   return cachedMat('eggShell3d:v2:' + (variant % 3), () => withSSS(new THREE.MeshStandardMaterial({
     map: RT.shell(), normalMap: RT.shellN(), normalScale: new THREE.Vector2(0.35, 0.35), roughness: 0.68, color: tints[variant % 3],
   }), { color: 0xffd8b8, wrap: 0.25, back: 0.12 }));
