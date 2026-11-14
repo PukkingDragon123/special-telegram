@@ -398,7 +398,7 @@ export class Game {
     if (v < 0 && (pl.wallet ?? 0) + v < 0) return false;
     pl.wallet = (pl.wallet ?? 0) + v;
     const at = popupAt ?? (pl.p ? [pl.p[0], pl.p[1] + 1.9, pl.p[2]] : null);
-    if (at && v !== 0) this.popup(at, `${v > 0 ? '+' : '−'}${Math.abs(v)} ฿`, { font: '"K2D"', size: 60, weight: 800, color: v > 0 ? '#ffe27a' : '#ff8a6a', stroke: '#2a1a08', strokeWidth: 7 });
+    if (at && v !== 0) this.popup(at, `${v > 0 ? '+' : '−'}${Math.abs(v)} ฿`, { font: '"K2D"', size: 60, weight: 800, color: v > 0 ? '#8fe39a' : '#ff8a6a', stroke: '#2a1a08', strokeWidth: 7 });
     if (v !== 0) this.sfx(v > 0 ? 'coins_handful' : 'coin_clink', pl.p, { vol: 0.7 });
     this.events.emit('money', { player: playerId, delta: v, reason, wallet: pl.wallet });
     return true;
@@ -436,7 +436,7 @@ export function installCoreEvents(game: Game) {
     const rig = (game.views.of(d.id).find((v: any) => v.rig) as any)?.rig ?? null;
     if (obj) {
       const h = (obj.userData.headHeight as number) ?? 1.9;
-      game.ui.say(() => obj.localToWorld(new THREE.Vector3(0, h, 0)), d.text, { ...d.o, speaker: rig } as any);
+      game.ui.say(() => obj.localToWorld(new THREE.Vector3(0, h, 0)), d.text, { ...d.o, speaker: rig, name: (e as any)?.name ?? undefined } as any);
     } else if (e?.p) {
       game.ui.say(new THREE.Vector3(e.p[0], e.p[1] + 1.9, e.p[2]), d.text, { ...d.o, speaker: rig } as any);
     }
