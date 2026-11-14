@@ -149,10 +149,16 @@ export class CombatHost {
     this.addHeat(by, isCb ? 1 : 0.5);
     if (!isCb) {
       // gameplay npcs (shopkeepers, customers, the old man …): flinch + swear, nothing else
+      // flinch, swear, then give the npc back to its own module exactly as it was (anim/loop/expression)
+      const prev = { anim: e.anim, loop: e.animLoop, expr: e.expr };
       this.anim(e, 'get_slapped');
       e.expr = 'angry';
       this.game.say(e.id, cl('flinch'), { style: 'shout', duration: 2 });
-      setTimeout(() => { if (this.game.state.get(e.id)) { e.expr = null; this.anim(e, 'angry'); } }, 900);
+      setTimeout(() => {
+        if (!this.game.state.get(e.id)) return;
+        e.expr = prev.expr ?? null;
+        if (prev.anim) this.anim(e, prev.anim, !!prev.loop); else this.anim(e, 'idle', true);
+      }, 1500);
       this.witnesses(e, by);
       return;
     }

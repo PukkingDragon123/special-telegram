@@ -431,6 +431,8 @@ export default defineModule({
     (game as any).stand = {
       /** HOST: rewind the first wok now (debug / tests) */
       test: () => { if (game.isHost) host?.test(); else game.intent('stand.test', {}); },
+      /** seconds into the running sequence on this peer (-1 = none) */
+      t: () => (show as any)?.run?.t ?? -1,
     };
     if (params.has('standtest')) game.events.on('scene:entered', (n: string) => { if (n === 'world') setTimeout(() => game.isHost && host?.test(), 4000); });
   },

@@ -107,7 +107,7 @@ export class CookCam {
     }
     const k = this.k * this.k * (3 - 2 * this.k);
     // dolly along the view axis toward the work surface: stop ~0.6 m short of it (closer for boards)
-    const stopAt = this.target?.k === 'wok' ? 0.6 : this.target?.k === 'chopping_board' || this.target?.k === 'mortar' ? 0.5 : 0.62;
+    const stopAt = this.target?.k === 'wok' ? 0.8 : this.target?.k === 'chopping_board' || this.target?.k === 'mortar' ? 0.5 : 0.62;
     this.dist += (stopAt - this.dist) * damp(6, dt);
     const along = Math.max(0, _to.copy(this.smoothPt).sub(_eye).dot(_fwd) - this.dist);
     _p.copy(_eye).addScaledVector(_fwd, along);
@@ -117,7 +117,7 @@ export class CookCam {
     if (this.shake > 0.001) { _p.y -= this.shake * 0.011 * k; _p.addScaledVector(_fwd, this.shake * 0.008 * k); this.shake *= Math.exp(-dt * 16); }
     // first person: blend from the eye camera; third person: from the shoulder camera to the eye line
     cam.position.lerp(_p, k);
-    const fov = cam.fov + (44 - cam.fov) * k;
+    const fov = cam.fov + (50 - cam.fov) * k;
     if (Math.abs(cam.fov - fov) > 0.01) { cam.fov = fov; cam.updateProjectionMatrix(); }
     // third person aims through this camera once it is mostly on the eye line
     return pl.view === 'tp' ? k > 0.5 : false;

@@ -664,8 +664,10 @@ export class Rig implements CharacterRig {
     if (sh) { const hs = r.hs ?? (r.hs = new Float32Array(HS_N * 2)); hs.set(sh, k * HS_N); } else r.hs = null;
   }
   private reachT: ({ p: THREE.Vector3; w: number; hs: Float32Array | null } | null)[] = [null, null];
+  private reachLean = [0, 0];
   private applyReach() {
     if (!this.reachT[0] && !this.reachT[1]) return;
+    this.reachLean[0] = this.reachLean[1] = 0;
     this.inner.updateWorldMatrix(true, false);
     const inv = _m4r.copy(this.inner.matrixWorld).invert();
     for (let k = 0; k < 2; k++) {
@@ -676,6 +678,31 @@ export class Rig implements CharacterRig {
       if (ia === undefined || ib === undefined || ic === undefined) continue;
       const tgt = _wR.copy(r.p).applyMatrix4(inv);
       tgt.lerpVectors(this.Fp[ic], tgt, r.w);
+      // out of arm's reach: lean the upper body toward the target first (spine chain), like a person reaching
+      const reach = (this.Fp[ia].distanceTo(this.Fp[ib]) + this.Fp[ib].distanceTo(this.Fp[ic])) * 0.94;
+      const sp = I.spine_01, pv = I.pelvis;
+      if (sp !== undefined && pv !== undefined) {
+        for (let it = 0; it < 3; it++) {
+          const deficit = this.Fp[ia].distanceTo(tgt) - reach;
+          if (deficit <= 0.005) break;
+          // rotate the spine about the axis that swings the shoulder toward the target, around the lower spine
+          const piv = this.Fp[sp];
+          _w1.copy(this.Fp[ia]).sub(piv); _w2.copy(tgt).sub(piv);
+          const ax = _w3.crossVectors(_w1, _w2);
+          if (ax.lengthSq() < 1e-8) break;
+          ax.normalize();
+          const ang = Math.min(0.32, deficit / Math.max(0.25, _w1.length())) * r.w;
+          if ((this.reachLean[k] += ang) > 1.05) break;
+          for (const [bn, f] of [['spine_01', 0.4], ['spine_02', 0.35], ['spine_03', 0.25]] as const) {
+            const bi = I[bn]; if (bi === undefined) continue;
+            const pa = this.t.parent[bi];
+            _qa.setFromAxisAngle(ax, ang * f);
+            _qb.copy(this.Fq[pa]).multiply(this.bones[bi].quaternion).premultiply(_qa);
+            this.bones[bi].quaternion.copy(_q.copy(this.Fq[pa]).invert().multiply(_qb));
+            this.fk();
+          }
+        }
+      }
       this.solve2(ia, ib, ic, tgt);
       this.fk();
       if (r.hs && this.near) this.applyFingers(r.hs, k === 0 ? r.w : 0, k === 1 ? r.w : 0);

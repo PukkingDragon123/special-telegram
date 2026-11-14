@@ -34,6 +34,8 @@ export class ViewHands {
   private flick = 1;
   private lastHeld: number | null = null;
   private last = { r: new THREE.Matrix4(), l: new THREE.Matrix4(), two: false };
+  /** forearm direction (toward the elbow, view-model space) + roll — exposed for tuning */
+  tune = { x: 0.3, y: -0.8, z: 0.5, roll: -0.6 };
   private _bb = new THREE.Box3();
   private _bt = new THREE.Box3();
 
@@ -175,8 +177,8 @@ export class ViewHands {
         this.place(this.bakes.l!, gl, new THREE.Vector3(-0.35, -0.55, 0.75), -1.2, this.last.l);
       } else {
         // wrap the right side of the item, a little below its middle
-        const gr = new THREE.Vector3(bb.max.x - Math.min(0.025, sz.x * 0.25), lowY, c.z + sz.z * 0.15);
-        this.place(this.bakes.r!, gr, new THREE.Vector3(0.45, -0.5, 0.72), -0.9, this.last.r);
+        const gr = new THREE.Vector3(bb.max.x - Math.min(0.05, sz.x * 0.3), bb.min.y + Math.min(0.06, sz.y * 0.25), c.z + sz.z * 0.2);
+        this.place(this.bakes.r!, gr, new THREE.Vector3(this.tune.x, this.tune.y, this.tune.z), this.tune.roll, this.last.r);
       }
       this.last.two = two;
       this.meshR.matrix.copy(this.last.r);
