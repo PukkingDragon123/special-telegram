@@ -128,13 +128,16 @@ function drawIndex(c: CanvasRenderingContext2D, unlocked: string[], seed: number
   const r = mulberry(seed);
   paper(c, seed);
   scrawl(c, 'สารบัญ (มั้ง)', 90, 70, 40, r, { font: F.scrawl });
-  let y = 140;
+  // the notebook grew: short list = one roomy column, long list = two cramped columns of page numbers
+  const n = RECIPE_IDS.length, two = n > 11, per = two ? Math.ceil(n / 2) : n;
+  const dy = Math.min(46, (PH - 230) / per), fs = two ? 17 : 26;
   RECIPE_IDS.forEach((id, i) => {
     const R = RECIPES[id];
     const ok = unlocked.includes(id);
-    if (ok) scrawl(c, `${i + 1}. ${R.name.th} ........ หน้า ${i + 1}`, 82, y, 26, r);
-    else { scrawl(c, `${i + 1}. ??? ........`, 82, y, 26, r, { color: PENCIL }); scribbleOut(c, 112, y - 22, 170, 26, r); }
-    y += 46;
+    const x = two ? (i < per ? 40 : 268) : 82, y = 140 + (i % per) * dy;
+    const nm = two && R.name.th.length > 13 ? R.name.th.slice(0, 12) + '…' : R.name.th;
+    if (ok) scrawl(c, two ? `${i + 1}. ${nm} ..${i + 1}` : `${i + 1}. ${R.name.th} ........ หน้า ${i + 1}`, x, y, fs, r);
+    else { scrawl(c, `${i + 1}. ??? ........`, x, y, fs, r, { color: PENCIL }); scribbleOut(c, x + 30, y - fs + 4, two ? 120 : 170, fs, r); }
   });
   scrawl(c, '* ทำทีละจาน อย่าใจร้อน', 90, PH - 60, 24, r, { color: RED });
 }

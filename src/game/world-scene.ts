@@ -241,11 +241,14 @@ export function installWorldScene(game: Game) {
   // PRELOAD: while the casino cutscene plays (session + seed are fixed by then), build the world behind it so the
   // cut to gameplay is instant. ?nostage disables it.
   if (!new URLSearchParams(location.search).has('nostage')) {
-    game.events.on('scene:entered', (name: string) => {
-      if (name !== 'casino') return;
-      setTimeout(() => { if (game.scenes.currentName === 'casino' && !game.scene) game.scenes.prestage('world'); }, 1200);
-    });
-    // a new session (host/join/leave) invalidates a staged world (new State, new seed)
-    game.events.on('net:session', () => game.scenes.dropStaged());
+    // start once the session (and so the world seed) is known and the player sits in the menu / casino cutscene
+    const maybeStage = (delay: number) => setTimeout(() => {
+      const n = game.scenes.currentName;
+      if ((n === 'menu' || n === 'casino') && !game.scene && game.localPlayerId >= 0) game.scenes.prestage('world');
+    }, delay);
+    game.events.on('scene:entered', (name: string) => { if (name === 'casino') maybeStage(1200); else if (name === 'menu') maybeStage(4000); });
+    // a new session (host / join / leave) invalidates a staged world (new State, new seed) → rebuild for the new one
+    game.events.on('net:session', () => { game.scenes.dropStaged(); maybeStage(5000); });
+    game.events.on('net:welcome', () => maybeStage(3000));
   }
 }
