@@ -350,15 +350,11 @@ export class LocalPlayer {
       if (this.pitch < -0.96) this.pitch = -0.96;   // first-person look-down limit (also after views/cutscenes set pitch)
       const bobY = Math.abs(Math.sin(this.bobT)) * 0.045 * this.bob;
       const bobX = Math.cos(this.bobT) * 0.025 * this.bob;
-      // eyes of the actual body (stable chest-based FK, so it matches crouch/lean/height), else the capsule estimate
-      const eyeFK = rig?.eyeWorld?.(this._eye, true) as THREE.Vector3 | undefined;
-      if (eyeFK && isFinite(eyeFK.y) && Math.abs(eyeFK.y - (this.pos.y + this.eye)) < 0.5 && Math.hypot(eyeFK.x - this.pos.x, eyeFK.z - this.pos.z) < 0.6) {
-        // vertical from FK (smoothed), horizontal from the capsule so mouse look never wobbles
-        this.eyeY += (eyeFK.y - this.eyeY) * (snap || !this.eyeY ? 1 : damp(14, dt));
-        cam.position.set(this.pos.x, this.eyeY + bobY * 0.6 - this.landDip, this.pos.z);
-      } else {
-        cam.position.set(this.pos.x, this.pos.y + this.eye + bobY - 0.02 - this.landDip, this.pos.z);
-      }
+      // steady eye height from the capsule (NOT the animated skeleton: the walk lean / hip drop made the view bounce
+      // 15 cm and sink ~40 cm while walking). Smoothed so kerbs/steps don't jolt the view; a small classic head bob.
+      const eyeTarget = this.pos.y + this.eye - 0.02;
+      this.eyeY = snap || !this.eyeY ? eyeTarget : this.eyeY + (eyeTarget - this.eyeY) * damp(16, dt);
+      cam.position.set(this.pos.x, this.eyeY + bobY * 0.6 - this.landDip, this.pos.z);
       cam.position.addScaledVector(right, bobX);
       // a little in front of the eyes, along the view, so the (head-less) body never fills the view when looking down
       const fwdX = -Math.sin(this.yaw) * Math.cos(this.pitch), fwdZ = -Math.cos(this.yaw) * Math.cos(this.pitch);
