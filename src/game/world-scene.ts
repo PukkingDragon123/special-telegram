@@ -91,7 +91,10 @@ export class WorldScene implements SceneDef {
     marks.buildWorld = Math.round(performance.now() - tw);
     if (!game.world) game.world = buildStubWorld(game);
     if (background) {
-      // programs + texture uploads for the post-process target, behind the cutscene (compileAsync = no stall)
+      // entity views (NPC rigs, items…) get built a few ms per frame by the game loop (views.prepareStep) …
+      game.views.prepare(this.scene);
+      while (!game.views.prepareStep(0)) await breathe();
+      // … then programs + texture uploads for the post-process target, behind the cutscene (compileAsync = no stall)
       await breathe();
       await prewarmShaders(game.engine.renderer, this.scene, this.camera, 20000, true);
     }

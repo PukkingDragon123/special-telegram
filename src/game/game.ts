@@ -360,7 +360,8 @@ export class Game {
       if (this.prof) this.profAdd(m.id, t);
     }
     let t = this.prof ? performance.now() : 0;
-    this.views.update(dt);
+    // background world build: build entity views a few ms at a time instead of updating them
+    if (this.staging) this.views.prepareStep(3); else this.views.update(dt);
     if (this.prof) { this.profAdd('views', t); t = performance.now(); }
     this.ui.update(rawDt);
     if (this.prof) { this.profAdd('ui', t); this.prof.frames++; }

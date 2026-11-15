@@ -70,9 +70,35 @@ export class ViewManager {
   }
 
   activate(scene: THREE.Scene) {
-    scene.add(this.root);
+    if (this.root.parent !== scene) scene.add(this.root);
     this.active = true;
+    this.pending = null;
     for (const e of this.state.ents.values()) if (!this.views.has(e.id)) this.create(e);
+  }
+
+  /** entities whose views are still to be built by prepareStep (background world build) */
+  private pending: number[] | null = null;
+  /**
+   * Background world build: hook the views into the (not yet shown) scene and build them a few at a time
+   * (prepareStep) so a cutscene / menu keeps running; activate() later only finishes whatever is left.
+   * New spawns meanwhile get their view right away (active = true); update() is skipped by the game loop.
+   */
+  prepare(scene: THREE.Scene) {
+    if (this.root.parent !== scene) scene.add(this.root);
+    this.active = true;
+    this.pending = [...this.state.ents.keys()];
+  }
+  /** build pending views for up to `budgetMs`; true when nothing is left */
+  prepareStep(budgetMs = 3): boolean {
+    if (!this.pending) return true;
+    const t0 = performance.now();
+    while (this.pending.length && performance.now() - t0 < budgetMs) {
+      const id = this.pending.pop()!;
+      const e = this.state.get(id);
+      if (e && !this.views.has(id)) this.create(e);
+    }
+    if (!this.pending.length) this.pending = null;
+    return !this.pending;
   }
 
   deactivate() {
