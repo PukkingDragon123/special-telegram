@@ -11,6 +11,7 @@ import * as THREE from 'three';
  * ========================================================================================== */
 
 const _m = new THREE.Matrix4();
+const lodOff = typeof location !== 'undefined' && new URLSearchParams(location.search).get('perfab') === '0';
 const _p = new THREE.Vector3();
 const _s = new THREE.Sphere();
 const _c = new THREE.Color();
@@ -47,7 +48,33 @@ export function splitByGrid(im: THREE.InstancedMesh, cell = 12): THREE.Instanced
   return out;
 }
 
-interface Entry { obj: THREE.Object3D; max: number; sphere: THREE.Sphere | null }
+interface Entry {
+  obj: THREE.Object3D; max: number; sphere: THREE.Sphere | null;
+  /** automatic far LOD for small instanced items: [full geometry, proxy geometry] (proxy built on first need) */
+  lod?: { full: THREE.BufferGeometry; proxy: THREE.BufferGeometry | null; near: boolean } | null;
+}
+
+/**
+ * Far LOD for many small repeats (fruit in piles, tins, bowls…): a 450-triangle lime 10 m away is a few pixels, but
+ * a market of them was > 1 M triangles per frame (plus their shadow pass). Beyond LOD_NEAR the InstancedMesh swaps
+ * to a 48-triangle ellipsoid fitted to the item's bounds, with the same material (the texture's average colour
+ * reads right at that size). One proxy per source geometry, shared.
+ */
+const LOD_NEAR = 9;
+const LOD_MIN_TRIS = 160;
+const proxies = new WeakMap<THREE.BufferGeometry, THREE.BufferGeometry>();
+function triCount(g: THREE.BufferGeometry) { return (g.index ? g.index.count : g.getAttribute('position')?.count ?? 0) / 3; }
+function proxyOf(g: THREE.BufferGeometry): THREE.BufferGeometry {
+  let p = proxies.get(g);
+  if (p) return p;
+  if (!g.boundingBox) g.computeBoundingBox();
+  const b = g.boundingBox!, c = b.getCenter(new THREE.Vector3()), sz = b.getSize(new THREE.Vector3());
+  p = new THREE.SphereGeometry(0.5, 8, 4);
+  p.scale(Math.max(1e-3, sz.x), Math.max(1e-3, sz.y), Math.max(1e-3, sz.z)).translate(c.x, c.y, c.z);
+  p.computeBoundingSphere();
+  proxies.set(g, p);
+  return p;
+}
 
 class DetailCuller {
   private list: Entry[] = [];
@@ -56,7 +83,17 @@ class DetailCuller {
   /** quality scale for the distances (low quality pulls them in) */
   scale = 1;
 
-  add(obj: THREE.Object3D, maxDist: number) { this.list.push({ obj, max: maxDist, sphere: null }); }
+  add(obj: THREE.Object3D, maxDist: number) {
+    const im: any = obj;
+    let lod: Entry['lod'] = null;
+    // small repeated items only (≥ 160 tris each, ≤ 0.6 m): instanced meshes with plenty of copies
+    if (im.isInstancedMesh && im.count >= 6 && !lodOff) {
+      const g = im.geometry as THREE.BufferGeometry;
+      if (!g.boundingSphere) g.computeBoundingSphere();
+      if (triCount(g) >= LOD_MIN_TRIS && g.boundingSphere!.radius * 2 <= 0.6) lod = { full: g, proxy: null, near: true };
+    }
+    this.list.push({ obj, max: maxDist, sphere: null, lod });
+  }
   remove(obj: THREE.Object3D) { this.list = this.list.filter((e) => e.obj !== obj); }
   clear() { this.list = []; }
 
@@ -87,6 +124,18 @@ class DetailCuller {
       if (!s) continue;
       const d = _p.distanceTo(s.center) - s.radius;
       e.obj.visible = d < e.max * this.scale;
+      if (e.lod && e.obj.visible) {
+        const near = d < LOD_NEAR * this.scale;
+        if (near !== e.lod.near) {
+          e.lod.near = near;
+          const m = e.obj as THREE.InstancedMesh;
+          if (!near) e.lod.proxy ??= proxyOf(e.lod.full);
+          m.geometry = near ? e.lod.full : e.lod.proxy!;
+          // far proxies don't need to cast shadows (they were tiny anyway)
+          if (m.userData.castShadow0 === undefined) m.userData.castShadow0 = m.castShadow;
+          m.castShadow = near ? m.userData.castShadow0 : false;
+        }
+      }
     }
   }
 }

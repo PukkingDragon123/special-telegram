@@ -109,7 +109,12 @@ export default defineModule({
   frame(game: Game, dt: number) {
     if (!life || !life.built || !game.scene) return;
     life.clock.frame(dt);
-    const safe = (n: string, f: () => void) => { try { f(); } catch (e) { console.error('[life] ' + n, e); } };
+    const prof = (game as any).prof as { ms: Record<string, number> } | null;
+    const safe = (n: string, f: () => void) => {
+      const t = prof ? performance.now() : 0;
+      try { f(); } catch (e) { console.error('[life] ' + n, e); }
+      if (prof) prof.ms['life.' + n] = (prof.ms['life.' + n] ?? 0) + performance.now() - t;
+    };
     safe('crowd', () => life!.crowd.frame(dt));
     safe('traffic', () => life!.traffic.frame(dt));
     safe('ghosts', () => life!.ghosts.frame(dt));

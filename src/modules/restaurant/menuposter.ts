@@ -187,7 +187,7 @@ function drawSpecial(game: Game) {
   if (tex2) tex2.needsUpdate = true;
 }
 
-function specialTexture(game: Game) {
+export function specialTexture(game: Game) {
   if (!tex2) { tex2 = canvasTexture(cv2); drawSpecial(game); lastSig2 = menuSig(game); }
   const sig = menuSig(game);
   if (sig !== lastSig2) { lastSig2 = sig; drawSpecial(game); }
