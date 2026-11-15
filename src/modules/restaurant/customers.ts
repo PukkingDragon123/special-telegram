@@ -4,9 +4,9 @@ import type { Ent } from '../../sim/state';
 import type { DishData } from '../../game/contracts';
 import { TL, clamp, dist2D, round, tl } from '../../core/util';
 import { yawTo } from '../../game/mapplan';
-import { archDef, archetypePool, weighted, pick, recipeInfo, isRaining } from './data';
+import { archDef, archetypePool, weighted, pick, recipeInfo, isRaining, ORDER_NAME } from './data';
 import { L, X, MAD, pickL, fillL, stars as starStr, Line } from './lines';
-import { makeOrder, orderSpeech, orderShort, judge, menuRecipes, menuPrice, Order, reviewBubble, JudgeCtx, SPICY_RECIPES } from './judge';
+import { makeOrder, orderSpeech, orderShort, judge, menuRecipes, menuPrice, Order, reviewBubble, JudgeCtx, SPICY_RECIPES, menuDesserts } from './judge';
 import { SEAT_KINDS, TABLE_KINDS, SEAT_H, TABLE_H, TABLE_SIZE, SODA_KINDS } from './furniture';
 import { addReview, stats } from './stats';
 import { serviceFrame, restMods, isInside, rs, setRS, staffNearby } from './premises';
@@ -166,7 +166,8 @@ export function maxCustomers() { return Math.min(12 + restMods().capacity, 4 + f
 export function spawnCustomer(o: { arch?: string; at?: number[]; state?: CS; order?: Order } = {}): Ent | null {
   const cf = serviceFrame();
   const zone = cf.zone;
-  const arch = o.arch ?? weighted(archetypePool(zone?.kind, G.clock.time));
+  const premium = menuRecipes(G).filter((r) => menuPrice(G, r) >= 150 && recipeInfo(G, r).group !== 'dessert').length;
+  const arch = o.arch ?? weighted(archetypePool(zone?.kind, G.clock.time, premium));
   let at = o.at;
   if (!at) {
     const base = V(cf.p);
@@ -385,7 +386,8 @@ export function serve(pl: Ent, c: Ent, it: Ent): boolean {
   G.npcs.stop(c);
   // where does the plate go?
   if (c.spot && c.seat != null) {
-    G.items.toWorld(it, c.spot, [0, 0, 0], (c.yaw ?? 0));
+    const s = c.spot, yaw = c.yaw ?? 0, k = c._sweetDone ? -0.2 : 0;   // the dessert goes beside the finished plate
+    G.items.toWorld(it, k ? [s[0] + Math.cos(yaw) * k, s[1], s[2] - Math.sin(yaw) * k] : s, [0, 0, 0], yaw);
   } else {
     G.items.detach(it);
     it.holder = c.id;
@@ -477,8 +479,44 @@ function eatTick(c: Ent, dt: number, t: number) {
   if (t >= c._eatT) {
     if (Math.random() < 0.04 && !c._madUsed) { startMad(c, 'customer_wants_free_refill'); return; }
     if ((d.portion ?? 0) > 200 || Math.random() < 0.15) G.sfx('burp', c.p, { vol: 0.6 });
+    if (tryDessert(c, d)) return;
     payAndGo(c, false);
   }
+}
+
+/** sweet-tooth weight per archetype for the after-meal dessert order */
+const SWEET_TOOTH: Record<string, number> = { student_f: 1.6, student_m: 1.2, office_worker_f: 1.4, shop_girl: 1.4, teen_gamer: 1.3, old_lady: 1.3, tourist_backpacker: 1.5, housewife: 1.1, construction_worker: 0.5, moto_taxi: 0.6, gangster_lite: 0.6, delivery_rider: 0.3 };
+
+/**
+ * HOST: after the main course a seated customer may stay for dessert (if the menu has any): they pay + review
+ * the main now, then order a dessert from where they sit; the dessert is served, eaten and paid like a dish.
+ */
+function tryDessert(c: Ent, d: DishData): boolean {
+  if (c._sweetDone || c.seat == null || !G.g.shopOpen || c._half) return false;
+  if (recipeInfo(G, c.ord?.r ?? d.recipe).group === 'dessert') return false;
+  const ds = menuDesserts(G);
+  if (!ds.length) return false;
+  const p = clamp((0.16 + 0.3 * (d.taste ?? 0.5)) * (SWEET_TOOTH[c.arch] ?? 1), 0, 0.7);
+  if (Math.random() > p) return false;
+  c._sweetDone = true;
+  settle(c, false);
+  const a = archDef(c.arch);
+  const r = weighted(ds.map((x) => [x, a.likes?.[x] ?? 1] as [string, number]));
+  const o: Order = { r, req: [], drink: null };
+  c._dish = null; c._drink = null; c._servedAt = undefined; c._waited = 0; c._madLate = false;
+  c._pat = Math.max(c._pat ?? 60, 50);
+  c._order = o; c.ord = o;
+  setCS(c, 'wait');
+  c.posture = 'sit'; anim(c, 'sit', true);
+  stats().orders = (stats().orders ?? 0) + 1;
+  const nm = pick(ORDER_NAME[r] ?? [recipeInfo(G, r).name.th]);
+  setTimeout(() => {
+    if (!G.state.get(c.id) || c.cs !== 'wait') return;
+    anim(c, 'wave');
+    say(c, pick([tl(`ขอ${nm}ต่ออีกที่นะ`, `and a ${recipeInfo(G, r).name.en ?? nm} please`), tl(`ของหวานมีอะไร… เอา${nm}ครับ`, `dessert… ${recipeInfo(G, r).name.en ?? nm}!`), tl(`อิ่มแล้วแต่ของหวานแยกกระเพาะ ขอ${nm}`, `full, but dessert has its own stomach: ${recipeInfo(G, r).name.en ?? nm}`)]), { duration: 4.5 });
+    G.sfx('khob_khun', c.p, { vol: 0.4 });
+  }, 4200);
+  return true;
 }
 
 // ------------------------------------------------------------------ judge, pay, mess, leave
@@ -492,6 +530,19 @@ function ctxOf(c: Ent): JudgeCtx {
 }
 
 function payAndGo(c: Ent, takeaway: boolean) {
+  const v = settle(c, takeaway);
+  const good = v.stars >= 4;
+  setTimeout(() => {
+    if (!G.state.get(c.id)) return;
+    leave(c, good ? pickL(X.leaveGood) : v.stars <= 2 ? pickL(X.leaveBad) : null);
+    if (good) G.sfx('im_laew', c.p, { vol: 0.4 });
+  }, takeaway ? 2200 : 3800);
+  setCS(c, 'leave');
+  c._t = -5;
+}
+
+/** judge + pay + review + leave the mess (the customer stays where they are) */
+function settle(c: Ent, takeaway: boolean) {
   const it = G.state.get(c._dish);
   const d: DishData = it?.data ?? { recipe: c.ord?.r ?? 'kaphrao_moo', taste: 0.5, issues: [] } as any;
   const v = judge(G, c, d, c.ord ?? { r: d.recipe, req: [] }, ctxOf(c));
@@ -512,7 +563,7 @@ function payAndGo(c: Ent, takeaway: boolean) {
   }
   addReview(c, v, d.recipe, v.pay + v.tip, false);
   // a real restaurant: count the (paying) customers who ate inside (grand-opening quest, stats)
-  if (v.pay > 0 && c.seat != null && isInside(c.p!)) setRS(G, { servedInside: rs(G).servedInside + 1 });
+  if (v.pay > 0 && c.seat != null && isInside(c.p!) && !c._counted) { c._counted = true; setRS(G, { servedInside: rs(G).servedInside + 1 }); }
   // honest review bubble + floating star slip (all peers)
   G.emit('rest:review', { cid: c.id, stars: v.stars, th: v.review.th, en: v.review.en, pay: v.pay, tip: v.tip });
   const line = reviewBubble(v);
@@ -539,14 +590,7 @@ function payAndGo(c: Ent, takeaway: boolean) {
       G.items.spawn('trash_tissue', [s[0] + (Math.random() - 0.5) * 0.25, s[1] + 0.05, s[2] + (Math.random() - 0.5) * 0.2], { vel: [0, 0.4, 0] });
     }
   }
-  const good = v.stars >= 4;
-  setTimeout(() => {
-    if (!G.state.get(c.id)) return;
-    leave(c, good ? pickL(X.leaveGood) : v.stars <= 2 ? pickL(X.leaveBad) : null);
-    if (good) G.sfx('im_laew', c.p, { vol: 0.4 });
-  }, takeaway ? 2200 : 3800);
-  setCS(c, 'leave');
-  c._t = -5;
+  return v;
 }
 
 /** Eaten dish on the table → dirty plate (cooking module helper) right there. */

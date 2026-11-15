@@ -2,7 +2,7 @@ import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import type { DishData } from '../../game/contracts';
 import { tl, TL, clamp } from '../../core/util';
-import { archDef, recipeInfo, ORDER_NAME, pick, weighted, particle, DEFAULT_EXTRAS } from './data';
+import { archDef, recipeInfo, ORDER_NAME, pick, weighted, particle, DEFAULT_EXTRAS, richness } from './data';
 import { L, X, pickL, fillL, stars as starStr, Line } from './lines';
 
 /* =============================================================================================
@@ -14,7 +14,9 @@ import { L, X, pickL, fillL, stars as starStr, Line } from './lines';
 export type Req = 'egg' | 'egg_runny' | 'egg_crispy' | 'no_egg' | 'mild' | 'hot' | 'special' | 'takeaway';
 export interface Order { r: string | null; any?: boolean; req: Req[]; drink?: 'water' | 'ice' | 'soda' | null }
 
-export const SPICY_RECIPES = ['kaphrao_moo', 'phat_phrik_kaeng', 'tom_yam', 'phat_phak_bung', 'khao_phat'];
+export const SPICY_RECIPES = ['kaphrao_moo', 'phat_phrik_kaeng', 'tom_yam', 'phat_phak_bung', 'khao_phat', 'kaphrao_talay', 'kaphrao_wagyu', 'tom_yam_nam_khon', 'yam_salmon', 'pla_neung_manao'];
+/** dessert recipes on the menu (ordered after the main course, rarely instead of one) */
+export const menuDesserts = (game: Game) => menuRecipes(game).filter((r) => recipeInfo(game, r).group === 'dessert');
 
 /** Enabled menu recipes (g.menu minus extras). */
 export function menuRecipes(game: Game): string[] {
@@ -28,10 +30,15 @@ export function makeOrder(game: Game, c: Ent, o: { drinks: { water: boolean; sod
   if (!menu.length) return null;
   const a = archDef(c.arch);
   const pf = c._pf ?? 1;
+  const mains = menu.filter((r) => recipeInfo(game, r).group !== 'dessert');
   const w: [string, number][] = menu.map((r) => {
-    const exp = recipeInfo(game, r).price * pf * a.budget;
+    const info = recipeInfo(game, r);
+    const exp = info.price * pf * a.budget;
     const attract = clamp(Math.pow(exp / Math.max(5, menuPrice(game, r)), 1.6), 0.25, 2.2);
-    return [r, (a.likes?.[r] ?? 1) * attract];
+    // an expensive plate is ordered by the people who can afford it; a dessert as the main order is rare
+    const wallet = menuPrice(game, r) >= 150 ? richness(c.arch) : 1;
+    const sweet = info.group === 'dessert' && mains.length ? 0.12 : 1;
+    return [r, (a.likes?.[r] ?? 1) * attract * wallet * sweet];
   });
   const any = Math.random() < 0.07;
   const r = weighted(w);
@@ -117,6 +124,9 @@ export function judge(game: Game, c: Ent, d: DishData, o: Order, j: JudgeCtx): V
   else if (!wantHot && !wantMild && iss('too_spicy')) bad('too_spicy', 0.5, pickL(L.bad.too_spicy));
   else if (wantHot && (d.spicy ?? 0) > 0.55) good('hot_ok', 0.25);
   for (const k of ['soggy_basil', 'no_basil', 'too_oily', 'dry', 'cold', 'no_rice', 'watery', 'smoky', 'mushy_rice', 'hard_rice', 'unchopped', 'not_flipped', 'soggy_veg']) if (iss(k)) bad(k, k === 'no_rice' ? 0.8 : k === 'cold' ? 0.35 : 0.2, pickL(X.issue[k]));
+  // seafood / dessert problems (cooking/recipes.ts issue codes)
+  if (iss('raw_seafood')) bad('raw_seafood', 1.2, pickL(X.issue.raw_seafood));
+  for (const k of ['rubbery_squid', 'melted', 'warm_dessert']) if (iss(k)) bad(k, k === 'rubbery_squid' ? 0.3 : 0.45, pickL(X.issue[k]));
   if (iss('small_portion')) bad('portion', 0.4, pickL(L.bad.portion));
   if (iss('huge_portion') || (o.req.includes('special') && (d.portion ?? 0) > 200)) good('portion', 0.3, pickL(L.good.portion));
   else if (o.req.includes('special') && (d.portion ?? 0) < 170) bad('special_small', 0.4, pickL(L.ok.portion));

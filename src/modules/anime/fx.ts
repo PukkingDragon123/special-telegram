@@ -1,6 +1,19 @@
 import * as THREE from 'three';
 import { text3d, Text3D } from '../../ui3d/text3d';
 import { addInkHull, setInk } from '../../core/ink';
+import { Sound } from '../../core/audio';
+import { sfxTexture, SfxStyle } from '../memes/lettering';
+
+/** tiny anime cue sounds (plip / pop) — globally rate-limited so crowds don't spam */
+let cueAt = 0;
+function cue(key: string, anchor: () => THREE.Vector3 | null) {
+  const now = performance.now();
+  if (now - cueAt < 1200 || !Sound.has(key)) return;
+  const p = anchor();
+  if (!p) return;
+  cueAt = now;
+  Sound.play(key, { pos: p, vol: 0.6, max: 14, bus: 'meme' });
+}
 
 /* =============================================================================================
  * Goofy anime effects — real 3D objects in the world (inked by the screen-space pass / hulls),
@@ -237,6 +250,7 @@ function dropAssets() {
 
 /** big anime sweat drop beside a head. `anchor()` returns the head-top world point (null = owner gone). */
 export function sweatDrop(anchor: () => THREE.Vector3 | null, size = 0.085, side = 1): Fx {
+  cue('anime_plip', anchor);
   const A = dropAssets();
   const g = new THREE.Group();
   const m = new THREE.Mesh(A.dropGeo, A.dropMat);
@@ -311,6 +325,7 @@ function veinAssets() {
 }
 
 export function angerVein(anchor: () => THREE.Vector3 | null, size = 0.075, dur = 1.8): Fx {
+  cue('anime_pop', anchor);
   const A = veinAssets();
   const g = new THREE.Group();
   const m = new THREE.Mesh(A.veinGeo, A.veinMat);
@@ -367,29 +382,35 @@ export function popMark(anchor: () => THREE.Vector3 | null, mark: '!' | '?' | '!
 // ------------------------------------------------------------------ comic sound words
 
 export function soundWord(at: THREE.Vector3, word: string, color: THREE.ColorRepresentation = '#fff07a', size = 0.22, dur = 1.0): Fx {
-  const t3: Text3D = text3d(word, { font: 'talk', size, depth: 0.32, bevel: 0.05, color, side: '#3a0f04', emissive: 0.3, roughness: 0.35, castShadow: false, keyLight: 0.65, anim: { pop: 0.18, spin: 0.4, rise: 0.2 } });
+  // printed-manga lettering sprite (memes/lettering) instead of glowing 3D text; colour hint picks the ink
+  const c = new THREE.Color(color as any);
+  const hsl = { h: 0, s: 0, l: 0 }; c.getHSL(hsl);
+  const thai = /[\u0E00-\u0E7F]/.test(word);
+  const style: SfxStyle = thai ? 'thai' : hsl.s < 0.2 ? 'white' : hsl.h < 0.06 || hsl.h > 0.92 ? 'blood' : hsl.h < 0.2 ? 'impact' : hsl.h < 0.55 ? 'ice' : hsl.h < 0.8 ? 'menace' : 'pop';
+  const tex = sfxTexture(word, style, 160);
+  const img: any = tex.image;
+  const asp = img ? img.width / img.height : 2;
+  const mat = new THREE.SpriteMaterial({ map: tex, color: 0xececec, transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false });
+  const sp = new THREE.Sprite(mat);
+  sp.renderOrder = 25;
   const g = new THREE.Group();
-  g.add(t3);
-  const tilt = (Math.random() - 0.5) * 0.5;
+  g.add(sp);
   const drift = new THREE.Vector3((Math.random() - 0.5) * 0.25, 0.35, 0);
   const base = at.clone();
-  let vanished = false;
-  t3.popIn(0.025);
+  const h = size * 1.6;
   return {
     obj: g, t: 0, dur,
-    update(dt, cam) {
+    update(dt) {
       this.t += dt;
       const k = this.t / this.dur;
       g.position.copy(base).addScaledVector(drift, Math.min(1, this.t * 2.2) * 0.6);
-      cam.getWorldQuaternion(g.quaternion);
-      g.rotateZ(tilt);
-      // stamp: squashed wide → stretched tall → settle
       const e = Math.exp(-this.t * 7);
       const pop = Math.min(1, this.t * 14);
-      g.scale.set(pop * (1 + 0.45 * e * Math.cos(this.t * 24)), pop * (1 - 0.35 * e * Math.cos(this.t * 24)), pop);
-      if (!vanished && k > 0.72) { vanished = true; t3.vanish(0.015); }
+      sp.scale.set(h * asp * pop * (1 + 0.35 * e * Math.cos(this.t * 24)), h * pop * (1 - 0.25 * e * Math.cos(this.t * 24)), 1);
+      mat.rotation = -0.06;
+      mat.opacity = k > 0.72 ? Math.max(0, 1 - (k - 0.72) / 0.28) : 1;
       return this.t < this.dur;
     },
-    dispose() { t3.dispose(); },
+    dispose() { mat.dispose(); },
   };
 }

@@ -82,7 +82,11 @@ export const X = {
     small_portion: [t('ให้น้อยไปนิด ไม่อิ่มเลย', 'small portion')], huge_portion: [t('ให้เยอะจุใจ อิ่มแปล้', 'huge portion!')],
     unchopped: [t('ผักไม่ได้หั่น ชิ้นโตเท่าบ้าน', 'veg not chopped')], unpounded: [t('กระเทียมเม็ดเบ้อเริ่ม', 'whole garlic cloves')],
     soggy_veg: [t('ผักเละ', 'mushy veg')], not_flipped: [t('ไข่เจียวไม่ได้กลับ ด้านนึงดิบ', 'omelette not flipped')],
-    too_sweet: [t('หวานเจี๊ยบ เหมือนกินขนม', 'sweet like dessert')], wrong_dish: [t('นี่มันอะไรเนี่ย', 'what is this')],
+    too_sweet: [t('หวานเจี๊ยบ เหมือนกินขนม', 'sweet like dessert')],
+    raw_seafood: [t('ทะเลยังดิบอยู่! คืนนี้ได้นอนห้องน้ำแน่', 'raw seafood! I’ll sleep in the bathroom tonight'), t('กุ้งยังใสอยู่เลย ว่ายน้ำได้ด้วยมั้ง', 'the prawn is still see-through, it might swim away')],
+    rubbery_squid: [t('ปลาหมึกเหนียวเหมือนยางรถ', 'squid chewy like a tyre'), t('เคี้ยวปลาหมึกจนกรามค้าง', 'chewed the squid till my jaw locked')],
+    melted: [t('น้ำแข็งละลายหมดแล้ว กลายเป็นน้ำหวานอุ่นๆ', 'the ice all melted, warm syrup'), t('ไอติมกลายเป็นซุป', 'the ice cream became soup')],
+    warm_dessert: [t('ของหวานเย็นทำไมมันอุ่นๆ', 'why is the cold dessert warm?'), t('ทับทิมกรอบอุ่น… ไม่ไหวจริงๆ', 'warm red rubies… no way')], wrong_dish: [t('นี่มันอะไรเนี่ย', 'what is this')],
   } as Record<string, Line[]>,
   req: {
     mildFail: [t('บอกแล้วว่าไม่เผ็ด! น้ำตาไหลเลย', 'I said NOT spicy!')],

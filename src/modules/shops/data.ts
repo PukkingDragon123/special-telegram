@@ -314,6 +314,7 @@ export const SHOPS: ShopDef[] = [
       { id: 'bowl', kinds: ['bowl'], fb: 'sfb_bowl', price: 45, unit: 'ใบละ', qty: 12, show: 2 },
       { id: 'spoon', kinds: ['spoon_fork'], fb: 'sfb_spoon_fork', price: 20, unit: 'คู่ละ', qty: 24, show: 3 },
       { id: 'paddle', kinds: ['rice_paddle'], fb: 'sfb_rice_paddle', price: 25, unit: 'อันละ', qty: 4, show: 1 },
+      { id: 'mixbowl', kinds: ['mix_bowl'], fb: 'sfb_bowl', price: 140, unit: 'ใบละ', qty: 3, show: 1, label: { th: 'กะละมังสแตนเลส (ผสมขนม)', en: 'steel dessert basin' } },
       { id: 'ricepot', kinds: ['rice_pot', 'rice_cooker'], fb: 'sfb_rice_cooker', price: 1290, unit: 'ใบละ', qty: 2, show: 1, big: true },
       { id: 'burner', kinds: ['burner_hp', 'burner_high', 'stove_hp', 'burner'], fb: 'sfb_burner', price: 690, unit: 'ตัวละ', qty: 2, show: 1, day: 3 },
     ],

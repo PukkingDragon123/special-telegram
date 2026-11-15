@@ -255,7 +255,7 @@ class StandShow {
     this.menace.emit(() => this.userHead().add(new THREE.Vector3(0, 0.2, 0)), 'do', 1.6, -1);
     Sound.play(Sound.has('slowmo_dramatic') ? 'slowmo_dramatic' : 'bass_boom', { vol: 0.8 });
     Sound.play('heartbeat_slow', { vol: 0.5 });
-    if (Sound.has('menace_rumble')) this.rumble = Sound.loop('menace_rumble', { vol: 0.55 });
+    if (Sound.has('menace_rumble')) this.rumble = Sound.play('menace_rumble', { vol: 0.6 });
   }
   private rumble: any = null;
 
