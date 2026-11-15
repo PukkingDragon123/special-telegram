@@ -336,7 +336,7 @@ export function fill5(api: FillApi, seed: string) {
 
   // ================================================================ 8. wholesale apron (between the main-road sidewalk and the warehouse face)
   {
-    const zA = WHOLESALE.z0 - 1.6;
+    const zA = WHOLESALE.z0 - 2.9;   // the corrugated cladding sits ~1.4 m in front of the layout box face
     for (let x = WHOLESALE.x0 + 14; x < WHOLESALE.x1 - 2; x += r.range(3.5, 6)) {
       const pick = r.int(0, 5);
       if (pick === 0) { if (put('crate_mil', x, zA, r.range(-0.1, 0.1), { tag: 'apron crates' })) add('crate_mil', x, groundHeight(x, zA) + size('crate_mil')[1], zA, r.range(-0.15, 0.15), { phys: 'none', tag: 'apron crates' }); }
@@ -345,9 +345,9 @@ export function fill5(api: FillApi, seed: string) {
       else if (pick === 3) put('barrels_wood', x, zA, r.range(0, 6), { tag: 'apron barrels' });
       else put('crate_wood2', x, zA, r.range(0, 6), { tag: 'apron crates' });
     }
-    put('extinguisher', WHOLESALE.doorX + 3.2, WHOLESALE.z0 - 0.35, Math.PI, { tag: 'extinguishers' });
-    put('dumpster', WHOLESALE.x1 - 3, WHOLESALE.z0 - 1.7, 0, { tag: 'dumpsters' });
-    for (const dx of [-1.2, -2.1]) put('wheelie', WHOLESALE.x1 - 3 + dx - 1.2, WHOLESALE.z0 - 1.4, r.range(-0.3, 0.3), { tag: 'wheelie bins' });
+    put('extinguisher', WHOLESALE.doorX + 3.2, WHOLESALE.z0 - 1.9, Math.PI, { tag: 'extinguishers' });
+    put('dumpster', WHOLESALE.x1 - 3, WHOLESALE.z0 - 2.9, 0, { tag: 'dumpsters' });
+    for (const dx of [-1.2, -2.1]) put('wheelie', WHOLESALE.x1 - 3 + dx - 1.2, WHOLESALE.z0 - 2.6, r.range(-0.3, 0.3), { tag: 'wheelie bins' });
   }
   void THREE;
 }
