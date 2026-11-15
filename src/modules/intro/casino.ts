@@ -8,6 +8,7 @@ import { Input } from '../../core/input';
 import { F } from '../../core/fonts';
 import { params } from '../../core/util';
 import { Overlay } from '../../ui3d/overlay';
+import { Voice } from '../../core/voice';
 import { buildCasino, CasinoSet, makeBottle, makeGlass, ROULETTE, SLOTS_POS, TABLE_Y } from './casino-set';
 import { Chips, Particles, makeCard } from './casino-fx';
 import { CASINO } from './lines';
@@ -186,6 +187,7 @@ export class CasinoScene implements SceneDef {
     for (const l of this.loops) l.stop(0.2);
     RigWorld.ambientCam = this.ambientCamWas;
     this.cine.restoreAll();
+    Voice.stopAll(0.3);
     this.menace.dispose();
     this.fx?.dispose(); this.fx = null;
     for (const a of [...this.players, ...this.extras]) { try { a.rig.dispose(); } catch {} }
@@ -350,7 +352,11 @@ export class CasinoScene implements SceneDef {
     };
   }
 
-  private sub(t: { th: string; en?: string }, sec = 3.2) { Overlay.subtitle(t.th, t.en, sec); }
+  /** cutscene subtitle + its voiced take (narrator: deep, in the casino hall) */
+  private sub(t: { th: string; en?: string }, sec = 3.2) {
+    const v = Voice.say(t.th, { rate: 0.9, fx: 'hall', channel: 'casino-sub' });
+    Overlay.subtitle(t.th, t.en, v ? Math.max(sec, v.duration + 0.4) : sec);
+  }
 
   private center() {
     const c = V(0, 0, 0);
@@ -945,7 +951,7 @@ export class CasinoScene implements SceneDef {
 
   private bubble(a: Actor, text: { th: string; en?: string }) {
     const head = () => (a.rig.headWorld ? a.rig.headWorld(new THREE.Vector3()) : a.root.position.clone().add(V(0, 1.85, 0)));
-    this.game.ui.shout(head, text, { duration: 1.6, scale: 0.8 });
+    this.game.ui.shout(head, text, { duration: 1.6, scale: 0.8, speaker: a.rig, vrate: 0.9 + ((a.slot ?? 0) % 4) * 0.06, vfx: 'hall' } as any);
   }
 
   // ------------------------------------------------------------------ skip & end

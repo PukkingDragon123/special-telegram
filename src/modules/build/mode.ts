@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { T } from '../../core/lang';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import { Input } from '../../core/input';
@@ -213,8 +214,9 @@ export class BuildMode {
       this.pad.rotation.y = gh.rotation.y;
       this.padMat.color.set(ok ? 0x5cff9a : 0xff5a4a);
     }
-    const label = (g.items.def(kind)?.name.th ?? kind) + (ok ? '' : '  ✗ ' + WHY_TEXT[t.why!].th);
-    this.tagSet(t.pos.clone().setY(t.pos.y + f.size[1] + 0.25), label, ok ? (g.items.def(kind)?.name.en ?? '') : WHY_TEXT[t.why!].en);
+    const nm = g.items.def(kind)?.name;
+    const label = (nm ? T(nm) : kind) + (ok ? '' : '  ✗ ' + T(WHY_TEXT[t.why!]));
+    this.tagSet(t.pos.clone().setY(t.pos.y + f.size[1] + 0.25), label, '');
     const pos = [+t.pos.x.toFixed(3), +t.pos.y.toFixed(3), +t.pos.z.toFixed(3)];
     if (this.drag) {
       // stream the drag so everyone sees the piece float along

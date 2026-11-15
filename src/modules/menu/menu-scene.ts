@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { TT, isEn, getLang, setLang, langChosen } from '../../core/lang';
 import type { Game } from '../../game/game';
 import type { SceneDef } from '../../game/scenes';
 import type { CharacterRig, Look } from '../../game/contracts';
@@ -8,7 +9,7 @@ import { Sound } from '../../core/audio';
 import { Input } from '../../core/input';
 import { params, disposeObject, damp, asset, Ease } from '../../core/util';
 import { F } from '../../core/fonts';
-import { ALBUM_CAM, ALBUM_GRADE, SLOTS, buildBackdrop, buildRug, buildSofa, buildTable, buildJenga, buildPanton, buildShellChair, buildLights, JENGA_COLORS, Jenga } from './album';
+import { ALBUM_CAM, ALBUM_GRADE, SLOTS, buildBackdrop, buildRug, buildSofa, SOFA_SEAT_TOP, buildTable, buildJenga, buildPanton, buildShellChair, buildLights, JENGA_COLORS, Jenga } from './album';
 import { StickerUI, Sticker, plateCanvas, preloadUi } from './ui';
 import { COVER, DANGER, GOLD, DISABLED, HOVER, LetterStyle, albumText, loadImg, mulberry, MF, MW } from './lettering';
 import { sfx, musicKey } from './sfx';
@@ -51,7 +52,7 @@ const SEAT_LOCAL: Record<number, THREE.Vector3> = {
   0: new THREE.Vector3(0, 0.44, -0.03),   // Panton (album.ts buildPanton: seat z −0.12…0.2, y 0.435)
   3: new THREE.Vector3(0, 0.45, -0.04),   // shell chair (seat z −0.06…0.22, y 0.45)
 };
-const SOFA_SEAT_Y = 0.395;                // cushion top (album.ts buildSofa)
+const SOFA_SEAT_Y = SOFA_SEAT_TOP;          // cushion top (album.ts buildSofa fits the Poly Haven sofa to it)
 const PELVIS_ABOVE_SEAT = 0.1;
 /** where the seated guys look: the top of the Jenga tower on the coffee table */
 const TOWER_LOOK = new THREE.Vector3(-0.27, 0.58, -2.38);
@@ -361,16 +362,16 @@ export class MenuScene implements SceneDef {
         const follow = () => this.project(this.tagAnchor(s.i));
         if (!p) {
           // small, quiet "waiting…" note floating over the free seat (online rooms only)
-          if (online) s.tag = this.ui.add({ lines: [{ text: 'รอเพื่อน…', size: 34, font: MF, weight: MW }], style: DISABLED, width: 92, follow, passive: true, bob: 2.5, delay: 0.2, tilt: s.i % 2 ? 3 : -3 });
+          if (online) s.tag = this.ui.add({ lines: [{ text: TT('รอเพื่อน…', 'Waiting…'), size: 34, font: MF, weight: MW }], style: DISABLED, width: 92, follow, passive: true, bob: 2.5, delay: 0.2, tilt: s.i % 2 ? 3 : -3 });
         } else {
           const lines: any[] = [{ text: this.nameEdit && isMe ? (this.nameDraft || ' ') + '|' : p.name, size: 34, font: MF, weight: MW }];
-          if (p.peer === hostPeer && online) lines.push({ text: 'หัวห้อง', size: 18, font: MF, weight: MW, gap: -6, band: 0.8, style: GOLD });
+          if (p.peer === hostPeer && online) lines.push({ text: TT('หัวห้อง', 'HOST'), size: 18, font: MF, weight: MW, gap: -6, band: 0.8, style: GOLD });
           s.tag = this.ui.add({ lines, follow, passive: !isMe, tilt: (s.i % 2 ? 2 : -2), onClick: isMe ? () => this.editName() : undefined, delay: this.firstSync ? 0.6 + s.i * 0.08 : 0.25 });
         }
       }
       const rdy = !!p?.ready && online;
       if (rdy !== !!s.ready) {
-        if (rdy) s.ready = this.ui.add({ lines: [{ text: 'พร้อม!', size: 26, font: MF, weight: MW }], style: GOLD, follow: () => { const q = this.project(this.tagAnchor(s.i)); return q ? { ...q, y: q.y - 34 * this.ui.u } : null; }, passive: true, tilt: 8, bob: 1.5 });
+        if (rdy) s.ready = this.ui.add({ lines: [{ text: TT('พร้อม!', 'READY!'), size: 26, font: MF, weight: MW }], style: GOLD, follow: () => { const q = this.project(this.tagAnchor(s.i)); return q ? { ...q, y: q.y - 34 * this.ui.u } : null; }, passive: true, tilt: 8, bob: 1.5 });
         else { this.ui.remove(s.ready); s.ready = null; }
       }
     }
@@ -556,7 +557,7 @@ export class MenuScene implements SceneDef {
     a.scale.set((1 + this.hoverMe * 0.2) / Math.sqrt(sq), (1 + this.hoverMe * 0.2) * sq, 1 + this.hoverMe * 0.2);
     a.rotation.set(0, Math.sin(this.t * 1.3) * 0.45 + this.t * this.hoverMe * 4, rot + Math.sin(this.t * 2.1) * 0.08, 'ZYX');
     if (!this.arrowTag) {
-      this.arrowTag = this.ui.add({ lines: [{ text: 'คุณ', size: 30, font: MF, weight: MW }], follow: () => { const p = this.project(this.arrow.position.clone().add(new THREE.Vector3(0, 0.13, 0))); return p; }, onClick: () => this.openCustomize(), bob: 0, tilt: -4, delay: 0.9 });
+      this.arrowTag = this.ui.add({ lines: [{ text: TT('คุณ', 'YOU'), size: 30, font: MF, weight: MW }], follow: () => { const p = this.project(this.arrow.position.clone().add(new THREE.Vector3(0, 0.13, 0))); return p; }, onClick: () => this.openCustomize(), bob: 0, tilt: -4, delay: 0.9 });
     }
     s.rig?.root.scale.multiplyScalar(1 + this.hoverMe * 0.025);
   }
@@ -683,7 +684,7 @@ export class MenuScene implements SceneDef {
     const want = this.paperHover && !this.reading && this.mode === 'album';
     if (want && !this.paperTag) {
       this.paperTag = this.ui.add({
-        lines: [{ text: 'ข่าวด่วน!', size: 30, font: MF, weight: MW }, { text: 'คลิกอ่านหนังสือพิมพ์', size: 15, font: MF, weight: MW, gap: -6, band: 0.7 }],
+        lines: [{ text: TT('ข่าวด่วน!', 'BREAKING!'), size: 30, font: MF, weight: MW }, { text: TT('คลิกอ่านหนังสือพิมพ์', 'click to read the paper'), size: 15, font: MF, weight: MW, gap: -6, band: 0.7 }],
         style: DANGER, tilt: -4, passive: true, bob: 2,
         follow: () => { const g = this.paper; if (!g) return null; return this.project(new THREE.Vector3(g.position.x, g.position.y + 0.2, g.position.z)); },
       });
@@ -745,7 +746,7 @@ export class MenuScene implements SceneDef {
     let hasSave = false;
     try { hasSave = !!save?.has?.(); } catch {}
     const me = g.me;
-    return `${this.sub}|${s.kind}|${s.isHost}|${s.room}|${hasSave}|${!!me?.ready}|${this.busy}|${g.players().length}`;
+    return `${this.sub}|${s.kind}|${s.isHost}|${s.room}|${hasSave}|${!!me?.ready}|${this.busy}|${g.players().length}|${getLang()}|${langChosen()}`;
   }
 
   private refreshUI() {
@@ -784,16 +785,19 @@ export class MenuScene implements SceneDef {
 
   private buildUI(add: (k: string, o: any) => Sticker) {
     const g = this.game, s = g.session;
-    // less text: the small English gloss only on the big primary buttons (START / HOST / JOIN / LEAVE)
-    const L = (text: string, en?: string, size = 54): any[] => {
-      const a: any[] = [{ text, size, font: MF, weight: MW }];
-      if (en && size >= 56) a.push({ text: en, size: Math.max(17, Math.round(size * 0.34)), font: MF, weight: MW, gap: -Math.round(size * 0.12), band: 0.9, spacing: 1.5 });
-      return a;
-    };
+    // one language only (Settings → language; core/lang)
+    const L = (text: string, en?: string, size = 54): any[] => [{ text: TT(text, en), size: isEn() ? Math.round(size * 0.86) : size, font: MF, weight: MW }];
     const next = () => (g.scenes.has('casino') && !params.has('skipintro') ? 'casino' : 'world');
     // settings (always, top-right)
     if (this.sub !== 'settings') add('settings', { lines: L('ตั้งค่า', 'SETTINGS', 30), anchor: 'tr', x: 92, y: 50, tilt: 3, onClick: () => this.openSettings(), delay: 0.5 });
     if (this.sub === 'settings') { this.buildSettings(add); return; }
+    // first launch: pick the language right here
+    if (!langChosen() && this.sub === 'main' && !this.busy) {
+      add('lang_t', { lines: [{ text: 'เลือกภาษา · Language', size: 40, font: MF, weight: MW }], anchor: 'c', x: 0, y: -60, passive: true });
+      add('lang_th', { lines: [{ text: 'ไทย', size: 64, font: MF, weight: MW }], anchor: 'c', x: -130, y: 30, onClick: () => { setLang('th'); this.uiKey = ''; sfx.play('menu_toggle'); } });
+      add('lang_en', { lines: [{ text: 'English', size: 54, font: MF, weight: MW }], anchor: 'c', x: 130, y: 30, onClick: () => { setLang('en'); this.uiKey = ''; sfx.play('menu_toggle'); } });
+      return;
+    }
     if (this.busy || this.sub === 'busy') {
       add('busy', { lines: L('กำลังต่อเน็ต…', 'CONNECTING', 44), anchor: 'r', x: 200, y: -10, passive: true, bob: 4, tilt: -3 });
       return;
@@ -915,8 +919,8 @@ export class MenuScene implements SceneDef {
   }
 
   private buildSettings(add: (k: string, o: any) => Sticker) {
-    // settings: Thai labels only (less text)
-    const L = (text: string, _en?: string, size = 40): any[] => [{ text, size, font: MF, weight: MW }];
+    // settings: one language (core/lang)
+    const L = (text: string, en?: string, size = 40): any[] => [{ text: TT(text, en), size: isEn() ? Math.round(size * 0.86) : size, font: MF, weight: MW }];
     const g = this.game;
     add('s_title', { lines: L('ตั้งค่า', 'SETTINGS', 70), anchor: 'c', x: 0, y: -250, passive: true, tilt: -2 });
     add('s_q', { lines: L('ความสวยของภาพ', 'GRAPHICS QUALITY', 30), anchor: 'c', x: 0, y: -165, passive: true });
@@ -933,6 +937,9 @@ export class MenuScene implements SceneDef {
     };
     meter('s_v', 'ความดังเสียง', 'VOLUME', -15, this.settings.volume, (v) => { this.settings.volume = v; applySettings(this.settings); });
     meter('s_m', 'ความไวเมาส์', 'MOUSE SENSITIVITY', 120, this.settings.sens / 2, (v) => { this.settings.sens = v * 2; applySettings(this.settings); });
+    // language: ไทย / English
+    add('s_lang_th', { lines: [{ text: 'ไทย', size: 34, font: MF, weight: MW }], style: getLang() === 'th' ? GOLD : COVER, anchor: 'c', x: -300, y: 215, onClick: () => { setLang('th'); this.uiKey = ''; sfx.play('menu_toggle'); } });
+    add('s_lang_en', { lines: [{ text: 'English', size: 30, font: MF, weight: MW }], style: getLang() === 'en' ? GOLD : COVER, anchor: 'c', x: -170, y: 215, onClick: () => { setLang('en'); this.uiKey = ''; sfx.play('menu_toggle'); } });
     add('s_close', { lines: L('ปิด', 'CLOSE', 44), anchor: 'c', x: 0, y: 285, tilt: 3, onClick: () => this.closeSettings() });
   }
 
@@ -987,8 +994,7 @@ export class MenuScene implements SceneDef {
   toast(th: string, en?: string, style: LetterStyle = DANGER) {
     this.ui.remove(this.toastSt);
     clearTimeout(this.toastTimer);
-    const lines: any[] = [{ text: th, size: 46, font: MF, weight: MW }];
-    if (en) lines.push({ text: en, size: 18, font: MF, weight: MW, gap: -6, band: 0.9, spacing: 1 });
+    const lines: any[] = [{ text: TT(th, en), size: isEn() ? 40 : 46, font: MF, weight: MW }];
     this.toastSt = this.ui.add({ lines, style, anchor: 't', x: 0, y: 92, tilt: -2, passive: true, z: 5 });
     this.toastSt.shake = style === DANGER ? 0.6 : 0;
     if (style === DANGER) sfx.error(); else sfx.confirm();

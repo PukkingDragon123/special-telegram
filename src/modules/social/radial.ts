@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { TT } from '../../core/lang';
 import type { Game } from '../../game/game';
 import { canvasTexture } from '../../ui3d/text';
 import { Text3D, Text3DOpts } from '../../ui3d/text3d';
@@ -88,8 +89,8 @@ export class Radial {
       const icon = new THREE.Mesh(new THREE.PlaneGeometry(cv.width * S, cv.height * S), new THREE.MeshBasicMaterial({ map: canvasTexture(cv), transparent: true, depthTest: false, depthWrite: false, toneMapped: false }));
       icon.position.y = cv.height * S * 0.5 + 0.004;
       icon.renderOrder = 2100;
-      const txt = new Text3D(`${p.key}. ${p.th}`, PETAL_TXT);
-      const sub = new Text3D(p.en, PETAL_SUB);
+      const txt = new Text3D(`${p.key}. ${TT(p.th, p.en)}`, PETAL_TXT);
+      const sub = new Text3D('', PETAL_SUB);
       txt.popIn(0.03);
       sub.popIn(0.015);
       mesh.add(icon, txt, sub);

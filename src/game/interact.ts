@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { L } from '../core/lang';
 import type { Game } from './game';
 import type { Ent } from '../sim/state';
 import { Input } from '../core/input';
@@ -183,11 +184,11 @@ export class Interaction {
     const hit = ctx.hit;
     if (!hit && !acts.length) { this.tag?.remove(); this.tag = null; return; }
     let title = '';
-    if (hit?.ent?.t === 'item') title = this.game.items.name(hit.ent).th;
-    else if (hit?.data?.name) title = hit.data.name.th ?? hit.data.name;
+    if (hit?.ent?.t === 'item') title = L(this.game.items.name(hit.ent));
+    else if (hit?.data?.name) title = L(hit.data.name);
     const status = acts.find((a) => a.status)?.status?.();
-    if (status) title = status;
-    const sub = acts.map((a) => `[${KEY_LABEL[a.key]}] ${a.disabled ? '✕ ' + a.disabled.th : a.label.th}`).join('   ');
+    if (status) title = L(status as any);
+    const sub = acts.map((a) => `[${KEY_LABEL[a.key]}] ${a.disabled ? '✕ ' + L(a.disabled) : L(a.label)}`).join('   ');
     if (!title && !sub) { this.tag?.remove(); this.tag = null; return; }
     let pos: THREE.Vector3;
     if (hit) {

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { T as Tx, L as Lx } from '../../core/lang';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import type { Action, Ctx } from '../../game/interact';
@@ -314,7 +315,7 @@ export class IntroLocal {
         const look = eye.clone().add(V(0, 1.6 - t * 0.12, 0)).addScaledVector(f, 1.2 + Math.sin(t * 0.7) * 0.2);
         return { p: eye, look, fov: 58, roll: 0.42 + Math.sin(t * 1.3) * 0.05 };
       },
-      tick: (_k, t) => { const p: any = game.engine.post; p.setDOF?.(true, 0.35 + t * 0.5, 7); },
+      // perf: no DOF here — the eyelid fade already sells it and the bokeh pass + its first-use compile made the wake hitch
     };
     const shots: Shot[] = [
       pov,
@@ -602,7 +603,7 @@ export class IntroLocal {
     }
     const el = this.cardEl;
     el.className = 'hp-tcard';
-    el.innerHTML = `<b>${esc(title.th)}</b>${title.en ? `<i>${esc(title.en)}</i>` : ''}${sub ? `<small>${esc(sub.th)}${sub.en ? ' · ' + esc(sub.en) : ''}</small>` : ''}`;
+    el.innerHTML = `<b>${esc(Tx(title))}</b>${sub ? `<small>${esc(Tx(sub))}</small>` : ''}`;
     el.style.setProperty('--d', sec + 's');
     void el.offsetWidth;
     el.classList.add(soft ? 'soft' : 'slam');
@@ -664,7 +665,7 @@ export class IntroLocal {
       this.subEl.className = 'hp-cinesub';
       document.body.appendChild(this.subEl);
     }
-    this.subEl.innerHTML = `${nm ? `<b>${esc(nm)}</b>` : ''}${esc(t.th)}${t.en ? `<small>${esc(t.en)}</small>` : ''}`;
+    this.subEl.innerHTML = `${nm ? `<b>${esc(Lx(nm))}</b>` : ''}${esc(Tx(t))}`;
     this.subEl.classList.add('on');
     clearTimeout(this.subTimer);
     const sec = Math.min(6, Math.max(2.2, (d.o?.duration ?? 3) + 0.6));

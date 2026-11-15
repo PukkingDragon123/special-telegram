@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { T, TT } from '../../core/lang';
 import type { Game } from '../../game/game';
 import { Assets } from '../../core/assets';
 import { F } from '../../core/fonts';
@@ -147,15 +148,14 @@ function drawSpecial(game: Game) {
   c.fillStyle = '#ffd21a'; c.fillRect(0, 128, PW, 10);
   c.font = `900 78px ${F.looped}`; c.fillStyle = '#fff6d8'; c.textAlign = 'left'; c.textBaseline = 'middle';
   c.fillText('เมนูพิเศษ', 48, 66);
-  c.font = `700 32px ${F.looped}`; c.fillStyle = '#ffe08a'; c.fillText('ทะเลสด · วัตถุดิบพรีเมียม · ของหวานหลังอาหาร', 430, 70);
+  c.font = `700 32px ${F.looped}`; c.fillStyle = '#ffe08a'; c.fillText(TT('ทะเลสด · วัตถุดิบพรีเมียม · ของหวานหลังอาหาร', 'Seafood · premium · desserts'), 430, 70);
   const menu = game.g.menu ?? {};
   const unl = unlockedRecipes(game);
   SPECIAL_COLS.forEach((col, ci) => {
     const x = COL_X[ci];
     c.fillStyle = col.color; c.fillRect(x, 156, COL_W, 62);
     c.font = `800 38px ${F.looped}`; c.fillStyle = '#ffffff'; c.textAlign = 'left'; c.textBaseline = 'middle';
-    c.fillText(col.th, x + 16, 180);
-    c.font = `600 19px ${F.looped}`; c.fillStyle = 'rgba(255,255,255,0.85)'; c.fillText(col.en, x + 16, 207);
+    c.fillText(TT(col.th, col.en), x + 16, 193);
   });
   for (const r of specialRows()) {
     const info = recipeInfo(game, r.rid);
@@ -164,10 +164,10 @@ function drawSpecial(game: Game) {
     c.fillStyle = known ? '#fffaf0' : '#ebe6d8'; c.fillRect(r.x, r.y, r.w, r.h);
     c.strokeStyle = 'rgba(60,40,20,0.18)'; c.lineWidth = 2; c.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
     c.textAlign = 'left'; c.textBaseline = 'alphabetic';
-    c.font = `700 ${info.name.th.length > 18 ? 25 : 30}px ${F.looped}`; c.fillStyle = known ? '#2a1c10' : '#9a948a';
-    c.fillText(info.name.th, r.x + 14, r.y + 38, r.w - 120);
+    c.font = `700 ${T(info.name).length > 18 ? 25 : 30}px ${F.looped}`; c.fillStyle = known ? '#2a1c10' : '#9a948a';
+    c.fillText(T(info.name), r.x + 14, r.y + 38, r.w - 120);
     c.font = `500 18px ${F.looped}`; c.fillStyle = known ? '#7a6a58' : '#aaa496';
-    c.fillText(known ? (info.name.en ?? '') : 'ยังไม่มีสูตร · locked', r.x + 14, r.y + 64, r.w - 120);
+    c.fillText(known ? '' : TT('ยังไม่มีสูตร', 'locked'), r.x + 14, r.y + 64, r.w - 120);
     if (known) {
       c.fillStyle = '#ffd21a'; c.beginPath(); c.arc(r.cx, r.cy, 36, 0, Math.PI * 2); c.fill();
       c.font = `900 ${price >= 100 ? 30 : 36}px ${F.looped}`; c.fillStyle = '#d41e2a'; c.textAlign = 'center'; c.textBaseline = 'middle';

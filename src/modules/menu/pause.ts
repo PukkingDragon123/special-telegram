@@ -1,4 +1,6 @@
 import type { Game } from '../../game/game';
+import { Sound } from '../../core/audio';
+import { TT, getLang, setLang, type Lang } from '../../core/lang';
 import { F } from '../../core/fonts';
 import { Input } from '../../core/input';
 import { loadSettings, saveSettings, applySettings, QUALITIES } from './settings';
@@ -35,18 +37,19 @@ const CSS = `
 @keyframes pzIn{from{opacity:0}to{opacity:1}}
 `;
 
-export interface ExtraSettings { invertY: boolean; fov: number; view: 'fp' | 'tp'; textScale: number; motionBlur: boolean }
+export interface ExtraSettings { invertY: boolean; fov: number; view: 'fp' | 'tp'; textScale: number; motionBlur: boolean; voice: number }
 const XKEY = 'hp.settings2';
 export function loadExtra(): ExtraSettings {
   let s: any = null;
   try { s = JSON.parse(localStorage.getItem(XKEY) || 'null'); } catch { /* storage blocked */ }
-  return { invertY: !!s?.invertY, fov: Math.max(60, Math.min(95, s?.fov ?? 72)), view: s?.view === 'tp' ? 'tp' : 'fp', textScale: Math.max(0.85, Math.min(1.35, s?.textScale ?? 1)), motionBlur: s?.motionBlur !== false };
+  return { invertY: !!s?.invertY, fov: Math.max(60, Math.min(95, s?.fov ?? 72)), view: s?.view === 'tp' ? 'tp' : 'fp', textScale: Math.max(0.85, Math.min(1.35, s?.textScale ?? 1)), motionBlur: s?.motionBlur !== false, voice: Math.max(0, Math.min(1, s?.voice ?? 1)) };
 }
 function saveExtra(x: ExtraSettings) { try { localStorage.setItem(XKEY, JSON.stringify(x)); } catch { /* storage blocked */ } }
 
 /** apply the extra settings to the running game (safe to call any time) */
 export function applyExtra(game: Game, x: ExtraSettings) {
   Input.invertY = x.invertY;
+  Sound.setBusVolume('voice', x.voice);
   const pl: any = game.player;
   if (pl) {
     pl.baseFov = x.fov;
@@ -60,7 +63,7 @@ export function applyExtra(game: Game, x: ExtraSettings) {
 }
 function hasMotionBlur(game: Game) { const p: any = game.engine?.post; return !!p && (typeof p.setMotionBlur === 'function' || 'motionBlur' in p); }
 
-const QTH: Record<string, string> = { auto: 'อัตโนมัติ', low: 'ต่ำ', medium: 'กลาง', high: 'สูง', ultra: 'สูงสุด' };
+const QTH: Record<string, [string, string]> = { auto: ['อัตโนมัติ', 'Auto'], low: ['ต่ำ', 'Low'], medium: ['กลาง', 'Medium'], high: ['สูง', 'High'], ultra: ['สูงสุด', 'Ultra'] };
 
 export class PauseMenu {
   private el: HTMLDivElement | null = null;
@@ -115,28 +118,28 @@ export class PauseMenu {
     d.appendChild(box);
     const game = this.game;
     if (this.page === 'main') {
-      const h = document.createElement('h1'); h.textContent = 'พักเกม'; box.appendChild(h);
-      box.appendChild(this.btn('เล่นต่อ', () => this.resume()));
-      box.appendChild(this.btn('ตั้งค่า', () => { this.page = 'settings'; this.render(); }));
-      box.appendChild(this.btn('ปุ่มควบคุม', () => { this.page = 'controls'; this.render(); }));
+      const h = document.createElement('h1'); h.textContent = TT('พักเกม', 'Paused'); box.appendChild(h);
+      box.appendChild(this.btn(TT('เล่นต่อ', 'Resume'), () => this.resume()));
+      box.appendChild(this.btn(TT('ตั้งค่า', 'Settings'), () => { this.page = 'settings'; this.render(); }));
+      box.appendChild(this.btn(TT('ปุ่มควบคุม', 'Controls'), () => { this.page = 'controls'; this.render(); }));
       if (game.session?.online && game.session.room) {
-        const c = document.createElement('div'); c.className = 'pz-code'; c.textContent = 'ห้อง ' + game.session.room; box.appendChild(c);
+        const c = document.createElement('div'); c.className = 'pz-code'; c.textContent = TT('ห้อง ', 'Room ') + game.session.room; box.appendChild(c);
       }
-      box.appendChild(this.btn('กลับเมนูหลัก', () => {
+      box.appendChild(this.btn(TT('กลับเมนูหลัก', 'Main menu'), () => {
         try { (game as any).save?.save?.(); } catch { /* */ }
         location.href = location.pathname;
       }, true));
-      if ((window as any).process?.versions?.electron || /Electron/i.test(navigator.userAgent)) box.appendChild(this.btn('ออกจากเกม', () => { try { (game as any).save?.save?.(); } catch { /* */ } window.close(); }, true));
+      if ((window as any).process?.versions?.electron || /Electron/i.test(navigator.userAgent)) box.appendChild(this.btn(TT('ออกจากเกม', 'Quit game'), () => { try { (game as any).save?.save?.(); } catch { /* */ } window.close(); }, true));
       setTimeout(() => (box.querySelector('.pz-btn') as HTMLElement | null)?.focus(), 0);
       return;
     }
-    const back = this.btn('‹ กลับ', () => { this.page = 'main'; this.render(); });
+    const back = this.btn(TT('‹ กลับ', '‹ Back'), () => { this.page = 'main'; this.render(); });
     if (this.page === 'controls') {
-      const h = document.createElement('h2'); h.textContent = 'ปุ่มควบคุม'; box.appendChild(h);
+      const h = document.createElement('h2'); h.textContent = TT('ปุ่มควบคุม', 'Controls'); box.appendChild(h);
       const k = document.createElement('div'); k.className = 'pz-keys';
       const rows: [string, string][] = [
-        ['W A S D', 'เดิน'], ['Shift', 'วิ่ง'], ['Ctrl / C', 'ย่อ / ย่อง'], ['Space', 'กระโดด'], ['E', 'ใช้ / หยิบ / คุย'],
-        ['Q', 'วางของ'], ['1–5 / ล้อเมาส์', 'เลือกช่องของ'], ['V', 'มุมกล้อง'], ['T', 'คิดในใจ'], ['B', 'โหมดจัดร้าน'], ['Esc', 'พักเกม'],
+        ['W A S D', TT('เดิน', 'Walk')], ['Shift', TT('วิ่ง', 'Run')], ['Ctrl / C', TT('ย่อ / ย่อง', 'Crouch / sneak')], ['Space', TT('กระโดด', 'Jump')], ['E', TT('ใช้ / หยิบ / คุย', 'Use / pick up / talk')],
+        ['Q', TT('วางของ', 'Drop')], [TT('1–5 / ล้อเมาส์', '1–5 / wheel'), TT('เลือกช่องของ', 'Select slot')], ['V', TT('มุมกล้อง', 'Camera view')], ['T', TT('คิดในใจ', 'Think out loud')], ['B', TT('โหมดจัดร้าน', 'Build mode')], ['F', TT('ต่อย', 'Punch')], ['Esc', TT('พักเกม', 'Pause')],
       ];
       for (const [a, b] of rows) { const kb = document.createElement('kbd'); kb.textContent = a; const s = document.createElement('span'); s.textContent = b; k.append(kb, s); }
       box.appendChild(k);
@@ -144,7 +147,7 @@ export class PauseMenu {
       return;
     }
     // ---- settings
-    const h = document.createElement('h2'); h.textContent = 'ตั้งค่า'; box.appendChild(h);
+    const h = document.createElement('h2'); h.textContent = TT('ตั้งค่า', 'Settings'); box.appendChild(h);
     const st = loadSettings();
     const x = loadExtra();
     const row = (label: string, ctl: HTMLElement) => { const r = document.createElement('div'); r.className = 'pz-row'; const l = document.createElement('label'); l.textContent = label; r.append(l, ctl); box.appendChild(r); };
@@ -163,15 +166,18 @@ export class PauseMenu {
       return r;
     };
     const eng: any = game.engine;
-    row('คุณภาพภาพ', opts(QUALITIES.map((q) => ({ v: q.q, t: QTH[q.q] ?? q.th })), eng.qualityMode ?? eng.quality, (v) => { eng.setQuality(v); }));
-    row('ความดังเสียง', slider(0, 1, 0.05, st.volume, (v) => { st.volume = v; applySettings(st); saveSettings(st); }));
-    row('ความไวเมาส์', slider(0.2, 2, 0.05, st.sens, (v) => { st.sens = v; applySettings(st); saveSettings(st); }));
-    row('กลับแกนเมาส์', opts([{ v: '0', t: 'ปิด' }, { v: '1', t: 'เปิด' }], x.invertY ? '1' : '0', (v) => { x.invertY = v === '1'; saveExtra(x); applyExtra(game, x); }));
+    row(TT('ภาษา', 'Language'), opts([{ v: 'th', t: 'ไทย' }, { v: 'en', t: 'English' }], getLang(), (v) => { setLang(v as Lang); this.render(); }));
+    row(TT('คุณภาพภาพ', 'Graphics quality'), opts(QUALITIES.map((q) => ({ v: q.q, t: QTH[q.q] ? TT(QTH[q.q][0], QTH[q.q][1]) : TT(q.th, q.en) })), eng.qualityMode ?? eng.quality, (v) => { eng.setQuality(v); }));
+    row(TT('ความดังเสียง', 'Volume'), slider(0, 1, 0.05, st.volume, (v) => { st.volume = v; applySettings(st); saveSettings(st); }));
+    row(TT('เสียงพากย์', 'Voices'), slider(0, 1, 0.05, x.voice, (v) => { x.voice = v; saveExtra(x); applyExtra(game, x); }));
+    row(TT('ความไวเมาส์', 'Mouse sensitivity'), slider(0.2, 2, 0.05, st.sens, (v) => { st.sens = v; applySettings(st); saveSettings(st); }));
+    row(TT('กลับแกนเมาส์', 'Invert mouse Y'), opts([{ v: '0', t: TT('ปิด', 'Off') }, { v: '1', t: TT('เปิด', 'On') }], x.invertY ? '1' : '0', (v) => { x.invertY = v === '1'; saveExtra(x); applyExtra(game, x); }));
     const curView = (game.player as any)?.view ?? x.view;
-    row('มุมกล้อง', opts([{ v: 'fp', t: 'บุคคลที่หนึ่ง' }, { v: 'tp', t: 'บุคคลที่สาม' }], curView, (v) => { x.view = v as 'fp' | 'tp'; saveExtra(x); applyExtra(game, x); }));
-    row('มุมมอง (FOV)', slider(60, 95, 1, x.fov, (v) => { x.fov = v; saveExtra(x); applyExtra(game, x); }));
-    if (hasMotionBlur(game)) row('เบลอตอนเคลื่อนไหว', opts([{ v: '1', t: 'เปิด' }, { v: '0', t: 'ปิด' }], x.motionBlur ? '1' : '0', (v) => { x.motionBlur = v === '1'; saveExtra(x); applyExtra(game, x); }));
-    row('ขนาดตัวหนังสือ', opts([{ v: '0.9', t: 'เล็ก' }, { v: '1', t: 'ปกติ' }, { v: '1.2', t: 'ใหญ่' }], String(x.textScale), (v) => { x.textScale = Number(v); saveExtra(x); applyExtra(game, x); }));
+    row(TT('มุมกล้อง', 'Camera'), opts([{ v: 'fp', t: TT('บุคคลที่หนึ่ง', 'First person') }, { v: 'tp', t: TT('บุคคลที่สาม', 'Third person') }], curView, (v) => { x.view = v as 'fp' | 'tp'; saveExtra(x); applyExtra(game, x); }));
+    row(TT('มุมมอง (FOV)', 'Field of view'), slider(60, 95, 1, x.fov, (v) => { x.fov = v; saveExtra(x); applyExtra(game, x); }));
+    if (hasMotionBlur(game)) row(TT('เบลอตอนเคลื่อนไหว', 'Motion blur'), opts([{ v: '1', t: TT('เปิด', 'On') }, { v: '0', t: TT('ปิด', 'Off') }], x.motionBlur ? '1' : '0', (v) => { x.motionBlur = v === '1'; saveExtra(x); applyExtra(game, x); }));
+    { const post: any = eng.post; if (typeof post?.setOutline === 'function') row(TT('เส้นขอบดำ', 'Black outlines'), opts([{ v: '0', t: TT('ปิด', 'Off') }, { v: '0.6', t: TT('บาง', 'Light') }, { v: '1', t: TT('ปกติ', 'Normal') }, { v: '1.4', t: TT('หนา', 'Bold') }], String(post.outline ?? 1), (v) => { post.setOutline(Number(v)); })); }
+    row(TT('ขนาดตัวหนังสือ', 'Text size'), opts([{ v: '0.9', t: TT('เล็ก', 'Small') }, { v: '1', t: TT('ปกติ', 'Normal') }, { v: '1.2', t: TT('ใหญ่', 'Large') }], String(x.textScale), (v) => { x.textScale = Number(v); saveExtra(x); applyExtra(game, x); }));
     box.appendChild(back);
   }
 }

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { TT } from '../../core/lang';
 import type { Game } from '../../game/game';
 import type { CatalogItem, Look } from '../../game/contracts';
 import { asset } from '../../core/util';
@@ -532,11 +533,11 @@ export class Magazine {
     const x0 = tx + tW + 14, w = c.x + c.w - x0 - 10;
     ctx.fillStyle = '#1f1c1c';
     ctx.font = `800 31px ${F.looped}`;
-    const lines = wrap(ctx, it.name.th, w);
+    const lines = wrap(ctx, TT(it.name.th, it.name.en), w);
     lines.slice(0, 2).forEach((l, i) => ctx.fillText(l, x0, c.y + 44 + i * 36));
     ctx.fillStyle = '#7a7368';
     ctx.font = `500 19px ${F.body}`;
-    if (it.name.en) ctx.fillText(it.name.en, x0, c.y + 44 + Math.min(2, lines.length) * 36 + 2);
+    if (false && it.name.en) ctx.fillText(it.name.en!, x0, c.y + 44 + Math.min(2, lines.length) * 36 + 2);
     // price burst
     const price = it.price ?? 0;
     ctx.save();

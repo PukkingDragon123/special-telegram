@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { T, bi } from '../core/lang';
 import type { TextStyle } from './text';
 import { Text3D, Text3DOpts, Font3D, preloadText3D } from './text3d';
 import { Sound } from '../core/audio';
@@ -7,6 +8,7 @@ import { ChoicePrompt, ChoiceOpts } from './choice';
 import { Speaker, speakStart, speakStop } from './mood';
 import type { Expression } from '../game/contracts';
 import { F } from '../core/fonts';
+import { Voice, VoiceClip, VoiceFx, rateFromPitch } from '../core/voice';
 
 /**
  * Diegetic 3D UI — NO bubbles, panels or plates: every line is real extruded 3D lettering floating in the
@@ -47,6 +49,9 @@ export interface SayOpts {
   mood?: Expression | null;
   /** speaker's name (shown on the screen-space subtitle when the speaker is off-screen) */
   name?: string;
+  /** voice acting: clip playback rate override (default from `voice` / the speaker's look) and FX */
+  vrate?: number;
+  vfx?: VoiceFx;
 }
 
 export interface BubbleHandle { close(): void; readonly alive: boolean; mesh: THREE.Object3D }
@@ -57,6 +62,8 @@ type Kind = 'say' | 'think' | 'shout' | 'popup' | 'tag';
 
 interface Live {
   kind: Kind;
+  /** voice-acted clip for this line (babble is skipped while it plays) */
+  vclip?: VoiceClip | null;
   group: THREE.Group;
   main: Text3D;
   sub: Text3D | null;
@@ -187,8 +194,9 @@ export class UI3D {
 
   /** Speech above an anchor — floating 3D words. One line per anchor: saying again replaces it. */
   say(anchor: Anchor, text: string | TL, o: SayOpts = {}): BubbleHandle {
-    const th = typeof text === 'string' ? text : text.th;
-    // less text: world speech shows the Thai line only (no English gloss under it)
+    // one language only: the line in the player's UI language (voices/mouth timing still use the Thai line)
+    const thVoice = typeof text === 'string' ? text : text.th;
+    const th = T(text);
     const subText: string | undefined = undefined;
     const key = (anchor as any).isObject3D || typeof anchor === 'function' ? anchor : null;
     if (key && this.byKey.has(key)) {
@@ -223,9 +231,19 @@ export class UI3D {
     });
     if (key) this.byKey.set(key, L);
     L.th = th; L.name = o.name;
+    // ---- voice acting: a recorded take for this exact line → play it, pace the typewriter + mouth to it
+    if (kind !== 'think' && L.voice > 0 && Voice.has(thVoice)) {
+      this.posOf(L);
+      const rate = o.vrate ?? speakerRate(o, L.voice);
+      L.vclip = Voice.say(thVoice, { rate, fx: o.vfx ?? (L.voice < 0.6 ? 'ghost' : 'none'), pos: this.tmp.clone(), channel: key ?? undefined, vol: kind === 'shout' ? 1.1 : 1 });
+      if (L.vclip) {
+        L.cps = Math.max(6, th.length / Math.max(0.35, L.vclip.duration * 0.94));
+        L.life = Math.max(o.duration !== undefined ? Math.min(o.duration, 6) : 1.6, 1.0);
+      }
+    }
     if (o.speaker && kind !== 'think') {
       L.speaker = o.speaker;
-      speakStart(o.speaker, th, subText, o.mood, th.length / L.cps + 1.2);
+      speakStart(o.speaker, thVoice, subText, o.mood, L.vclip ? L.vclip.duration + 0.15 : th.length / L.cps + 1.2);
     }
     if (L.voice > 0) {
       this.posOf(L);
@@ -250,7 +268,7 @@ export class UI3D {
       po.side = new THREE.Color(st.color as any).multiplyScalar(0.5);
     }
     if (st?.size) po.size = LOOK.popup.size! * clamp(st.size / 64, 0.55, 1.4);
-    const main = new Text3D(text, po);
+    const main = new Text3D(bi(text), po);
     main.popIn(0.035);
     const L = this.makeLive('popup', main, null, pos.clone(), { offset: 0, life: o.dur ?? 1.6, rise: o.rise ?? 0.9, baseScale: o.scale ?? 1 });
     L.revealedAt = 0;
@@ -262,6 +280,7 @@ export class UI3D {
     let cur = '';
     const self = this;
     const make = (t: string, s?: string) => {
+      t = bi(t); s = s ? bi(s) : s;
       const k = t + '|' + (s ?? '');
       if (k === cur && L) return;
       cur = k;
@@ -270,13 +289,13 @@ export class UI3D {
         L.main.setText(t);
         if (s) {
           if (L.sub) L.sub.setText(s);
-          else { L.sub = new Text3D(s, LOOK.tagSub); L.group.add(L.sub); }
+          else { L.sub = new Text3D(bi(s), LOOK.tagSub); L.group.add(L.sub); }
         } else if (L.sub) { L.sub.dispose(); L.sub = null; }
         return;
       }
-      const main = new Text3D(t, LOOK.tag);
+      const main = new Text3D(bi(t), LOOK.tag);
       main.popIn(0.012);
-      const subT = s ? new Text3D(s, LOOK.tagSub) : null;
+      const subT = s ? new Text3D(bi(s), LOOK.tagSub) : null;
       subT?.popIn(0.01);
       L = this.makeLive('tag', main, subT, anchor, { offset: o.offset ?? 0.12, life: Infinity, baseScale: o.scale ?? 0.55 });
       L.revealedAt = 0;
@@ -336,7 +355,7 @@ export class UI3D {
     if (!el) {
       el = L.sub2d = document.createElement('div');
       el.className = 'ui3d-sub';
-      const esc = (v: any) => (typeof v === 'string' ? v : v && typeof v === 'object' ? String(v.th ?? '') : String(v ?? '')).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!));
+      const esc = (v: any) => (typeof v === 'string' ? v : v && typeof v === 'object' ? T(v) : String(v ?? '')).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!));
       const text = esc(L.th ?? '');
       el.dataset.side = '';
       el.innerHTML = (L.name ? `<b>${esc(L.name)}</b>` : '') + `<span>${text}</span>`;
@@ -363,6 +382,7 @@ export class UI3D {
   }
 
   private kill(L: Live, instant: boolean, stagger = 0.012) {
+    L.vclip?.stop(instant ? 0.05 : 0.15); L.vclip = null;
     if (instant) { this.dispose(L); return; }
     if (L.closing >= 0) return;
     speakStop(L.speaker); L.speaker = null;
@@ -422,7 +442,8 @@ export class UI3D {
         main.reveal = L.revF;
         if (sub && sub.isReady) sub.reveal = n ? (sub.glyphCount * L.revF) / n : Infinity;
         const after = Math.floor(L.revF);
-        if (L.voice > 0 && after !== before && after < n && L.age - L.lastBabble > 0.075) {
+        if (L.vclip) L.vclip.setPos(g.position);
+        if (L.voice > 0 && !L.vclip && after !== before && after < n && L.age - L.lastBabble > 0.075) {
           L.lastBabble = L.age;
           Sound.play('babble', { pos: g.position, vol: 0.45, pitch: L.voice });
         }
@@ -492,4 +513,18 @@ export class UI3D {
     // level, no spin / roll
     g.quaternion.copy(_q);
   }
+}
+
+/** a speaking rate for the voice clip: explicit babble pitch, else from the speaker's look (sex, build, age-ish names) */
+function speakerRate(o: SayOpts, voice: number): number {
+  if (o.voice !== undefined) return rateFromPitch(voice);
+  const look: any = (o.speaker as any)?.look;
+  const nmv: any = o.name; const nm = typeof nmv === 'string' ? nmv : nmv && typeof nmv === 'object' ? String(nmv.th ?? '') : '';
+  let r = look?.sex === 'f' ? 1.17 : 0.97;
+  if (/ลุง|ตา|uncle|grandpa|old/i.test(nm)) r = 0.86;
+  else if (/ป้า|ยาย|auntie|grandma/i.test(nm)) r = 1.12;
+  else if (/เจ๊|jeh/i.test(nm)) r = 1.2;
+  else if (look) r *= 1 - ((look.build ?? 0.5) - 0.5) * 0.08 - ((look.height ?? 1.72) - 1.72) * 0.25;
+  let h = 0; for (let i = 0; i < nm.length; i++) h = (h * 31 + nm.charCodeAt(i)) | 0;
+  return Math.max(0.78, Math.min(1.3, r * (1 + ((h % 9) - 4) * 0.01)));
 }

@@ -3,6 +3,8 @@ import { defineModule, type CharacterRig } from '../../game/contracts';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import { Sound } from '../../core/audio';
+import { Voice } from '../../core/voice';
+import { Overlay } from '../../ui3d/overlay';
 import { Input } from '../../core/input';
 import { params, tl, type TL } from '../../core/util';
 import { standLook } from '../characters/defs';
@@ -33,6 +35,12 @@ const DUR = 7.0;
 interface Snap { t: number; js: string; maxB: number }
 interface Go { n: number; user: number; wok: number; cart: number | null; line: number }
 
+/** the stand itself speaks once, at the thumb press (deep, metallic echo) */
+const STAND_VOICE: TL[] = [
+  tl('ข้าวไหม้… ไม่มีวันเกิดขึ้น ย้อนกลับไปซะ', 'Burnt rice… never happened. Go back.'),
+  tl('เวลาของข้าวจานนี้… กลับไปเริ่มใหม่', 'This plate\'s time… starts over.'),
+  tl('ไหม้แล้วเหรอ งั้นก็ไม่ไหม้', 'Burnt? Then it isn\'t.'),
+];
 const LINES: TL[] = [
   tl('ข้าวไหม้งั้นเหรอ… ย้อนเวลา!', 'Burnt rice, huh… REWIND!'),
   tl('กระทะนี้… ข้าไม่ยอมให้ไหม้!', 'Not on my wok!'),
@@ -121,7 +129,7 @@ class StandHost {
       A.done = true;
       if (A.userEnt) setAnim(game, A.userEnt, 'idle', true);
       const isOld = A.userEnt?.t === 'npc';
-      if (A.userEnt) game.say(A.userEnt.id, pick(isOld ? OLD_AFTER : AFTER), { style: 'shout', duration: 3.2 } as any);
+      if (A.userEnt) game.say(A.userEnt.id, pick(isOld ? OLD_AFTER : AFTER), { style: 'shout', duration: 3.2, voice: isOld ? 0.66 : 1.05 } as any);
       const cook = this.nearestPlayer(A.go.wok);
       if (isOld && cook) setTimeout(() => game.say(cook.id, pick(AFTER), { duration: 3 } as any), 1400);
     }
@@ -170,7 +178,7 @@ class StandHost {
     const go: Go = { n: ++this.n, user: user.id, wok: w.id, cart: cart?.id ?? null, line: Math.floor(Math.random() * LINES.length) };
     this.active = { go, t: 0, restored: false, posed: false, done: false, snap: snap?.js ?? null, userEnt: user };
     game.emit('stand:go', go);
-    game.say(user.id, LINES[go.line], { style: 'shout', duration: 3.2 } as any);
+    game.say(user.id, LINES[go.line], { style: 'shout', duration: 3.2, vfx: 'echo' } as any);
   }
 
   /** debug: rewind the nearest wok right now */
@@ -307,6 +315,9 @@ class StandShow {
       Sound.play(Sound.has('record_scratch') ? 'record_scratch' : 'whoosh_swing', { vol: 0.9 });
       this.overlay?.showCard(false);
       (this.game as any).memes?.stamp?.('カチッ', 'impact', { x: 0.62, y: 0.42, size: 1.0, life: 1.0 });
+      const sv = STAND_VOICE[Math.floor(Math.random() * STAND_VOICE.length)];
+      const vc = Voice.say(sv.th, { rate: 0.8, fx: 'echo', vol: 1.1, channel: 'stand' });
+      if (vc) Overlay.subtitle('「ข้าวไหม้ควีน」 ' + sv.th, sv.en, vc.duration + 0.5);
     }
     // ---- rewind 3.4–5.8 s: VHS rewind, smoke flies back into the wok
     if (!R.rewind && t > 3.4) {

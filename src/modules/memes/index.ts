@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { TT } from '../../core/lang';
 import { defineModule } from '../../game/contracts';
 import type { Game } from '../../game/game';
 import { Sound } from '../../core/audio';
@@ -127,8 +128,9 @@ class Memes {
     const el = document.createElement('div');
     el.className = 'mm-card ' + cls;
     el.style.setProperty('--life', life + 's');
-    el.textContent = th;
-    if (sub) { const s = document.createElement('small'); s.textContent = sub; el.appendChild(s); }
+    // one language only: an English sub-line is the English version of the card
+    el.textContent = sub && !/[\u0E00-\u0E7F]/.test(sub) ? TT(th, sub) : th;
+    if (sub && /[\u0E00-\u0E7F]/.test(sub)) { const s = document.createElement('small'); s.textContent = sub; el.appendChild(s); }
     for (const c of [...this.root.querySelectorAll('.mm-card')]) c.remove();
     this.root.appendChild(el);
     setTimeout(() => el.remove(), life * 1000 + 80);
@@ -161,20 +163,26 @@ class Memes {
         this.sfx(w, at, s, 0.7, 1.3);
         if (d.by === g.localPlayerId) { this.stamp('CRITICAL!!', 'blood', { x: 0.5, y: 0.2, size: 0.11, life: 0.9, rot: -3 }); this.flash(); }
         this.snd('anime_punch_crit', 0.8, at);
+        if (this.ok('wow', 14)) setTimeout(() => this.snd('meme_crowd_wow', 0.45, at), 350);
       } else if (this.ok('hitword', 0.12)) {
         const [w, s] = pick(HIT_WORDS);
         this.sfx(w, at, s, 0.36, 0.85);
         this.snd('anime_punch', 0.55, at);
+        if (Math.random() < 0.18 && this.ok('chip', 6)) this.snd('meme_chipmunk', 0.5, at);
+        // bystanders whip their phones out (combat/host.ts turns nearby NPCs into filmers)
+        if (Math.random() < 0.5 && this.ok('shutter', 2.5)) setTimeout(() => this.snd('meme_camera_shutter', 0.55, at), 400 + Math.random() * 600);
       }
     });
     g.on('combat:ko', (d: { id: number }) => {
       const at = this.headOf(d.id, 0.3); if (!at || !this.near(at, 28)) return;
       this.sfx('ズキュウウン', at, 'menace', 0.62, 1.6);
       if (this.ok('ooh', 7)) this.snd('crowd_ooh', 0.6, at);
+      else if (this.ok('boing', 5)) this.snd(Math.random() < 0.5 ? 'meme_boing' : 'meme_slide_whistle', 0.55, at);
     });
     g.on('combat:dead', (d: { id: number }) => {
       const at = this.headOf(d.id, 0.2); if (!at || !this.near(at, 28)) return;
       this.sfx('チーン…', at, 'white', 0.5, 2.0);
+      if (this.ok('gong', 10)) this.snd('meme_gong', 0.45, at);
     });
     g.on('combat:shot', (d: { from: number }) => {
       const at = this.headOf(d.from, -0.2); if (!at || !this.near(at, 35)) return;
@@ -188,45 +196,54 @@ class Memes {
       if (d.id !== g.localPlayerId) return;
       this.stamp('หมดสภาพ', 'blood', { x: 0.5, y: 0.33, size: 0.2, life: 2.6, rot: -2 });
       this.snd('ko_sting', 0.8);
+      setTimeout(() => this.snd('meme_slide_whistle', 0.5), 250);
     });
     g.on('combat:cop', (d: { pl: number }) => {
-      if (d.pl === g.localPlayerId && this.ok('cop', 30)) { this.card('เอาแล้วไง', 'POLICE?!'); this.snd('dramatic_dun', 0.8); }
+      if (d.pl === g.localPlayerId && this.ok('cop', 30)) { this.card('เอาแล้วไง', 'POLICE?!'); this.snd(Math.random() < 0.5 ? 'meme_scratch_2' : 'meme_scratch_3', 0.6); setTimeout(() => this.snd('dramatic_dun', 0.8), 380); }
     });
     // ---- surprise moments → nani zoom
-    g.on('life:jumpscare', (d: { player: number }) => { if (d.player === g.localPlayerId && this.ok('nani', 20)) this.naniZoom('ヒィッ!?'); });
+    g.on('life:jumpscare', (d: { player: number }) => { if (d.player === g.localPlayerId && this.ok('nani', 20)) { this.naniZoom('ヒィッ!?'); this.snd('meme_chipmunk', 0.6); } });
     // ---- money: sad violin at ฿0, mission-passed on the first sale
     g.events.on('money', (d: { player: number; delta: number; reason: string; wallet: number }) => {
       if (d.player !== g.localPlayerId || !this.inWorld()) return;
       if (d.delta < 0 && d.wallet <= 0 && this.ok('broke', 60)) { this.card('ตังค์หมด…', 'BROKE'); this.snd('sad_violin', 0.7); }
+      if (d.delta >= 20 && /restaurant|sale|serve|pay|tip/.test(d.reason ?? '') && this.ok('kaching', 3.5)) this.snd('meme_ka_ching', 0.5);
       if (d.delta > 0 && !this.firstSale && /restaurant|first_sale/.test(d.reason ?? '')) {
         this.firstSale = true;
         setTimeout(() => { this.card('ภารกิจสำเร็จ!', 'RESPECT ++', 'mp', 3.2); this.snd('mission_fanfare', 0.75); }, 600);
       }
     });
-    g.on('quest:done', () => { if (this.ok('qdone', 8)) { this.card('ภารกิจสำเร็จ!', 'RESPECT ++', 'mp', 3.0); this.snd('mission_fanfare', 0.7); } });
+    g.on('quest:done', () => { if (this.ok('qdone', 8)) { this.card('ภารกิจสำเร็จ!', 'RESPECT ++', 'mp', 3.0); this.snd('mission_fanfare', 0.7); setTimeout(() => this.snd('meme_airhorn', 0.4), 900); } });
+    g.on('unlock:recipe', () => { if (this.inWorld() && this.ok('ding', 3)) this.snd('meme_ding', 0.55); });
+    g.on('rest:grand', () => { if (this.ok('grand', 20)) { this.snd('meme_airhorn', 0.5); setTimeout(() => this.snd('meme_crowd_wow', 0.5), 700); } });
+    g.on('rest:mad', (d: { pid: number }) => { if (d.pid === g.localPlayerId && this.ok('mad', 10)) this.snd('meme_huh_low', 0.6); });
     // ---- the dog steals your food
     g.events.on('life:dog_steal', () => {
       if (!this.inWorld() || !this.ok('dog', 12)) return;
       this.card('ไม่นะ ไม่ๆๆๆ', 'OH NO NO NO');
       this.snd('oh_no_slide', 0.75);
+      setTimeout(() => this.snd('meme_cartoon_run', 0.5), 900);
     });
     // ---- burnt dish (unless the stand just rewound it)
     g.events.on('cook:dish', (d: { player: number; data: any }) => {
       const iss: string[] = d.data?.issues ?? [];
-      if (!iss.some((x) => /burn/.test(x)) || this.now - this.standAt < 12 || !this.ok('burnt', 20)) return;
+      if (!iss.some((x) => /burn/.test(x))) { if (iss.length && d.player === g.localPlayerId && this.ok('wrong', 15)) this.snd('meme_wrong_buzzer', 0.4); return; }
+      if (this.now - this.standAt < 12 || !this.ok('burnt', 20)) return;
       this.stamp('ไหม้!!', 'blood', { x: 0.5, y: 0.36, size: 0.15, life: 1.2 });
       if (d.player === g.localPlayerId) setTimeout(() => this.card('อีหยังวะ', 'WHAT IS THIS'), 400);
       this.snd('boom_heavy', 0.7);
     });
-    g.on('stand:go', () => { this.standAt = this.now; });
+    g.on('stand:go', () => { this.standAt = this.now; this.snd('meme_gong', 0.4); });
     // ---- five-star review
     g.on('rest:review', (d: { stars: number }) => {
-      if ((d.stars ?? 0) >= 5 && this.ok('5star', 25)) { this.card('มันส์พะยะค่ะ', '★★★★★'); this.snd('crowd_ooh', 0.5); }
+      if ((d.stars ?? 0) >= 5 && this.ok('5star', 25)) { this.card('มันส์พะยะค่ะ', '★★★★★'); this.snd('meme_crowd_wow', 0.55); }
+      else if ((d.stars ?? 5) <= 1 && this.ok('1star', 25)) this.snd('meme_huh_low', 0.6);
     });
     // ---- conversation punchlines (NPC reaction lines after a comeback)
     g.on('talk:line', (d: { by: number; th: string }) => {
       if (d.by !== g.localPlayerId || !d.th) return;
-      if (/555|ฮ่า|ขำ|ตลก/.test(d.th) && Math.random() < 0.45 && this.ok('laugh', 25)) { this.card('ตลกตายห่า', 'LMAO'); this.snd('boom_heavy', 0.7); }
+      if (/555|ฮ่า|ขำ|ตลก/.test(d.th) && Math.random() < 0.45 && this.ok('laugh', 25)) { this.card('ตลกตายห่า', 'LMAO'); this.snd('boom_heavy', 0.7); setTimeout(() => this.snd('meme_laugh_track', 0.45), 300); }
+      else if (/อะไร|หา\?|ห๊ะ|ไม่เข้าใจ|งง/.test(d.th) && this.ok('huh', 20)) this.snd('meme_huh_low', 0.6);
       else if (/ไอ้|มึง|เชี่ย|แม่ง|สัส|ห่า|ควาย/.test(d.th) && Math.random() < 0.4 && this.ok('damage', 25)) { this.card('ดาเมจทางใจ!!', 'EMOTIONAL DAMMIT'); this.snd('savage_hit', 0.8); }
     });
     // ---- secrets / easter eggs

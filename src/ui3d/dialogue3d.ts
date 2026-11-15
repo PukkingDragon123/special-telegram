@@ -1,10 +1,12 @@
 import * as THREE from 'three';
+import { TT } from '../core/lang';
 import { Text3D, Text3DOpts } from './text3d';
 import { Input } from '../core/input';
 import { Sound } from '../core/audio';
 import { Ease } from '../core/util';
 import { Speaker, speakStart, speakStop } from './mood';
 import type { Expression } from '../game/contracts';
+import { Voice, VoiceClip, rateFromPitch } from '../core/voice';
 
 /* ============================================================================================
  * DIALOGUE 3D — the "talk to an NPC" presentation (used by the quests module).
@@ -108,6 +110,9 @@ export class DialogueView {
   private speaker: Speaker | null = null;
   /** glyphs per second */
   cps = 32;
+  /** this line's typewriter speed (follows the voice clip when the line is voice-acted) */
+  private lineCps = 32;
+  private vclip: VoiceClip | null = null;
   private mouseMoved = false;
   private lastNdc = new THREE.Vector2(9, 9);
 
@@ -126,18 +131,25 @@ export class DialogueView {
     // the previous answers no longer apply: the chosen one flies off, the rest slide away
     if (this.cards.length) this.setOptions(null);
     speakStop(this.speaker);
+    this.vclip?.stop(0.1); this.vclip = null;
     this.spec = spec;
     let sp: Speaker | null = null;
     try { sp = spec.speaker?.() ?? null; } catch { sp = null; }
     this.speaker = sp;
-    speakStart(sp, spec.th, spec.en, spec.mood, spec.th.length / this.cps + 1.4);
+    // voice acting: conversations are close-up and 2D (no panning); ghosts get the spooky echo
+    this.lineCps = this.cps;
+    if ((spec.voice ?? 1) > 0) {
+      this.vclip = Voice.say(spec.th, { rate: rateFromPitch(spec.voice), fx: (spec.voice ?? 1) < 0.6 ? 'ghost' : 'none' });
+      if (this.vclip) this.lineCps = Math.max(6, spec.th.length / Math.max(0.35, this.vclip.duration * 0.94));
+    }
+    speakStart(sp, spec.th, spec.en, spec.mood, this.vclip ? this.vclip.duration + 0.15 : spec.th.length / this.cps + 1.4);
     const maxW = LINE_W;
-    this.line = new Text3D(spec.th, { ...LINE, maxWidth: maxW });
+    this.line = new Text3D(TT(spec.th, spec.en), { ...LINE, maxWidth: maxW });
     this.line.reveal = 0;
     // less text: no English gloss lines under the NPC's words / the answers
     this.lineEn = null; void LINE_EN;
     this.lineEn && (this.lineEn.reveal = 0);
-    this.name = new Text3D(spec.name, { ...NAME, color: spec.color ?? (NAME.color as number) });
+    this.name = new Text3D(TT(spec.name, (spec as any).nameEn), { ...NAME, color: spec.color ?? (NAME.color as number) });
     this.name.popIn(0.03);
     const holder = new THREE.Group();
     holder.add(this.line, this.name);
@@ -163,7 +175,7 @@ export class DialogueView {
       const root = new THREE.Group();
       const locked = !!o.locked;
       const tint = locked ? (OPT_LOCK.color as number) : o.tone ? new THREE.Color(TONE[o.tone]).lerp(new THREE.Color(0xfff0d2), 0.35).getHex() : (OPT.color as number);
-      const main = new Text3D(o.th, { ...OPT, color: tint, ...(locked ? OPT_LOCK : {}) });
+      const main = new Text3D(TT(o.th, o.en), { ...OPT, color: tint, ...(locked ? OPT_LOCK : {}) });
       const sub: Text3D | null = null; void OPT_EN;
       const num = new Text3D(n === 1 && !o.en && o.th.length < 12 ? 'E' : String(i + 1), { ...NUM, ...(locked ? { color: 0x7d746c, metalness: 0.2, emissive: 0.05 } : {}) });
       const reason = locked ? new Text3D('🔒 ' + o.locked, { ...OPT_EN, color: 0xff9a7a, size: 0.0115 }) : null;
@@ -227,10 +239,10 @@ export class DialogueView {
     if (s && this.line) {
       if (this.line.isReady && this.rev < this.line.glyphCount) {
         const before = Math.floor(this.rev);
-        this.rev = Math.min(this.line.glyphCount, this.rev + dt * this.cps);
+        this.rev = Math.min(this.line.glyphCount, this.rev + dt * this.lineCps);
         this.line.reveal = this.rev;
         if (this.lineEn) this.lineEn.reveal = this.lineEn.isReady ? Math.floor((this.rev / Math.max(1, this.line.glyphCount)) * this.lineEn.glyphCount + 0.5) : 0;
-        if (Math.floor(this.rev) !== before && this.t - this.lastBlip > 0.07 && (s.voice ?? 1) > 0) {
+        if (!this.vclip && Math.floor(this.rev) !== before && this.t - this.lastBlip > 0.07 && (s.voice ?? 1) > 0) {
           this.lastBlip = this.t;
           Sound.play('babble', { vol: 0.32, pitch: (s.voice ?? 1) * (0.92 + Math.random() * 0.16) });
         }
@@ -376,6 +388,7 @@ export class DialogueView {
   }
 
   dispose() {
+    this.vclip?.stop(0.2); this.vclip = null;
     speakStop(this.speaker);
     this.speaker = null;
     this.setOptions(null);

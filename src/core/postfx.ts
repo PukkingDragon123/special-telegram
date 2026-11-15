@@ -4,7 +4,7 @@ import {
   SMAAEffect, SMAAPreset, ChromaticAberrationEffect, DepthOfFieldEffect, Effect, BlendFunction, EffectAttribute,
 } from 'postprocessing';
 import { N8AOPostPass } from 'n8ao';
-import { InkEdgePass, InkEffect, InkSettings, CEL, INK_ON, installMaterialPatch, updateInkHulls, InkParams, LOOK_STYLE, SAFE_HEAD } from './ink';
+import { InkEdgePass, InkEffect, InkSettings, CEL, INK_ON, INK_DEFAULTS, installMaterialPatch, updateInkHulls, InkParams, LOOK_STYLE, SAFE_HEAD } from './ink';
 
 export type Quality = 'low' | 'medium' | 'high' | 'ultra';
 
@@ -411,12 +411,13 @@ export class PostFX {
       try { aoRender(r, inputBuffer, outputBuffer, dt, mask); } finally { sm.autoUpdate = au; sm.needsUpdate = nu; }
     };
 
-    this.dof = new DepthOfFieldEffect(camera, { focusDistance: 0.02, focalLength: 0.05, bokehScale: 3.0, height: 480 });
+    this.dof = new DepthOfFieldEffect(camera, { focusDistance: 0.02, focalLength: 0.05, bokehScale: 3.0, height: 360 });
     this.dofPass = new EffectPass(camera, this.dof);
     this.dofPass.enabled = false;
     this.composer.addPass(this.dofPass);
 
     this.ink = new InkEffect(this.inkPass.target.texture);
+    if (InkSettings.ink && InkSettings.strength > 1) this.inkPass.setParams({ silPx: INK_DEFAULTS.silPx * InkSettings.strength });
     this.bloom = new BloomEffect({ mipmapBlur: true, intensity: 0.55, luminanceThreshold: 0.88, luminanceSmoothing: 0.22, radius: 0.68 });
     // bloom input guard: whatever wrote a NaN / Inf pixel (custom ShaderMaterials aren't patched), the mip blur
     // must never spread it into a flashing black square
@@ -536,7 +537,10 @@ export class PostFX {
     }
     this.syncShaftsPass();
     // ink: creases are the expensive/noisy part → lighter at low; ultra gets the finest SMAA
-    this.inkPass.setParams(q === 'low' ? { creaseK: 0.5, jitter: 0.4 } : { creaseK: 0.85, jitter: 0.6 });
+    // (realistic + ink: silhouettes only at low — creases are the costly, noisy part)
+    this.inkPass.setParams(LOOK_STYLE === 'anime'
+      ? (q === 'low' ? { creaseK: 0.5, jitter: 0.4 } : { creaseK: 0.85, jitter: 0.6 })
+      : (q === 'low' ? { creaseK: 0, jitter: 0.15 } : { creaseK: q === 'medium' ? 0.4 : 0.55, jitter: 0.25 }));
     this.smaa.applyPreset(q === 'ultra' ? SMAAPreset.ULTRA : q === 'low' ? SMAAPreset.MEDIUM : SMAAPreset.HIGH);
     this.noise.u('grainK').value = q === 'low' ? 0 : 0.022;
     this.sharpen = q === 'high' ? 0.3 : q === 'ultra' ? 0.18 : 0;
@@ -559,6 +563,18 @@ export class PostFX {
     if (p.tint !== undefined) this.ink.u('tintK').value = p.tint;
     if (p.glow !== undefined) this.ink.u('glowK').value = p.glow;
   }
+  /** Player outline strength (0 = off … 1.5): line opacity + hull width. Persisted in localStorage. */
+  setOutline(k: number, persist = true) {
+    const v = Math.max(0, Math.min(1.5, k));
+    InkSettings.ink = v > 0;
+    InkSettings.strength = v > 0 ? v : InkSettings.strength;
+    this.inkPass.enabled = InkSettings.ink;
+    this.ink.u('inkK').value = InkSettings.ink ? Math.min(1, v) : 0;
+    // above 1: thicker silhouettes instead of a stronger-than-black line
+    this.inkPass.setParams({ silPx: INK_DEFAULTS.silPx * Math.max(1, v) });
+    if (persist) { try { localStorage.setItem('hp.outline', String(v)); } catch { /* storage blocked */ } }
+  }
+  get outline() { return InkSettings.ink ? InkSettings.strength : 0; }
   /** Cel banding strength (0 = plain PBR). */
   setCel(k: number, shadow = k > 0 ? 0.6 : 0) { CEL.uCelK.value = k; CEL.uCelShadow.value = shadow; }
 
@@ -606,6 +622,11 @@ export class PostFX {
 
   /** Depth of field for menus / skill tree / cutscenes. focusDist in metres. */
   setDOF(on: boolean, focusDist = 3, bokeh = 3) {
+    // perf: the bokeh DOF is a cutscene nicety but costs several full-screen passes (+ a first-use shader
+    // compile hitch) — only on high/ultra, at a reduced internal height, with the kernel capped
+    if (on && !(this.quality === 'high' || this.quality === 'ultra') && !new URLSearchParams(location.search).has('dof')) on = false;
+    if (on) bokeh = Math.min(bokeh, this.quality === 'ultra' ? 4 : 3);
+    if (this.dofPass.enabled === on && !on) return;
     this.dofPass.enabled = on;
     this.syncShaftsPass();
     if (on) {

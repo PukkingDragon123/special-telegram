@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { T } from '../../core/lang';
 import type { Game } from '../../game/game';
 import { Sound } from '../../core/audio';
 import { F } from '../../core/fonts';
@@ -105,10 +106,10 @@ export class RitualFx {
   /** ghostly 3D words floating at a point (e.g. the voice from the dark) */
   words(at: THREE.Vector3, text: TL, dur = 4, color = '#d8ecff', size = 0.16) {
     const g = new THREE.Group();
-    const a = text3d(text.th, { font: 'hand', size, depth: 0.14, color, side: '#3a4a6a', emissive: 0.9, opacity: 0.9, rim: '#cfe6ff', rimStrength: 0.7, castShadow: false, keyLight: 0.2, maxWidth: 2.4 });
+    const a = text3d(T(text), { font: 'hand', size, depth: 0.14, color, side: '#3a4a6a', emissive: 0.9, opacity: 0.9, rim: '#cfe6ff', rimStrength: 0.7, castShadow: false, keyLight: 0.2, maxWidth: 2.4 });
     g.add(a);
     const texts = [a];
-    if (text.en) { const b = text3d(text.en, { font: 'ui', size: size * 0.45, depth: 0.1, color: '#c8d8f0', emissive: 0.7, opacity: 0.85, castShadow: false, keyLight: 0.2, maxWidth: 2.4 }); b.position.y = -size * 1.1; g.add(b); texts.push(b); }
+    if (false && text.en) { const b = text3d(text.en, { font: 'ui', size: size * 0.45, depth: 0.1, color: '#c8d8f0', emissive: 0.7, opacity: 0.85, castShadow: false, keyLight: 0.2, maxWidth: 2.4 }); b.position.y = -size * 1.1; g.add(b); texts.push(b); }
     g.position.copy(at);
     this.root.add(g);
     this.items.push({ obj: g, t: 0, dur, texts, update: (k) => { g.position.y = at.y + k * 0.25; const cp = this.game.camera.getWorldPosition(_v); g.rotation.y = Math.atan2(cp.x - g.position.x, cp.z - g.position.z); } });

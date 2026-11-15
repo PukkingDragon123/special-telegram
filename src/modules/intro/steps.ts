@@ -818,7 +818,7 @@ export class IntroHost {
   /** Thought for a player: the owner gets the monologue subtitle, others a cloud above the head. */
   think(id: number, text: TL) { this.game.emit('intro:think', { id, text }); }
   say(e: Ent, text: TL, sec: number, style: 'speech' | 'thought' | 'shout' = 'speech') {
-    this.game.say(e.id, text, { style, duration: sec, voice: style === 'thought' ? 0 : e.t === 'npc' ? (e.role === 'oldman' ? 0.72 : 0.92) : 1.1 } as any);
+    this.game.say(e.id, text, { style, duration: sec, voice: style === 'thought' ? 0 : e.t === 'npc' ? (e.role === 'oldman' ? 0.66 : 0.92) : 1.02 + ((e.slot ?? 0) % 4) * 0.09 } as any);
     if (style !== 'thought' && sec < 60) this.game.emit('intro:talk', { id: e.id, sec: Math.min(sec * 0.75, 4.5) });
   }
   expr(id: number, e: string, hold?: number) { this.game.emit('intro:expr', { id, e, hold }); }

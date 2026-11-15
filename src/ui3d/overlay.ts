@@ -1,4 +1,5 @@
 import { F } from '../core/fonts';
+import { TT, bi } from '../core/lang';
 import { DEBUG } from '../core/util';
 
 /**
@@ -78,7 +79,7 @@ class OverlaySys {
   /** Cinematic subtitle line (Thai + optional English). */
   subtitle(th: string, en?: string, sec = 3) {
     clearTimeout(this.subTimer);
-    this.subs.innerHTML = `${escapeHtml(th)}${en ? `<small>${escapeHtml(en)}</small>` : ''}`;
+    this.subs.innerHTML = escapeHtml(en ? TT(th, en) : bi(th));
     this.subs.classList.add('on');
     this.subTimer = setTimeout(() => this.subs.classList.remove('on'), sec * 1000);
   }
@@ -87,7 +88,7 @@ class OverlaySys {
   /** Tiny contextual hint at the bottom (e.g. first-time controls). Use rarely. `[E]` becomes a key cap. */
   showHint(text: string, sec = 4) {
     clearTimeout(this.hintTimer);
-    this.hint.innerHTML = escapeHtml(text).replace(/\[([^\]]+)\]/g, '<kbd>$1</kbd>');
+    this.hint.innerHTML = escapeHtml(bi(text)).replace(/\[([^\]]+)\]/g, '<kbd>$1</kbd>');
     this.hint.classList.add('on');
     if (sec > 0) this.hintTimer = setTimeout(() => this.hint.classList.remove('on'), sec * 1000);
   }

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { T, TT, getLang } from '../../core/lang';
 import type { Game } from '../../game/game';
 import { Input } from '../../core/input';
 import { Sound } from '../../core/audio';
@@ -172,21 +173,20 @@ function drawRecipeLeft(c: CanvasRenderingContext2D, R: Recipe, ok: boolean, n: 
     scrawl(c, 'ยังอ่านไม่ออก... (ปลดล็อกก่อน)', 90, 600, 24, r, { color: RED });
     return;
   }
-  scrawl(c, `${n}. ${R.name.th}`, 80, 80, 44, r, { font: F.scrawl });
-  scrawl(c, `(${R.name.en})`, 96, 116, 20, r, { color: PENCIL, font: F.hand2 });
+  scrawl(c, `${n}. ${T(R.name)}`, 80, 80, 44, r, { font: F.scrawl });
   let y = 168;
   scrawl(c, 'ของที่ต้องใช้ (1 จาน):', 80, y, 26, r, { color: RED });
   y += 42;
   const rows: string[] = [];
-  for (const [k, v] of Object.entries(R.ing)) rows.push(`${k === 'rice_cooked' ? 'ข้าวสวย' : k === 'egg_scr' ? 'ไข่ (คน)' : ING[k]?.name.th ?? k}  ${v.g} ก.${v.req ? ' !!' : ''}`);
+  for (const [k, v] of Object.entries(R.ing)) rows.push(`${k === 'rice_cooked' ? 'ข้าวสวย' : k === 'egg_scr' ? 'ไข่ (คน)' : (ING[k] ? T(ING[k].name) : k)}  ${v.g} ก.${v.req ? ' !!' : ''}`);
   if (R.oil) rows.push(`น้ำมัน  ${R.oil} มล.`);
-  for (const [k, g] of Object.entries(R.sa)) rows.push(`${ING[k]?.name.th ?? k}  ${g} ${unitTH(k)}`);
+  for (const [k, g] of Object.entries(R.sa)) rows.push(`${ING[k] ? T(ING[k].name) : k}  ${g} ${unitTH(k)}`);
   if (R.water) rows.push(`น้ำเปล่า  ${R.water} มล.`);
   if (R.egg === 'main') rows.push('ไข่ 1 ฟอง');
   if (R.egg === 'omelet') rows.push('ไข่ 2 ฟอง');
   if (R.rice) rows.push(`ข้าวสวย ${R.rice} ก. (ใส่จาน)`);
   for (const row of rows) { scrawl(c, '- ' + row, 90, y, 25, r); y += 37; if (y > PH - 120) break; }
-  scrawl(c, `ไฟ: ${R.heat.th}`, 90, Math.min(y + 18, PH - 70), 24, r, { color: RED });
+  scrawl(c, `${TT('ไฟ', 'Heat')}: ${T(R.heat)}`, 90, Math.min(y + 18, PH - 70), 24, r, { color: RED });
   const dk = R.id === 'khai_dao' || R.id === 'khai_jiao' ? 'egg' : R.id === 'phat_phak_bung' ? 'fire' : r() < 0.5 ? 'chili' : 'wok';
   doodle(c, dk, 400, 120, 34, r);
 }
@@ -239,7 +239,7 @@ export class RecipeBook {
   private spreads() { return 1 + RECIPE_IDS.length; }
   private pageTex(spread: number, side: 0 | 1): THREE.CanvasTexture {
     const unl = this.unlocked();
-    const key = `${spread}:${side}:${unl.join(',')}`;
+    const key = `${getLang()}:${spread}:${side}:${unl.join(',')}`;
     let t = this.cache.get(key);
     if (t) return t;
     const cv = document.createElement('canvas');

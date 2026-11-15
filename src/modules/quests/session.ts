@@ -217,7 +217,7 @@ export class DialogueSession {
     if (!o) return;
     // the player says the chosen line (short floating text from you)
     const tx = textOf(o.text, c);
-    if (!o.end) this.game.say(this.game.localPlayerId, tx.th, { duration: 1.6, voice: 0, scale: 0.8 } as any);
+    if (!o.end) this.game.say(this.game.localPlayerId, tx, { duration: 1.6, voice: 0, scale: 0.8 } as any);
     try { o.do?.(c); } catch (e) { console.warn('[quests] option.do', e); }
     if (o.end || (!o.next)) { this.close(); return; }
     this.go(o.next);

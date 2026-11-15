@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { TT } from '../core/lang';
 import { Text3D, Text3DOpts } from './text3d';
 import { Input } from '../core/input';
 import { Sound } from '../core/audio';
@@ -153,7 +154,7 @@ export class ChoicePrompt {
       const baseX = (i - (n - 1) / 2) * spacing;
       root.position.set(baseX, -0.2, -0.9);
       const tint = o.colors?.[i] !== undefined ? new THREE.Color(o.colors[i]).lerp(new THREE.Color(0xfff0d2), 0.45).getHex() : (OPT.color as number);
-      const main = new Text3D(opt.th, { ...OPT, color: tint });
+      const main = new Text3D(TT(opt.th, (opt as any).en), { ...OPT, color: tint });
       const sub: Text3D | null = null; void SUB;
       const num = new Text3D(String(i + 1), NUM);
       main.popIn(0.025);

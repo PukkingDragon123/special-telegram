@@ -79,6 +79,8 @@ class AudioSys {
       const r = await fetch(asset('audio/manifest.json'));
       if (r.ok) this.manifest = await r.json();
     } catch { /* no manifest yet */ }
+    // voice-acted lines (src/core/voice.ts) load their own manifest alongside
+    import('./voice').then((m) => m.Voice.load()).catch(() => {});
   }
 
   has(key: string) { return !!this.manifest[key]; }

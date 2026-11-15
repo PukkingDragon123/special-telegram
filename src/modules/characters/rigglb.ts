@@ -275,6 +275,7 @@ function makeAtlasMaterial() {
   const m = new THREE.MeshStandardMaterial({ roughness: 0.84, metalness: 0, envMapIntensity: 0.85, bumpScale: 1.4 });
   m.name = 'char-atlas';
   m.userData.uFat = { value: 0 };
+  m.userData.rimK = 0.3;                 // soft rim light (core/ink.ts patch)
   m.userData.uSkin = { value: WHITE1 };
   m.userData.uFace = { value: new Float32Array(20) };
   m.userData.uFaceOn = { value: 0 };
@@ -738,7 +739,7 @@ export class Rig implements CharacterRig {
   lookAt(p: THREE.Vector3 | null) { if (p) { if (!this.lookTarget) this.lookTarget = new THREE.Vector3(); this.lookTarget.copy(p); } else this.lookTarget = null; }
   attach(point: AttachPoint): THREE.Object3D { return this.attachPts.get(point) ?? this.attachPts.get('hand_r')!; }
   setSilhouette(on: boolean) { this.mode = on ? 'sil' : this.mode === 'sil' ? 'normal' : this.mode; this.applyMaterials(); }
-  setFirstPerson(on: boolean) { this.mode = on ? 'fp' : this.mode === 'fp' ? 'normal' : this.mode; this.applyMaterials(); }
+  setFirstPerson(on: boolean) { this.mode = on ? 'fp' : this.mode === 'fp' ? 'normal' : this.mode; this.root.userData.inkOff = this.mode === 'fp'; this.applyMaterials(); }
 
   // extras
   setPosture(p: Posture) { if (p && p !== this.posture) { this.fadeFrom.copy(this.out); this.fadeT = 0; this.fadeDur = 0.4; this.posture = p; this.inertialize(0.4); } }

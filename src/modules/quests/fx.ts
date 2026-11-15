@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { L, T, TT } from '../../core/lang';
 import type { Game } from '../../game/game';
 import { Sound } from '../../core/audio';
 import { Ease, tl, TL } from '../../core/util';
@@ -286,9 +287,9 @@ export class QuestFX {
     const def = Quests.get(id);
     if (!def) return;
     this.card('start', (g) => {
-      const a = new Text3D('ภารกิจใหม่!', { ...CARD_MID, color: 0xffd25a, size: 0.026 });
-      const b = new Text3D(def.title.th, { ...CARD_MID, size: 0.032 });
-      const c = new Text3D(def.title.en ?? '', CARD_SMALL);
+      const a = new Text3D(TT('ภารกิจใหม่!', 'New quest!'), { ...CARD_MID, color: 0xffd25a, size: 0.026 });
+      const b = new Text3D(T(def.title), { ...CARD_MID, size: 0.032 });
+      const c = new Text3D('', CARD_SMALL);
       a.position.set(0, 0.052, 0); b.position.set(0, 0.008, 0); c.position.set(0, -0.032, 0);
       g.add(backdrop(0.62, 0.15, 0.45));
       for (const t of [a, b, c]) { t.popIn(0.02); g.add(t); }
@@ -302,15 +303,15 @@ export class QuestFX {
     const def = Quests.get(d.id);
     if (!def) return;
     this.card('done', (g) => {
-      const a = new Text3D('ภารกิจสำเร็จ!', CARD_BIG);
-      const b = new Text3D(def.title.th, { ...CARD_MID, size: 0.03 });
+      const a = new Text3D(TT('ภารกิจสำเร็จ!', 'Quest complete!'), CARD_BIG);
+      const b = new Text3D(T(def.title), { ...CARD_MID, size: 0.03 });
       const rew: string[] = [];
       if (d.money) rew.push(`+${d.money} ฿`);
-      for (const r of d.recipes ?? []) rew.push(`สูตร${RECIPES[r]?.name.th ?? r}`);
-      if (d.rep) rew.push(`ชื่อเสียง +${d.rep}`);
-      if (d.note) rew.push(typeof d.note === 'string' ? d.note : d.note.th);
-      const c = new Text3D(rew.join('  ·  ') || 'ขอบคุณ!', { ...CARD_MID, color: 0x9fe6a0, size: 0.024 });
-      const e = new Text3D(def.title.en ?? '', CARD_SMALL);
+      for (const r of d.recipes ?? []) rew.push(TT('สูตร', 'Recipe: ') + (RECIPES[r] ? T(RECIPES[r].name) : r));
+      if (d.rep) rew.push(TT('ชื่อเสียง', 'Reputation') + ` +${d.rep}`);
+      if (d.note) rew.push(L(d.note));
+      const c = new Text3D(rew.join('  ·  ') || TT('ขอบคุณ!', 'Thanks!'), { ...CARD_MID, color: 0x9fe6a0, size: 0.024 });
+      const e = new Text3D('', CARD_SMALL);
       a.position.set(0, 0.098, 0); b.position.set(0, 0.03, 0); c.position.set(0, -0.016, 0); e.position.set(0, -0.052, 0);
       g.add(backdrop(0.78, 0.25, 0.5));
       for (const t of [a, b, c, e]) { t.popIn(0.02); g.add(t); }
@@ -350,11 +351,11 @@ export class QuestFX {
       const light = new THREE.PointLight(0xfff0d8, 2.2, 1.6, 1.5);
       light.position.set(0.1, 0.12, 0.35);
       g.add(light);
-      const a = new Text3D('สูตรใหม่!', CARD_BIG);
-      const b = new Text3D(R.name.th, { ...CARD_MID, size: 0.036, color: 0xfff6e2 });
-      const c = new Text3D(R.name.en ?? '', CARD_SMALL);
+      const a = new Text3D(TT('สูตรใหม่!', 'New recipe!'), CARD_BIG);
+      const b = new Text3D(T(R.name), { ...CARD_MID, size: 0.036, color: 0xfff6e2 });
+      const c = new Text3D('', CARD_SMALL);
       const st = sourceText(source);
-      const s = new Text3D(st.th, { ...CARD_SMALL, color: 0x5a2c14, side: 0x2a160a, emissive: 0.02, shadow: 0, size: 0.0135, maxWidth: 0.3 });
+      const s = new Text3D(T(st), { ...CARD_SMALL, color: 0x5a2c14, side: 0x2a160a, emissive: 0.02, shadow: 0, size: 0.0135, maxWidth: 0.3 });
       a.position.set(0, 0.178, 0.02); b.position.set(0, 0.113, 0.02); c.position.set(0, 0.07, 0.02); s.position.set(0, -0.112, 0.01);
       for (const t of [a, b, c, s]) { t.popIn(0.025); g.add(t); }
       g.userData.dish = dish;

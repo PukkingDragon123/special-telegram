@@ -101,7 +101,7 @@ export class WorldScene implements SceneDef {
       while (!game.views.prepareStep(0)) await breathe();
       // … then programs + texture uploads for the post-process target, behind the cutscene (compileAsync = no stall)
       await breathe();
-      await prewarmShaders(game.engine.renderer, this.scene, this.camera, 20000, true);
+      await prewarmShaders(game.engine.renderer, this.scene, this.camera, 180000, true);
     }
   }
 

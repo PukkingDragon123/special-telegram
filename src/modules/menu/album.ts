@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { Assets } from '../../core/assets';
 import { Noise } from '../../core/rng';
 import { mulberry } from './lettering';
@@ -198,7 +200,91 @@ function puff(geo: THREE.BufferGeometry, amt: number, seed: number) {
   return geo;
 }
 
+/** seat-cushion top the seated guys are fitted to (menu-scene SOFA_SEAT_Y) */
+export const SOFA_SEAT_TOP = 0.395;
+
+/** Album sofa: the Poly Haven CC0 "Sofa 02" (Kirill Sannikov) re-tinted to the cover's oxblood leather, scaled
+ *  so its cushion top sits exactly at SOFA_SEAT_TOP. The procedural sofa below shows until it loads (or if it
+ *  fails, ?procsofa forces it). */
 export function buildSofa() {
+  const g = buildProcSofa();
+  if (new URLSearchParams(location.search).has('procsofa')) return g;
+  loadRealSofa(g).catch((e) => console.warn('[menu] sofa model', e));
+  return g;
+}
+
+/** tileable grey-scale version of a texture image (normalised to mid grey) so a colour tint reads as leather */
+function greyLeather(img: any): THREE.Texture | null {
+  try {
+    const w = Math.min(1024, img.width || 0), h = Math.min(1024, img.height || 0);
+    if (!w || !h) return null;
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const x = cv.getContext('2d', { willReadFrequently: true })!;
+    x.drawImage(img, 0, 0, w, h);
+    const d = x.getImageData(0, 0, w, h);
+    const a = d.data;
+    let sum = 0;
+    for (let i = 0; i < a.length; i += 4) sum += 0.2126 * a[i] + 0.7152 * a[i + 1] + 0.0722 * a[i + 2];
+    const mean = Math.max(1, sum / (a.length / 4));
+    const k = 150 / mean;
+    for (let i = 0; i < a.length; i += 4) {
+      const l = (0.2126 * a[i] + 0.7152 * a[i + 1] + 0.0722 * a[i + 2]) * k;
+      const v = Math.max(0, Math.min(255, 150 + (l - 150) * 1.35));
+      a[i] = a[i + 1] = a[i + 2] = v;
+    }
+    x.putImageData(d, 0, 0);
+    const t = new THREE.CanvasTexture(cv);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    return t;
+  } catch { return null; }
+}
+
+async function loadRealSofa(g: THREE.Group) {
+  const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  const gl = await loader.loadAsync(Assets.url('gen/menu/models/sofa_02/sofa_02.glb'));
+  const model = gl.scene;
+  model.updateMatrixWorld(true);
+  // the leather is the material on the most vertices; the rest is the carved wood trim
+  const verts = new Map<THREE.Material, number>();
+  model.traverse((o: any) => { if (o.isMesh) verts.set(o.material, (verts.get(o.material) ?? 0) + (o.geometry.attributes.position?.count ?? 0)); });
+  let leather: any = null, best = -1;
+  for (const [m, n] of verts) if (n > best) { best = n; leather = m; }
+  if (leather) {
+    const grey = leather.map?.image ? greyLeather(leather.map.image) : null;
+    if (grey) { grey.flipY = leather.map.flipY; grey.wrapS = leather.map.wrapS; grey.wrapT = leather.map.wrapT; leather.map = grey; }
+    leather.color = new THREE.Color(0x7a2418);        // the cover's oxblood / cherry leather
+    leather.roughness = Math.min(leather.roughness ?? 0.6, 0.55);
+    leather.envMapIntensity = 1.1;
+    leather.needsUpdate = true;
+  }
+  model.traverse((o: any) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  // measure: footprint, then the cushion top (ray down through the middle of the seat)
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3()), ctr = box.getCenter(new THREE.Vector3());
+  const ray = new THREE.Raycaster();
+  const tops: number[] = [];
+  for (const fx of [-0.25, -0.1, 0.1, 0.25]) for (const fz of [0.05, 0.15]) {
+    ray.set(new THREE.Vector3(ctr.x + fx * size.x, box.max.y + 1, ctr.z + fz * size.z), new THREE.Vector3(0, -1, 0));
+    const hit = ray.intersectObject(model, true)[0];
+    if (hit) tops.push(hit.point.y - box.min.y);
+  }
+  tops.sort((a, b) => a - b);
+  const seat = tops.length ? tops[Math.floor(tops.length / 2)] : size.y * 0.5;
+  // uniform scale: cushion top at SOFA_SEAT_TOP, but never narrower/wider than ±10 % of the old 1.86 m sofa
+  let k = SOFA_SEAT_TOP / Math.max(0.05, seat);
+  k = THREE.MathUtils.clamp(k, (1.86 * 0.9) / size.x, (1.86 * 1.1) / size.x);
+  const lift = SOFA_SEAT_TOP - seat * k;           // tiny residual (legs on a 1–2 cm riser / sunk into the rug)
+  model.scale.setScalar(k);
+  model.position.set(-ctr.x * k, -box.min.y * k + lift, -ctr.z * k + 0.02);
+  (window as any).__sofa = { size: size.toArray(), seat, k, lift, tops };
+  // swap: hide the procedural parts, keep the group (position / references stay valid)
+  for (const c of [...g.children]) c.visible = false;
+  g.add(model);
+}
+
+function buildProcSofa() {
   const g = new THREE.Group();
   g.name = 'album_sofa';
   const leather = new THREE.MeshPhysicalMaterial({

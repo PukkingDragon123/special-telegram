@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { TT } from '../../core/lang';
 import type { Game } from '../../game/game';
 import type { CharacterRig, Look } from '../../game/contracts';
 import { Assets } from '../../core/assets';
@@ -296,7 +297,7 @@ export class CustomizeView {
         g.rig.setFace('scream');
         g.rig.play('scream_run', { loop: true });
         const head = () => g.rig.root.localToWorld(new THREE.Vector3(0, (g.rig.height || 1.6) + 0.15, 0));
-        g.bubble = this.game.ui.shout(head, g.line!.th, { sub: g.line!.en, duration: 1.6, voice: 0 });
+        g.bubble = this.game.ui.shout(head, TT(g.line!.th, g.line!.en), { duration: 1.6, voice: 0 });
         sfx.scream(g.pos.clone().setY(1.5));
         this.rig.lookAt(g.pos.clone().setY(1.5));
         this.kick = Math.max(this.kick, 0.6);

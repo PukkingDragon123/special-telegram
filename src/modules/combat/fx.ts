@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { TT } from '../../core/lang';
 import type { Game } from '../../game/game';
 import { Sound } from '../../core/audio';
 import { F } from '../../core/fonts';
@@ -123,7 +124,7 @@ export class CombatFX {
   hurtFlash(k: number) { this.flashK = Math.min(1, this.flashK + k); }
 
   knockScreen(on: boolean, th = 'สลบเหมือด', en = 'out cold') {
-    if (on) { this.koEl.innerHTML = `<div>${th}<small>${en}</small></div>`; this.koEl.style.opacity = '0.92'; }
+    if (on) { this.koEl.innerHTML = `<div>${TT(th, en)}</div>`; this.koEl.style.opacity = '0.92'; }
     else this.koEl.style.opacity = '0';
   }
 

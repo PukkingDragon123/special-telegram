@@ -1,0 +1,19 @@
+{
+ "sofa_02": {
+  "file": "sofa_02/sofa_02.glb",
+  "name": "Sofa 02",
+  "bytes": 169304,
+  "srcTris": 2728,
+  "tris": 2728,
+  "dims": [
+   1.807,
+   0.818,
+   0.709
+  ],
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "license": "CC0",
+  "source": "https://polyhaven.com/a/sofa_02"
+ }
+}

@@ -24,8 +24,10 @@ import { params } from './util';
  *                   pixels, SkinnedMesh-aware: same skeleton, same bind) for characters, animals and
  *                   hero props. Hulls are children of their source mesh (LOD / visibility follow it).
  *
- *  The default look is REALISTIC (plain PBR, no outlines, no cel bands). The inked anime look is opt-in:
- *  ?look=anime (or localStorage 'hp.look' = 'anime'); ?ink=1/0 and ?cel=1/0 override each part.
+ *  Default look: REALISTIC + INK — photographic PBR/grade (no cel bands) with crisp black comic outlines
+ *  (screen-space edges for the world, inverted hulls for characters/pets). Outline strength is a player
+ *  setting (localStorage 'hp.outline', 0 = off … 1.5; pause menu → Settings). The full anime look (cel bands,
+ *  tinted ink, AgX) is opt-in: ?look=anime (or localStorage 'hp.look' = 'anime'); ?ink=1/0, ?cel=1/0 override.
  * ============================================================================================= */
 
 /** 'realistic' (default) | 'anime' (inked realism + cel bands) */
@@ -36,9 +38,21 @@ export const LOOK_STYLE: 'realistic' | 'anime' = (() => {
 })();
 const flag = (name: string, def: boolean) => { const v = params.get(name); return v === null ? def : v !== '0'; };
 
+/** saved outline strength (0 = off … 1.5), default 1 */
+export function savedOutline(): number {
+  const q = params.get('outline');
+  if (q !== null && q !== '' && isFinite(+q)) return Math.max(0, Math.min(1.5, +q));
+  let v: string | null = null;
+  try { v = localStorage.getItem('hp.outline'); } catch {}
+  const n = v === null ? 1 : +v;
+  return isFinite(n) ? Math.max(0, Math.min(1.5, n)) : 1;
+}
+
 export const InkSettings = {
-  ink: flag('ink', LOOK_STYLE === 'anime'),
+  ink: flag('ink', savedOutline() > 0),
   cel: flag('cel', LOOK_STYLE === 'anime'),
+  /** outline strength multiplier (line opacity + hull width) */
+  strength: savedOutline() || 1,
 };
 
 // ------------------------------------------------------------------ shared uniforms
@@ -149,6 +163,17 @@ function patchShader(m: any, sh: any) {
   const u = matUniforms(m);
   sh.uniforms.uInkMask = u.uInkMask;
   sh.uniforms.uInkOn = INK_ON;
+  // soft fresnel rim (characters: material.userData.rimK ≈ 0.3) — reads well against the dark ink silhouettes
+  const rimK = m.userData?.rimK ?? 0;
+  if (rimK > 0 && m.isMeshStandardMaterial && fs.includes('#include <opaque_fragment>') && fs.includes('vViewPosition')) {
+    sh.uniforms.uRimK = (m.userData.uRimK ??= { value: rimK });
+    fs = fs.replace('#include <common>', '#include <common>\nuniform float uRimK;');
+    fs = fs.replace('#include <opaque_fragment>', `{
+      float rimF = pow(1.0 - saturate(dot(normal, normalize(vViewPosition))), 3.0);
+      outgoingLight += uRimK * rimF * (diffuseColor.rgb * 0.55 + vec3(0.05, 0.048, 0.045));
+    }
+#include <opaque_fragment>`);
+  }
   if (fs.includes('#include <opaque_fragment>')) {
     // + NaN / overflow guard: a single non-finite pixel (zero-length normal, pow(<0), a /0 in a custom chunk) or
     //   one above the half-float range (Inf) explodes through the bloom mip chain into flashing black blocks
@@ -309,9 +334,10 @@ export interface InkParams {
   jitter: number;
 }
 
-export const INK_DEFAULTS: InkParams = {
-  silPx: 1.6, creasePx: 1.0, silT: [0.012, 0.045], crT: [0.75, 1.6], creaseK: 0.85, fade: [30, 85], jitter: 0.6,
-};
+export const INK_DEFAULTS: InkParams = LOOK_STYLE === 'anime'
+  ? { silPx: 1.6, creasePx: 1.0, silT: [0.012, 0.045], crT: [0.75, 1.6], creaseK: 0.85, fade: [30, 85], jitter: 0.6 }
+  // inked realism: clean silhouettes, only strong creases, steady lines (comic-realistic, not sketchy)
+  : { silPx: 1.75, creasePx: 0.9, silT: [0.014, 0.05], crT: [0.95, 2.1], creaseK: 0.55, fade: [34, 95], jitter: 0.25 };
 
 export class InkEdgePass extends Pass {
   readonly target: THREE.WebGLRenderTarget;
@@ -413,9 +439,10 @@ export class InkEffect extends Effect {
       uniforms: new Map<string, THREE.Uniform>([
         ['tInk', new THREE.Uniform(mask)],
         ['inkCol', new THREE.Uniform(new THREE.Color(0.0085, 0.006, 0.005))],
-        ['inkK', new THREE.Uniform(InkSettings.ink ? 1 : 0)],
-        ['tintK', new THREE.Uniform(0.55)],
-        ['glowK', new THREE.Uniform(0.12)],
+        ['inkK', new THREE.Uniform(InkSettings.ink ? Math.min(1, InkSettings.strength) : 0)],
+        // realistic: near-black ink (only a hint of the local colour); anime: tinted ink
+        ['tintK', new THREE.Uniform(LOOK_STYLE === 'anime' ? 0.55 : 0.22)],
+        ['glowK', new THREE.Uniform(LOOK_STYLE === 'anime' ? 0.12 : 0.08)],
       ]),
     });
   }
@@ -427,7 +454,7 @@ export class InkEffect extends Effect {
 const HULL_U = {
   uRes: { value: new THREE.Vector2(1920, 1080) },
   uPxScale: { value: 1 },
-  uOn: { value: InkSettings.ink ? 1 : 0 },
+  uOn: { value: InkSettings.ink ? InkSettings.strength : 0 },
 };
 
 const HULL_VERT = /* glsl */ `
@@ -594,7 +621,7 @@ export function updateInkHulls(renderH: number, renderW: number) {
   frameN++;
   HULL_U.uRes.value.set(Math.max(1, renderW), Math.max(1, renderH));
   HULL_U.uPxScale.value = renderH / 1080;
-  HULL_U.uOn.value = InkSettings.ink ? 1 : 0;
+  HULL_U.uOn.value = InkSettings.ink ? InkSettings.strength : 0;
   for (const t of tracks.values()) {
     if ((frameN + t.stagger) % 30 === 0) {
       if (!inScene(t.root)) {
@@ -605,8 +632,10 @@ export function updateInkHulls(renderH: number, renderW: number) {
       const src = h.parent as THREE.Mesh | null;
       if (!src) { t.hulls.delete(h); (h.material as THREE.Material).dispose(); continue; }
       const m: any = firstMat(src);
-      // first-person owner (colorWrite off), invisible materials → no hull
-      h.visible = InkSettings.ink && !!m && m.colorWrite !== false && m.visible !== false;
+      // first-person owner (colorWrite off / rig root flagged inkOff), invisible materials → no hull. The FP body
+      // folds its torso/head away in its own vertex patch; a hull would not, and would draw the head's
+      // silhouette around the camera.
+      h.visible = InkSettings.ink && !t.root.userData.inkOff && !!m && m.colorWrite !== false && m.visible !== false;
     }
   }
 }

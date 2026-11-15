@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { L, TT } from '../../core/lang';
 import { defineModule } from '../../game/contracts';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
@@ -21,7 +22,7 @@ import { thinkLine } from './monologue';
  * ========================================================================================== */
 
 const txt = (t: HudText | undefined): { th: string; en: string } =>
-  !t ? { th: '', en: '' } : typeof t === 'string' ? { th: t, en: '' } : { th: t.th, en: t.en ?? '' };
+  !t ? { th: '', en: '' } : { th: L(t as any), en: '' };   // one language only (core/lang)
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
 
@@ -131,7 +132,7 @@ class Hud implements HudApi {
       <div class="hud-mono"></div>
       <div class="hud-keys">${[1, 2, 3, 4, 5].map((n) => `<span>${n}</span>`).join('')}</div>
       <div class="hud-name"></div>
-      <div class="hud-over">หนักเกินไป! กด Q วางของ</div>`;
+      <div class="hud-over"></div>`;
     document.body.appendChild(r);
     const q = <T extends HTMLElement>(sel: string) => r.querySelector(sel) as T;
     this.money = q('.hud-money'); this.moneyNum = q('.hud-money span');
@@ -264,7 +265,7 @@ class Hud implements HudApi {
       if (sel !== this.selSig) { this.selSig = sel; this.nameT = 2.2; }
       const e = inv[sel] != null ? game.state.get(inv[sel]!) : null;
       const n = e ? game.items.name(e) : null;
-      this.nameEl.textContent = n ? n.th : '';
+      this.nameEl.textContent = n ? L(n) : '';
       if (e) this.nameT = Math.max(this.nameT, 2.2);
     }
     this.nameT -= dt;
@@ -273,6 +274,7 @@ class Hud implements HudApi {
     const over = game.items.isOverloaded(me);
     this.overEl.style.bottom = (this.bar.baseY + this.bar.slotSize * 0.85 + 26).toFixed(1) + 'px';
     this.overEl.classList.toggle('on', over);
+    if (over) { const ot = TT('หนักเกินไป! กด Q วางของ', 'Too heavy! Press Q to drop'); if (this.overEl.textContent !== ot) this.overEl.textContent = ot; }
     this.mono.style.bottom = (this.bar.baseY + this.bar.slotSize * 0.85 + (over ? 56 : 34)).toFixed(1) + 'px';
     void H;
 
@@ -317,7 +319,7 @@ class Hud implements HudApi {
       this.mark.style.left = sx.toFixed(1) + 'px';
       this.mark.style.top = sy.toFixed(1) + 'px';
       this.mark.style.opacity = d < 2.5 ? '0' : '1';
-      (this.mark.lastElementChild as HTMLElement).textContent = Math.round(d) + ' ม.';
+      (this.mark.lastElementChild as HTMLElement).textContent = Math.round(d) + TT(' ม.', ' m');
     } else this.mark.style.opacity = '0';
   }
 }

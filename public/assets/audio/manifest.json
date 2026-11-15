@@ -2217,5 +2217,155 @@
   "cat": "meme",
   "pitchVar": 0.04,
   "desc": "Cartoon bang for gunshot SFX text (original synthesis, scripts-free numpy render)"
+ },
+ "meme_huh_low": {
+  "files": [
+   "meme/anime2/meme_huh_low.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Low \"huh?\" bruh-style reaction (original synthetic voice) — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_boing": {
+  "files": [
+   "meme/anime2/meme_boing.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Comedic spring boing — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_slide_whistle": {
+  "files": [
+   "meme/anime2/meme_slide_whistle.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Slide whistle up and down — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_chipmunk": {
+  "files": [
+   "meme/anime2/meme_chipmunk.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Chipmunk \"huh?!\" gasp (original synthetic voice) — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_airhorn": {
+  "files": [
+   "meme/anime2/meme_airhorn.mp3"
+  ],
+  "vol": 0.45,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Airhorn x3 (detuned saws) — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_ding": {
+  "files": [
+   "meme/anime2/meme_ding.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Correct! bell ding — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_wrong_buzzer": {
+  "files": [
+   "meme/anime2/meme_wrong_buzzer.mp3"
+  ],
+  "vol": 0.5,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Wrong-answer buzzer — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_cartoon_run": {
+  "files": [
+   "meme/anime2/meme_cartoon_run.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Cartoon run-away tom roll + whistle — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_camera_shutter": {
+  "files": [
+   "meme/anime2/meme_camera_shutter.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Phone camera shutter (bystanders filming) — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_gong": {
+  "files": [
+   "meme/anime2/meme_gong.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Big gong — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_ka_ching": {
+  "files": [
+   "meme/anime2/meme_ka_ching.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Cash register ka-ching — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_laugh_track": {
+  "files": [
+   "meme/anime2/meme_laugh_track.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Sitcom laugh track (synthetic crowd) — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_crowd_wow": {
+  "files": [
+   "meme/anime2/meme_crowd_wow.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Crowd \"wooow\" (synthetic crowd) — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_scratch_2": {
+  "files": [
+   "meme/anime2/meme_scratch_2.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Record scratch variant — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
+ },
+ "meme_scratch_3": {
+  "files": [
+   "meme/anime2/meme_scratch_3.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Record scratch variant (short) — original numpy synthesis (scripts/voice/gen_meme_sfx.py)"
  }
 }
