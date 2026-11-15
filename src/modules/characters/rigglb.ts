@@ -686,7 +686,7 @@ export class Rig implements CharacterRig {
       const reach = (this.Fp[ia].distanceTo(this.Fp[ib]) + this.Fp[ib].distanceTo(this.Fp[ic])) * 0.94;
       const sp = I.spine_01, pv = I.pelvis;
       if (sp !== undefined && pv !== undefined) {
-        for (let it = 0; it < 3; it++) {
+        for (let it = 0; it < 4; it++) {
           const deficit = this.Fp[ia].distanceTo(tgt) - reach;
           if (deficit <= 0.005) break;
           // rotate the spine about the axis that swings the shoulder toward the target, around the lower spine
@@ -695,8 +695,9 @@ export class Rig implements CharacterRig {
           const ax = _w3.crossVectors(_w1, _w2);
           if (ax.lengthSq() < 1e-8) break;
           ax.normalize();
-          const ang = Math.min(0.32, deficit / Math.max(0.25, _w1.length())) * r.w;
-          if (this.reachLean[k] + ang > 0.62) break;
+          // clamp the last step to the remaining lean budget instead of giving up (it used to stop at 0.32 rad)
+          const ang = Math.min(0.32, deficit / Math.max(0.25, _w1.length()), 0.72 - this.reachLean[k]) * r.w;
+          if (ang <= 0.002) break;
           this.reachLean[k] += ang;
           this.leanAx.copy(ax);
           for (const [bn, f] of [['spine_01', 0.4], ['spine_02', 0.35], ['spine_03', 0.25]] as const) {
