@@ -46,6 +46,7 @@ export class WorldScene implements SceneDef {
     const game = this.game;
     const t0 = performance.now();
     if (this.staged && !this.aborted) await this.staged;
+    { const m = (window as any).__hpMarks; if (m) m.stagedWait = Math.round(performance.now() - t0); }
     if (!this.staged || this.aborted) { this.aborted = false; this.staged = null; await this.build(false); }
     game.staging = false;
     this.activate();
