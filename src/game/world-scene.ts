@@ -103,10 +103,15 @@ export class WorldScene implements SceneDef {
   /** show the (built) world: view, UI, entity views, bodies, the local player */
   private activate() {
     const game = this.game;
+    const am = ((window as any).__hpMarks ??= {}); let ta = performance.now();
+    const mk = (k: string) => { const n = performance.now(); am['act:' + k] = Math.round(n - ta); ta = n; };
     game.engine.setView(this.scene, this.camera);
+    mk('setView');
     game.ui.setScene(this.scene, this.camera);
     game.views.activate(this.scene);
+    mk('views');
     game.items.rebuildBodies();
+    mk('bodies');
 
     const player = new LocalPlayer(game, this.camera);
     game.player = player;
@@ -115,6 +120,7 @@ export class WorldScene implements SceneDef {
     const a = game.world.anchors['wake_' + (me?.slot ?? 0)] ?? game.world.anchor('player_spawn');
     player.spawn(hasPos ? me!.p! : a.p, hasPos ? me!.yaw ?? 0 : a.yaw ?? 0);
     player.setMode('play');
+    mk('player');
     Input.onUnlock = () => this.pause(true);
     applyExtra(game, loadExtra());
     // Esc while the pointer is already free (e.g. after closing a dialog) also opens the pause menu
@@ -128,7 +134,9 @@ export class WorldScene implements SceneDef {
       this.offs.push(() => window.removeEventListener('keydown', onKey));
     }
     this.offs.push(game.engine.onFrame((f) => player.update(f.dt)));
+    mk('misc');
     game.events.emit('world:ready', this.scene);
+    mk('worldReadyHandlers');
   }
 
   /** throw away a staged (never shown) world — e.g. the session changed before the switch */
