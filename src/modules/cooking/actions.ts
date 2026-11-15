@@ -23,7 +23,7 @@ function amountIn(dst: Ent | undefined, kind: string): number {
   const d = dst.data;
   const def = ING[kind];
   switch (dst.k) {
-    case 'wok':
+    case 'wok': case 'mix_bowl':
       if (!def) return 0;
       if (def.into === 'oil') return d.oil ?? 0;
       if (def.into === 'w') return d.w ?? 0;
@@ -40,7 +40,7 @@ const solidsOf = (d: any) => Object.values<any>(d?.it ?? {}).reduce((a, v) => a 
 const hasFood = (w: Ent) => { const d = w.data ?? {}; return solidsOf(d) > 2 || (d.egg?.n ?? 0) > 0 || (d.om?.n ?? 0) > 0 || (d.w ?? 0) > 30; };
 const hasContents = (e: Ent) => {
   const d = e.data ?? {};
-  if (e.k === 'wok') return hasFood(e) || (d.oil ?? 0) > 1;
+  if (e.k === 'wok' || e.k === 'mix_bowl') return hasFood(e) || (d.oil ?? 0) > 1 || Object.values<any>(d.sa ?? {}).some((v) => v > 0.5);
   if (e.k === 'mortar' || e.k === 'chopping_board') return solidsOf(d) > 0.5;
   if (e.k === 'bowl') return (d.egg ?? 0) > 0 || Object.values<any>(d.sa ?? {}).some((v) => v > 0.5) || (d.rice ?? 0) > 1;
   if (e.k === 'plate' || e.k === 'takeaway_box') return (d.rice ?? 0) > 1;
@@ -101,7 +101,7 @@ export function cookingProvider(game: Game) {
     }
     const hdef = ING[hk!];
     // ------------------------------------------------ R: dump the held vessel
-    if (CONTAINERS.has(hk!) || hk === 'wok') {
+    if (CONTAINERS.has(hk!) || hk === 'wok' || hk === 'mix_bowl') {
       if (hasContents(held) && !(t?.k === 'rice_pot')) acts.push({ key: 'R', label: tl('เททิ้ง', 'dump'), priority: 1, run: () => game.intent('cook.dump', { id: held.id }) });
     }
     if (!t) return acts;
@@ -125,6 +125,9 @@ export function cookingProvider(game: Game) {
       acts.push({ key: 'LMB', label: tl('ตอกไข่', 'crack egg'), priority: 7, run: () => game.intent('cook.crack', { egg: held.id, dst: t.id }) });
     }
     // ------------------------------------------------ spatula / ladle on a wok
+    if ((hk === 'spatula' || hk === 'ladle' || hk === 'spoon_fork') && t.k === 'mix_bowl' && hasContents(t)) {
+      acts.push(holdAct('stir', held, t, tl('คลุกเบาๆ', 'mix gently'), 7, () => `คลุกๆ · ${Math.round(get(t.id)?.data?.T ?? 25)}°C`));
+    }
     if ((hk === 'spatula' || hk === 'ladle') && t.k === 'wok') {
       acts.push(holdAct('stir', held, t, tl(hk === 'ladle' ? 'คน' : 'ผัด', 'stir'), 7, () => {
         const w = get(t.id)?.data ?? {};
@@ -149,14 +152,14 @@ export function cookingProvider(game: Game) {
       acts.push(holdAct('scoop', held, t, tl('ตักข้าว', 'scoop rice'), 7, () => `ข้าว ${Math.round(get(held.id)?.data?.rice ?? 0)} ก.`));
     }
     // ------------------------------------------------ plating: vessel ↔ wok
-    if ((VESSELS.has(hk!) || hk === 'dish') && t.k === 'wok' && hasFood(t)) {
+    if ((VESSELS.has(hk!) || hk === 'dish') && (t.k === 'wok' || t.k === 'mix_bowl') && hasContents(t) && (t.k === 'mix_bowl' || hasFood(t))) {
       acts.push({ key: 'LMB', label: tl(hk === 'dish' ? 'ตักใส่จานนี้' : 'ตักใส่จาน', 'plate it'), priority: 8, run: () => game.intent('cook.plate', { vessel: held.id, wok: t.id }) });
     }
-    if (hk === 'wok' && hasFood(held) && (VESSELS.has(t.k) || t.k === 'dish')) {
+    if ((hk === 'wok' || hk === 'mix_bowl') && hasContents(held) && (VESSELS.has(t.k) || t.k === 'dish')) {
       acts.push({ key: 'LMB', label: tl('เทใส่จาน', 'plate it'), priority: 8, run: () => game.intent('cook.plate', { vessel: t.id, wok: held.id }) });
     }
     // ------------------------------------------------ containers → wok (mortar paste, chopped veg, eggs, rice)
-    if (CONTAINERS.has(hk!) && t.k === 'wok' && hasContents(held) && !(VESSELS.has(hk!) && hasFood(t) && (held.data?.rice ?? 0) > 1 && hk !== 'bowl')) {
+    if (CONTAINERS.has(hk!) && (t.k === 'wok' || (t.k === 'mix_bowl' && (hk === 'chopping_board' || hk === 'bowl'))) && hasContents(held) && !(VESSELS.has(hk!) && hasFood(t) && (held.data?.rice ?? 0) > 1 && hk !== 'bowl')) {
       const lbl = hk === 'mortar' ? 'เทกระเทียมพริกลงกระทะ' : hk === 'chopping_board' ? 'กวาดลงกระทะ' : hk === 'bowl' ? 'เทไข่ลงกระทะ' : 'เทข้าวลงกระทะ';
       let base = 0;
       const a = holdAct('pour', held, t, tl(lbl, 'pour in'), (VESSELS.has(hk!) && hk !== 'bowl') ? 6 : 7, () => `${Math.round(solidsOf(get(t.id)?.data) - base)} ก. ลงกระทะ`);

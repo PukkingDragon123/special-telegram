@@ -25,6 +25,8 @@ export function canPourInto(srcKind: string, dst: Ent | null | undefined): boole
   const d = ING[srcKind];
   switch (dst.k) {
     case 'wok': return !!d ? d.into !== 'raw' && d.into !== 'egg' && !d.cutOnly : ['mortar', 'chopping_board', 'bowl', 'plate', 'takeaway_box'].includes(srcKind);
+    // the stainless dessert basin: a cold wok (no oil / raw rice; chopped fruit from the board, sauces, ice)
+    case 'mix_bowl': return !!d ? d.into !== 'raw' && d.into !== 'egg' && d.into !== 'oil' && !d.cutOnly : ['chopping_board', 'bowl'].includes(srcKind);
     case 'mortar': return !!d?.mortar;
     case 'chopping_board': return !!d?.board;
     case 'bowl': return !!d?.bowl;
@@ -35,7 +37,7 @@ export function canPourInto(srcKind: string, dst: Ent | null | undefined): boole
 
 // ------------------------------------------------------------------ host scratch state
 
-const isVessel = (e: Ent) => e.k === 'wok' || e.k === 'mortar' || e.k === 'chopping_board' || e.k === 'bowl' || e.k === 'rice_pot';
+const isVessel = (e: Ent) => e.k === 'wok' || e.k === 'mix_bowl' || e.k === 'mortar' || e.k === 'chopping_board' || e.k === 'bowl' || e.k === 'rice_pot';
 function S(e: Ent): any {
   const js = JSON.stringify(e.data);
   if (!e._s || e._pub !== js) { e._s = JSON.parse(js ?? '{}'); e._pub = js; }
@@ -216,7 +218,7 @@ export function installCookIntents(game: Game) {
 
   game.onIntent('cook.plate', (pl, d: { vessel: number; wok: number }) => {
     const vessel = game.state.get(d.vessel), wok = game.state.get(d.wok);
-    if (!vessel || !wok || wok.k !== 'wok') return;
+    if (!vessel || !wok || (wok.k !== 'wok' && wok.k !== 'mix_bowl')) return;
     if (vessel.holder !== pl.id && wok.holder !== pl.id) return;
     if (!nearPlayer(game, pl, vessel, 3.6) || !nearPlayer(game, pl, wok, 3.6)) return;
     plateFromWok(game, pl, vessel, wok);
@@ -282,7 +284,7 @@ export function installCookIntents(game: Game) {
     const e = game.state.get(d.id);
     if (!e || !nearPlayer(game, pl, e, 3.4)) return;
     const p = entPos(game, e);
-    if (e.k === 'wok') e.data = { T: e.data?.T ?? 25, oil: 0, w: 0, it: {}, sa: {} };
+    if (e.k === 'wok' || e.k === 'mix_bowl') e.data = { T: e.data?.T ?? 25, oil: 0, w: 0, it: {}, sa: {} };
     else if (e.k === 'mortar') e.data = { it: {}, pound: 0 };
     else if (e.k === 'chopping_board') e.data = { it: {}, chop: 0 };
     else if (e.k === 'bowl') e.data = { dirty: true, rice: 0, egg: 0, whisk: 0, sa: {} };
@@ -482,6 +484,14 @@ export function cookHostUpdate(game: Game, dt: number) {
       if (idle) continue;
       simWok(game, e, s, dt, heat);
       if (pub) publish(e);
+    } else if (e.k === 'mix_bowl') {
+      // the dessert basin never sees a flame: contents drift back to the air temperature (ice melts in ~1–2 min)
+      const s = S(e);
+      const T = s.T ?? 28;
+      if (Math.abs(T - 30) < 0.3 && !s.st) continue;
+      s.T = T + (30 - T) * Math.min(1, dt * 0.012);
+      if (s.st) s.st = Math.max(0, s.st - dt * 2);
+      if (pub) publish(e);
     } else if (e.k === 'rice_pot') {
       const s = S(e);
       if (s.on) {
@@ -503,7 +513,7 @@ export function cookHostUpdate(game: Game, dt: number) {
       }
     } else if (e.k === 'dish' && slow) {
       const d = e.data;
-      if (!d || d.temp <= 0) continue;
+      if (!d || d.temp <= 0 || RECIPES[d.recipe]?.cold) continue;
       const t = Math.max(0, d.temp - 1 / ((d.takeaway ? 900 : 560)));
       const issues: string[] = d.issues ?? [];
       const cold = t < 0.35 && !issues.includes('cold');
@@ -529,8 +539,9 @@ function stepAct(game: Game, pl: Ent, a: Act, src: Ent | null | undefined, dst: 
       if (amt <= 0) return;
       const field = d.unit === 'ml' ? 'ml' : 'g';
       src.data = { ...src.data, [field]: rd(have - amt, 2) };
-      if (dst.k === 'wok') {
+      if (dst.k === 'wok' || dst.k === 'mix_bowl') {
         const T0 = addToWok(game, dst, src.k, amt);
+        if (dst.k === 'mix_bowl') { if ((dst._pubT = (dst._pubT ?? 0) + dt) > 0.1) { dst._pubT = 0; publish(dst); } return; }
         const liquidSauce = d.into === 'sa' && (d.unit === 'ml' || src.k === 'oyster_sauce' || src.k === 'soy_dark' || src.k === 'gravy_starch' || src.k === 'lime');
         if ((liquidSauce || d.into === 'w') && T0 > 205) flare(game, dst, Math.min(1, (T0 - 195) / 90) * (d.into === 'w' ? 0.6 : 1));
         if (d.into === 'w' && T0 > 150 && a.t < 0.1) sfx(game, ['steam_hiss', 'sizzle_burst'], entPos(game, dst), { vol: 0.8 });
@@ -552,7 +563,7 @@ function stepAct(game: Game, pl: Ent, a: Act, src: Ent | null | undefined, dst: 
       return;
     }
     case 'stir': {
-      if (dst.k !== 'wok') return;
+      if (dst.k !== 'wok' && dst.k !== 'mix_bowl') return;
       const s = S(dst);
       s.st = Math.min(1.5, (s.st ?? 0) + dt * 6 * skill('stir'));
       if (s.egg?.n) {
@@ -616,9 +627,9 @@ function stepAct(game: Game, pl: Ent, a: Act, src: Ent | null | undefined, dst: 
 
 /** Pour a container's contents (mortar paste, chopped veg, whisked eggs, plated rice, wok food) into the target. */
 function transferContainer(game: Game, pl: Ent, a: Act, src: Ent, dst: Ent, dt: number) {
-  if (src.k === 'wok') return; // wok → plate is 'cook.plate'
+  if (src.k === 'wok' || src.k === 'mix_bowl') return; // wok → plate is 'cook.plate'
   const s = S(src);
-  if (dst.k !== 'wok') return;
+  if (dst.k !== 'wok' && dst.k !== 'mix_bowl') return;
   const rate = 70 * dt;
   if (src.k === 'mortar' || src.k === 'chopping_board') {
     const prog = src.k === 'mortar' ? s.pound ?? 0 : s.chop ?? 0;

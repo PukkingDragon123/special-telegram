@@ -485,6 +485,7 @@ export function matchRecipe(w: WokData, allowed?: string[]): { id: string; score
       have += imp * Math.min(1, (it[k]?.g ?? 0) / (0.3 * v.g));
     }
     if (r.soup) { tot += 2; have += 2 * Math.min(1, (w.w ?? 0) / 150); }
+    if (r.cold && (w.T ?? 25) > 60) have -= 1;
     else if ((w.w ?? 0) > 120 && r.id !== 'rat_na') have -= 1.5;
     if (r.id === 'rat_na') { tot += 1.5; have += 1.5 * Math.min(1, (w.w ?? 0) / 100) * Math.min(1, (w.sa?.gravy_starch ?? 0) / 5); }
     let extras = 0;
@@ -628,11 +629,12 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
       const tags = def?.tags ?? [];
       const role = tags.includes('meat') ? 1 : tags.includes('starch') || k === 'rice_cooked' ? 0.7 : tags.includes('veg') ? 0.55 : tags.includes('aroma') ? 0.35 : 0.4;
       const wt = role * Math.sqrt(v.g);
-      const raw = clamp01(1 - v.c);
+      const raw = r.cold ? 0 : clamp01(1 - v.c);
       const burn = clamp01(v.b);
       wsum += wt; rawAcc += raw * wt; burnAcc += burn * wt;
       cookAcc += (burn - raw) * wt;
-      if (tags.includes('meat') && v.c < 0.75) issues.push(k.startsWith('pork') ? 'raw_pork' : k === 'shrimp' ? 'raw_shrimp' : 'raw_meat');
+      if (!r.cold && tags.includes('meat') && v.c < 0.75) issues.push(k.startsWith('pork') ? 'raw_pork' : k === 'shrimp' ? 'raw_shrimp' : tags.includes('seafood') ? 'raw_seafood' : 'raw_meat');
+      if (k === 'squid' && v.b > 0.25) issues.push('rubbery_squid');
       if (k === 'garlic' && v.b > 0.45) issues.push('burnt_garlic');
       if (cp.soggy && v.c > cp.soggy) { issues.push(k === 'holy_basil' ? 'soggy_basil' : 'soggy_veg'); texture -= 0.35; }
       if (def?.prep === 'chop' && (v.p ?? 0) < 0.5 && r.ing[k]) { issues.push('unchopped'); texture -= 0.25; }
@@ -640,7 +642,7 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
       if (cp.char && v.b > 0.08 && v.b < 0.4) texture += 0.1; // nice wok char
       if (tags.includes('aroma') || tags.includes('herb')) {
         aromaN++;
-        aroma += v.b > 0.45 ? 0.1 : v.c < 0.4 && !cp.soggy ? 0.5 : 1;
+        aroma += v.b > 0.45 ? 0.1 : r.cold ? 1 : v.c < 0.4 && !cp.soggy ? 0.5 : 1;
       }
       if (!r.ing[k] && v.g > Math.max(10, P.portion * 0.08) && !tags.includes('aroma')) issues.push('weird_' + k);
     }
@@ -649,7 +651,12 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
       if (v.req && g < v.g * 0.3) issues.push(k === 'holy_basil' ? 'no_basil' : 'no_' + k.split('_')[0]);
       else if (k === 'holy_basil' && g < v.g * 0.3) issues.push('no_basil');
     }
-    cooked = wsum > 0 ? Math.max(-1, Math.min(1, cookAcc / wsum * 1.2)) : 0;
+    cooked = r.cold ? 0 : wsum > 0 ? Math.max(-1, Math.min(1, cookAcc / wsum * 1.2)) : 0;
+    if (r.cold) {
+      const frozen = Object.keys(it).some((k) => (it[k]?.g ?? 0) > 5 && ING[k]?.tags?.includes('frozen'));
+      if (frozen && (w.T ?? 25) > 12) issues.push('melted');
+      if ((w.T ?? 25) > 42) issues.push('warm_dessert');
+    }
     const burnAvg = wsum > 0 ? burnAcc / wsum : 0;
     if (burnAvg > 0.5) issues.push('burnt');
     if ((w.ob ?? 0) > 0.5) issues.push('smoky');
@@ -682,7 +689,7 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
       + ww.aroma * aromaS + ww.texture * clamp01(texture) + ww.oil * oilS + ww.portion * portionS + (ww.sour ?? 0) * sc(sourDev);
     let den = ww.salt + ww.sweet + ww.spice + ww.cooked + ww.aroma + ww.texture + ww.oil + ww.portion + (ww.sour ?? 0);
     taste = num / den;
-    const pen: Record<string, number> = { unknown_recipe: 0.6, raw_pork: 0.35, raw_meat: 0.3, raw_shrimp: 0.25, burnt: 0.25, burnt_garlic: 0.1, wrong_dish: 0.3, no_basil: 0.12, smoky: 0.08, watery: 0.05, no_soup: 0.2, too_salty: 0.08, bland: 0.08, small_portion: 0.08, too_oily: 0.05, too_sweet: 0.05, too_spicy: 0.04, dry: 0.04 };
+    const pen: Record<string, number> = { melted: 0.18, warm_dessert: 0.25, raw_seafood: 0.3, rubbery_squid: 0.1, unknown_recipe: 0.6, raw_pork: 0.35, raw_meat: 0.3, raw_shrimp: 0.25, burnt: 0.25, burnt_garlic: 0.1, wrong_dish: 0.3, no_basil: 0.12, smoky: 0.08, watery: 0.05, no_soup: 0.2, too_salty: 0.08, bland: 0.08, small_portion: 0.08, too_oily: 0.05, too_sweet: 0.05, too_spicy: 0.04, dry: 0.04 };
     for (const i of issues) taste -= pen[i] ?? (i.startsWith('no_') ? 0.15 : i.startsWith('weird_') ? 0.05 : 0);
     taste += clamp01(w.wh ?? 0) * 0.06;
     // visuals
@@ -707,8 +714,8 @@ export function evaluate(w: WokData, o: EvalOpts = {}): Dish {
   if (rice > 0 && (o.riceWet ?? 0) < -0.35) issues.push('hard_rice');
   if (rice > 0 && (o.riceQ ?? 1) < 0.5) taste -= 0.08;
   if (R.rice > 0 && rice > 0) taste = taste * 0.92 + 0.08 * clamp01(1 - Math.abs(Math.log(rice / R.rice)) / Math.log(2.5));
-  const temp = rice > 0 ? tempFood * 0.75 + 0.25 * 0.8 : tempFood;
-  if (temp < 0.35) issues.push('cold');
+  const temp = R.cold ? 0.95 : rice > 0 ? tempFood * 0.75 + 0.25 * 0.8 : tempFood;
+  if (temp < 0.35 && !R.cold) issues.push('cold');
   if (!o.spoon) issues.push('no_spoon');
   const uniq = [...new Set(issues)];
   return {
