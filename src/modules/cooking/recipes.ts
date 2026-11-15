@@ -62,6 +62,10 @@ export interface Recipe {
   tips?: string[];
   /** scribbled note at the bottom of the page */
   note?: string;
+  /** COLD dish (dessert / yam): assembled in the stainless basin, never cooked; served cold, melts */
+  cold?: boolean;
+  /** menu group (shown in the book / used by customers: desserts come after a main) */
+  group?: 'main' | 'seafood' | 'premium' | 'dessert';
 }
 
 const W = (o: Partial<Recipe['w']> = {}): Recipe['w'] => ({ salt: 0.24, sweet: 0.1, spice: 0.1, cooked: 0.24, aroma: 0.1, texture: 0.08, oil: 0.06, portion: 0.08, ...o });
@@ -214,12 +218,188 @@ export const RECIPES: Record<string, Recipe> = {
       'ตักใส่จานเร็วๆ ผักยังกรอบเขียว',
     ],
   },
+
+  // ======================================================================== ROUND 5: seafood
+  kaphrao_talay: {
+    id: 'kaphrao_talay', group: 'seafood', name: { th: 'กะเพราทะเล', en: 'Holy basil seafood' }, vessel: 'plate', rice: 200, egg: 'topping',
+    ing: { squid: { g: 60, req: true, imp: 2 }, shrimp: { g: 50, req: true, imp: 2 }, mussels: { g: 40, imp: 1.2 }, holy_basil: { g: 18, req: true, imp: 2 }, garlic: { g: 15, imp: 1.2 }, chili: { g: 6, imp: 1.2 } },
+    sa: { oyster_sauce: 10, soy_light: 5, fish_sauce: 5, sugar: 4 },
+    oil: 20, water: 20, heat: { th: 'ไฟแรงสุด', en: 'max heat' }, time: 70, w: W({ aroma: 0.12 }), price: 90,
+    steps: ['ตำกระเทียม 15 พริก 6', 'น้ำมัน 20 ไฟแรงๆ เจียวกระเทียมพริก', 'ปลาหมึก 60 กุ้ง 50 หอยแมลงภู่ 40 ผัดเร็วๆ อย่านาน เดี๋ยวเหนียว!', 'หอยนางรม 10 ซีอิ๊วขาว 5 น้ำปลา 5 น้ำตาล 4 น้ำ 20', 'กะเพรา 18 ท้ายสุด', 'ราดข้าว + ไข่ดาว'],
+    note: 'ปลาหมึกผัดนาน = ยางรถ',
+  },
+  muek_khai_khem: {
+    id: 'muek_khai_khem', group: 'seafood', name: { th: 'ปลาหมึกผัดไข่เค็ม', en: 'Squid with salted egg' }, vessel: 'plate', rice: 200,
+    ing: { squid: { g: 150, req: true, imp: 3 }, salted_egg: { g: 60, req: true, imp: 2.5 }, onion: { g: 30, imp: 0.8 }, spring_onion: { g: 6, imp: 0.4 }, garlic: { g: 8, imp: 0.8 } },
+    sa: { oyster_sauce: 6, sugar: 3 },
+    oil: 25, water: 10, heat: { th: 'ไฟกลาง-แรง', en: 'medium-high' }, time: 75, w: W({ spice: 0.02, aroma: 0.12 }), price: 120,
+    steps: ['น้ำมัน 25 กระเทียม 8', 'ไข่เค็ม 60 ก. ยีๆ ในกระทะจนฟูเป็นฟอง', 'ปลาหมึก 150 + หอมใหญ่ 30 ผัดเร็วๆ', 'หอยนางรม 6 น้ำตาล 3', 'ต้นหอมโรย ตักราดข้าว'],
+  },
+  pu_phat_phong_kari: {
+    id: 'pu_phat_phong_kari', group: 'premium', name: { th: 'ปูผัดผงกะหรี่', en: 'Curry-powder blue crab' }, vessel: 'plate', rice: 0,
+    ing: { crab_pieces: { g: 200, req: true, imp: 3 }, egg_scr: { g: 50, req: true, imp: 1.5 }, onion: { g: 40, imp: 0.8 }, spring_onion: { g: 8, imp: 0.4 }, garlic: { g: 10, imp: 0.6 } },
+    sa: { curry_powder: 6, evaporated_milk: 40, oyster_sauce: 10, soy_light: 5, sugar: 4 },
+    oil: 25, water: 30, heat: { th: 'ไฟแรง', en: 'high heat' }, time: 110, w: W({ spice: 0.05, aroma: 0.1, texture: 0.1 }), price: 380,
+    steps: ['ปูม้าล้างให้สะอาด ขึ้นเขียงสับเป็นชิ้น', 'น้ำมัน 25 กระเทียม 10 หอมใหญ่ 40', 'ปู 200 ก. ผัดจนเปลือกแดง', 'น้ำ 30 ผงกะหรี่ 6 หอยนางรม 10 ซีอิ๊ว 5 น้ำตาล 4', 'ตอกไข่ใส่นมข้นจืด 40 เทลงไป คนช้าๆ ให้เป็นปุยๆ', 'ต้นหอมโรย ใส่จานใหญ่'],
+    note: 'ราคาจานละสามร้อยกว่า ทำพังลูกค้าฟ้องแม่',
+  },
+  khao_phat_pu: {
+    id: 'khao_phat_pu', group: 'premium', name: { th: 'ข้าวผัดปู', en: 'Crab fried rice' }, vessel: 'plate', rice: 0,
+    ing: { rice_cooked: { g: 230, req: true, imp: 3 }, crab_meat: { g: 70, req: true, imp: 3 }, egg_scr: { g: 50, imp: 1.5 }, garlic: { g: 10, imp: 1 }, spring_onion: { g: 6, imp: 0.5 } },
+    sa: { soy_light: 8, fish_sauce: 2, sugar: 2 },
+    oil: 25, heat: { th: 'ไฟแรง', en: 'high heat' }, time: 85, w: W({ spice: 0.02, texture: 0.12 }), price: 180,
+    steps: ['น้ำมัน 25 กระเทียม 10', 'ตอกไข่ คนให้สุก', 'ข้าวสวย 230 ผัดให้ร่วน', 'ซีอิ๊วขาว 8 น้ำปลา 2 น้ำตาล 2', 'เนื้อปู 70 ใส่ท้าย คลุกเบาๆ อย่าให้แหลก', 'ต้นหอม มะนาวข้างจาน'],
+  },
+  kung_phao: {
+    id: 'kung_phao', group: 'premium', name: { th: 'กุ้งแม่น้ำเผา', en: 'Grilled river prawns' }, vessel: 'plate', rice: 0,
+    ing: { river_prawn: { g: 250, req: true, imp: 4 }, garlic: { g: 8, imp: 0.6 }, chili: { g: 6, imp: 0.6 } },
+    sa: { fish_sauce: 10, lime: 15, sugar: 3 },
+    oil: 8, heat: { th: 'ไฟแรง ย่างแห้งๆ', en: 'high dry heat' }, time: 70, w: W({ salt: 0.15, sweet: 0.05, spice: 0.08, cooked: 0.35, aroma: 0.07, texture: 0.12, oil: 0.03, portion: 0.1, sour: 0.05 }), price: 450,
+    steps: ['กุ้งแม่น้ำ 2 ตัว (250 ก.) ล้างนิด', 'กระทะร้อนจัด น้ำมันแค่ 8 มล. เอาให้เปลือกไหม้นิดๆ หอมๆ', 'พลิกกุ้งจนเปลือกแดงทั้งตัว มันกุ้งเยิ้ม', 'น้ำจิ้มซีฟู้ด: น้ำปลา 10 มะนาว 15 พริก กระเทียม น้ำตาล 3', 'จัดใส่จาน มันกุ้งต้องโชว์'],
+    note: 'ห้ามไหม้ ตัวละ 225 บาทนะมึง',
+  },
+  tom_yam_nam_khon: {
+    id: 'tom_yam_nam_khon', group: 'premium', name: { th: 'ต้มยำกุ้งแม่น้ำน้ำข้น', en: 'Creamy river-prawn tom yum' }, vessel: 'bowl', rice: 0, soup: true,
+    ing: { river_prawn: { g: 200, req: true, imp: 3 }, lemongrass: { g: 15, req: true, imp: 1.5 }, galangal: { g: 10, imp: 1 }, kaffir_lime: { g: 3, imp: 1 }, mushroom: { g: 60, imp: 1 }, chili: { g: 6, imp: 1 } },
+    sa: { fish_sauce: 15, lime: 15, tomyum_paste: 20, evaporated_milk: 60, sugar: 3 },
+    oil: 0, water: 400, heat: { th: 'ต้มเดือด', en: 'boil' }, time: 130,
+    w: W({ salt: 0.2, sweet: 0.05, spice: 0.15, cooked: 0.2, aroma: 0.15, texture: 0.05, oil: 0, portion: 0.08, sour: 0.15 }), price: 220,
+    steps: ['น้ำ 400 เดือด ตะไคร้ ข่า ใบมะกรูด', 'เห็ด 60 กุ้งแม่น้ำ 200 ต้มพอสุก', 'น้ำปลา 15 น้ำพริกเผา 20 น้ำตาล 3', 'นมข้นจืด 60 ให้น้ำข้นๆ', 'ปิดไฟ บีบมะนาว 15'],
+  },
+  hoi_thot: {
+    id: 'hoi_thot', group: 'seafood', name: { th: 'หอยทอด', en: 'Crispy oyster pancake' }, vessel: 'plate', rice: 0,
+    ing: { oysters: { g: 100, req: true, imp: 3 }, batter: { g: 80, req: true, imp: 2.5 }, egg_scr: { g: 50, imp: 1.5 }, bean_sprouts: { g: 50, imp: 1 }, spring_onion: { g: 6, imp: 0.4 } },
+    sa: { fish_sauce: 4, soy_light: 4 },
+    oil: 50, heat: { th: 'ไฟแรง น้ำมันเยอะ', en: 'high heat, lots of oil' }, time: 90, w: W({ spice: 0.02, texture: 0.2, cooked: 0.28 }), price: 120,
+    steps: ['น้ำมัน 50 ร้อนจัด', 'เทแป้ง 80 ให้แผ่ ทอดจนกรอบ', 'หอยนางรม 100 วางบน ตอกไข่ใส่', 'กลับด้าน (R) ให้กรอบทั้งสองฝั่ง', 'น้ำปลา 4 ซีอิ๊ว 4', 'ถั่วงอกผัดไฟแรงรองจาน ต้นหอมโรย'],
+  },
+  pla_neung_manao: {
+    id: 'pla_neung_manao', group: 'premium', name: { th: 'ปลากะพงนึ่งมะนาว', en: 'Steamed sea bass, lime & chili' }, vessel: 'bowl', rice: 0, soup: true,
+    ing: { fish_fillet: { g: 220, req: true, imp: 3 }, garlic: { g: 15, imp: 1.2 }, chili: { g: 8, imp: 1.2 } },
+    sa: { lime: 25, fish_sauce: 15, sugar: 6 },
+    oil: 0, water: 250, heat: { th: 'ไฟกลาง ต้มเบาๆ', en: 'gentle simmer' }, time: 100,
+    w: W({ salt: 0.2, sweet: 0.08, spice: 0.12, cooked: 0.25, aroma: 0.08, texture: 0.05, oil: 0, portion: 0.08, sour: 0.2 }), price: 280,
+    steps: ['ปลากะพงทั้งตัว ล้าง แล้วขึ้นเขียงแล่เป็นชิ้น', 'น้ำ 250 เดือดเบาๆ ใส่ปลา 220 ก.', 'น้ำยำ: มะนาว 25 น้ำปลา 15 น้ำตาล 6 กระเทียม 15 พริก 8', 'ปิดไฟ ราดน้ำยำ', 'ตักใส่ชามเปลรอบๆ น้ำซุปเปรี้ยวจี๊ด'],
+  },
+  hoi_shell_noei: {
+    id: 'hoi_shell_noei', group: 'premium', name: { th: 'หอยเชลล์ผัดเนยกระเทียม', en: 'Garlic-butter scallops' }, vessel: 'plate', rice: 0,
+    ing: { scallop: { g: 150, req: true, imp: 3.5 }, garlic: { g: 15, req: true, imp: 1.5 }, spring_onion: { g: 5, imp: 0.4 } },
+    sa: { butter: 25, soy_light: 4, white_pepper: 1 },
+    oil: 5, heat: { th: 'ไฟแรง จี่ให้เกรียม', en: 'hot sear' }, time: 60, w: W({ spice: 0.02, aroma: 0.15, texture: 0.15 }), price: 420,
+    steps: ['กระทะร้อนจัด น้ำมันนิดเดียว 5', 'หอยเชลล์ 150 จี่ด้านเดียวให้เกรียมทอง ห้ามขยับ!', 'เนย 25 กระเทียม 15 ราดๆ ให้หอม', 'ซีอิ๊ว 4 พริกไทย 1', 'ต้นหอมโรย เสิร์ฟร้อนๆ'],
+  },
+  kaphrao_wagyu: {
+    id: 'kaphrao_wagyu', group: 'premium', name: { th: 'กะเพราวากิว A5 ราดน้ำมันทรัฟเฟิล', en: 'A5 wagyu kaphrao, truffle oil' }, vessel: 'plate', rice: 200, egg: 'topping',
+    ing: { wagyu: { g: 120, req: true, imp: 3.5 }, holy_basil: { g: 18, req: true, imp: 2 }, garlic: { g: 15, imp: 1.2 }, chili: { g: 6, imp: 1.2 } },
+    sa: { oyster_sauce: 8, soy_light: 4, fish_sauce: 4, sugar: 3, truffle_oil: 3 },
+    oil: 12, water: 10, heat: { th: 'ไฟแรงสุด เร็วๆ', en: 'max heat, fast' }, time: 55, w: W({ aroma: 0.14 }), price: 590,
+    steps: ['วากิวอย่าผัดนาน! สุกแค่ medium', 'น้ำมัน 12 กระเทียม 15 พริก 6', 'วากิว 120 เขย่า 15 วิ', 'หอยนางรม 8 ซีอิ๊ว 4 น้ำปลา 4 น้ำตาล 3', 'กะเพรา 18 ปิดไฟ', 'ราดข้าวหอมมะลิ + ไข่ดาว + น้ำมันทรัฟเฟิล 3 มล. ให้ลูกค้าเห็นตอนราด'],
+    note: 'กะเพราจานละ 590 ไฮโซเท่านั้นที่สั่ง 555',
+  },
+  yam_salmon: {
+    id: 'yam_salmon', group: 'premium', cold: true, name: { th: 'ยำแซลมอน', en: 'Spicy salmon salad' }, vessel: 'plate', rice: 0,
+    ing: { salmon: { g: 120, req: true, imp: 3 }, onion: { g: 30, imp: 1 }, chili: { g: 6, imp: 1 }, spring_onion: { g: 6, imp: 0.5 }, lemongrass: { g: 8, imp: 0.6 } },
+    sa: { lime: 20, fish_sauce: 12, sugar: 6 },
+    oil: 0, heat: { th: 'ไม่ใช้ไฟ (ผสมในกะละมัง)', en: 'no fire (mix in the basin)' }, time: 50,
+    w: W({ salt: 0.24, sweet: 0.1, spice: 0.14, cooked: 0, aroma: 0.12, texture: 0.12, oil: 0, portion: 0.1, sour: 0.18 }), price: 260,
+    steps: ['แซลมอน 120 ก. หั่นเต๋าบนเขียง', 'หอมใหญ่ 30 ตะไคร้ 8 ซอยบางๆ', 'ทุกอย่างลงกะละมังขนม (ห้ามขึ้นเตา!)', 'มะนาว 20 น้ำปลา 12 น้ำตาล 6 พริก 6 คลุกเบาๆ', 'ต้นหอมโรย ตักใส่จาน เสิร์ฟเย็นๆ'],
+  },
+  // ======================================================================== ROUND 5: desserts
+  khao_niao_mamuang: {
+    id: 'khao_niao_mamuang', group: 'dessert', cold: true, name: { th: 'ข้าวเหนียวมะม่วง', en: 'Mango sticky rice' }, vessel: 'plate', rice: 0,
+    ing: { sticky_rice: { g: 150, req: true, imp: 3 }, mango: { g: 180, req: true, imp: 3 } },
+    sa: { coconut_milk: 40, sugar: 6 },
+    oil: 0, heat: { th: 'ไม่ใช้ไฟ', en: 'no fire' }, time: 40,
+    w: W({ salt: 0.05, sweet: 0.35, spice: 0.02, cooked: 0, aroma: 0.05, texture: 0.15, oil: 0, portion: 0.2 }), price: 120,
+    steps: ['ข้าวเหนียวมูน 150 ลงกะละมังขนม', 'มะม่วงสุก 180 หั่นบนเขียงก่อน', 'ราดกะทิ 40 น้ำตาล 6', 'ตักใส่จาน โรยงา (ถ้ามี)'],
+    note: 'มะม่วงต้องหวาน ไม่งั้นลูกค้าด่าเป็นภาษาอังกฤษ',
+  },
+  bua_loi: {
+    id: 'bua_loi', group: 'dessert', name: { th: 'บัวลอยน้ำกะทิ', en: 'Bua loi in coconut milk' }, vessel: 'bowl', rice: 0, soup: true,
+    ing: { bua_loi_balls: { g: 120, req: true, imp: 3 } },
+    sa: { coconut_milk: 150, palm_sugar: 30 },
+    oil: 0, water: 220, heat: { th: 'ต้มไฟอ่อน', en: 'gentle boil' }, time: 70,
+    w: W({ salt: 0.05, sweet: 0.35, spice: 0.02, cooked: 0.25, aroma: 0.03, texture: 0.1, oil: 0, portion: 0.15 }), price: 40,
+    steps: ['น้ำ 220 ต้มเดือด', 'แป้งบัวลอย 120 ใส่ทีละนิด ลอยขึ้นมา = สุก', 'กะทิ 150 น้ำตาลปี๊บ 30 คนเบาๆ ห้ามเดือดแรง กะทิแตก', 'ตักใส่ถ้วย'],
+  },
+  kluay_buat_chi: {
+    id: 'kluay_buat_chi', group: 'dessert', name: { th: 'กล้วยบวชชี', en: 'Bananas in coconut milk' }, vessel: 'bowl', rice: 0, soup: true,
+    ing: { banana: { g: 150, req: true, imp: 3 } },
+    sa: { coconut_milk: 180, palm_sugar: 25 },
+    oil: 0, water: 200, heat: { th: 'ต้มไฟอ่อน', en: 'gentle boil' }, time: 70,
+    w: W({ salt: 0.05, sweet: 0.35, spice: 0.02, cooked: 0.25, aroma: 0.03, texture: 0.1, oil: 0, portion: 0.15 }), price: 45,
+    steps: ['กล้วยน้ำว้า 150 หั่นท่อนบนเขียง', 'น้ำ 200 + กะทิ 180 อุ่นไฟอ่อน', 'ใส่กล้วย ต้มจนนิ่ม', 'น้ำตาลปี๊บ 25 เกลือนิดนึง', 'ตักใส่ถ้วย'],
+  },
+  thapthim_krop: {
+    id: 'thapthim_krop', group: 'dessert', cold: true, name: { th: 'ทับทิมกรอบ', en: 'Tub tim krob' }, vessel: 'bowl', rice: 0,
+    ing: { thapthim: { g: 100, req: true, imp: 3 }, shaved_ice: { g: 120, req: true, imp: 2 } },
+    sa: { coconut_milk: 80, red_syrup: 25 },
+    oil: 0, heat: { th: 'ไม่ใช้ไฟ เย็นจัด', en: 'no fire, ice cold' }, time: 30,
+    w: W({ salt: 0.03, sweet: 0.35, spice: 0.02, cooked: 0, aroma: 0.03, texture: 0.15, oil: 0, portion: 0.2 }), price: 45,
+    steps: ['ทับทิมกรอบ 100 ลงกะละมังขนม', 'น้ำแข็งไส 120', 'กะทิ 80 น้ำแดง 25', 'ตักใส่ถ้วย เร็วๆ ก่อนน้ำแข็งละลาย'],
+  },
+  lot_chong_nam_kathi: {
+    id: 'lot_chong_nam_kathi', group: 'dessert', cold: true, name: { th: 'ลอดช่องน้ำกะทิ', en: 'Lot chong in coconut milk' }, vessel: 'bowl', rice: 0,
+    ing: { lot_chong: { g: 120, req: true, imp: 3 }, shaved_ice: { g: 100, req: true, imp: 2 } },
+    sa: { coconut_milk: 100, palm_sugar: 20 },
+    oil: 0, heat: { th: 'ไม่ใช้ไฟ', en: 'no fire' }, time: 30,
+    w: W({ salt: 0.03, sweet: 0.35, spice: 0.02, cooked: 0, aroma: 0.03, texture: 0.15, oil: 0, portion: 0.2 }), price: 40,
+    steps: ['ลอดช่อง 120 ลงกะละมัง', 'กะทิ 100 น้ำตาลปี๊บ 20', 'น้ำแข็งไส 100', 'ตักใส่ถ้วย'],
+  },
+  itim_kathi: {
+    id: 'itim_kathi', group: 'dessert', cold: true, name: { th: 'ไอติมกะทิข้าวเหนียว', en: 'Coconut ice cream, sticky rice' }, vessel: 'bowl', rice: 0,
+    ing: { icecream_coconut: { g: 150, req: true, imp: 3 }, sticky_rice: { g: 40, imp: 1 }, peanuts: { g: 10, imp: 0.8 } },
+    sa: {},
+    oil: 0, heat: { th: 'ไม่ใช้ไฟ', en: 'no fire' }, time: 25,
+    w: W({ salt: 0.02, sweet: 0.3, spice: 0.02, cooked: 0, aroma: 0.03, texture: 0.15, oil: 0, portion: 0.25 }), price: 50,
+    steps: ['ข้าวเหนียวมูน 40 รองก้นถ้วย', 'ไอติมกะทิ 150 ตักเป็นลูกๆ', 'ถั่วลิสงคั่ว 10 โรย', 'เสิร์ฟทันที ละลายแล้วลูกค้าเศร้า'],
+  },
+  bingsu_mamuang: {
+    id: 'bingsu_mamuang', group: 'dessert', cold: true, name: { th: 'บิงซูมะม่วง', en: 'Mango bingsu' }, vessel: 'bowl', rice: 0,
+    ing: { shaved_ice: { g: 200, req: true, imp: 3 }, mango: { g: 80, req: true, imp: 2 } },
+    sa: { condensed_milk: 25, red_syrup: 10 },
+    oil: 0, heat: { th: 'ไม่ใช้ไฟ เย็นจัด', en: 'no fire, ice cold' }, time: 30,
+    w: W({ salt: 0.02, sweet: 0.35, spice: 0.02, cooked: 0, aroma: 0.03, texture: 0.15, oil: 0, portion: 0.2 }), price: 120,
+    steps: ['น้ำแข็งไส 200 กองในกะละมัง', 'มะม่วง 80 หั่นเต๋า', 'นมข้นหวาน 25 น้ำแดงนิดเดียว 10', 'ตักใส่ถ้วยเป็นภูเขา ถ่ายรูปลงไอจี'],
+  },
+  roti_kluay_khai: {
+    id: 'roti_kluay_khai', group: 'dessert', name: { th: 'โรตีกล้วยไข่', en: 'Banana-egg roti' }, vessel: 'plate', rice: 0,
+    ing: { roti_dough: { g: 80, req: true, imp: 3 }, banana: { g: 60, req: true, imp: 2 }, egg_scr: { g: 50, imp: 1.5 } },
+    sa: { condensed_milk: 20, sugar: 6 },
+    oil: 30, heat: { th: 'กระทะแบนๆ ไฟกลาง', en: 'medium griddle' }, time: 80,
+    w: W({ salt: 0.03, sweet: 0.3, spice: 0.02, cooked: 0.28, aroma: 0.05, texture: 0.17, oil: 0.05, portion: 0.1 }), price: 50,
+    steps: ['น้ำมัน 30 ไฟกลาง', 'แป้งโรตี 80 ตีให้บาง แผ่ลงกระทะ', 'ตอกไข่ + กล้วยหั่น 60 วางกลาง พับเป็นสี่เหลี่ยม', 'ทอดจนกรอบทอง กลับด้าน', 'หั่นเป็นชิ้น ราดนมข้นหวาน 20 น้ำตาล 6'],
+    note: 'บังโรตีปากซอยทำวันละสามร้อยแผ่น อย่าไปแข่งเลย',
+  },
 };
 
 export const RECIPE_IDS = Object.keys(RECIPES);
+export const SEAFOOD_RECIPES = ['kaphrao_talay', 'muek_khai_khem', 'hoi_thot'];
+export const PREMIUM_RECIPES = ['pu_phat_phong_kari', 'khao_phat_pu', 'kung_phao', 'tom_yam_nam_khon', 'pla_neung_manao', 'hoi_shell_noei', 'kaphrao_wagyu', 'yam_salmon'];
+export const DESSERT_RECIPES = ['khao_niao_mamuang', 'bua_loi', 'kluay_buat_chi', 'thapthim_krop', 'lot_chong_nam_kathi', 'itim_kathi', 'bingsu_mamuang', 'roti_kluay_khai'];
+export const isDessert = (id: string | undefined) => !!id && RECIPES[id]?.group === 'dessert';
 
 /** how each recipe is unlocked (shown on locked recipe-book pages). Sources: quests module, levels, the old man. */
 export const RECIPE_UNLOCK_HINT: Record<string, TL> = {
+  kaphrao_talay: { th: 'ซื้อสูตรจากเจ๊ปลา แผงทะเล (80 ฿)', en: "buy Jeh Pla's card at the seafood stall (80 ฿)" },
+  muek_khai_khem: { th: 'ซื้อสูตรจากเจ๊ปลา แผงทะเล (120 ฿)', en: "buy Jeh Pla's card (120 ฿)" },
+  hoi_thot: { th: 'ซื้อสูตรจากเจ๊ปลา แผงทะเล (150 ฿)', en: "buy Jeh Pla's card (150 ฿)" },
+  pu_phat_phong_kari: { th: 'สูตรพรีเมียม: เจ๊ปลาขาย 450 ฿ (วันที่ 3+)', en: 'premium card from Jeh Pla, 450 ฿ (day 3+)' },
+  khao_phat_pu: { th: 'สูตรพรีเมียม: เจ๊ปลาขาย 250 ฿', en: 'premium card from Jeh Pla, 250 ฿' },
+  kung_phao: { th: 'สูตรพรีเมียม: เจ๊ปลาขาย 350 ฿', en: 'premium card from Jeh Pla, 350 ฿' },
+  tom_yam_nam_khon: { th: 'ทำต้มยำกุ้งเป็นก่อน แล้วซื้อสูตรน้ำข้นจากเจ๊ปลา 300 ฿', en: 'know tom yum, then buy the creamy card (300 ฿)' },
+  pla_neung_manao: { th: 'สูตรพรีเมียม: เจ๊ปลาขาย 400 ฿', en: 'premium card from Jeh Pla, 400 ฿' },
+  hoi_shell_noei: { th: 'สูตรพรีเมียม: เจ๊ปลาขาย 500 ฿', en: 'premium card from Jeh Pla, 500 ฿' },
+  kaphrao_wagyu: { th: 'สูตรไฮโซ: เจ๊ปลาขาย 900 ฿ (ต้องเคยขายกะเพรา)', en: 'hi-so card, 900 ฿' },
+  yam_salmon: { th: 'สูตรพรีเมียม: เจ๊ปลาขาย 350 ฿', en: 'premium card from Jeh Pla, 350 ฿' },
+  khao_niao_mamuang: { th: 'ซื้อสูตรจากป้าหวาน แผงขนม (100 ฿)', en: "buy Auntie Waan's card at the dessert stall (100 ฿)" },
+  bua_loi: { th: 'ป้าหวานแผงขนมสอนให้ฟรี แค่ทักป้า', en: 'Auntie Waan teaches it for free' },
+  kluay_buat_chi: { th: 'ป้าหวานแผงขนมสอนให้ฟรี แค่ทักป้า', en: 'Auntie Waan teaches it for free' },
+  thapthim_krop: { th: 'ซื้อสูตรจากป้าหวาน (80 ฿)', en: "Auntie Waan's card (80 ฿)" },
+  lot_chong_nam_kathi: { th: 'ซื้อสูตรจากป้าหวาน (60 ฿)', en: "Auntie Waan's card (60 ฿)" },
+  itim_kathi: { th: 'ซื้อสูตรจากป้าหวาน (60 ฿)', en: "Auntie Waan's card (60 ฿)" },
+  bingsu_mamuang: { th: 'ซื้อสูตรจากป้าหวาน (150 ฿)', en: "Auntie Waan's card (150 ฿)" },
+  roti_kluay_khai: { th: 'ซื้อสูตรจากป้าหวาน (100 ฿)', en: "Auntie Waan's card (100 ฿)" },
   kaphrao_moo: { th: 'สูตรติดรถเข็นมาตั้งแต่แรก', en: 'came with the cart' },
   khai_dao: { th: 'สูตรติดรถเข็นมาตั้งแต่แรก', en: 'came with the cart' },
   khai_jiao: { th: 'ลุงเจ้าของรถเข็นจะเอาหน้ากระดาษมาให้เช้าวันที่ 2', en: 'the old man brings the page on day 2' },
@@ -558,7 +738,7 @@ export const ISSUE_TH: Record<string, string> = {
   no_basil: 'ไม่มีกะเพรา?!', too_oily: 'มันเยิ้ม', dry: 'แห้งไป', too_salty: 'เค็มปี๋', bland: 'จืด', too_sweet: 'หวานเจี๊ยบ', too_spicy: 'เผ็ดตายห่า',
   not_spicy: 'ไม่เผ็ดเลย', cold: 'เย็นชืด', no_rice: 'ไม่มีข้าว', small_portion: 'น้อยจัง', wrong_dish: 'อะไรเนี่ย?', watery: 'แฉะ', raw_egg: 'ไข่ดิบ',
   burnt_egg: 'ไข่ไหม้', soggy_egg: 'ไข่ไม่กรอบ', smoky: 'เหม็นควัน', unchopped: 'ไม่ได้หั่น', unpounded: 'กระเทียมเม็ดๆ', no_soup: 'น้ำแห้ง',
-  not_sour: 'ไม่เปรี้ยว', too_sour: 'เปรี้ยวจี๊ด', mushy_rice: 'ข้าวแฉะ', hard_rice: 'ข้าวแข็ง', not_flipped: 'ไม่ได้กลับ', not_whisked: 'ตีไข่ไม่แตก', soggy_veg: 'ผักเละ',
+  not_sour: 'ไม่เปรี้ยว', too_sour: 'เปรี้ยวจี๊ด', melted: 'ละลายหมดแล้ว!', warm_dessert: 'ของหวานร้อนๆ?!', raw_seafood: 'ซีฟู้ดยังดิบ!', rubbery_squid: 'ปลาหมึกเหนียวเป็นยาง', mushy_rice: 'ข้าวแฉะ', hard_rice: 'ข้าวแข็ง', not_flipped: 'ไม่ได้กลับ', not_whisked: 'ตีไข่ไม่แตก', soggy_veg: 'ผักเละ',
 };
 
 export function qualityWord(taste: number): string {
