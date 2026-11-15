@@ -291,7 +291,7 @@ export class MenuScene implements SceneDef {
         const sq = 1 + wob;
         s.rig.root.scale.set(grow / Math.sqrt(sq), grow * sq, grow / Math.sqrt(sq));
       } else s.rig.root.scale.setScalar(1);
-      if (s === this.puller()) this.jengaHand(s); else if ((s as any).jgOn) { (s.rig as any).reach?.(-1, null); (s as any).jgOn = false; }
+      if (s === this.puller()) this.jengaHand(s); else if ((s as any).jgOn) { (s.rig as any).reach?.(-1, null); (s as any).jgOn = false; if (s.block) { s.block.visible = true; s.block.scale.setScalar(1); } }
       s.rig.update(rdt);
       if (s.fit !== undefined && --s.fit <= 0) { s.fit = undefined; this.fitSeat(s); }
     }
@@ -378,9 +378,9 @@ export class MenuScene implements SceneDef {
   }
 
   // ------------------------------------------------------------------ jenga: a real hand pull (body fork)
-  /** who pulls: G3 when seated, else the first seated jenga player (single player: your own guy, slot 0) */
+  /** who pulls: G1 (slot 0, always seated — the tower sits at his end of the table, within arm's reach), else G3/G4 */
   private puller(): SlotView | null {
-    for (const i of [2, 3, 0]) { const s = this.slots[i]; if (s?.rig && s.out === undefined && s.pop <= 0 && SLOTS[i].pose === 'jenga_pull') return s; }
+    for (const i of [0, 2, 3]) { const s = this.slots[i]; if (s?.rig && s.out === undefined && s.pop <= 0 && SLOTS[i].pose === 'jenga_pull') return s; }
     return null;
   }
   private jgEnd = new THREE.Vector3(); private jgAx = new THREE.Vector3(); private jgTmp = new THREE.Vector3(); private jgExpr = ''; private jgGap = 0;
@@ -393,7 +393,6 @@ export class MenuScene implements SceneDef {
     const rig: any = s.rig!;
     if (!rig.reach) return;
     (s as any).jgOn = true;
-    if (s.block) s.block.visible = false;   // both hands are needed for the real thing
     const P = 8.5, u = (window as any).__jgU ?? (this.t + s.i * 1.7) % P;   // dev: __jgU pins the loop time
     const from = rig.attach('hand_r').getWorldPosition(this.jgTmp);
     if (!this.jenga.grip(from, this.jgEnd, this.jgAx)) { rig.reach(-1, null); return; }
@@ -409,6 +408,8 @@ export class MenuScene implements SceneDef {
     this.jenga.wobble(Math.max(this.game.players().length >= 4 ? 1 : 0, out / 0.04 * 0.35 + nervous * 0.9));
     // arm weight + wrist target (wrist sits ~7.5 cm behind the pinching fingertips, a little above the block)
     const w = ease(0.6, 1.6, u) * (1 - ease(6.6, 7.6, u));
+    // the album-cover block in his other hand while resting; tucked away (shrinks) while both hands work the tower
+    if (s.block) { const k = Math.max(0.001, 1 - Math.min(1, w * 5)); s.block.visible = k > 0.01; s.block.scale.setScalar(k); }
     const back = 0.075 + 0.05 * (1 - ease(1.6, 2.1, u)) + 0.03 * ease(6.2, 6.7, u);
     const wig = Math.sin(u * 23) * 0.0018 * ease(2.1, 2.4, u) * (1 - ease(4.6, 4.9, u)) + Math.sin(u * 31) * 0.002 * nervous;
     const side = this.jgTmp.set(0, 1, 0).cross(this.jgAx).normalize();
@@ -426,7 +427,8 @@ export class MenuScene implements SceneDef {
     rig.root.position.set(sl.x, rig.root.position.y, sl.z);
     rig.reach(-1, w > 0.002 ? tgt : null, { w, shape });
     this.jgGap = w > 0.9 ? rig.attach('hand_r').getWorldPosition(new THREE.Vector3()).distanceTo(tgt) : 0;
-    rig.lookAt(w > 0.05 ? this.jgEnd : TOWER_LOOK);
+    // eyes on the block but not chin-to-chest (the tall toque would hide his face from the menu camera)
+    rig.lookAt(w > 0.05 ? this.jgTmp.copy(this.jgEnd).add(new THREE.Vector3(0, 0.42, 0)) : TOWER_LOOK);
     const ex = u < 0.6 ? 'neutral' : nervous > 0.4 ? 'scared' : u > 6.6 && u < 8 ? 'happy' : w > 0.3 ? 'determined' : 'neutral';
     if (ex !== this.jgExpr) { this.jgExpr = ex; rig.setExpression?.(ex, { fade: 0.25 }); }
   }
