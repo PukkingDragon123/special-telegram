@@ -98,6 +98,8 @@ export class Crowd {
     // the baked impostors share the exact same look, so far walkers hand over to them sooner
     this.nearCap = q === 'low' ? 5 : q === 'medium' ? 7 : q === 'ultra' ? 14 : 10;
     this.rigR2 = q === 'low' ? 26 * 26 : q === 'medium' ? 32 * 32 : q === 'ultra' ? 46 * 46 : 38 * 38;
+    // A/B: ?perfab=0 restores the old caps
+    if (new URLSearchParams(location.search).get('perfab') === '0') { this.nearCap = q === 'low' ? 6 : q === 'medium' ? 10 : q === 'ultra' ? 20 : 15; this.rigR2 = 46 * 46; }
     this.fullFaces = q === 'high' || q === 'ultra';
     const k = 1 / qmul();
     // sidewalk paths (walking lanes kept clear by world/dressing: soi ±4.6, main road z 3.55 / 23.6, market aisles between the stall islands, temple, canal, rural road)

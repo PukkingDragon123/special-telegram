@@ -259,7 +259,7 @@ export function fill5(api: FillApi, seed: string) {
     for (const side of [-1, 1]) {
       for (let k = 0; k < 6; k++) {
         const x = gx + side * (2.2 + k * 0.45), z = TEMPLE.forecourtZ + 2.2 + (k % 2) * 0.35;
-        put('elephant', x, z, side > 0 ? -Math.PI / 2 : Math.PI / 2, { scale: r.range(2.2, 3.4), tag: 'elephant offerings' });
+        put('elephant', x, z, side > 0 ? -Math.PI / 2 : Math.PI / 2, { scale: r.range(5.5, 8), tag: 'elephant offerings' });
       }
       put('cat_statue', gx + side * 1.6, TEMPLE.forecourtZ + 1.6, Math.PI, { scale: 1.5, tag: 'temple statues' });
     }
@@ -273,7 +273,16 @@ export function fill5(api: FillApi, seed: string) {
     }
     put('buddha_happy', TEMPLE.x1 - 6, TEMPLE.forecourtZ + 2.0, Math.PI, { tag: 'temple statues' });
     if (api.treeAt) for (const x of [TEMPLE.x0 + 8, TEMPLE.x0 + 30, TEMPLE.x1 - 14]) api.treeAt(x, TEMPLE.forecourtZ + 0.9, 'palm');
-    for (let k = 0; k < 8; k++) put('candlestick', gx + r.range(-1.2, 1.2), TEMPLE.forecourtZ + 2.9 + r.range(-0.15, 0.15), r.range(0, 6), { scale: 1.5, pad: -0.05, tag: 'candles' });
+    // garland & flower stalls by the gate (umbrella, stools), big plants along the temple wall
+    for (const sx of [-1, 1]) {
+      const x = gx + sx * 7, z = TEMPLE.forecourtZ + 2.6;
+      if (put('fruit_stand2', x, z, Math.PI, { tag: 'flower stalls', pad: 0.1 })) {
+        onTop('fruit_stand2', x, z, Math.PI, ['brass_vase1', 'brass_vase2', 'jar_1'], r.int(3, 6), 'stall vases');
+        const id = r.pick(UMBRELLAS); if (has(id)) add(id, x + 0.6, groundHeight(x, z), z + 0.9, r.range(0, 6), { color: r.pick(UMB_COLS), tag: 'umbrellas' });
+        for (let k = 0; k < 2; k++) put('vn_stool', x + r.range(-1.2, 1.2), z + 1.4 + r.range(0, 0.4), r.range(0, 6), { tag: 'red stools' });
+      }
+    }
+    for (let x = TEMPLE.x0 + 6; x < TEMPLE.x1 - 4; x += r.range(5, 8)) if (Math.abs(x - gx) > 3.5) put(r.pick(['pachira', 'calathea', 'jar_4']), x, TEMPLE.forecourtZ + 3.3, r.range(0, 6), { scale: r.range(1.2, 1.6), tag: 'temple wall plants' });
   }
 
   // ================================================================ 5. canal bank (between the canal road and the water): fishermen's things

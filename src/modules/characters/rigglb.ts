@@ -304,6 +304,7 @@ function makeAtlasMaterial() {
 }
 
 const _offS = new THREE.Sphere();
+const _noAB = new URLSearchParams(location.search).get('perfab') === '0';
 export class Rig implements CharacterRig {
   readonly root = new THREE.Group();
   private inner = new THREE.Group();
@@ -762,7 +763,7 @@ export class Rig implements CharacterRig {
     this.accDt += dt;
     let interval = this.opts.lod === 'high' || d < 16 ? 1 : d < 34 ? 2 : d < 60 ? 3 : d < 110 ? 5 : 0;
     // out of view (and not right next to the camera): only the shadow can show → ~8–10 Hz is plenty
-    if (interval > 0 && d > 5 && RigWorld.frustumOk && this.opts.lod !== 'high') {
+    if (interval > 0 && d > 5 && RigWorld.frustumOk && this.opts.lod !== 'high' && !_noAB) {
       _offS.center.copy(_v); _offS.center.y += 0.9; _offS.radius = 1.4;
       if (!RigWorld.frustum.intersectsSphere(_offS)) interval = Math.max(interval, d < 24 ? 6 : 8);
     }
