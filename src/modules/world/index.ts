@@ -293,6 +293,7 @@ async function restoreWorldTextures(game: Game) {
  * re-checked: meshes whose single item is small (≤ 0.7 m radius) cast only within SMALL_R metres of the camera,
  * medium ones (≤ 2 m) within MED_R; everything else is left alone. The original flag is kept and restored.
  */
+let _triK = 1;
 const _sb = { list: [] as THREE.Mesh[], i: 0, t: 0, scene: null as THREE.Scene | null };
 const _sbs = new THREE.Sphere();
 function shadowBudget(game: Game, cam: THREE.Vector3, force: boolean) {
@@ -356,7 +357,18 @@ function frame(game: Game, dt: number) {
   ARCH.update(_cam);
   U.uWet.value += (((game.g as any).rain ?? 0) - U.uWet.value) * Math.min(1, dt * 0.2);
   // tiny instanced details (pegs, fruit piles, shelf goods …) registered by any module
-  DetailCull.scale = game.engine.quality === 'low' ? 0.65 : game.engine.quality === 'medium' ? 0.85 : game.engine.quality === 'ultra' ? 1.3 : 1;
+  // triangle budget (main + shadow passes, last frame): when props push a frame over it, small-detail
+  // distances shrink smoothly (down to 55 %), and grow back when there is headroom
+  {
+    const q = game.engine.quality;
+    const budget = q === 'low' ? 3.2e6 : q === 'medium' ? 4.5e6 : q === 'ultra' ? 9e6 : 6e6;
+    const tris = game.engine.renderer.info.render.triangles;
+    if (tris > 0 && new URLSearchParams(location.search).get('perfab') !== '0') {
+      const want = tris > budget ? 0.55 : tris < budget * 0.75 ? 1 : _triK;
+      _triK += (want - _triK) * Math.min(1, dt * 0.6);
+    }
+  }
+  DetailCull.scale = (game.engine.quality === 'low' ? 0.65 : game.engine.quality === 'medium' ? 0.85 : game.engine.quality === 'ultra' ? 1.3 : 1) * _triK;
   DetailCull.update(cam, dt);
   // distance-cull small detail meshes — every 8 frames, and immediately when the camera jumped (teleport, respawn,
   // cutscene cut): otherwise whole house rows stayed hidden for 8 frames after a cut (visible pop-in)

@@ -696,7 +696,7 @@ export class Rig implements CharacterRig {
           if (ax.lengthSq() < 1e-8) break;
           ax.normalize();
           // clamp the last step to the remaining lean budget instead of giving up (it used to stop at 0.32 rad)
-          const ang = Math.min(0.32, deficit / Math.max(0.25, _w1.length()), 0.72 - this.reachLean[k]) * r.w;
+          const ang = Math.min(0.32, deficit / Math.max(0.25, _w1.length()), 0.55 - this.reachLean[k]) * r.w;
           if (ang <= 0.002) break;
           this.reachLean[k] += ang;
           this.leanAx.copy(ax);

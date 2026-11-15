@@ -304,7 +304,7 @@ export function buildJenga(levels = 18): Jenga {
   group.name = 'album_jenga';
   group.add(mesh);
   // a little toward G1's end of the table and its front edge: the seated pullers can actually reach a block
-  group.position.set(-0.18, 0.38, -2.44);
+  group.position.set(-0.27, 0.38, -2.38);
   group.rotation.y = Math.PI / 4 + 0.08;
   // G3's block: a mid-height middle-row block on the camera-facing side
   const pullIdx = blocks.findIndex((b, i) => i > 21 && !b.missing && b.rot === 0 && i % 3 === 0);

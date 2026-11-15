@@ -54,7 +54,7 @@ const SEAT_LOCAL: Record<number, THREE.Vector3> = {
 const SOFA_SEAT_Y = 0.395;                // cushion top (album.ts buildSofa)
 const PELVIS_ABOVE_SEAT = 0.1;
 /** where the seated guys look: the top of the Jenga tower on the coffee table */
-const TOWER_LOOK = new THREE.Vector3(-0.18, 0.58, -2.44);
+const TOWER_LOOK = new THREE.Vector3(-0.27, 0.58, -2.38);
 
 interface Bit { m: THREE.Matrix4; p: THREE.Vector3; v: THREE.Vector3; r: THREE.Euler; av: THREE.Vector3; life: number; s: number }
 
@@ -1023,7 +1023,7 @@ export class MenuScene implements SceneDef {
     this.shake = 0.8;
     this.pushTarget = 0.5;
     this.backdrop.uniforms.uPulse.value = 1;
-    this.burst(new THREE.Vector3(-0.18, 0.6, -2.44), 90);
+    this.burst(new THREE.Vector3(-0.27, 0.6, -2.38), 90);
     for (const k of Object.keys(this.stickers)) if (k !== 'title') { this.ui.remove(this.stickers[k]); this.stickers[k] = null; }
     for (const s of this.slots) { this.ui.remove(s.tag); s.tag = null; this.ui.remove(s.ready); s.ready = null; }
     this.ui.remove(this.arrowTag); this.arrowTag = null;
