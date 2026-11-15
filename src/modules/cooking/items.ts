@@ -21,6 +21,7 @@ import { cookParams } from './recipes';
 import { pickKey, clamp01 } from './util';
 import type { CookFX } from './fx';
 import { juice, juiceKick, JP, JuiceKind } from './juice';
+import { defineFoodX } from './foodx';
 import { riceMoundGeoReal, riceMatReal, leafMat, chiliMat, reliefGeo, reliefMat } from './realfood';
 
 /* ---- juice (squash/stretch/jiggle + impact sound/bits) and Rapier tuning per item kind ---- */
@@ -35,6 +36,11 @@ const JUICE: Record<string, JuiceKind> = {
   spatula: 'metal', ladle: 'metal', cleaver: 'metal', spoon_fork: 'metal', rice_paddle: 'plastic',
   chopping_board: 'wood', mortar: 'clay', wok: 'wok', plate: 'plate', bowl: 'plate', takeaway_box: 'foam', plastic_bag: 'paper',
   rice_pot: 'appliance', recipe_book: 'paper', dish: 'dish',
+  squid: 'meat', mussels: 'shrimp', clams: 'bulb', oysters: 'meat', sea_bass: 'meat', crab_blue: 'shrimp', river_prawn: 'shrimp', crab_meat: 'meat', salmon: 'meat',
+  scallop: 'meat', wagyu: 'meat', truffle_oil: 'glass', red_syrup: 'glass', hommali_rice: 'sack', butter: 'packet', salted_egg: 'packet', curry_powder: 'packet',
+  evaporated_milk: 'metal', condensed_milk: 'metal', coconut_milk: 'packet', palm_sugar: 'packet', batter: 'packet', bean_sprouts: 'herb', sticky_rice: 'packet',
+  mango: 'bulb', bua_loi_balls: 'packet', banana: 'veg', roti_dough: 'packet', thapthim: 'packet', lot_chong: 'packet', icecream_coconut: 'plastic', shaved_ice: 'sack',
+  peanuts: 'packet', mix_bowl: 'metal',
 };
 type Phys = NonNullable<ItemDef['phys']>;
 const PHYS: Partial<Record<JuiceKind, Phys>> = {
@@ -84,7 +90,7 @@ export function setItemFX(fx: CookFX) { FX = fx; }
 type AnimFn = (obj: THREE.Object3D, e: Ent, dt: number, game: Game, act: string | undefined, st: any) => void;
 
 /** Shared animate: cart yaw fix (items on carts keep their placed yaw) + pour tilt + per-kind anim. */
-function anim(extra?: AnimFn): ItemDef['animate'] {
+export function anim(extra?: AnimFn): ItemDef['animate'] {
   return (obj, e, dt, game) => {
     const st = (obj.userData.st ??= { tilt: 0, t: Math.random() * 10, snd: 0, ph: 0 });
     st.t += dt;
@@ -123,7 +129,7 @@ const heapScale = (e: Ent, full: number, min = 0.18) => {
   return a <= 0.01 ? 0 : Math.max(min, Math.min(1.15, Math.sqrt(a / full)));
 };
 
-function refreshHeap(full: number) {
+export function refreshHeap(full: number) {
   return (obj: THREE.Object3D, e: Ent) => {
     const h = obj.getObjectByName('heap');
     if (!h) return;
@@ -134,7 +140,7 @@ function refreshHeap(full: number) {
   };
 }
 
-function refreshLiquid(full: number) {
+export function refreshLiquid(full: number) {
   return (obj: THREE.Object3D, e: Ent) => {
     const l = obj.getObjectByName('liquid');
     if (!l) return;
@@ -152,7 +158,7 @@ const lbl = (name: string) => (e: Ent): TL => {
 
 // ------------------------------------------------------------------ hold poses (first-person viewmodel)
 
-const HOLD = {
+export const HOLD = {
   bottle: { pos: [0.02, -0.08, 0] as [number, number, number], rot: [0.05, -0.4, 0] as [number, number, number], scale: 0.85 },
   jar: { pos: [0.02, -0.04, 0] as [number, number, number], rot: [0.1, -0.4, 0] as [number, number, number], scale: 1 },
   tray: { pos: [-0.02, -0.02, 0.02] as [number, number, number], rot: [0.75, -0.35, 0] as [number, number, number], scale: 0.95 },
@@ -293,6 +299,8 @@ export function defineCookingItems(game: Game) {
     label: (e) => tl((e.data?.rice ?? 0) > 1 ? `กล่องข้าว (ข้าว ${Math.round(e.data.rice)} ก.)` : 'กล่องข้าวเปล่า'),
   });
   def({ kind: 'plastic_bag', name: TOOL_META.plastic_bag.name, weight: 0.01, price: 1, carry: 'hand', tags: ['takeaway', 'bag'], build: () => buildPlasticBag(), animate: anim(), hold: HOLD.bag });
+  // ---- round 5: seafood / premium / dessert ingredients + the stainless dessert basin (a cold wok)
+  defineFoodX(def, ingBase, { anim, refreshHeap, refreshLiquid, HOLD, wokRefresh: (obj, e) => wokRefresh(obj, e), wokLabel: (e) => wokLabel(e.data) });
   // ---- appliances
   def({
     kind: 'rice_pot', name: TOOL_META.rice_pot.name, weight: 5.5, price: 1500, carry: 'twohand', slots: 2, tags: ['appliance', 'pot', 'metal'],
