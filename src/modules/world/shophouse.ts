@@ -590,6 +590,16 @@ export class Shophouse {
           for (let i = 0; i < np; i++) w.put(this.c.props.plant(rng.int(0, 4)), rng.range(0.4, W - 0.4), fl.y + 0.06, rng.range(0.25, bd - 0.2), rng.range(0, 6), rng.range(0.75, 1));
         }
         if (rng.chance(0.28)) w.put(birdcage(w, rng.int(0, 1)), rng.range(0.6, W - 0.6), fl.y + hf - 0.2, bd * 0.55, rng.range(0, 6));
+        // round 5: lived-in balconies (real CC0 props; own RNG so the rest of the facade stays as it was)
+        {
+          const r5 = new RNG(Math.floor(fl.y * 1013 + W * 7919 + bd * 104729 + (trim % 9973)));
+          const BALC = ['fern', 'anthurium', 'calathea', 'sorrel', 'cn_stool', 'plastic_chair', 'bamboo_basket', 'bucket_wood1', 'jar_2', 'esky', 'birdcage', 'suitcase'];
+          for (let i = 0, n = r5.int(1, 4); i < n; i++) {
+            const id = r5.pick(BALC);
+            const x = r5.range(0.45, W - 0.45), z = r5.range(0.25, Math.max(0.3, bd - 0.25));
+            w.put(this.c.props.realOnly(id), x, fl.y + 0.06, z, r5.range(0, 6));
+          }
+        }
         if (rng.chance(0.15)) w.put(wallShrine(w), rng.chance(0.5) ? 0.8 : W - 0.8, fl.y + 1.9, 0.0, 0);
         // AC unit or junk on the balcony
         if (rng.chance(0.55)) ARCH.add('ac_rusted', w.M, rng.chance(0.5) ? 0.6 : W - 0.6, fl.y + 0.06, 0.05, 0);

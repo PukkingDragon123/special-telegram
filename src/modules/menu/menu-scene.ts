@@ -54,7 +54,7 @@ const SEAT_LOCAL: Record<number, THREE.Vector3> = {
 const SOFA_SEAT_Y = 0.395;                // cushion top (album.ts buildSofa)
 const PELVIS_ABOVE_SEAT = 0.1;
 /** where the seated guys look: the top of the Jenga tower on the coffee table */
-const TOWER_LOOK = new THREE.Vector3(0, 0.58, -2.5);
+const TOWER_LOOK = new THREE.Vector3(-0.14, 0.58, -2.45);
 
 interface Bit { m: THREE.Matrix4; p: THREE.Vector3; v: THREE.Vector3; r: THREE.Euler; av: THREE.Vector3; life: number; s: number }
 
@@ -418,7 +418,7 @@ export class MenuScene implements SceneDef {
     // scoot to the front edge of the seat while reaching (the tower is a long reach from the chair)
     const base: THREE.Vector3 = (s as any).jgBase && (s as any).jgRig === rig ? (s as any).jgBase : ((s as any).jgRig = rig, (s as any).jgBase = rig.root.position.clone());
     const toT = this.jgEnd.clone().sub(s.root.localToWorld(base.clone())).setY(0);
-    const scoot = toT.lengthSq() > 1e-6 ? toT.normalize().multiplyScalar(0.12 * ease(0.3, 1.4, u) * (1 - ease(6.8, 7.9, u))) : toT;
+    const scoot = toT.lengthSq() > 1e-6 ? toT.normalize().multiplyScalar(0.2 * ease(0.3, 1.4, u) * (1 - ease(6.8, 7.9, u))) : toT;
     s.root.updateMatrixWorld(true);
     const sl = s.root.worldToLocal(s.root.localToWorld(base.clone()).add(scoot));
     rig.root.position.set(sl.x, rig.root.position.y, sl.z);
@@ -1020,7 +1020,7 @@ export class MenuScene implements SceneDef {
     this.shake = 0.8;
     this.pushTarget = 0.5;
     this.backdrop.uniforms.uPulse.value = 1;
-    this.burst(new THREE.Vector3(0, 0.6, -2.5), 90);
+    this.burst(new THREE.Vector3(-0.14, 0.6, -2.45), 90);
     for (const k of Object.keys(this.stickers)) if (k !== 'title') { this.ui.remove(this.stickers[k]); this.stickers[k] = null; }
     for (const s of this.slots) { this.ui.remove(s.tag); s.tag = null; this.ui.remove(s.ready); s.ready = null; }
     this.ui.remove(this.arrowTag); this.arrowTag = null;

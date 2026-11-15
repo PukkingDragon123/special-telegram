@@ -183,6 +183,14 @@ export function fill5(api: FillApi, seed: string) {
     }
   }
 
+  // ================================================================ 1b. soi kerb strip: the sidewalk edge between the parked bikes (road, |x| 3.05)
+  // and the walking lane (|x| 4.6): bins, plants, coolers, gas tanks, stools — what actually lines a Bangkok soi
+  const KERB = ['wheelie', 'wheelie', 'fern', 'calathea', 'anthurium', 'crate_wood2', 'lpg_scan', 'cn_stool', 'vn_stool', 'vn_stool', 'foam_cooler', 'bucket_wood2', 'esky', 'jar_3'];
+  for (const sx of [-1, 1]) for (let z = -9 - r.range(0, 3); z > -150; z -= r.range(3, 6.5)) {
+    const id = r.pick(KERB);
+    if (put(id, sx * 3.78 + r.range(-0.04, 0.04), z, r.range(0, 6), { tag: 'soi kerb' }) && id === 'vn_stool' && r.chance(0.5)) put('vn_stool', sx * 3.78, z - 0.55, r.range(0, 6), { tag: 'soi kerb' });
+  }
+
   // ================================================================ 2. main road: coffee carts + vendor corners on the wide north sidewalk
   for (let x = -120; x < 120; x += r.range(16, 30)) {
     if (Math.abs(x) < 10 || (x > -50 && x < -18)) continue;

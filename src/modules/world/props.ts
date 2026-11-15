@@ -584,6 +584,8 @@ export function makeProps(w: WB) {
     // rooftop water tanks: rusty stainless tank on its stand / ribbed plastic tank (Sketchfab, CC-BY), blue
     waterTankSteel: () => asReal(waterTankSteel(), (m) => real.addMatrix('lib:water_tank_steel', m, { phys: 'none' }), { need: ['lib:water_tank_steel'] }),
     waterTankBlue: () => asReal(waterTankBlue(), (m) => real.addMatrix('lib:water_tank_plastic', local(m, 0, 0.25, 0), { color: 0x3a6ac0, phys: 'none' }), { stamp: tankPlinth(), need: ['lib:water_tank_plastic'] }),
+    /** any real prop by id with no procedural fallback (round-5 fill: balcony furniture, plants…) — one template per id */
+    realOnly: (id: string) => asReal(memo('realOnly:' + id, () => T(() => { /* empty: real prop only */ })), (m) => real.addMatrix(id, m, { phys: 'none' }), { need: [id] }),
     basket: (col: number) => asReal(basket(col), (m) => real.addMatrix('lib:plastic_basket', m, { color: col, phys: 'none' }), { need: ['lib:plastic_basket'] }),
     // potted plants: photoscanned taro / aloe / big leafy pot (Poly Haven), physical, instanced — replaces the old
     // cylinder-pot + 3 foliage cards (k picks the species deterministically)
