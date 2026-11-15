@@ -56,7 +56,7 @@ const _q = new THREE.Quaternion(), _up = new THREE.Vector3(0, 1, 0);
 
 export function buildClutter(game: Game, real: RealProps, anchors: Record<string, AnchorPt>): Stats {
   const rng = new RNG(SEED);
-  const stats: Stats = { placed: 0, tries: 0, kinds: {} };
+  const stats: Stats & { rej: Record<string, number> } = { placed: 0, tries: 0, kinds: {}, rej: {} };   // rej: rejected put()s by tag:reason (debug)
   // scooter paint variants (ModelDef.hueVar: instance colour = hue shift, saturation ×, value × of the red Wave panels)
   const PAINTS: [number, number, number, number][] = [
     [0, 1, 1, 3],          // stock red
@@ -149,9 +149,11 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
     stats.tries++;
     const s = sizeOf(id), sc = o.scale ?? 1;
     const r = Math.max(0.08, Math.max(s[0], s[2]) * 0.5 * sc * 0.85) + (o.pad ?? 0);
-    if (blocked(x, z, r) || !real.free(x, z, r)) return false;
+    const rej = (why: string) => { const k = (o.tag ?? id) + ':' + why; stats.rej[k] = (stats.rej[k] ?? 0) + 1; return false; };
+    if (blocked(x, z, r)) return rej('keepout');
+    if (!real.free(x, z, r)) return rej('occupied');
     const y = o.y ?? groundHeight(x, z);
-    if (o.probe !== false && hitsStatic(x, y, z, yaw, s[0] * sc, s[2] * sc, s[1] * sc)) return false;
+    if (o.probe !== false && hitsStatic(x, y, z, yaw, s[0] * sc, s[2] * sc, s[1] * sc)) return rej('collider');
     real.add(p, x, y, z, yaw, o);
     real.claim(x, z, r);
     stats.placed++;

@@ -51,6 +51,8 @@ const TRIM_TINTS = [0xffffff, 0xe0d8c8, 0x8a8478, 0x5a6a5a, 0x7a3a2a, 0x3a4a6a];
 const GRILLE_TINTS = [0xe8e8e0, 0x2a2a2a, 0x3a5a3a, 0x6a4a2a, 0x8a8a8a, 0x2a3a5a, 0x9a2a2a];
 const CURTAIN = [0xf0e8d8, 0xe8d0a0, 0xc84a3a, 0x5a7ab0, 0xf4f0f0, 0x8aa070, 0xe0a0b0];
 const SHUTTER_TINTS = [0xc8c8c0, 0x8aa0b0, 0x9aa890, 0xc0a080, 0x7a8a9a, 0xd0c8a8, 0xa04030, 0x40607a];
+/** round-5 fill (balcony things) can be switched off with ?nofill5 to measure its cost */
+const NO_FILL5 = typeof location !== 'undefined' && new URLSearchParams(location.search).has('nofill5');
 
 /** world frame of a unit */
 export function unitFrame(u: { face: Face; line: number; a0: number; a1: number }) {
@@ -593,8 +595,8 @@ export class Shophouse {
         // round 5: lived-in balconies (real CC0 props; own RNG so the rest of the facade stays as it was)
         {
           const r5 = new RNG(Math.floor(fl.y * 1013 + W * 7919 + bd * 104729 + (trim % 9973)));
-          const BALC = ['fern', 'anthurium', 'calathea', 'sorrel', 'cn_stool', 'plastic_chair', 'bamboo_basket', 'bucket_wood1', 'jar_2', 'esky', 'birdcage', 'suitcase'];
-          for (let i = 0, n = r5.int(1, 4); i < n; i++) {
+          const BALC = ['fern', 'anthurium', 'calathea', 'sorrel', 'cn_stool', 'cn_stool', 'bamboo_basket', 'bucket_wood1', 'jar_2', 'esky', 'birdcage'];
+          for (let i = 0, n = NO_FILL5 ? 0 : r5.int(0, 2); i < n; i++) {
             const id = r5.pick(BALC);
             const x = r5.range(0.45, W - 0.45), z = r5.range(0.25, Math.max(0.3, bd - 0.25));
             w.put(this.c.props.realOnly(id), x, fl.y + 0.06, z, r5.range(0, 6));

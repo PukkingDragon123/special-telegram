@@ -88,7 +88,7 @@ export function fill5(api: FillApi, seed: string) {
       }
     }
     // ---- the electricity meter on the pier at eye height
-    if (has('elec_meter') && r.chance(0.35)) {
+    if (has('elec_meter') && r.chance(0.22)) {
       const [x, z] = f.at(A(r.chance(0.5) ? 0.035 : 0.965), 0.02);
       add('elec_meter', x, groundHeight(x, z) + 1.05, z, f.out, { tag: 'electric meters' });
     }
@@ -111,7 +111,7 @@ export function fill5(api: FillApi, seed: string) {
         const yaw = f.out + r.range(-0.2, 0.2);
         if (put(tid, x, z, yaw, { tag: 'eatery tables', pad: 0.05 })) {
           onTop(tid, x, z, yaw, TABLE_TOPS, r.int(1, 3), 'table tops');
-          for (const s2 of [-1, 1]) { const [cx, cz] = at(s2 * 0.12, 0.75); put(r.chance(0.6) ? 'cn_stool' : 'bar_stool', cx, cz, r.range(0, 6), { tag: 'eatery stools' }); }
+          for (const s2 of [-1, 1]) { const [cx, cz] = at(s2 * 0.12, 0.75); put(r.chance(0.6) ? 'cn_stool' : 'metal_stool_c', cx, cz, r.range(0, 6), { tag: 'eatery stools' }); }
         }
       }
       if (r.chance(0.5)) { const [x, z] = at(0.12, 0.28); put(r.pick(['enamel_pot', 'brass_pot', 'jug_clay']), x, z, r.range(0, 6), { tag: 'pots by the door' }); }
@@ -209,7 +209,7 @@ export function fill5(api: FillApi, seed: string) {
       }
     } else if (kind === 0 && has('coffee_cart')) {
       if (put('coffee_cart', x, z, Math.PI + r.range(-0.2, 0.2), { tag: 'coffee carts', pad: 0.1 })) {
-        for (const dx of [-1.3, 1.3]) put('bar_stool', x + dx, z + r.range(-0.2, 0.2), r.range(0, 6), { tag: 'bar stools' });
+        for (const dx of [-1.3, 1.3]) put('metal_stool_c', x + dx, z + r.range(-0.2, 0.2), r.range(0, 6), { tag: 'bar stools' });
       }
     } else if (kind === 1) {
       // fruit & veg on wooden crates (sidewalk greengrocer)
@@ -237,7 +237,7 @@ export function fill5(api: FillApi, seed: string) {
   {
     const zP = OFFICE.z1 + 2.2;
     for (const x of [-60, -50, -38, -30]) put(r.pick(['pachira', 'calathea']), x, zP + r.range(-0.3, 0.3), r.range(0, 6), { scale: r.range(1.1, 1.4), tag: 'plaza plants' });
-    if (put('coffee_cart', -55, zP + 1.6, Math.PI / 2, { tag: 'coffee carts', pad: 0.2 })) for (const dz of [-1.1, 1.1]) put('bar_stool', -53.6, zP + 1.6 + dz, r.range(0, 6), { tag: 'bar stools' });
+    if (put('coffee_cart', -55, zP + 1.6, Math.PI / 2, { tag: 'coffee carts', pad: 0.2 })) for (const dz of [-1.1, 1.1]) put('metal_stool_c', -53.6, zP + 1.6 + dz, r.range(0, 6), { tag: 'bar stools' });
     put('extinguisher', -44.5, OFFICE.z1 + 0.65, Math.PI, { tag: 'extinguishers' });
     // a row along the lobby: big pots, parked bicycles, bins, a smokers' corner with plastic stools
     for (let x = OFFICE.plazaX0 + 3; x < OFFICE.plazaX1 - 2; x += r.range(3.2, 5)) {

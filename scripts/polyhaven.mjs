@@ -105,11 +105,17 @@ if (!opt.list) {
   const sorted = Object.fromEntries(Object.entries(man).sort(([a], [b]) => a.localeCompare(b)));
   fs.writeFileSync(manPath, JSON.stringify(sorted, null, 1));
   const total = Object.values(sorted).reduce((s, m) => s + m.bytes, 0);
-  const lines = ['# Real-world prop models — credits', '', 'All models come from [Poly Haven](https://polyhaven.com) and are **CC0** (public domain, no attribution required; credited anyway).',
-    'Downloaded and optimized with `scripts/polyhaven.mjs` (simplified with meshoptimizer, WebP textures, meshopt geometry).', '',
-    '| model | Poly Haven page | author(s) | size |', '|---|---|---|---|',
-    ...Object.entries(sorted).map(([id, m]) => `| ${m.name ?? id} (\`${id}\`) | ${m.source} | ${m.authors.join(', ')} | ${(m.bytes / 1024).toFixed(0)} KB |`),
+  const lines = ['# Real-world prop models — credits', '',
+    'Models from [Poly Haven](https://polyhaven.com) are **CC0** (public domain, credited anyway), downloaded with `scripts/polyhaven.mjs`.',
+    'Models from [Sketchfab](https://sketchfab.com) are **CC Attribution** (or CC0) as listed, downloaded with `scripts/sketchfab.py` — attribution required, kept here.',
+    'All are simplified with meshoptimizer and re-encoded (WebP textures ≤1K, meshopt geometry); Sketchfab models are also rescaled.', '',
+    '| model | source page | author(s) | licence | size |', '|---|---|---|---|---|',
+    ...Object.entries(sorted).map(([id, m]) => `| ${m.name ?? id} (\`${id}\`) | ${m.source} | ${(m.authors ?? []).join(', ')} | ${m.license ?? 'CC0'} | ${(m.bytes / 1024).toFixed(0)} KB |`),
     '', `Total: ${(total / 1048576).toFixed(1)} MB in ${Object.keys(sorted).length} models.`, ''];
+  // attribution list for the CC-BY models (scripts/sketchfab.py keeps the same section up to date)
+  const sf = Object.entries(sorted).filter(([, m]) => /sketchfab\.com/.test(m.source ?? ''));
+  if (sf.length) lines.push('## Sketchfab (CC-BY / CC0)', 'Models downloaded with scripts/sketchfab.py; scaled, simplified and re-encoded (WebP textures, meshopt).',
+    ...sf.map(([id, m]) => `- **${id}** — “${m.name ?? id}” by ${(m.authors ?? []).join(', ')}, ${m.license ?? 'CC Attribution'} — ${m.source}`), '');
   // hand-maintained extra credits (photo-derived textures etc.) are appended verbatim
   const extra = path.join(OUT, 'CREDITS.extra.md');
   if (fs.existsSync(extra)) lines.push('', fs.readFileSync(extra, 'utf8'));

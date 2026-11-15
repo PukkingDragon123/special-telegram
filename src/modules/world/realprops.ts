@@ -323,6 +323,13 @@ function prepMaterial(src: THREE.Material, def: ModelDef): THREE.Material {
   m.envMapIntensity = def.env ?? 0.55;
   // some scans ship absurd emissive strengths (KHR_materials_emissive_strength 100 → a white bloom blob in daylight)
   if ((m as any).emissiveIntensity !== undefined && (def.emis !== undefined || F5_DEFS.has(def))) (m as any).emissiveIntensity = def.emis ?? Math.min((m as any).emissiveIntensity, 1.5);
+  // KHR_materials_transmission (lamp/bulb glass): ONE visible transmissive material makes three render the whole
+  // opaque scene a second time into the transmission target every frame (~+1.5M tris on the main road at low).
+  // Plain alpha glass instead — it looks the same at prop scale.
+  if (((m as any).transmission ?? 0) > 0) {
+    (m as any).transmission = 0;
+    m.transparent = true; m.opacity = Math.min(m.opacity, 0.35); m.depthWrite = false; m.alphaTest = 0;
+  }
   if (m.map) m.map.anisotropy = 4;
   return m;
 }
