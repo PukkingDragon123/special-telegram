@@ -6,7 +6,7 @@ import { Input } from '../../core/input';
 import { Sound } from '../../core/audio';
 import { Ease, tl } from '../../core/util';
 import { canvasTexture } from '../../ui3d/text';
-import { allRecipeIds, recipeInfo, unlockedRecipes, DEFAULT_EXTRAS } from './data';
+import { allRecipeIds, recipeInfo, unlockedRecipes, DEFAULT_EXTRAS, RECIPE_FALLBACK } from './data';
 import { serviceFrame } from './premises';
 
 /* =============================================================================================
@@ -95,8 +95,103 @@ function drawPoster(game: Game) {
   c.font = `700 32px ${F.looped}`; c.fillStyle = '#ffffff'; c.textAlign = 'left'; c.textBaseline = 'middle';
   c.fillText('เพิ่ม:', 78, 999);
   for (const b of EXTRA_BOXES) c.fillText(`${b.th} ${b.k === 'soda' ? '' : '+'}${ex[b.k as keyof typeof ex]}`, b.x, 999);
+  // flip to the special page (seafood / premium / desserts) — only once one of those is known
+  if (unl.some((r) => RECIPE_FALLBACK[r]?.group)) drawTab(c, 'เมนูพิเศษ ▶');
   c.setTransform(1, 0, 0, 1, 0, 0);
   if (tex) tex.needsUpdate = true;
+}
+
+// ------------------------------------------------------------------ page 2: เมนูพิเศษ (seafood · premium · desserts)
+
+/** columns of the hand-made laminated "special menu" sheet (recipes with a group in the fallback table) */
+const SPECIAL_COLS: { th: string; en: string; group: string; color: string }[] = [
+  { th: 'อาหารทะเล', en: 'SEAFOOD', group: 'seafood', color: '#1f5fae' },
+  { th: 'พรีเมียม', en: 'PREMIUM · ลูกค้ากระเป๋าหนัก', group: 'premium', color: '#8a1c1c' },
+  { th: 'ของหวาน', en: 'DESSERTS · หลังอาหาร', group: 'dessert', color: '#c2407a' },
+];
+const specialIds = (group: string) => Object.values(RECIPE_FALLBACK).filter((r) => r.group === group).map((r) => r.id);
+const COL_X = [50, 535, 1020], COL_W = 430, ROW_Y0 = 236, ROW_H = 86;
+/** row rects of page 2 (poster px) */
+function specialRows(): { rid: string; x: number; y: number; w: number; h: number; cx: number; cy: number }[] {
+  const out: { rid: string; x: number; y: number; w: number; h: number; cx: number; cy: number }[] = [];
+  SPECIAL_COLS.forEach((col, ci) => specialIds(col.group).forEach((rid, ri) => {
+    const x = COL_X[ci], y = ROW_Y0 + ri * ROW_H;
+    out.push({ rid, x, y, w: COL_W, h: ROW_H - 8, cx: x + COL_W - 46, cy: y + (ROW_H - 8) / 2 });
+  }));
+  return out;
+}
+/** the corner tab that flips between the two pages */
+const TAB = { x: 1215, y: 968, w: 250, h: 62 };
+
+const cv2 = document.createElement('canvas');
+cv2.width = 1200; cv2.height = Math.round(1200 * PH / PW);
+let tex2: THREE.CanvasTexture | null = null;
+let lastSig2 = '';
+
+function drawTab(c: CanvasRenderingContext2D, text: string) {
+  c.save();
+  c.fillStyle = '#d41e2a'; c.beginPath(); c.roundRect(TAB.x, TAB.y, TAB.w, TAB.h, 14); c.fill();
+  c.fillStyle = 'rgba(0,0,0,0.18)'; c.fillRect(TAB.x + 8, TAB.y + TAB.h - 7, TAB.w - 16, 5);
+  c.font = `800 34px ${F.looped}`; c.fillStyle = '#fff6d8'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText(text, TAB.x + TAB.w / 2, TAB.y + TAB.h / 2 + 1);
+  c.restore();
+}
+
+function drawSpecial(game: Game) {
+  const c = cv2.getContext('2d')!;
+  const k = cv2.width / PW;
+  c.setTransform(k, 0, 0, k, 0, 0);
+  // laminated cream sheet with a printed red header band + a soft gloss streak
+  c.fillStyle = '#f5efdc'; c.fillRect(0, 0, PW, PH);
+  c.fillStyle = '#c8141a'; c.fillRect(0, 0, PW, 128);
+  c.fillStyle = '#ffd21a'; c.fillRect(0, 128, PW, 10);
+  c.font = `900 78px ${F.looped}`; c.fillStyle = '#fff6d8'; c.textAlign = 'left'; c.textBaseline = 'middle';
+  c.fillText('เมนูพิเศษ', 48, 66);
+  c.font = `700 32px ${F.looped}`; c.fillStyle = '#ffe08a'; c.fillText('ทะเลสด · วัตถุดิบพรีเมียม · ของหวานหลังอาหาร', 430, 70);
+  const menu = game.g.menu ?? {};
+  const unl = unlockedRecipes(game);
+  SPECIAL_COLS.forEach((col, ci) => {
+    const x = COL_X[ci];
+    c.fillStyle = col.color; c.fillRect(x, 156, COL_W, 62);
+    c.font = `800 38px ${F.looped}`; c.fillStyle = '#ffffff'; c.textAlign = 'left'; c.textBaseline = 'middle';
+    c.fillText(col.th, x + 16, 180);
+    c.font = `600 19px ${F.looped}`; c.fillStyle = 'rgba(255,255,255,0.85)'; c.fillText(col.en, x + 16, 207);
+  });
+  for (const r of specialRows()) {
+    const info = recipeInfo(game, r.rid);
+    const known = unl.includes(r.rid), on = menu[r.rid] !== undefined;
+    const price = menu[r.rid] ?? game.g.menuPrices?.[r.rid] ?? info.price;
+    c.fillStyle = known ? '#fffaf0' : '#ebe6d8'; c.fillRect(r.x, r.y, r.w, r.h);
+    c.strokeStyle = 'rgba(60,40,20,0.18)'; c.lineWidth = 2; c.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+    c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+    c.font = `700 ${info.name.th.length > 18 ? 25 : 30}px ${F.looped}`; c.fillStyle = known ? '#2a1c10' : '#9a948a';
+    c.fillText(info.name.th, r.x + 14, r.y + 38, r.w - 120);
+    c.font = `500 18px ${F.looped}`; c.fillStyle = known ? '#7a6a58' : '#aaa496';
+    c.fillText(known ? (info.name.en ?? '') : 'ยังไม่มีสูตร · locked', r.x + 14, r.y + 64, r.w - 120);
+    if (known) {
+      c.fillStyle = '#ffd21a'; c.beginPath(); c.arc(r.cx, r.cy, 36, 0, Math.PI * 2); c.fill();
+      c.font = `900 ${price >= 100 ? 30 : 36}px ${F.looped}`; c.fillStyle = '#d41e2a'; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText(String(price), r.cx, r.cy - 4);
+      c.font = `700 13px ${F.looped}`; c.fillText('บาท', r.cx, r.cy + 22);
+      if (!on) {
+        c.save(); c.strokeStyle = 'rgba(200,20,20,0.85)'; c.lineWidth = 6; c.lineCap = 'round';
+        c.beginPath(); c.moveTo(r.x + 12, r.y + r.h / 2); c.lineTo(r.x + r.w - 100, r.y + r.h / 2 - 6); c.stroke();
+        c.translate(r.x + r.w - 150, r.y + r.h / 2); c.rotate(-0.12);
+        c.font = `400 44px ${F.scrawl}`; c.fillStyle = '#c8141a'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('หมด', 0, 0);
+        c.restore();
+      }
+    }
+  }
+  drawTab(c, '◀ เมนูหลัก');
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  if (tex2) tex2.needsUpdate = true;
+}
+
+function specialTexture(game: Game) {
+  if (!tex2) { tex2 = canvasTexture(cv2); drawSpecial(game); lastSig2 = menuSig(game); }
+  const sig = menuSig(game);
+  if (sig !== lastSig2) { lastSig2 = sig; drawSpecial(game); }
+  return tex2;
 }
 
 export function posterMaterial(game: Game) {
@@ -172,6 +267,8 @@ export class MenuCloseup {
   open = true;
   private W = 0.74;
   private H = 0.74 * PH / PW;
+  /** 0 = photo poster, 1 = special sheet */
+  private page = 0;
 
   constructor(private game: Game, private onClose: () => void) {
     const cam = game.camera;
@@ -199,18 +296,35 @@ export class MenuCloseup {
     game.player?.setMode('frozen');
   }
 
-  /** hovered element in poster px */
-  private hover(): { kind: 'dish' | 'price' | 'extra' | null; i: number; key?: string } {
+  /** hovered element in poster px (rid + its highlight rect) */
+  private hover(): { kind: 'dish' | 'price' | 'extra' | 'tab' | null; i: number; key?: string; rid?: string; H?: { x: number; y: number; w: number; h: number } } {
     const x = this.cur.x * PW, y = (1 - this.cur.y) * PH;
+    const tabOn = this.page === 1 || unlockedRecipes(this.game).some((r) => RECIPE_FALLBACK[r]?.group);
+    if (tabOn && x >= TAB.x && x <= TAB.x + TAB.w && y >= TAB.y && y <= TAB.y + TAB.h) return { kind: 'tab', i: -1, H: TAB };
+    if (this.page === 1) {
+      for (const r of specialRows()) {
+        if (Math.hypot(x - r.cx, y - r.cy) < 42) return { kind: 'price', i: -1, rid: r.rid, H: r };
+        if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return { kind: 'dish', i: -1, rid: r.rid, H: r };
+      }
+      return { kind: null, i: -1 };
+    }
     if (y > 960 && y < 1035) for (const b of EXTRA_BOXES) if (x >= b.x - 10 && x <= b.x + b.w) return { kind: 'extra', i: -1, key: b.k };
     for (let i = 0; i < slots.length; i++) {
       const s = slots[i];
       const P = s.price;
-      if (Math.hypot(x - P.cx, y - P.cy) < 60) return { kind: 'price', i };
+      if (Math.hypot(x - P.cx, y - P.cy) < 60) return { kind: 'price', i, rid: SLOT_RECIPES[i], H: s.hit };
       const H = s.hit;
-      if (x >= H.x && x <= H.x + H.w && y >= H.y && y <= H.y + H.h) return { kind: 'dish', i };
+      if (x >= H.x && x <= H.x + H.w && y >= H.y && y <= H.y + H.h) return { kind: 'dish', i, rid: SLOT_RECIPES[i], H };
     }
     return { kind: null, i: -1 };
+  }
+
+  private flip() {
+    this.page = this.page ? 0 : 1;
+    const m = this.board.material as THREE.MeshBasicMaterial;
+    m.map = this.page ? specialTexture(this.game) : posterMaterial(this.game).map;
+    m.needsUpdate = true;
+    Sound.play('paper_rustle', { vol: 0.6, pitch: 0.9 });
   }
 
   private writeNote(text: string, sub: string) {
@@ -259,9 +373,16 @@ export class MenuCloseup {
     const sf = serviceFrame(game);
     const pf = sf.priceFactor, zone = sf.zone;
     this.hi.visible = false;
-    if (h.kind === 'dish' || h.kind === 'price') {
-      const s = slots[h.i], rid = SLOT_RECIPES[h.i];
-      const H = s.hit;
+    if (this.page === 1) specialTexture(game);   // keep the sheet in sync with the menu
+    if (h.kind === 'tab') {
+      this.hi.visible = true;
+      this.hi.scale.set(TAB.w / PW * this.W, TAB.h / PH * this.H, 1);
+      this.hi.position.set(((TAB.x + TAB.w / 2) / PW - 0.5) * this.W, (0.5 - (TAB.y + TAB.h / 2) / PH) * this.H, 0.001);
+      this.writeNote(this.page ? 'กลับไปหน้าเมนูหลัก' : 'เมนูพิเศษ: ทะเล · พรีเมียม · ของหวาน', 'คลิก = พลิกหน้า (หรือกด R)');
+      if (Input.mousePressed(0)) { Input.consumeMouse(0); this.flip(); }
+    } else if ((h.kind === 'dish' || h.kind === 'price') && h.rid && h.H) {
+      const rid = h.rid;
+      const H = h.H;
       this.hi.visible = true;
       this.hi.scale.set(H.w / PW * this.W, H.h / PH * this.H, 1);
       this.hi.position.set(((H.x + H.w / 2) / PW - 0.5) * this.W, (0.5 - (H.y + H.h / 2) / PH) * this.H, 0.001);
@@ -290,6 +411,7 @@ export class MenuCloseup {
       const n = Object.keys(menu).filter((k) => k !== 'extras').length;
       this.writeNote(`เมนูวันนี้ ${n} อย่าง`, 'ชี้รูปอาหาร: คลิก=เปิด/ปิด · วงเหลือง=ราคา · E/F=เสร็จ');
     }
+    if (Input.wasPressed('KeyR') && (this.page === 1 || unlockedRecipes(game).some((r) => RECIPE_FALLBACK[r]?.group))) { Input.consume('KeyR'); this.flip(); }
     if (Input.wasPressed('KeyE') || Input.wasPressed('KeyF') || Input.wasPressed('KeyQ') || Input.wasPressed('Escape') || Input.wasPressed('Tab')) {
       Input.consume('KeyE'); Input.consume('KeyF'); Input.consume('KeyQ');
       this.close();
@@ -317,7 +439,7 @@ export function applyMenuEdit(game: Game, d: { op: string; r?: string; k?: strin
   const g = game.g;
   const menu = { ...(g.menu ?? {}) };
   const prices = { ...(g.menuPrices ?? {}) };
-  const clampP = (v: number) => Math.max(5, Math.min(300, Math.round(v / 5) * 5));
+  const clampP = (v: number) => Math.max(5, Math.min(1500, Math.round(v / 5) * 5));
   if (d.op === 'toggle' && d.r && unlockedRecipes(game).includes(d.r)) {
     if (menu[d.r] !== undefined) { prices[d.r] = menu[d.r]; delete menu[d.r]; }
     else menu[d.r] = prices[d.r] ?? recipeInfo(game, d.r).price;
