@@ -74,6 +74,8 @@ export class Engine {
   frameDivider = 1;
   /** sun shadow maps re-rendered every n-th frame (only throttled under heavy load) */
   shadowEvery = 1;
+  /** minimum shadow-map cadence requested by the scene (deep night: the faint moon shadow barely moves) */
+  shadowEveryMin = 1;
   /** JS time per frame (simulation + scene update + draw submission), ms (smoothed) */
   cpuMs = 0;
   /** GPU time per frame from EXT_disjoint_timer_query_webgl2 (ms, smoothed), -1 = unavailable */
@@ -315,7 +317,8 @@ export class Engine {
     Sound.setListener(this.camera);
     // shadow throttling (governor, heavy load only): re-render the shadow maps every n-th frame
     const sm = this.renderer.shadowMap;
-    if (this.shadowEvery > 1) { sm.autoUpdate = false; sm.needsUpdate = this.frame % this.shadowEvery === 0; }
+    const se = Math.max(this.shadowEvery, this.shadowEveryMin);
+    if (se > 1) { sm.autoUpdate = false; sm.needsUpdate = this.frame % se === 0; }
     else if (!sm.autoUpdate) sm.autoUpdate = true;
     this.renderer.info.reset();
     this.gpuTimer?.begin();

@@ -673,6 +673,7 @@ function lookOf(k: LookKey): LookMats {
     transparent: k.opacity < 1, opacity: k.opacity, depthWrite: true,
   });
   mat.shadowSide = THREE.DoubleSide;
+  mat.userData.ink = 0;                  // floating 3D text: no screen-space ink outlines on/around it
   const uni = {
     uT3dTime: U_TIME,
     uT3dA: { value: new THREE.Vector4(...k.a) },
@@ -858,7 +859,9 @@ export class Text3D extends THREE.Group {
     this.mesh.material = L.mat;
     this.mesh.customDepthMaterial = L.depth;
     this.mesh.customDistanceMaterial = L.dist;
-    this.mesh.castShadow = this.o.castShadow ?? !this.o.xray;
+    // perf: floating lettering doesn't cast scene shadows unless a caller asks for it (it was rendered into every
+    // shadow cascade — ~100k+ glyph triangles in a busy soi)
+    this.mesh.castShadow = this.o.castShadow ?? false;
     this.mesh.receiveShadow = false;
     this.mesh.renderOrder = this.o.xray ? 1001 : 0;
     if (L.shadow) {

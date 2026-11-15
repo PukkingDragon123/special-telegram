@@ -7,6 +7,7 @@ import { tl, TL, dist2D } from '../../core/util';
 import { F } from '../../core/fonts';
 import { Input } from '../../core/input';
 import { Overlay } from '../../ui3d/overlay';
+import { Voice } from '../../core/voice';
 import { hud, HudObjective } from '../hud/api';
 import { CART_LABEL, CUSTOMER, DOG, HINTS, LESSON, PAY, SNEAK, WAKE } from './lines';
 import { anchor, clamp01, ease, headOf, play, rigOf, smooth, tex } from './util';
@@ -626,6 +627,10 @@ export class IntroLocal {
     const game = this.game;
     if (!game.scene) return;
     if (id === game.localPlayerId) {
+      // your own thoughts are voiced too: a close, muffled "inner voice" (only you hear it)
+      const slot = (game.me as any)?.slot ?? 0;
+      const vc = Voice.say(text.th, { fx: 'inner', rate: 0.99 + (slot % 4) * 0.08, channel: 'inner' });
+      if (vc) sec = Math.max(sec, vc.duration + 0.6);
       const h = hud(game);
       if (h) { h.monologue(text, sec); return; }
       if (game.player?.firstPerson) {

@@ -90,7 +90,8 @@ class VoiceSys {
     let p = this.bufs.get(file);
     if (!p) {
       const ctx = Sound.ctx;
-      p = !ctx ? Promise.resolve(null) : fetch(asset('audio/voice/' + file))
+      if (!ctx) return Promise.resolve(null);   // audio not started yet: don't cache the miss
+      p = fetch(asset('audio/voice/' + file))
         .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(r.status)))
         .then((ab) => ctx.decodeAudioData(ab))
         .catch(() => null);

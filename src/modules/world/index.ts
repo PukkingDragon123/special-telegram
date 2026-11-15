@@ -330,6 +330,7 @@ function shadowBudget(game: Game, cam: THREE.Vector3, force: boolean) {
 }
 
 function dispose() {
+  try { (S?.game?.engine as any).shadowEveryMin = 1; } catch { /* */ }
   DetailCull.clear();
   if (!S) return;
   S.atmo.dispose();
@@ -353,6 +354,8 @@ function frame(game: Game, dt: number) {
   S.weather.update(dt, _cam, S.atmo);
   realPropsFrame(game, dt);
   S.lights.update(_cam, S.atmo.night, dt);
+  // perf: deep night the only shadow caster is the faint moon — refresh its shadow map every 3rd frame
+  (game.engine as any).shadowEveryMin = S.atmo.night > 0.85 ? 3 : 1;
   drainsFrame(_cam, S.atmo.night, U.uWet.value, S.atmo.hemi.color);
   ARCH.update(_cam);
   U.uWet.value += (((game.g as any).rain ?? 0) - U.uWet.value) * Math.min(1, dt * 0.2);

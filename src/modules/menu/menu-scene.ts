@@ -71,6 +71,7 @@ export class MenuScene implements SceneDef {
   private slots: SlotView[] = [];
   private arrow!: THREE.Group;
   private arrowTag: Sticker | null = null;
+  private arrowLang = '';
   private t = 0;
   private offs: (() => void)[] = [];
   private stickers: Record<string, Sticker | null> = {};
@@ -556,7 +557,10 @@ export class MenuScene implements SceneDef {
     const sq = 1 + Math.cos(ph) * 0.08;
     a.scale.set((1 + this.hoverMe * 0.2) / Math.sqrt(sq), (1 + this.hoverMe * 0.2) * sq, 1 + this.hoverMe * 0.2);
     a.rotation.set(0, Math.sin(this.t * 1.3) * 0.45 + this.t * this.hoverMe * 4, rot + Math.sin(this.t * 2.1) * 0.08, 'ZYX');
+    // re-label on a language switch
+    if (this.arrowTag && this.arrowLang !== getLang()) { this.ui.remove(this.arrowTag); this.arrowTag = null; }
     if (!this.arrowTag) {
+      this.arrowLang = getLang();
       this.arrowTag = this.ui.add({ lines: [{ text: TT('คุณ', 'YOU'), size: 30, font: MF, weight: MW }], follow: () => { const p = this.project(this.arrow.position.clone().add(new THREE.Vector3(0, 0.13, 0))); return p; }, onClick: () => this.openCustomize(), bob: 0, tilt: -4, delay: 0.9 });
     }
     s.rig?.root.scale.multiplyScalar(1 + this.hoverMe * 0.025);

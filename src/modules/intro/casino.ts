@@ -157,6 +157,9 @@ export class CasinoScene implements SceneDef {
     Overlay.crosshair(false);
     Input.setWantLock(false);
     Sound.preload(['casino_ambience_loop', 'casino_lounge', 'slowmo_whoosh', 'slowmo_dramatic', 'crowd_cheer', 'cheers_glass_clink', 'champagne_pop', 'chips_clatter', 'card_shuffle', 'heartbeat_slow', 'roulette_spin', 'slot_win', 'sad_trombone', 'record_scratch', 'hiccup', 'body_thud', 'wow_crowd', 'crowd_aww', 'lose_sting', 'bass_boom']);
+    // voiced subtitle + shout takes: fetch + decode ahead of their beats
+    { const th: string[] = []; const walk = (v: any) => { if (!v) return; if (typeof v === 'function') { for (let n = 1; n <= 4; n++) walk(v(n)); } else if (Array.isArray(v)) v.forEach(walk); else if (typeof v === 'object') { if (typeof v.th === 'string') th.push(v.th); else Object.values(v).forEach(walk); } };
+      walk(CINE_LINES); walk(SHOUT); Voice.load().then(() => Voice.prefetch(th)); }
     this.amb = Sound.loop(key('casino_ambience_loop', 'crowd_chatter_loop'), { vol: 0.55, bus: 'amb' });
     this.music = Sound.play(key('casino_lounge'), { loop: true, bus: 'music', vol: 0.8, offset: 0 });
     this.makeSkipHint();

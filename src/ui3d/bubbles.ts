@@ -238,7 +238,6 @@ export class UI3D {
       L.vclip = Voice.say(thVoice, { rate, fx: o.vfx ?? (L.voice < 0.6 ? 'ghost' : 'none'), pos: this.tmp.clone(), channel: key ?? undefined, vol: kind === 'shout' ? 1.1 : 1 });
       if (L.vclip) {
         L.cps = Math.max(6, th.length / Math.max(0.35, L.vclip.duration * 0.94));
-        L.life = Math.max(o.duration !== undefined ? Math.min(o.duration, 6) : 1.6, 1.0);
       }
     }
     if (o.speaker && kind !== 'think') {
