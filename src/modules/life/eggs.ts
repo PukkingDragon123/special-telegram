@@ -68,7 +68,7 @@ export class Eggs {
     this.addCrow(new THREE.Vector3(-18, 0.15, -84));
     this.addCrow(new THREE.Vector3(-16.6, 0.15, -85.3));
     this.addCrow(new THREE.Vector3(38, 0.15, -79));
-    // secrets: the baby photo shelf (only if the photo file exists) + the snow-leopard kitten
+    // secrets: the baby photo shelf (only if the photo file exists)
     this.secrets = new Secrets(game);
     this.secrets.build(g);
   }
