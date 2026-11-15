@@ -14,6 +14,7 @@ import { leafScatter, leafMat, chiliBits, chiliMat, chunkScatter, reliefGeo, rel
 import { Assets } from '../../core/assets';
 import { RECIPES, qualityWord, ISSUE_TH } from './recipes';
 import type { CookFX } from './fx';
+import { buildFoodX } from './dishx';
 
 /* =============================================================================================
  * 'dish' item — finished food (DishData in e.data, see contracts.ts) in the ref5 decimated-photoscan
@@ -24,11 +25,11 @@ import type { CookFX } from './fx';
 let FX: CookFX | null = null;
 export function setDishFX(fx: CookFX) { FX = fx; }
 
-const heapGeo = (key: string, r: number, h: number, seed: number, squash: [number, number] = [1, 1]) =>
+export const heapGeo = (key: string, r: number, h: number, seed: number, squash: [number, number] = [1, 1]) =>
   gc('dishHeap' + key, () => planarUV(mound(r, h, { seed, detail: 2, rough: 0.3, squash }), 1 / (r * 2.2)));
 
 /** glossy street-food heap: real photo tile, crumb normals, clearcoat = the oil/sauce sheen */
-function heapMat(tex: THREE.Texture, normal: THREE.Texture | null, color: number, burn: number, key: string, rough = 0.42, oil = 0.7) {
+export function heapMat(tex: THREE.Texture, normal: THREE.Texture | null, color: number, burn: number, key: string, rough = 0.42, oil = 0.7) {
   const b = Math.round(Math.min(1, burn) * 4) / 4;
   return cachedMat(`dishMat:${key}:${b}`, () => {
     const m = new THREE.MeshPhysicalMaterial({ map: tex, roughness: rough, flatShading: true, color, clearcoat: oil * (1 - b * 0.7), clearcoatRoughness: 0.25 + b * 0.4 });
@@ -37,9 +38,9 @@ function heapMat(tex: THREE.Texture, normal: THREE.Texture | null, color: number
     return m;
   });
 }
-const photo = (name: string) => Assets.texture(`textures/food/${name}.png`, { srgb: true, wrap: false });
+export const photo = (name: string) => Assets.texture(`textures/food/${name}.png`, { srgb: true, wrap: false });
 /** cooked basil leaves scattered over a heap (3D, real leaf photo) */
-const dishLeaves = (n: number, spread: number, y: number, seed: number) => leafScatter(`dish${n}:${spread}:${seed}`, n, (i, m, r) => {
+export const dishLeaves = (n: number, spread: number, y: number, seed: number) => leafScatter(`dish${n}:${spread}:${seed}`, n, (i, m, r) => {
   const a = r() * 6.28, rr = Math.sqrt(r()) * spread;
   m.makeRotationFromEuler(new THREE.Euler((r() - 0.5) * 0.7, r() * 6.28, (r() - 0.5) * 0.6));
   m.setPosition(Math.cos(a) * rr, y + (1 - rr / spread) * 0.012, Math.sin(a) * rr);
@@ -132,7 +133,7 @@ function buildFood(d: any): THREE.Group {
       g.add(om);
       break;
     }
-    default: break;
+    default: buildFoodX(d, g, { fx, rx, s, burn, vis, bowl, add }); break;
   }
   // fried egg on top
   if (d.egg && d.egg !== 'none') {
@@ -249,7 +250,7 @@ void M; void lathe;
 // ------------------------------------------------------------------ garnish (real shapes + real food photos)
 
 /** a cucumber slice: 5 mm disc, both faces show one real slice from the photo, the edge is the dark skin */
-function cucumberSlice() {
+export function cucumberSlice() {
   return gc('cucSliceGeo', () => {
     const g = new THREE.CylinderGeometry(0.016, 0.016, 0.005, 16, 1, false);
     const uv = g.getAttribute('uv') as THREE.BufferAttribute, n = g.getAttribute('normal') as THREE.BufferAttribute, p = g.getAttribute('position') as THREE.BufferAttribute;
@@ -260,7 +261,7 @@ function cucumberSlice() {
     return g;
   });
 }
-function cucumberMat() {
+export function cucumberMat() {
   return cachedMat('cucSliceReal', () => new THREE.MeshStandardMaterial({
     map: Assets.texture('textures/food/cucumber_slices_tile.jpg', { srgb: true, wrap: false }),
     normalMap: Assets.texture('textures/food/cucumber_slices_tile_n.jpg', { srgb: false, wrap: false }),
@@ -268,7 +269,7 @@ function cucumberMat() {
   }));
 }
 /** a lime wedge (1/6 of the fruit): peel outside, two cut flesh faces */
-function limeWedge(): THREE.Group {
+export function limeWedge(): THREE.Group {
   const r = 0.019, arc = Math.PI / 3;
   const peel = gc('limePeel', () => {
     const pts: THREE.Vector2[] = [];
@@ -295,7 +296,7 @@ function limeWedge(): THREE.Group {
   return g;
 }
 /** cooked shrimp: curled, tapering body with white/orange segment bands and a fanned tail */
-function shrimpGeo() {
+export function shrimpGeo() {
   return gc('shrimpCurled', () => {
     const pts: THREE.Vector3[] = [];
     for (let i = 0; i <= 12; i++) { const a = (i / 12) * Math.PI * 1.25; pts.push(new THREE.Vector3(Math.cos(a) * 0.012, 0, Math.sin(a) * 0.012)); }

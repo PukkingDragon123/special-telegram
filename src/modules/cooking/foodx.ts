@@ -86,14 +86,16 @@ function loadScan(id: string, url: string, rough: number, sss?: number): Promise
 }
 
 /** A scan placed at `len` metres long (async: the group fills in when the GLB arrives). */
-function scan(id: string, len: number, pos: [number, number, number], yaw = 0, o: { rough?: number; sss?: number; url?: string; tilt?: number } = {}) {
+export function scan(id: string, len: number, pos: [number, number, number], yaw = 0, o: { rough?: number; sss?: number; url?: string; tilt?: number; tint?: number } = {}) {
   const g = G();
   g.position.set(...pos);
   g.rotation.set(o.tilt ?? 0, yaw, 0);
   g.scale.setScalar(len);
   loadScan(id, o.url ?? Assets.url(GEN + `models/${id}/${id}.glb`), o.rough ?? 0.5, o.sss).then((s) => {
     if (!s) return;
-    const m = new THREE.Mesh(s.geo, s.mat);
+    let mat = s.mat;
+    if (o.tint != null) mat = cachedMat(`scanTint:${id}:${o.tint}`, () => { const c = s.mat.clone(); c.color.setHex(o.tint!); return c; }) as THREE.MeshStandardMaterial;
+    const m = new THREE.Mesh(s.geo, mat);
     m.castShadow = true; m.receiveShadow = true;
     g.add(m);
   });
@@ -130,12 +132,12 @@ function shade(hex: string, k: number) {
   const f = (v: number) => Math.max(0, Math.min(255, Math.round(v * (1 + k))));
   return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`;
 }
-const labelMat = (key: string, th: string, en: string, bg: string, fg: string, accent?: string, rough = 0.45) =>
+export const labelMat = (key: string, th: string, en: string, bg: string, fg: string, accent?: string, rough = 0.45) =>
   cachedMat('fxlabel:' + key, () => new THREE.MeshStandardMaterial({ map: labelTex(key, th, en, bg, fg, accent), roughness: rough, metalness: 0 }));
 
 /** speckle / pattern canvas textures for food surfaces */
 const patTexCache = new Map<string, THREE.CanvasTexture>();
-function patTex(key: string, size: number, draw: (x: CanvasRenderingContext2D, s: number) => void, repeat = 1) {
+export function patTex(key: string, size: number, draw: (x: CanvasRenderingContext2D, s: number) => void, repeat = 1) {
   let t = patTexCache.get(key);
   if (t) return t;
   const c = document.createElement('canvas'); c.width = c.height = size;
@@ -149,7 +151,7 @@ const rnd = (seed: number) => () => { seed = (seed * 16807) % 2147483647; return
 
 // ------------------------------------------------------------------ materials
 
-const MX = {
+export const MX = {
   ice: () => cachedMat('fx:ice', () => { const m = new THREE.MeshStandardMaterial({ color: 0xe8f4fa, roughness: 0.18, metalness: 0, transparent: true, opacity: 0.86 }); return m; }),
   squid: () => cachedMat('fx:squid', () => withSSS(new THREE.MeshStandardMaterial({
     map: patTex('squidskin', 256, (x, s) => { x.fillStyle = '#f1e6e8'; x.fillRect(0, 0, s, s); const r = rnd(7); for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(${120 + r() * 60},${40 + r() * 30},${70 + r() * 50},${0.25 + r() * 0.5})`; x.beginPath(); x.arc(r() * s, r() * s, 0.6 + r() * 2.4, 0, 7); x.fill(); } }, 2),
