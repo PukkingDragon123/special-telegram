@@ -337,7 +337,7 @@ export interface InkParams {
 export const INK_DEFAULTS: InkParams = LOOK_STYLE === 'anime'
   ? { silPx: 1.6, creasePx: 1.0, silT: [0.012, 0.045], crT: [0.75, 1.6], creaseK: 0.85, fade: [30, 85], jitter: 0.6 }
   // inked realism: clean silhouettes, only strong creases, steady lines (comic-realistic, not sketchy)
-  : { silPx: 1.75, creasePx: 0.9, silT: [0.014, 0.05], crT: [0.95, 2.1], creaseK: 0.55, fade: [34, 95], jitter: 0.25 };
+  : { silPx: 2.1, creasePx: 0.9, silT: [0.01, 0.034], crT: [0.95, 2.1], creaseK: 0.55, fade: [36, 100], jitter: 0.2 };
 
 export class InkEdgePass extends Pass {
   readonly target: THREE.WebGLRenderTarget;
@@ -441,7 +441,7 @@ export class InkEffect extends Effect {
         ['inkCol', new THREE.Uniform(new THREE.Color(0.0085, 0.006, 0.005))],
         ['inkK', new THREE.Uniform(InkSettings.ink ? Math.min(1, InkSettings.strength) : 0)],
         // realistic: near-black ink (only a hint of the local colour); anime: tinted ink
-        ['tintK', new THREE.Uniform(LOOK_STYLE === 'anime' ? 0.55 : 0.22)],
+        ['tintK', new THREE.Uniform(LOOK_STYLE === 'anime' ? 0.55 : 0.1)],
         ['glowK', new THREE.Uniform(LOOK_STYLE === 'anime' ? 0.12 : 0.08)],
       ]),
     });
@@ -621,7 +621,8 @@ export function updateInkHulls(renderH: number, renderW: number) {
   frameN++;
   HULL_U.uRes.value.set(Math.max(1, renderW), Math.max(1, renderH));
   HULL_U.uPxScale.value = renderH / 1080;
-  HULL_U.uOn.value = InkSettings.ink ? InkSettings.strength : 0;
+  // inked realism: character/pet hulls a bit bolder than the world lines (clear figure-ground)
+  HULL_U.uOn.value = InkSettings.ink ? InkSettings.strength * (LOOK_STYLE === 'anime' ? 1 : 1.2) : 0;
   for (const t of tracks.values()) {
     if ((frameN + t.stagger) % 30 === 0) {
       if (!inScene(t.root)) {
