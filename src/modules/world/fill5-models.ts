@@ -55,7 +55,7 @@ export const F5_MODELS: Record<string, ModelDef> = {
   manhole: { file: 'water_manhole_cover', phys: 'none', far: 0.9 },
   extinguisher: { file: 'korean_fire_extinguisher_01', phys: 'none', far: 0.6 },
   cctv2: { file: 'security_camera_02', phys: 'none', far: 0.7, anchor: 'back' },
-  wall_lamp2: { file: 'industrial_wall_lamp', phys: 'none', far: 0.9, anchor: 'back' },
+  wall_lamp2: { file: 'industrial_wall_lamp', phys: 'none', far: 0.9, anchor: 'back', emis: 0.4 },
   cage_light: { file: 'caged_hanging_light', phys: 'none', far: 0.8, anchor: 'top' },
   socket_bulb: { file: 'pull_chain_light_socket', phys: 'none', far: 0.7, anchor: 'top' },
   tube_light: { file: 'mounted_fluorescent_lights', phys: 'none', far: 0.9, anchor: 'top' },

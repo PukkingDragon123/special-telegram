@@ -67,6 +67,8 @@ export interface ModelDef {
   anchor?: 'bottom' | 'back' | 'top';
   /** env-map intensity */
   env?: number;
+  /** emissive intensity override (default: the GLB's, capped at 1.5) */
+  emis?: number;
   /** only the meshes under the glTF node with exactly this name (Poly Haven packs variants side by side) */
   node?: string;
 }
@@ -310,6 +312,7 @@ diffuseColor.rgb = hpHueVar(diffuseColor.rgb, vColor.rgb);
   m.customProgramCacheKey = () => 'hp-huevar-1';
 }
 
+const F5_DEFS = new Set<ModelDef>(Object.values(F5_MODELS));
 function prepMaterial(src: THREE.Material, def: ModelDef): THREE.Material {
   const m = (src as THREE.MeshStandardMaterial).clone();
   if (m.transparent || (m as any).alphaMode === 'BLEND') { m.transparent = false; m.depthWrite = true; m.alphaTest = Math.max(m.alphaTest, 0.5); }
@@ -318,6 +321,8 @@ function prepMaterial(src: THREE.Material, def: ModelDef): THREE.Material {
   for (const k of TEX_SLOTS) { const t = (m as any)[k] as THREE.Texture | null; if (t) ownTexture(t); }
   if (m.color) m.color.multiplyScalar(def.dirt ?? 0.92);
   m.envMapIntensity = def.env ?? 0.55;
+  // some scans ship absurd emissive strengths (KHR_materials_emissive_strength 100 → a white bloom blob in daylight)
+  if ((m as any).emissiveIntensity !== undefined && (def.emis !== undefined || F5_DEFS.has(def))) (m as any).emissiveIntensity = def.emis ?? Math.min((m as any).emissiveIntensity, 1.5);
   if (m.map) m.map.anisotropy = 4;
   return m;
 }
