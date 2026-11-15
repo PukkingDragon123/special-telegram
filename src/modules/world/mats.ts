@@ -816,9 +816,13 @@ vec3 roomEmis = wInterior(vWPos, vWNrm, vUvT, vExt, glassDirt);
 diffuseColor.rgb = vec3(0.012, 0.013, 0.014);`)
       .replace('#include <roughnessmap_fragment>', `float roughnessFactor = 0.04 + 0.22 * glassDirt;`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-totalEmissiveRadiance += roomEmis;`);
+totalEmissiveRadiance += roomEmis;`)
+      // the mirror-sharp sun highlight on the panes (roughness 0.04) is ~1000× the sky → bloom turned it into white
+      // blobs down the main road in daylight; cap the pane radiance (reflections and rooms stay)
+      .replace('#include <opaque_fragment>', `outgoingLight = min(outgoingLight, vec3(2.5));
+#include <opaque_fragment>`);
   };
-  m.customProgramCacheKey = () => 'world-room-v1';
+  m.customProgramCacheKey = () => 'world-room-v2';
   return m;
 }
 
@@ -965,8 +969,9 @@ export function makeGlassMaterial(): THREE.MeshStandardMaterial {
       // fresnel: glass gets more opaque/reflective at grazing angles
       float fres = pow(1.0 - saturate(dot(normalize(vViewPosition), normal * (gl_FrontFacing ? 1.0 : -1.0))), 3.0);
       diffuseColor.a = clamp(diffuseColor.a + fres * 0.55, 0.0, 0.92);
+      outgoingLight = min(outgoingLight, vec3(2.5));   // no sun-glint bloom blobs (see makeRoomMaterial)
       #include <opaque_fragment>`);
   };
-  m.customProgramCacheKey = () => 'world-glass-v1';
+  m.customProgramCacheKey = () => 'world-glass-v2';
   return m;
 }

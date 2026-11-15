@@ -12,7 +12,7 @@ import { ClothSpots } from '../cloth/api';
 import { THAI_TABLE, STEEL_TABLE } from './realprops-table';
 import { propHeight, MODELS, resolveProp } from './realprops';
 import { EMIS } from './mats';
-import { SW_H, SOI, MAIN, CROAD, ZEBRAS, POLES_SOI, POLES_SOI_E, POLES_MAIN_N, POLES_MAIN_S } from './layout';
+import { SW_H, SOI, MAIN, CROAD, ZEBRAS, POLES_SOI, POLES_SOI_E, POLES_MAIN_N, POLES_MAIN_S, OFFICE } from './layout';
 
 /**
  * STREET LIFE DRESSING — parked motorbikes & pickups, trash bags, bins, crates, stools, potted
@@ -294,6 +294,8 @@ export function buildStreetLife(c: Ctx) {
       else if (t === 2) { x = rng.range(-128, 128); z = rng.chance(0.5) ? MAIN.swN0 + 0.08 : MAIN.swS1 - 0.08; }
       else { x = rng.range(-128, 128); z = rng.chance(0.5) ? MAIN.z0 + 0.06 : MAIN.z1 - 0.06; y = 0; }
       if (!ok(x, z, 0.3)) continue;
+      // the office plaza has no wall line at MAIN.swN0 (the tower is set back): tufts there floated mid-paving
+      if (t === 2 && z < 2 && x > OFFICE.plazaX0 - 0.5 && x < OFFICE.plazaX1 + 0.5) continue;
       weeds(w, F, x, y, z, rng, rng.range(0.5, 1.1));
     }
     for (let i = 0; i < 46; i++) {

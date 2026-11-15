@@ -34,7 +34,7 @@ const SMALL_GOODS = ['food_box', 'cans_food', 'oil_tin', 'bleach', 'cleaner_all'
 const PRODUCE = ['sweet_potato', 'onion_y', 'lemon', 'lime_w', 'ginger'];
 const TABLE_TOPS = ['jug_clay', 'metal_jug', 'enamel_pot', 'wood_bowl', 'thermos', 'kettle'];
 const THAI_FRUIT = ['durian', 'coconut_g', 'coconut_g', 'lemon', 'lime_w', 'sweet_potato'];
-const UMBRELLAS = ['umbrella_w', 'parasol'];
+const UMBRELLAS = ['umbrella_w'];   // parasol_beach is modelled with a tilted pole: it read as a white disc lying on the pavement
 const UMB_COLS = [0xd8382c, 0x2a62b8, 0xf2f0ea, 0x2a8a4a, 0xe8a020];
 
 export function fill5(api: FillApi, seed: string) {
@@ -198,7 +198,8 @@ export function fill5(api: FillApi, seed: string) {
   // ================================================================ 2. main road: coffee carts + vendor corners on the wide north sidewalk
   for (let x = -120; x < 120; x += r.range(8, 15)) {
     if (Math.abs(x) < 10) continue;   // the soi mouth (the overpass stairs are kept out by put())
-    const z = 1.6 + r.range(-0.2, 0.3);
+    // the kerb band between the parked-scooter row (z ≈ 1) and the north walking lane (z 3.55)
+    const z = 2.25 + r.range(-0.1, 0.1);
     const kind = r.int(0, 6);
     const umbrella = (ux: number, uz: number) => { const id = r.pick(UMBRELLAS); if (has(id)) add(id, ux, groundHeight(ux, uz), uz, r.range(0, 6), { color: r.pick(UMB_COLS), tag: 'umbrellas' }); };
     if (kind >= 3) {
@@ -207,7 +208,7 @@ export function fill5(api: FillApi, seed: string) {
       if (put(sid, x, z, Math.PI + r.range(-0.15, 0.15), { tag: 'street stalls', pad: 0.15 })) {
         if (sid === 'cart_sf' || r.chance(0.4)) umbrella(x + r.range(-0.4, 0.4), z + 0.4);
         if (/fruit/.test(sid)) onTop(sid, x, z, Math.PI, THAI_FRUIT, r.int(6, 12), 'stall fruit');
-        for (let k = 0, n = r.int(2, 5); k < n; k++) put('vn_stool', x + r.range(-1.6, 1.6), z + r.range(1.0, 2.0), r.range(0, 6), { tag: 'red stools' });
+        for (let k = 0, n = r.int(2, 5); k < n; k++) put('vn_stool', x + (r.chance(0.5) ? 1 : -1) * r.range(1.2, 2.4), z + r.range(-0.3, 0.3), r.range(0, 6), { tag: 'red stools' });
         put(r.pick(['cooler', 'esky', 'foam_cooler']), x + 1.35, z - 0.2, r.range(0, 6), { tag: 'ice coolers' });
         put('lpg_scan', x - 1.3, z - 0.3, r.range(0, 6), { tag: 'lpg' });
       }
