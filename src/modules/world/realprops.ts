@@ -129,7 +129,7 @@ export const MODELS: Record<PropId, ModelDef> = {
   bin_rusty: M('metal_trash_can', { phys: 'dyn', mass: 7, friction: 0.5, shadow: true, collider: 'cyl', node: 'metal_trash_can_rust' }),
   cctv: M('security_camera_01', { phys: 'none', far: 0.7, anchor: 'back' }),
   wall_lamp: M('security_light', { phys: 'none', far: 0.9, anchor: 'back' }),
-  plant_pot_big: M('potted_plant_01', { phys: 'dyn', mass: 11, friction: 0.7, shadow: true, collider: 'cyl', far: 1.0 }),
+  plant_pot_big: M('potted_plant_01', { phys: 'dyn', mass: 11, friction: 0.7, shadow: false, collider: 'cyl', far: 0.75 }),   // 14.7k tris: no shadow pass, ~25 m at low (simplifying it shreds the leaves)
   planter_long: M('planter_box_02', { phys: 'static', shadow: true, far: 1.0 }),
   planter_tall: M('planter_box_03', { phys: 'static', shadow: true, far: 1.1 }),
   crate_milk: M('plastic_crate_01', { phys: 'dyn', mass: 1.2, friction: 0.55, shadow: true, collider: 'box', far: 0.8, recolor: true }),
@@ -197,7 +197,7 @@ export const MODELS: Record<PropId, ModelDef> = {
   fridge: { phys: 'static', shadow: true, far: 1.2 },
   radio: M('boombox', { phys: 'dyn', mass: 2.8, friction: 0.6, far: 0.6, collider: 'box' }),
   cash_tin: M('cleaner_tin_01', { phys: 'dyn', mass: 0.4, friction: 0.5, far: 0.45, collider: 'cyl' }),
-  bulb: M('lightbulb_01', { phys: 'none', anchor: 'top', far: 0.7, env: 1.2 }),
+  bulb: M('lightbulb_01', { phys: 'none', anchor: 'top', far: 0.7, env: 1.2, emis: 0.7 }),   // the scan ships emissive ×10 → a white bloom blob in daylight
   bananas: M('bananas', { phys: 'none', far: 0.6 }),
   knife: M('fish_knife', { phys: 'none', far: 0.4 }),
   lychee: M('food_lychee_01', { phys: 'none', far: 0.3 }),
@@ -322,13 +322,13 @@ function prepMaterial(src: THREE.Material, def: ModelDef): THREE.Material {
   if (m.color) m.color.multiplyScalar(def.dirt ?? 0.92);
   m.envMapIntensity = def.env ?? 0.55;
   // some scans ship absurd emissive strengths (KHR_materials_emissive_strength 100 → a white bloom blob in daylight)
-  if ((m as any).emissiveIntensity !== undefined && (def.emis !== undefined || F5_DEFS.has(def))) (m as any).emissiveIntensity = def.emis ?? Math.min((m as any).emissiveIntensity, 1.5);
+  if ((m as any).emissiveIntensity !== undefined) (m as any).emissiveIntensity = def.emis ?? Math.min((m as any).emissiveIntensity, F5_DEFS.has(def) ? 1.5 : 2);
   // KHR_materials_transmission (lamp/bulb glass): ONE visible transmissive material makes three render the whole
   // opaque scene a second time into the transmission target every frame (~+1.5M tris on the main road at low).
   // Plain alpha glass instead — it looks the same at prop scale.
   if (((m as any).transmission ?? 0) > 0) {
     (m as any).transmission = 0;
-    m.transparent = true; m.opacity = Math.min(m.opacity, 0.35); m.depthWrite = false; m.alphaTest = 0;
+    if (/glass/i.test(m.name)) { m.transparent = true; m.opacity = Math.min(m.opacity, 0.35); m.depthWrite = false; m.alphaTest = 0; }   // sacks etc. just go opaque
   }
   if (m.map) m.map.anisotropy = 4;
   return m;

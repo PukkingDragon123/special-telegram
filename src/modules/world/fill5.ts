@@ -42,8 +42,12 @@ export function fill5(api: FillApi, seed: string) {
   const r = new RNG(seed);
   const top = (id: string) => size(id)[1];
   /** stack a few small things on top of something already accepted at (x,z) */
+  /** bases whose bounding-box top is NOT where things sit (canopies, backrests): [surface height, spread factor] */
+  const SURF: Record<string, [number, number]> = { fruit_stand: [0.62, 0.55], fruit_stand2: [0.47, 0.6], sofa: [0.44, 0.55], armchair: [0.44, 0.4], day_bed: [0.45, 0.6] };
   const onTop = (base: string, x: number, z: number, yaw: number, ids: string[], n: number, tag: string) => {
-    const s = size(base), y = groundHeight(x, z) + s[1] + 0.003;
+    const s0 = size(base), sf = SURF[base];
+    const s: [number, number, number] = sf ? [s0[0] * sf[1], sf[0], s0[2] * sf[1]] : s0;
+    const y = groundHeight(x, z) + s[1] + 0.003;
     const c = Math.cos(yaw), sn = Math.sin(yaw);
     for (let i = 0; i < n; i++) {
       const id = r.pick(ids);
@@ -257,9 +261,9 @@ export function fill5(api: FillApi, seed: string) {
     const gx = TEMPLE.gateX;
     // carved elephants offered in rows beside the gate (scaled up: devotees' elephant statues)
     for (const side of [-1, 1]) {
-      for (let k = 0; k < 6; k++) {
-        const x = gx + side * (2.2 + k * 0.45), z = TEMPLE.forecourtZ + 2.2 + (k % 2) * 0.35;
-        put('elephant', x, z, side > 0 ? -Math.PI / 2 : Math.PI / 2, { scale: r.range(5.5, 8), tag: 'elephant offerings' });
+      for (let k = 0; k < 5; k++) {   // one row, ~0.15 m apart (they used to overlap in a tight zig-zag)
+        const sc = r.range(5.5, 7), x = gx + side * (2.3 + k * 0.95), z = TEMPLE.forecourtZ + 2.2;
+        put('elephant', x, z, side > 0 ? -Math.PI / 2 : Math.PI / 2, { scale: sc, tag: 'elephant offerings' });
       }
       put('cat_statue', gx + side * 1.6, TEMPLE.forecourtZ + 1.6, Math.PI, { scale: 1.5, tag: 'temple statues' });
     }

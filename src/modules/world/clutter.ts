@@ -8,7 +8,8 @@ import { MODELS, type RealProps, type PlaceOpts } from './realprops';
 import { libEntry } from './lib';
 import { fill5 } from './fill5';
 import { F5_SIZE } from './fill5-models';
-import { SOI_CROSSINGS } from './nav';
+import { SOI_CROSSINGS, buildNav } from './nav';
+import { ZONES } from '../../game/mapplan';
 import { PLASTIC_COLORS } from './props';
 import { ROWS, MARKET, ZEBRAS, OFFICE, CROAD, TEMPLE, POLES_MAIN_N, POLES_MAIN_S, groundHeight, type UnitSpec } from './layout';
 
@@ -108,7 +109,33 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   const fronts: [number, number][] = [];
   for (const [n, a] of Object.entries(anchors)) if (/_shop$|_store$|^restaurant_unit$|^shelf:[^:]+:0$/.test(n)) fronts.push([a.p[0], a.p[2]]);
   const cz = (CROAD.sw0 + CROAD.sw1) / 2;
+  // EVERY nav edge (sidewalk lanes, crossings, shop doors, canal bank, wholesale apron, temple…) is a keep-out, not only
+  // the hand-listed lanes below: the NPC walker steers along these segments and would walk through anything on them.
+  // (nav.ts buildNav is pure — the same graph the world builds after the dressing passes.)
+  const NAV_CELL = 4, NAV_HALF = 0.45;
+  const navSegs = new Map<string, Float32Array[]>();
+  {
+    const nv = buildNav(ZONES);
+    for (const n of nv.nodes) for (const e of n.e) {
+      if (e.to < n.id) continue;
+      const b = nv.nodes[e.to].p, seg = new Float32Array([n.p.x, n.p.z, b.x, b.z]);
+      const cx0 = Math.floor((Math.min(n.p.x, b.x) - 2) / NAV_CELL), cx1 = Math.floor((Math.max(n.p.x, b.x) + 2) / NAV_CELL);
+      const cz0 = Math.floor((Math.min(n.p.z, b.z) - 2) / NAV_CELL), cz1 = Math.floor((Math.max(n.p.z, b.z) + 2) / NAV_CELL);
+      for (let i = cx0; i <= cx1; i++) for (let j = cz0; j <= cz1; j++) { const k = i + ',' + j; const l = navSegs.get(k); if (l) l.push(seg); else navSegs.set(k, [seg]); }
+    }
+  }
+  const onNavLane = (x: number, z: number, r: number) => {
+    const l = navSegs.get(Math.floor(x / NAV_CELL) + ',' + Math.floor(z / NAV_CELL));
+    if (!l) return false;
+    for (const s of l) {
+      const dx = s[2] - s[0], dz = s[3] - s[1], L2 = dx * dx + dz * dz;
+      const t = L2 > 0 ? Math.max(0, Math.min(1, ((x - s[0]) * dx + (z - s[1]) * dz) / L2)) : 0;
+      if (Math.hypot(x - (s[0] + dx * t), z - (s[1] + dz * t)) < NAV_HALF + r) return true;
+    }
+    return false;
+  };
   const blocked = (x: number, z: number, r: number) => {
+    if (onNavLane(x, z, r)) return true;
     for (const [fx, fz] of fronts) if (Math.abs(fx) > 5 && Math.abs(fx) < 16 && Math.sign(fx) === Math.sign(x) && Math.abs(x) > 2.4 && Math.abs(x) < 8.6 && Math.abs(z - fz) < 4.6 + r) return true;
     if (x < MAP_BOUNDS.minX + 3 || x > MAP_BOUNDS.maxX - 3 || z < MAP_BOUNDS.minZ + 3 || z > MAP_BOUNDS.maxZ - 3) return true;
     if (x > MARKET.x0 - 0.3 - r && x < MARKET.x1 + 0.3 + r && z > MARKET.z0 - 0.3 - r && z < MARKET.z1 + 0.3 + r) return true;
