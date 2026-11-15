@@ -617,7 +617,7 @@ export class MenuScene implements SceneDef {
     const map = new THREE.CanvasTexture(half);
     map.colorSpace = THREE.SRGBColorSpace;
     map.anisotropy = 8;
-    const W = 0.42, H = W * half.height / half.width;
+    const W = 0.34, H = W * half.height / half.width;
     const geo = new THREE.PlaneGeometry(W, H, 18, 10);
     const pos = geo.attributes.position as THREE.BufferAttribute;
     for (let i = 0; i < pos.count; i++) {
@@ -648,10 +648,11 @@ export class MenuScene implements SceneDef {
     const g = this.paper;
     if (!g) return;
     const H = g.userData.H as number;
-    const lean = 0.2 - lift * 0.12;   // standing on the coffee table, propped against the Jenga tower
+    // standing on the right end of the coffee table, propped back — clear of the Jenga tower so the hand pull reads
+    const lean = 0.24 - lift * 0.12;
     const TOP = 0.381;                // table top height (album.ts buildTable)
-    g.rotation.set(-lean, 0.22 - lift * 0.1, 0.04);
-    g.position.set(-0.2, TOP + (H / 2) * Math.cos(lean) + lift * 0.035, -2.36 - (H / 2) * Math.sin(lean) + lift * 0.05);
+    g.rotation.set(-lean, -0.32 - lift * 0.1, -0.03);
+    g.position.set(0.29, TOP + (H / 2) * Math.cos(lean) + lift * 0.035, -2.4 - (H / 2) * Math.sin(lean) + lift * 0.05);
   }
 
   private readPaper() {
