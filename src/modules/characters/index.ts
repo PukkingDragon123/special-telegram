@@ -32,6 +32,7 @@ const factory: CharacterFactory & { archetypes(): string[]; archetypeName(id: st
 };
 
 const _cam = new THREE.Vector3();
+const _pv = new THREE.Matrix4();
 
 export default defineModule({
   id: 'characters',
@@ -58,7 +59,13 @@ export default defineModule({
   frame(game) {
     RigWorld.frame++;
     const cam = game.engine.camera;
-    if (cam) { cam.getWorldPosition(_cam); RigWorld.cam.copy(_cam); }
+    if (cam) {
+      cam.getWorldPosition(_cam); RigWorld.cam.copy(_cam);
+      cam.updateMatrixWorld();
+      _pv.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
+      RigWorld.frustum.setFromProjectionMatrix(_pv);
+      RigWorld.frustumOk = true;
+    }
     processAtlasQueue();
   },
 });

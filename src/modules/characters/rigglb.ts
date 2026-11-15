@@ -303,6 +303,7 @@ function makeAtlasMaterial() {
   return m;
 }
 
+const _offS = new THREE.Sphere();
 export class Rig implements CharacterRig {
   readonly root = new THREE.Group();
   private inner = new THREE.Group();
@@ -759,7 +760,12 @@ export class Rig implements CharacterRig {
     if (this.mesh) this.mesh.castShadow = shadow;
     if (this.meshLo) this.meshLo.castShadow = shadow;
     this.accDt += dt;
-    const interval = this.opts.lod === 'high' || d < 16 ? 1 : d < 34 ? 2 : d < 60 ? 3 : d < 110 ? 5 : 0;
+    let interval = this.opts.lod === 'high' || d < 16 ? 1 : d < 34 ? 2 : d < 60 ? 3 : d < 110 ? 5 : 0;
+    // out of view (and not right next to the camera): only the shadow can show → ~8–10 Hz is plenty
+    if (interval > 0 && d > 5 && RigWorld.frustumOk && this.opts.lod !== 'high') {
+      _offS.center.copy(_v); _offS.center.y += 0.9; _offS.radius = 1.4;
+      if (!RigWorld.frustum.intersectsSphere(_offS)) interval = Math.max(interval, d < 24 ? 6 : 8);
+    }
     if (interval === 0) { if (this.accDt > 2) this.accDt = 0; return; }
     if ((RigWorld.frame + this.stagger) % interval !== 0) return;
     const step = Math.min(0.25, this.accDt);

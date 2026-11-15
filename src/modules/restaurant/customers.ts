@@ -514,7 +514,6 @@ function tryDessert(c: Ent, d: DishData): boolean {
     if (!G.state.get(c.id) || c.cs !== 'wait') return;
     anim(c, 'wave');
     say(c, pick([tl(`ขอ${nm}ต่ออีกที่นะ`, `and a ${recipeInfo(G, r).name.en ?? nm} please`), tl(`ของหวานมีอะไร… เอา${nm}ครับ`, `dessert… ${recipeInfo(G, r).name.en ?? nm}!`), tl(`อิ่มแล้วแต่ของหวานแยกกระเพาะ ขอ${nm}`, `full, but dessert has its own stomach: ${recipeInfo(G, r).name.en ?? nm}`)]), { duration: 4.5 });
-    G.sfx('khob_khun', c.p, { vol: 0.4 });
   }, 4200);
   return true;
 }

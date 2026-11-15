@@ -17,6 +17,9 @@ import { faceEntry } from './defs';
 /** Per-frame context shared by all rigs (set by the module's frame()). */
 export const RigWorld = {
   cam: new THREE.Vector3(0, 1.6, 0),
+  /** view frustum of the rendering camera (rigs out of view animate at a low rate — only their shadow shows) */
+  frustum: new THREE.Frustum(),
+  frustumOk: false,
   frame: 0,
   shadowDist: 24,
   lodDist: 26,

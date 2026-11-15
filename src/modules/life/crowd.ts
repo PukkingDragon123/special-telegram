@@ -71,6 +71,7 @@ export class Crowd {
   private bakePending: { rig: CharacterRig; n: number; vi: number }[] = [];
   private seed = 1;
   private nearCap = 12;
+  private rigR2 = 46 * 46;
   private built = false;
   private tmpV = new THREE.Vector2();
   private tmpT = new THREE.Vector2();
@@ -93,7 +94,10 @@ export class Crowd {
     this.built = true;
     this.seed = (game.g.seed ?? 1) | 0;
     const q = quality();
-    this.nearCap = q === 'low' ? 6 : q === 'medium' ? 10 : q === 'ultra' ? 20 : 15;
+    // real skinned rigs are the most expensive thing in a frame (skinning + several draws each + shadow pass);
+    // the baked impostors share the exact same look, so far walkers hand over to them sooner
+    this.nearCap = q === 'low' ? 5 : q === 'medium' ? 7 : q === 'ultra' ? 14 : 10;
+    this.rigR2 = q === 'low' ? 26 * 26 : q === 'medium' ? 32 * 32 : q === 'ultra' ? 46 * 46 : 38 * 38;
     this.fullFaces = q === 'high' || q === 'ultra';
     const k = 1 / qmul();
     // sidewalk paths (walking lanes kept clear by world/dressing: soi ±4.6, main road z 3.55 / 23.6, market aisles between the stall islands, temple, canal, rural road)
@@ -521,7 +525,7 @@ export class Crowd {
       const dx = c.pos.x - cam.x, dz = c.pos.z - cam.z, inv = 1 / Math.max(0.01, Math.hypot(dx, dz));
       const front = (dx * fwd.x + dz * fwd.z) * inv;            // -1 behind … 1 ahead
       return { c, d, s: d * (front > 0.35 ? 0.16 : front > -0.2 ? 0.5 : 1) };
-    }).filter((o) => o.d < 46 * 46).sort((a, b) => a.s - b.s).slice(0, this.nearCap);
+    }).filter((o) => o.d < this.rigR2).sort((a, b) => a.s - b.s).slice(0, this.nearCap);
     const want = new Set(scored.map((o) => o.c.key));
     for (const [k, r] of this.rigs) if (!want.has(k)) { r.rig.root.removeFromParent(); r.rig.dispose(); this.rigs.delete(k); }
     this.createBudget = Math.min(1, this.createBudget + dt * 3);
