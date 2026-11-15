@@ -1,3127 +1,3703 @@
 {
- "alarm_clock_01": {
-  "file": "alarm_clock_01/alarm_clock_01.glb",
-  "name": "Alarm Clock 01",
-  "bytes": 107632,
-  "srcTris": 8985,
-  "tris": 3399,
-  "dims": [
-   0.228,
-   0.168,
-   0.174
-  ],
-  "authors": [
-   "Yann Kervran",
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/alarm_clock_01"
- },
- "all_purpose_cleaner": {
-  "file": "all_purpose_cleaner/all_purpose_cleaner.glb",
-  "name": "All Purpose Cleaner",
-  "bytes": 62556,
-  "srcTris": 4624,
-  "tris": 3000,
-  "dims": [
-   0.157,
-   0.117,
-   0.32
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/all_purpose_cleaner"
- },
- "anthurium_botany_01": {
-  "file": "anthurium_botany_01/anthurium_botany_01.glb",
-  "name": "Anthurium Botany 01",
-  "bytes": 88220,
-  "srcTris": 67152,
-  "tris": 3001,
-  "dims": [
-   2.806,
-   1.801,
-   0.507
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/anthurium_botany_01"
- },
- "antique_ceramic_vase_01": {
-  "file": "antique_ceramic_vase_01/antique_ceramic_vase_01.glb",
-  "name": "Antique Ceramic Vase 01",
-  "bytes": 68808,
-  "srcTris": 9408,
-  "tris": 3000,
-  "dims": [
-   0.255,
-   0.255,
-   0.44
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/antique_ceramic_vase_01"
- },
  "ArmChair_01": {
-  "file": "ArmChair_01/ArmChair_01.glb",
-  "name": "Arm Chair 01",
+  "authors": [
+   "Kirill Sannikov"
+  ],
   "bytes": 120976,
-  "srcTris": 5626,
-  "tris": 2998,
   "dims": [
    0.848,
    0.766,
    1.065
   ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
+  "file": "ArmChair_01/ArmChair_01.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/ArmChair_01"
- },
- "bananas": {
-  "file": "bananas/bananas.glb",
-  "name": "Bananas",
-  "bytes": 79352,
-  "srcTris": 46868,
-  "tris": 2496,
-  "dims": [
-   0.6,
-   0.244,
-   0.179
-  ],
-  "authors": [
-   "Alexander Shulha"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/bananas"
- },
- "bar_chair_round_01": {
-  "file": "bar_chair_round_01/bar_chair_round_01.glb",
-  "name": "Bar Chair Round 01",
-  "bytes": 378936,
-  "srcTris": 14373,
-  "tris": 14372,
-  "dims": [
-   0.483,
-   0.486,
-   0.751
-  ],
-  "authors": [
-   "Dairon Sanchez"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/bar_chair_round_01"
+  "name": "Arm Chair 01",
+  "source": "https://polyhaven.com/a/ArmChair_01",
+  "srcTris": 5626,
+  "tris": 2998
  },
  "BarberShopChair_01": {
-  "file": "BarberShopChair_01/BarberShopChair_01.glb",
-  "name": "Barber Shop Chair 01",
+  "authors": [
+   "Fernando Quinn"
+  ],
   "bytes": 207396,
-  "srcTris": 4280,
-  "tris": 3748,
   "dims": [
    0.757,
    1.328,
    1.489
   ],
-  "authors": [
-   "Fernando Quinn"
-  ],
+  "file": "BarberShopChair_01/BarberShopChair_01.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/BarberShopChair_01"
+  "name": "Barber Shop Chair 01",
+  "source": "https://polyhaven.com/a/BarberShopChair_01",
+  "srcTris": 4280,
+  "tris": 3748
  },
  "Barrel_01": {
-  "file": "Barrel_01/Barrel_01.glb",
-  "name": "Barrel_01",
+  "authors": [
+   "Jorge Camacho"
+  ],
   "bytes": 122916,
-  "srcTris": 2682,
-  "tris": 1998,
   "dims": [
    0.563,
    0.563,
    0.88
   ],
+  "file": "Barrel_01/Barrel_01.glb",
+  "license": "CC0",
+  "name": "Barrel_01",
+  "source": "https://polyhaven.com/a/Barrel_01",
+  "srcTris": 2682,
+  "tris": 1998
+ },
+ "Barrel_02": {
   "authors": [
    "Jorge Camacho"
   ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/Barrel_01"
- },
- "Barrel_02": {
-  "file": "Barrel_02/Barrel_02.glb",
-  "name": "Barrel 02",
   "bytes": 77364,
-  "srcTris": 2688,
-  "tris": 2500,
   "dims": [
    0.488,
    0.485,
    0.88
   ],
-  "authors": [
-   "Jorge Camacho"
-  ],
+  "file": "Barrel_02/Barrel_02.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/Barrel_02"
- },
- "barrel_03": {
-  "file": "barrel_03/barrel_03.glb",
-  "name": "Barrel 03",
-  "bytes": 93132,
-  "srcTris": 1473,
-  "tris": 1473,
-  "dims": [
-   0.634,
-   0.639,
-   0.93
-  ],
-  "authors": [
-   "Serhii Khromov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/barrel_03"
- },
- "barrel_stove": {
-  "file": "barrel_stove/barrel_stove.glb",
-  "name": "Barrel Stove",
-  "bytes": 121848,
-  "srcTris": 9216,
-  "tris": 3046,
-  "dims": [
-   0.599,
-   0.598,
-   0.856
-  ],
-  "authors": [
-   "MP"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/barrel_stove"
- },
- "bleach_bottle": {
-  "file": "bleach_bottle/bleach_bottle.glb",
-  "name": "Bleach Bottle",
-  "bytes": 59276,
-  "srcTris": 4052,
-  "tris": 3000,
-  "dims": [
-   0.088,
-   0.061,
-   0.294
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/bleach_bottle"
- },
- "boombox": {
-  "file": "boombox/boombox.glb",
-  "name": "Boombox",
-  "bytes": 192684,
-  "srcTris": 10168,
-  "tris": 2082,
-  "dims": [
-   0.724,
-   0.186,
-   0.47
-  ],
-  "authors": [
-   "Thomas Paul Mouilleron"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/boombox"
- },
- "brass_diya_lantern": {
-  "file": "brass_diya_lantern/brass_diya_lantern.glb",
-  "name": "Brass Diya Lantern",
-  "bytes": 119824,
-  "srcTris": 12742,
-  "tris": 3854,
-  "dims": [
-   0.123,
-   0.123,
-   0.381
-  ],
-  "authors": [
-   "Bhargav Kubal"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/brass_diya_lantern"
- },
- "brass_pan_01": {
-  "file": "brass_pan_01/brass_pan_01.glb",
-  "name": "Brass Pan 01",
-  "bytes": 79716,
-  "srcTris": 4340,
-  "tris": 2999,
-  "dims": [
-   0.191,
-   0.45,
-   0.053
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/brass_pan_01"
- },
- "brass_pot_01": {
-  "file": "brass_pot_01/brass_pot_01.glb",
-  "name": "Brass Pot 01",
-  "bytes": 70548,
-  "srcTris": 3760,
-  "tris": 3000,
-  "dims": [
-   0.302,
-   0.302,
-   0.291
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/brass_pot_01"
- },
- "brass_vase_01": {
-  "file": "brass_vase_01/brass_vase_01.glb",
-  "name": "Brass Vase 01",
-  "bytes": 60708,
-  "srcTris": 21440,
-  "tris": 2999,
-  "dims": [
-   0.227,
-   0.227,
-   0.692
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/brass_vase_01"
- },
- "brass_vase_02": {
-  "file": "brass_vase_02/brass_vase_02.glb",
-  "name": "Brass Vase 02",
-  "bytes": 93924,
-  "srcTris": 6890,
-  "tris": 2999,
-  "dims": [
-   0.21,
-   0.21,
-   0.529
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/brass_vase_02"
- },
- "caged_hanging_light": {
-  "file": "caged_hanging_light/caged_hanging_light.glb",
-  "name": "Caged Hanging Light",
-  "bytes": 163688,
-  "srcTris": 22893,
-  "tris": 2857,
-  "dims": [
-   1.162,
-   0.315,
-   0.75
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/caged_hanging_light"
- },
- "calathea_orbifolia_01": {
-  "file": "calathea_orbifolia_01/calathea_orbifolia_01.glb",
-  "name": "Calathea Orbifolia 01",
-  "bytes": 81092,
-  "srcTris": 16688,
-  "tris": 3000,
-  "dims": [
-   2.492,
-   1.194,
-   0.424
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/calathea_orbifolia_01"
- },
- "can_rusted": {
-  "file": "can_rusted/can_rusted.glb",
-  "name": "Can Rusted",
-  "bytes": 115588,
-  "srcTris": 3520,
-  "tris": 1562,
-  "dims": [
-   0.125,
-   0.125,
-   0.151
-  ],
-  "authors": [
-   "Rahul Chaudhary"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/can_rusted"
- },
- "cardboard_box_01": {
-  "file": "cardboard_box_01/cardboard_box_01.glb",
-  "name": "Cardboard Box 01",
-  "bytes": 82304,
-  "srcTris": 16952,
-  "tris": 800,
-  "dims": [
-   0.387,
-   0.516,
-   0.342
-  ],
-  "authors": [
-   "Rahul Chaudhary"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/cardboard_box_01"
- },
- "carved_wooden_elephant": {
-  "file": "carved_wooden_elephant/carved_wooden_elephant.glb",
-  "name": "Carved Wooden Elephant",
-  "bytes": 108852,
-  "srcTris": 2752,
-  "tris": 2752,
-  "dims": [
-   0.109,
-   0.058,
-   0.096
-  ],
-  "authors": [
-   "Greg Zaal"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/carved_wooden_elephant"
- },
- "cement_bag": {
-  "file": "cement_bag/cement_bag.glb",
-  "name": "Cement Bag",
-  "bytes": 49340,
-  "srcTris": 844,
-  "tris": 844,
-  "dims": [
-   0.462,
-   0.7,
-   0.18
-  ],
-  "authors": [
-   "PierreB3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/cement_bag"
- },
- "ceramic_pot": {
-  "file": "ceramic_pot/ceramic_pot.glb",
-  "name": "Ceramic Pot",
-  "bytes": 82164,
-  "srcTris": 3592,
-  "tris": 1500,
-  "dims": [
-   0.656,
-   0.502,
-   0.372
-  ],
-  "authors": [
-   "Aron Łyczek"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/ceramic_pot"
- },
- "ceramic_vase_01": {
-  "file": "ceramic_vase_01/ceramic_vase_01.glb",
-  "name": "Ceramic Vase 01",
-  "bytes": 42716,
-  "srcTris": 10296,
-  "tris": 3000,
-  "dims": [
-   0.205,
-   0.206,
-   0.401
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/ceramic_vase_01"
- },
- "ceramic_vase_02": {
-  "file": "ceramic_vase_02/ceramic_vase_02.glb",
-  "name": "Ceramic Vase 02",
-  "bytes": 83868,
-  "srcTris": 11128,
-  "tris": 3000,
-  "dims": [
-   0.22,
-   0.221,
-   0.309
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/ceramic_vase_02"
- },
- "ceramic_vase_03": {
-  "file": "ceramic_vase_03/ceramic_vase_03.glb",
-  "name": "Ceramic Vase 03",
-  "bytes": 87912,
-  "srcTris": 11136,
-  "tris": 3000,
-  "dims": [
-   0.112,
-   0.112,
-   0.414
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/ceramic_vase_03"
- },
- "ceramic_vase_04": {
-  "file": "ceramic_vase_04/ceramic_vase_04.glb",
-  "name": "Ceramic Vase 04",
-  "bytes": 65888,
-  "srcTris": 9000,
-  "tris": 2999,
-  "dims": [
-   0.183,
-   0.182,
-   0.342
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/ceramic_vase_04"
- },
- "chinese_chandelier": {
-  "file": "chinese_chandelier/chinese_chandelier.glb",
-  "name": "Chinese Chandelier",
-  "bytes": 143188,
-  "srcTris": 7828,
-  "tris": 2998,
-  "dims": [
-   0.878,
-   0.879,
-   0.748
-  ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/chinese_chandelier"
- },
- "chinese_stool": {
-  "file": "chinese_stool/chinese_stool.glb",
-  "name": "Chinese Stool",
-  "bytes": 66116,
-  "srcTris": 1090,
-  "tris": 1090,
-  "dims": [
-   0.599,
-   0.506,
-   0.631
-  ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/chinese_stool"
- },
- "chinese_tea_table": {
-  "file": "chinese_tea_table/chinese_tea_table.glb",
-  "name": "Chinese Tea Table",
-  "bytes": 68044,
-  "srcTris": 2508,
-  "tris": 2508,
-  "dims": [
-   0.841,
-   0.836,
-   0.499
-  ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/chinese_tea_table"
- },
- "cleaner_tin_01": {
-  "file": "cleaner_tin_01/cleaner_tin_01.glb",
-  "name": "Cleaner Tin 01",
-  "bytes": 32252,
-  "srcTris": 3560,
-  "tris": 762,
-  "dims": [
-   0.088,
-   0.088,
-   0.13
-  ],
-  "authors": [
-   "Tom Phillips"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/cleaner_tin_01"
+  "name": "Barrel 02",
+  "source": "https://polyhaven.com/a/Barrel_02",
+  "srcTris": 2688,
+  "tris": 2500
  },
  "CoffeeCart_01": {
-  "file": "CoffeeCart_01/CoffeeCart_01.glb",
-  "name": "Coffee Cart 01",
+  "authors": [
+   "Joe Seabuhr"
+  ],
   "bytes": 233064,
-  "srcTris": 27659,
-  "tris": 6312,
   "dims": [
    2.168,
    1.073,
    1.718
   ],
-  "authors": [
-   "Joe Seabuhr"
-  ],
+  "file": "CoffeeCart_01/CoffeeCart_01.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/CoffeeCart_01"
- },
- "compost_bag_02": {
-  "file": "compost_bag_02/compost_bag_02.glb",
-  "name": "Compost Bag 02",
-  "bytes": 121244,
-  "srcTris": 12096,
-  "tris": 2998,
-  "dims": [
-   0.539,
-   0.471,
-   0.434
-  ],
-  "authors": [
-   "Satyaki Mandal"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/compost_bag_02"
- },
- "compost_bags": {
-  "file": "compost_bags/compost_bags.glb",
-  "name": "Compost Bags",
-  "bytes": 135508,
-  "srcTris": 18708,
-  "tris": 3616,
-  "dims": [
-   1.847,
-   0.946,
-   0.768
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/compost_bags"
- },
- "concrete_cat_statue": {
-  "file": "concrete_cat_statue/concrete_cat_statue.glb",
-  "name": "Concrete Cat Statue",
-  "bytes": 190432,
-  "srcTris": 11950,
-  "tris": 2998,
-  "dims": [
-   0.153,
-   0.25,
-   0.283
-  ],
-  "authors": [
-   "Rico Cilliers",
-   "Riley Queen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/concrete_cat_statue"
- },
- "concrete_road_barrier_02": {
-  "file": "concrete_road_barrier_02/concrete_road_barrier_02.glb",
-  "name": "Concrete Road Barrier 02",
-  "bytes": 130648,
-  "srcTris": 23822,
-  "tris": 1500,
-  "dims": [
-   1.567,
-   0.442,
-   1.112
-  ],
-  "authors": [
-   "Amal Kumar"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/concrete_road_barrier_02"
- },
- "covered_car": {
-  "file": "covered_car/covered_car.glb",
-  "name": "Covered Car",
-  "bytes": 298228,
-  "srcTris": 12592,
-  "tris": 7999,
-  "dims": [
-   1.789,
-   4.38,
-   1.411
-  ],
-  "authors": [
-   "MP"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/covered_car"
- },
- "croissant": {
-  "file": "croissant/croissant.glb",
-  "name": "Croissant",
-  "bytes": 123192,
-  "srcTris": 1990,
-  "tris": 1990,
-  "dims": [
-   0.2,
-   0.076,
-   0.062
-  ],
-  "authors": [
-   "Greg Zaal",
-   "Dario Barresi"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/croissant"
- },
- "dartboard": {
-  "file": "dartboard/dartboard.glb",
-  "name": "Dartboard",
-  "bytes": 175832,
-  "srcTris": 6800,
-  "tris": 2999,
-  "dims": [
-   0.451,
-   0.04,
-   0.451
-  ],
-  "authors": [
-   "Satyaki Mandal"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/dartboard"
- },
- "dining_table": {
-  "file": "dining_table/dining_table.glb",
-  "name": "Dining Table",
-  "bytes": 107508,
-  "srcTris": 1048,
-  "tris": 1048,
-  "dims": [
-   2.256,
-   1.39,
-   0.877
-  ],
-  "authors": [
-   "Aron Łyczek"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/dining_table"
- },
- "drawer_cabinet": {
-  "file": "drawer_cabinet/drawer_cabinet.glb",
-  "name": "Drawer Cabinet",
-  "bytes": 98620,
-  "srcTris": 26406,
-  "tris": 4666,
-  "dims": [
-   1.141,
-   0.488,
-   1.881
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/drawer_cabinet"
- },
- "dustpan": {
-  "file": "dustpan/dustpan.glb",
-  "name": "Dustpan",
-  "bytes": 99980,
-  "srcTris": 4332,
-  "tris": 598,
-  "dims": [
-   0.332,
-   0.368,
-   0.1
-  ],
-  "authors": [
-   "Balen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/dustpan"
- },
- "electric_stove": {
-  "file": "electric_stove/electric_stove.glb",
-  "name": "Electric Stove",
-  "bytes": 111456,
-  "srcTris": 13914,
-  "tris": 3485,
-  "dims": [
-   0.503,
-   0.648,
-   0.859
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/electric_stove"
- },
- "exterior_aircon_unit": {
-  "file": "exterior_aircon_unit/exterior_aircon_unit.glb",
-  "name": "Exterior Aircon Unit",
-  "bytes": 409688,
-  "srcTris": 18986,
-  "tris": 4678,
-  "dims": [
-   1.8,
-   0.374,
-   0.928
-  ],
-  "authors": [
-   "Monsta3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/exterior_aircon_unit"
- },
- "fern_02": {
-  "file": "fern_02/fern_02.glb",
-  "name": "Fern 02",
-  "bytes": 76312,
-  "srcTris": 6232,
-  "tris": 3000,
-  "dims": [
-   1.973,
-   1.724,
-   0.428
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/fern_02"
- },
- "fire_hydrant": {
-  "file": "fire_hydrant/fire_hydrant.glb",
-  "name": "Fire Hydrant",
-  "bytes": 184980,
-  "srcTris": 86316,
-  "tris": 2992,
-  "dims": [
-   0.875,
-   0.318,
-   0.799
-  ],
-  "authors": [
-   "Gonçalo Felício"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/fire_hydrant"
- },
- "fish_knife": {
-  "file": "fish_knife/fish_knife.glb",
-  "name": "Fish Knife",
-  "bytes": 42972,
-  "srcTris": 2736,
-  "tris": 525,
-  "dims": [
-   0.029,
-   0.016,
-   0.216
-  ],
-  "authors": [
-   "Mateusz Sadek"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/fish_knife"
- },
- "fishermans_hat": {
-  "file": "fishermans_hat/fishermans_hat.glb",
-  "name": "Fishermans Hat",
-  "bytes": 103632,
-  "srcTris": 10304,
-  "tris": 2998,
-  "dims": [
-   0.324,
-   0.35,
-   0.124
-  ],
-  "authors": [
-   "PierreB3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/fishermans_hat"
- },
- "folding_wooden_stool": {
-  "file": "folding_wooden_stool/folding_wooden_stool.glb",
-  "name": "Folding Wooden Stool",
-  "bytes": 109528,
-  "srcTris": 6324,
-  "tris": 1500,
-  "dims": [
-   0.528,
-   0.547,
-   0.442
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/folding_wooden_stool"
- },
- "food_ginger_01": {
-  "file": "food_ginger_01/food_ginger_01.glb",
-  "name": "Food Ginger 01",
-  "bytes": 94308,
-  "srcTris": 7205,
-  "tris": 2998,
-  "dims": [
-   0.24,
-   0.147,
-   0.575
-  ],
-  "authors": [
-   "Oliver Harries"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/food_ginger_01"
- },
- "food_lime_01": {
-  "file": "food_lime_01/food_lime_01.glb",
-  "name": "Food Lime 01",
-  "bytes": 87168,
-  "srcTris": 8100,
-  "tris": 3000,
-  "dims": [
-   0.06,
-   0.061,
-   0.075
-  ],
-  "authors": [
-   "Oliver Harries"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/food_lime_01"
- },
- "food_lychee_01": {
-  "file": "food_lychee_01/food_lychee_01.glb",
-  "name": "Food Lychee 01",
-  "bytes": 37256,
-  "srcTris": 6783,
-  "tris": 120,
-  "dims": [
-   0.041,
-   0.042,
-   0.051
-  ],
-  "authors": [
-   "Oliver Harries"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/food_lychee_01"
- },
- "football": {
-  "file": "football/football.glb",
-  "name": "Football",
-  "bytes": 173784,
-  "srcTris": 4296,
-  "tris": 2998,
-  "dims": [
-   0.509,
-   0.222,
-   0.222
-  ],
-  "authors": [
-   "Amal Kumar"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/football"
- },
- "garden_gloves_01": {
-  "file": "garden_gloves_01/garden_gloves_01.glb",
-  "name": "Garden Gloves 01",
-  "bytes": 179176,
-  "srcTris": 6822,
-  "tris": 3000,
-  "dims": [
-   0.227,
-   0.299,
-   0.076
-  ],
-  "authors": [
-   "Satyaki Mandal"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/garden_gloves_01"
- },
- "garden_hose_wall_mounted_01": {
-  "file": "garden_hose_wall_mounted_01/garden_hose_wall_mounted_01.glb",
-  "name": "Garden Hose Wall Mounted 01",
-  "bytes": 156340,
-  "srcTris": 11684,
-  "tris": 6954,
-  "dims": [
-   0.467,
-   0.25,
-   0.557
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/garden_hose_wall_mounted_01"
- },
- "garden_sprinkler_01": {
-  "file": "garden_sprinkler_01/garden_sprinkler_01.glb",
-  "name": "Garden Sprinkler 01",
-  "bytes": 193440,
-  "srcTris": 8192,
-  "tris": 3205,
-  "dims": [
-   0.36,
-   0.249,
-   0.216
-  ],
-  "authors": [
-   "Amal Kumar"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/garden_sprinkler_01"
- },
- "hamburger_buns": {
-  "file": "hamburger_buns/hamburger_buns.glb",
-  "name": "Hamburger Buns",
-  "bytes": 109220,
-  "srcTris": 11588,
-  "tris": 3000,
-  "dims": [
-   0.397,
-   0.114,
-   0.063
-  ],
-  "authors": [
-   "Alexander Shulha"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/hamburger_buns"
- },
- "hand_truck": {
-  "file": "hand_truck/hand_truck.glb",
-  "name": "Hand Truck",
-  "bytes": 207708,
-  "srcTris": 13220,
-  "tris": 5264,
-  "dims": [
-   0.593,
-   0.693,
-   1.403
-  ],
-  "authors": [
-   "Mutanzom3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/hand_truck"
- },
- "hanging_industrial_lamp": {
-  "file": "hanging_industrial_lamp/hanging_industrial_lamp.glb",
-  "name": "Hanging Industrial Lamp",
-  "bytes": 165032,
-  "srcTris": 9530,
-  "tris": 2976,
-  "dims": [
-   0.55,
-   0.55,
-   1.355
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/hanging_industrial_lamp"
- },
- "industrial_pastic_container": {
-  "file": "industrial_pastic_container/industrial_pastic_container.glb",
-  "name": "Industrial Plastic Container",
-  "bytes": 137116,
-  "srcTris": 7118,
-  "tris": 4184,
-  "dims": [
-   0.476,
-   0.631,
-   0.423
-  ],
-  "authors": [
-   "Galo Benivegna"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/industrial_pastic_container"
- },
- "industrial_storage_cart": {
-  "file": "industrial_storage_cart/industrial_storage_cart.glb",
-  "name": "Industrial Storage Cart",
-  "bytes": 144160,
-  "srcTris": 18902,
-  "tris": 6726,
-  "dims": [
-   1.603,
-   1.103,
-   1.377
-  ],
-  "authors": [
-   "Jule Bielitz"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/industrial_storage_cart"
- },
- "industrial_wall_lamp": {
-  "file": "industrial_wall_lamp/industrial_wall_lamp.glb",
-  "name": "Industrial Wall Lamp",
-  "bytes": 162440,
-  "srcTris": 4446,
-  "tris": 2998,
-  "dims": [
-   0.273,
-   0.14,
-   0.43
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/industrial_wall_lamp"
- },
- "island_tree_02": {
-  "file": "island_tree_02/island_tree_02.glb",
-  "name": "Island Tree 02",
-  "bytes": 565368,
-  "srcTris": 1072213,
-  "tris": 9281,
-  "dims": [
-   8.486,
-   4.079,
-   3.409
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/island_tree_02"
- },
- "jug_01": {
-  "file": "jug_01/jug_01.glb",
-  "name": "Jug 01",
-  "bytes": 52656,
-  "srcTris": 5770,
-  "tris": 2998,
-  "dims": [
-   0.275,
-   0.168,
-   0.211
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/jug_01"
- },
- "korean_fire_extinguisher_01": {
-  "file": "korean_fire_extinguisher_01/korean_fire_extinguisher_01.glb",
-  "name": "Korean Fire Extinguisher 01",
-  "bytes": 204644,
-  "srcTris": 9913,
-  "tris": 3234,
-  "dims": [
-   0.28,
-   0.367,
-   0.659
-  ],
-  "authors": [
-   "UM JOORIN"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/korean_fire_extinguisher_01"
- },
- "ladder_sectioned_01": {
-  "file": "ladder_sectioned_01/ladder_sectioned_01.glb",
-  "name": "Ladder Sectioned 01",
-  "bytes": 113756,
-  "srcTris": 29140,
-  "tris": 3509,
-  "dims": [
-   0.662,
-   0.178,
-   2.135
-  ],
-  "authors": [
-   "MP"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/ladder_sectioned_01"
- },
- "lantern_chandelier_01": {
-  "file": "lantern_chandelier_01/lantern_chandelier_01.glb",
-  "name": "Lantern Chandelier 01",
-  "bytes": 289196,
-  "srcTris": 5971,
-  "tris": 3103,
-  "dims": [
-   0.579,
-   0.575,
-   0.878
-  ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/lantern_chandelier_01"
- },
- "lemon": {
-  "file": "lemon/lemon.glb",
-  "name": "Lemon",
-  "bytes": 113184,
-  "srcTris": 4012,
-  "tris": 3000,
-  "dims": [
-   0.069,
-   0.068,
-   0.095
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/lemon"
- },
- "life_jacket": {
-  "file": "life_jacket/life_jacket.glb",
-  "name": "Life Jacket",
-  "bytes": 112280,
-  "srcTris": 8968,
-  "tris": 2998,
-  "dims": [
-   0.696,
-   0.184,
-   0.992
-  ],
-  "authors": [
-   "PierreB3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/life_jacket"
- },
- "lifebuoy": {
-  "file": "lifebuoy/lifebuoy.glb",
-  "name": "Lifebuoy",
-  "bytes": 142888,
-  "srcTris": 10728,
-  "tris": 2998,
-  "dims": [
-   0.783,
-   0.155,
-   0.841
-  ],
-  "authors": [
-   "Hank Kaamura"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/lifebuoy"
- },
- "lightbulb_01": {
-  "file": "lightbulb_01/lightbulb_01.glb",
-  "name": "Lightbulb 01",
-  "bytes": 24324,
-  "srcTris": 4372,
-  "tris": 336,
-  "dims": [
-   0.06,
-   0.06,
-   0.1
-  ],
-  "authors": [
-   "Josh Dean"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/lightbulb_01"
- },
- "long_life_food": {
-  "file": "long_life_food/long_life_food.glb",
-  "name": "Long Life Food",
-  "bytes": 120588,
-  "srcTris": 4712,
-  "tris": 3000,
-  "dims": [
-   0.524,
-   0.114,
-   0.238
-  ],
-  "authors": [
-   "Mia Pecina Zorko"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/long_life_food"
+  "name": "Coffee Cart 01",
+  "source": "https://polyhaven.com/a/CoffeeCart_01",
+  "srcTris": 27659,
+  "tris": 6312
  },
  "Megaphone_01": {
-  "file": "Megaphone_01/Megaphone_01.glb",
-  "name": "Megaphone 01",
+  "authors": [
+   "Ethan Simon-Law"
+  ],
   "bytes": 115448,
-  "srcTris": 15814,
-  "tris": 6412,
   "dims": [
    0.371,
    0.228,
    0.3
   ],
-  "authors": [
-   "Ethan Simon-Law"
-  ],
+  "file": "Megaphone_01/Megaphone_01.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/Megaphone_01"
- },
- "metal_jerrycan": {
-  "file": "metal_jerrycan/metal_jerrycan.glb",
-  "name": "Metal Jerrycan",
-  "bytes": 141776,
-  "srcTris": 20022,
-  "tris": 2999,
-  "dims": [
-   0.35,
-   0.172,
-   0.455
-  ],
-  "authors": [
-   "Sean Buckley"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_jerrycan"
- },
- "metal_jerrycan_green": {
-  "file": "metal_jerrycan_green/metal_jerrycan_green.glb",
-  "name": "Metal Jerrycan Green",
-  "bytes": 147072,
-  "srcTris": 9636,
-  "tris": 2498,
-  "dims": [
-   0.374,
-   0.171,
-   0.501
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_jerrycan_green"
- },
- "metal_jug": {
-  "file": "metal_jug/metal_jug.glb",
-  "name": "Metal Jug",
-  "bytes": 68856,
-  "srcTris": 6040,
-  "tris": 3000,
-  "dims": [
-   0.197,
-   0.195,
-   0.288
-  ],
-  "authors": [
-   "Anzor Lezhava"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_jug"
- },
- "metal_stool_01": {
-  "file": "metal_stool_01/metal_stool_01.glb",
-  "name": "Metal Stool 01",
-  "bytes": 108548,
-  "srcTris": 8334,
-  "tris": 2500,
-  "dims": [
-   0.352,
-   0.355,
-   0.883
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_stool_01"
- },
- "metal_stool_02": {
-  "file": "metal_stool_02/metal_stool_02.glb",
-  "name": "Metal Stool 02",
-  "bytes": 119908,
-  "srcTris": 6532,
-  "tris": 1999,
-  "dims": [
-   0.448,
-   0.473,
-   0.458
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_stool_02"
- },
- "metal_stool_03": {
-  "file": "metal_stool_03/metal_stool_03.glb",
-  "name": "Metal Stool 03",
-  "bytes": 124304,
-  "srcTris": 6576,
-  "tris": 2998,
-  "dims": [
-   0.461,
-   0.471,
-   1.023
-  ],
-  "authors": [
-   "Flo Tasser"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_stool_03"
- },
- "metal_tool_chest": {
-  "file": "metal_tool_chest/metal_tool_chest.glb",
-  "name": "Metal Tool Chest",
-  "bytes": 119176,
-  "srcTris": 13360,
-  "tris": 2990,
-  "dims": [
-   0.685,
-   0.407,
-   0.652
-  ],
-  "authors": [
-   "Yann Kervran",
-   "John Hutcheson"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_tool_chest"
- },
- "metal_toolbox": {
-  "file": "metal_toolbox/metal_toolbox.glb",
-  "name": "Metal Toolbox",
-  "bytes": 132696,
-  "srcTris": 14228,
-  "tris": 3000,
-  "dims": [
-   0.4,
-   0.292,
-   0.347
-  ],
-  "authors": [
-   "Mateusz Sadek"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_toolbox"
- },
- "metal_trash_can": {
-  "file": "metal_trash_can/metal_trash_can.glb",
-  "name": "Metal Trash Can",
-  "bytes": 279784,
-  "srcTris": 13960,
-  "tris": 3722,
-  "dims": [
-   1.847,
-   0.556,
-   0.906
-  ],
-  "authors": [
-   "GurJas Studios"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/metal_trash_can"
- },
- "mounted_fluorescent_lights": {
-  "file": "mounted_fluorescent_lights/mounted_fluorescent_lights.glb",
-  "name": "Mounted Fluorescent Lights",
-  "bytes": 90916,
-  "srcTris": 17820,
-  "tris": 2998,
-  "dims": [
-   0.912,
-   0.645,
-   0.035
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/mounted_fluorescent_lights"
- },
- "multi_cleaner_5_litre": {
-  "file": "multi_cleaner_5_litre/multi_cleaner_5_litre.glb",
-  "name": "Multi Cleaner 5 Litre",
-  "bytes": 51332,
-  "srcTris": 4332,
-  "tris": 800,
-  "dims": [
-   0.219,
-   0.106,
-   0.3
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/multi_cleaner_5_litre"
- },
- "multi_cleaner_bottle": {
-  "file": "multi_cleaner_bottle/multi_cleaner_bottle.glb",
-  "name": "Multi Cleaner Bottle",
-  "bytes": 62784,
-  "srcTris": 6792,
-  "tris": 3000,
-  "dims": [
-   0.088,
-   0.09,
-   0.229
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/multi_cleaner_bottle"
- },
- "ocean_buoy": {
-  "file": "ocean_buoy/ocean_buoy.glb",
-  "name": "Ocean Buoy",
-  "bytes": 174500,
-  "srcTris": 12240,
-  "tris": 2991,
-  "dims": [
-   1.067,
-   0.952,
-   2.656
-  ],
-  "authors": [
-   "Mateusz Sadek"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/ocean_buoy"
- },
- "oil_tin": {
-  "file": "oil_tin/oil_tin.glb",
-  "name": "Oil Tin",
-  "bytes": 104652,
-  "srcTris": 2834,
-  "tris": 2834,
-  "dims": [
-   0.115,
-   0.154,
-   0.205
-  ],
-  "authors": [
-   "Niklas"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/oil_tin"
- },
- "old_tyre": {
-  "file": "old_tyre/old_tyre.glb",
-  "name": "Old Tyre",
-  "bytes": 113452,
-  "srcTris": 2880,
-  "tris": 1998,
-  "dims": [
-   0.6,
-   0.165,
-   0.6
-  ],
-  "authors": [
-   "MP"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/old_tyre"
- },
- "outdoor_table_chair_set_01": {
-  "file": "outdoor_table_chair_set_01/outdoor_table_chair_set_01.glb",
-  "name": "Outdoor Table Chair Set 01",
-  "bytes": 187108,
-  "srcTris": 9828,
-  "tris": 5367,
-  "dims": [
-   0.776,
-   1.831,
-   0.859
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/outdoor_table_chair_set_01"
- },
- "pachira_aquatica_01": {
-  "file": "pachira_aquatica_01/pachira_aquatica_01.glb",
-  "name": "Pachira Aquatica 01",
-  "bytes": 189208,
-  "srcTris": 76914,
-  "tris": 3995,
-  "dims": [
-   6.869,
-   0.997,
-   1.904
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/pachira_aquatica_01"
- },
- "painted_wooden_bench": {
-  "file": "painted_wooden_bench/painted_wooden_bench.glb",
-  "name": "Painted Wooden Bench",
-  "bytes": 258768,
-  "srcTris": 630,
-  "tris": 630,
-  "dims": [
-   1.165,
-   0.497,
-   0.889
-  ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/painted_wooden_bench"
- },
- "painted_wooden_chair_01": {
-  "file": "painted_wooden_chair_01/painted_wooden_chair_01.glb",
-  "name": "Painted Wooden Chair 01",
-  "bytes": 80116,
-  "srcTris": 724,
-  "tris": 724,
-  "dims": [
-   0.432,
-   0.54,
-   0.956
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/painted_wooden_chair_01"
- },
- "painted_wooden_chair_02": {
-  "file": "painted_wooden_chair_02/painted_wooden_chair_02.glb",
-  "name": "Painted Wooden Chair 02",
-  "bytes": 110140,
-  "srcTris": 1246,
-  "tris": 1246,
-  "dims": [
-   0.639,
-   0.662,
-   1.264
-  ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/painted_wooden_chair_02"
- },
- "painted_wooden_stool": {
-  "file": "painted_wooden_stool/painted_wooden_stool.glb",
-  "name": "Painted Wooden Stool",
-  "bytes": 90104,
-  "srcTris": 676,
-  "tris": 676,
-  "dims": [
-   0.385,
-   0.406,
-   0.579
-  ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/painted_wooden_stool"
- },
- "painted_wooden_table": {
-  "file": "painted_wooden_table/painted_wooden_table.glb",
-  "name": "Painted Wooden Table",
-  "bytes": 51436,
-  "srcTris": 600,
-  "tris": 600,
-  "dims": [
-   2.406,
-   1.137,
-   0.959
-  ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/painted_wooden_table"
- },
- "planter_box_01": {
-  "file": "planter_box_01/planter_box_01.glb",
-  "name": "Planter Box 01",
-  "bytes": 120112,
-  "srcTris": 8094,
-  "tris": 2499,
-  "dims": [
-   0.913,
-   0.414,
-   0.425
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/planter_box_01"
- },
- "planter_box_02": {
-  "file": "planter_box_02/planter_box_02.glb",
-  "name": "Planter Box 02",
-  "bytes": 134232,
-  "srcTris": 10944,
-  "tris": 2998,
-  "dims": [
-   1.252,
-   0.467,
-   0.453
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/planter_box_02"
- },
- "planter_box_03": {
-  "file": "planter_box_03/planter_box_03.glb",
-  "name": "Planter Box 03",
-  "bytes": 139888,
-  "srcTris": 13112,
-  "tris": 2956,
-  "dims": [
-   0.914,
-   0.656,
-   0.855
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/planter_box_03"
- },
- "planter_pot_clay": {
-  "file": "planter_pot_clay/planter_pot_clay.glb",
-  "name": "Planter Pot Clay",
-  "bytes": 65172,
-  "srcTris": 3080,
-  "tris": 1000,
-  "dims": [
-   0.266,
-   0.263,
-   0.222
-  ],
-  "authors": [
-   "Amal Kumar"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/planter_pot_clay"
- },
- "plastic_bottle_gallon": {
-  "file": "plastic_bottle_gallon/plastic_bottle_gallon.glb",
-  "name": "Plastic Bottle Gallon",
-  "bytes": 36468,
-  "srcTris": 13728,
-  "tris": 800,
-  "dims": [
-   0.166,
-   0.126,
-   0.274
-  ],
-  "authors": [
-   "Rahul Chaudhary"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_bottle_gallon"
- },
- "plastic_broom": {
-  "file": "plastic_broom/plastic_broom.glb",
-  "name": "Plastic Broom",
-  "bytes": 56128,
-  "srcTris": 18736,
-  "tris": 1198,
-  "dims": [
-   0.416,
-   0.567,
-   1.198
-  ],
-  "authors": [
-   "L"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_broom"
- },
- "plastic_container": {
-  "file": "plastic_container/plastic_container.glb",
-  "name": "Plastic Container",
-  "bytes": 79216,
-  "srcTris": 4070,
-  "tris": 2500,
-  "dims": [
-   0.895,
-   0.626,
-   0.43
-  ],
-  "authors": [
-   "PierreB3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_container"
- },
- "plastic_crate_01": {
-  "file": "plastic_crate_01/plastic_crate_01.glb",
-  "name": "Plastic Crate 01",
-  "bytes": 278044,
-  "srcTris": 18320,
-  "tris": 10532,
-  "dims": [
-   0.298,
-   0.408,
-   0.264
-  ],
-  "authors": [
-   "PierreB3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_crate_01"
- },
- "plastic_crate_02": {
-  "file": "plastic_crate_02/plastic_crate_02.glb",
-  "name": "Plastic Crate 02",
-  "bytes": 112180,
-  "srcTris": 5840,
-  "tris": 3000,
-  "dims": [
-   0.506,
-   0.406,
-   0.254
-  ],
-  "authors": [
-   "Fabi_G"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_crate_02"
- },
- "plastic_crate_03": {
-  "file": "plastic_crate_03/plastic_crate_03.glb",
-  "name": "Plastic Crate 03",
-  "bytes": 287300,
-  "srcTris": 21740,
-  "tris": 11926,
-  "dims": [
-   0.481,
-   0.265,
-   0.266
-  ],
-  "authors": [
-   "Pacific Penguin"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_crate_03"
- },
- "plastic_jerrycan": {
-  "file": "plastic_jerrycan/plastic_jerrycan.glb",
-  "name": "Plastic Jerrycan",
-  "bytes": 130640,
-  "srcTris": 7348,
-  "tris": 1498,
-  "dims": [
-   0.268,
-   0.341,
-   0.318
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_jerrycan"
- },
- "plastic_monobloc_chair_01": {
-  "file": "plastic_monobloc_chair_01/plastic_monobloc_chair_01.glb",
-  "name": "Plastic Monobloc Chair 01",
-  "bytes": 124896,
-  "srcTris": 3356,
-  "tris": 2498,
-  "dims": [
-   0.642,
-   0.628,
-   0.88
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_monobloc_chair_01"
- },
- "plastic_thermos": {
-  "file": "plastic_thermos/plastic_thermos.glb",
-  "name": "Plastic Thermos",
-  "bytes": 70280,
-  "srcTris": 5514,
-  "tris": 3000,
-  "dims": [
-   0.141,
-   0.109,
-   0.32
-  ],
-  "authors": [
-   "PierreB3D"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plastic_thermos"
- },
- "plunger": {
-  "file": "plunger/plunger.glb",
-  "name": "Plunger",
-  "bytes": 79336,
-  "srcTris": 3278,
-  "tris": 3000,
-  "dims": [
-   0.172,
-   0.172,
-   0.421
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/plunger"
- },
- "portable_generator": {
-  "file": "portable_generator/portable_generator.glb",
-  "name": "Portable Generator",
-  "bytes": 266956,
-  "srcTris": 26419,
-  "tris": 9205,
-  "dims": [
-   0.818,
-   0.564,
-   0.577
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/portable_generator"
- },
- "pot_enamel_01": {
-  "file": "pot_enamel_01/pot_enamel_01.glb",
-  "name": "Pot Enamel 01",
-  "bytes": 69816,
-  "srcTris": 11416,
-  "tris": 3000,
-  "dims": [
-   0.263,
-   0.18,
-   0.178
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/pot_enamel_01"
- },
- "potted_plant_01": {
-  "file": "potted_plant_01/potted_plant_01.glb",
-  "name": "Potted Plant 01",
-  "bytes": 335464,
-  "srcTris": 176226,
-  "tris": 14721,
-  "dims": [
-   0.589,
-   0.637,
-   1.351
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/potted_plant_01"
- },
- "potted_plant_02": {
-  "file": "potted_plant_02/potted_plant_02.glb",
-  "name": "Potted Plant 02",
-  "bytes": 168604,
-  "srcTris": 69806,
-  "tris": 3537,
-  "dims": [
-   0.701,
-   0.657,
-   0.841
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/potted_plant_02"
- },
- "potted_plant_04": {
-  "file": "potted_plant_04/potted_plant_04.glb",
-  "name": "Potted Plant 04",
-  "bytes": 149572,
-  "srcTris": 8929,
-  "tris": 4022,
-  "dims": [
-   0.17,
-   0.186,
-   0.268
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/potted_plant_04"
- },
- "power_box_01": {
-  "file": "power_box_01/power_box_01.glb",
-  "name": "Power Box 01",
-  "bytes": 139372,
-  "srcTris": 21272,
-  "tris": 4027,
-  "dims": [
-   0.377,
-   0.418,
-   0.503
-  ],
-  "authors": [
-   "Rico Cilliers",
-   "Yann Kervran"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/power_box_01"
- },
- "propane_tank": {
-  "file": "propane_tank/propane_tank.glb",
-  "name": "Propane Tank",
-  "bytes": 99360,
-  "srcTris": 5238,
-  "tris": 2331,
-  "dims": [
-   0.337,
-   0.337,
-   0.554
-  ],
-  "authors": [
-   "Slinc"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/propane_tank"
- },
- "pull_chain_light_socket": {
-  "file": "pull_chain_light_socket/pull_chain_light_socket.glb",
-  "name": "Pull Chain Light Socket",
-  "bytes": 119596,
-  "srcTris": 10902,
-  "tris": 2999,
-  "dims": [
-   0.11,
-   0.11,
-   0.165
-  ],
-  "authors": [
-   "Josh Dean"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/pull_chain_light_socket"
- },
- "rubber_boots": {
-  "file": "rubber_boots/rubber_boots.glb",
-  "name": "Rubber Boots",
-  "bytes": 90948,
-  "srcTris": 56128,
-  "tris": 4282,
-  "dims": [
-   0.891,
-   0.269,
-   0.373
-  ],
-  "authors": [
-   "L"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/rubber_boots"
- },
- "rubber_duck_toy": {
-  "file": "rubber_duck_toy/rubber_duck_toy.glb",
-  "name": "Rubber Duck Toy",
-  "bytes": 48984,
-  "srcTris": 4288,
-  "tris": 2998,
-  "dims": [
-   0.214,
-   0.3,
-   0.286
-  ],
-  "authors": [
-   "Plat251"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/rubber_duck_toy"
- },
- "russian_food_cans_01": {
-  "file": "russian_food_cans_01/russian_food_cans_01.glb",
-  "name": "Russian Food Cans 01",
-  "bytes": 75312,
-  "srcTris": 1348,
-  "tris": 1348,
-  "dims": [
-   0.142,
-   0.046,
-   0.085
-  ],
-  "authors": [
-   "Kosan Aziz"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/russian_food_cans_01"
- },
- "rusted_spade_01": {
-  "file": "rusted_spade_01/rusted_spade_01.glb",
-  "name": "Rusted Spade 01",
-  "bytes": 112172,
-  "srcTris": 11436,
-  "tris": 2998,
-  "dims": [
-   0.168,
-   0.046,
-   1.101
-  ],
-  "authors": [
-   "Blemonade"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/rusted_spade_01"
- },
- "rusted_wheel_rim_01": {
-  "file": "rusted_wheel_rim_01/rusted_wheel_rim_01.glb",
-  "name": "Rusted Wheel Rim 01",
-  "bytes": 110928,
-  "srcTris": 16440,
-  "tris": 2500,
-  "dims": [
-   0.403,
-   0.154,
-   0.395
-  ],
-  "authors": [
-   "John Hutcheson"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/rusted_wheel_rim_01"
- },
- "security_camera_01": {
-  "file": "security_camera_01/security_camera_01.glb",
-  "name": "Security Camera 01",
-  "bytes": 91532,
-  "srcTris": 13571,
-  "tris": 3001,
-  "dims": [
-   0.17,
-   0.554,
-   0.286
-  ],
-  "authors": [
-   "Alexander Otterbeck",
-   "Yann Kervran"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/security_camera_01"
- },
- "security_camera_02": {
-  "file": "security_camera_02/security_camera_02.glb",
-  "name": "Security Camera 02",
-  "bytes": 84684,
-  "srcTris": 12477,
-  "tris": 2998,
-  "dims": [
-   0.141,
-   0.394,
-   0.209
-  ],
-  "authors": [
-   "Garrison Gager",
-   "Yann Kervran"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/security_camera_02"
- },
- "security_light": {
-  "file": "security_light/security_light.glb",
-  "name": "Security Light",
-  "bytes": 144468,
-  "srcTris": 4668,
-  "tris": 3044,
-  "dims": [
-   0.323,
-   0.417,
-   0.531
-  ],
-  "authors": [
-   "Maximilian Schuster"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/security_light"
- },
- "seeding_tray_01": {
-  "file": "seeding_tray_01/seeding_tray_01.glb",
-  "name": "Seedling Tray 01",
-  "bytes": 120684,
-  "srcTris": 8334,
-  "tris": 3000,
-  "dims": [
-   0.22,
-   0.22,
-   0.061
-  ],
-  "authors": [
-   "Satyaki Mandal"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/seeding_tray_01"
+  "name": "Megaphone 01",
+  "source": "https://polyhaven.com/a/Megaphone_01",
+  "srcTris": 15814,
+  "tris": 6412
  },
  "Shelf_01": {
-  "file": "Shelf_01/Shelf_01.glb",
-  "name": "Shelf 01",
+  "authors": [
+   "Gabriel Radi\u0107"
+  ],
   "bytes": 80644,
-  "srcTris": 182,
-  "tris": 182,
   "dims": [
    1.003,
    0.257,
    2.08
   ],
-  "authors": [
-   "Gabriel Radić"
-  ],
+  "file": "Shelf_01/Shelf_01.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/Shelf_01"
- },
- "shrub_03": {
-  "file": "shrub_03/shrub_03.glb",
-  "name": "Shrub 03",
-  "bytes": 110424,
-  "srcTris": 8287,
-  "tris": 3499,
-  "dims": [
-   1.367,
-   0.151,
-   0.403
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/shrub_03"
- },
- "shrub_sorrel_01": {
-  "file": "shrub_sorrel_01/shrub_sorrel_01.glb",
-  "name": "Shrub Sorrel 01",
-  "bytes": 74324,
-  "srcTris": 3319,
-  "tris": 3000,
-  "dims": [
-   0.352,
-   0.146,
-   0.058
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/shrub_sorrel_01"
- },
- "side_table_01": {
-  "file": "side_table_01/side_table_01.glb",
-  "name": "Side Table 01",
-  "bytes": 84876,
-  "srcTris": 2756,
-  "tris": 2756,
-  "dims": [
-   0.55,
-   0.45,
-   0.551
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/side_table_01"
- },
- "sledgehammer_01": {
-  "file": "sledgehammer_01/sledgehammer_01.glb",
-  "name": "Sledgehammer 01",
-  "bytes": 86904,
-  "srcTris": 2596,
-  "tris": 2596,
-  "dims": [
-   0.208,
-   0.09,
-   1.006
-  ],
-  "authors": [
-   "Dylan Guzman"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/sledgehammer_01"
- },
- "small_lpg_tank": {
-  "file": "small_lpg_tank/small_lpg_tank.glb",
-  "name": "Small Lpg Tank",
-  "bytes": 140212,
-  "srcTris": 15042,
-  "tris": 2000,
-  "dims": [
-   0.41,
-   0.409,
-   0.642
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/small_lpg_tank"
- },
- "small_wooden_table_01": {
-  "file": "small_wooden_table_01/small_wooden_table_01.glb",
-  "name": "Small Wooden Table 01",
-  "bytes": 54492,
-  "srcTris": 3410,
-  "tris": 2499,
-  "dims": [
-   0.916,
-   0.44,
-   0.533
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/small_wooden_table_01"
+  "name": "Shelf 01",
+  "source": "https://polyhaven.com/a/Shelf_01",
+  "srcTris": 182,
+  "tris": 182
  },
  "Sofa_01": {
-  "file": "Sofa_01/Sofa_01.glb",
-  "name": "Sofa 01",
+  "authors": [
+   "Kirill Sannikov"
+  ],
   "bytes": 85436,
-  "srcTris": 4101,
-  "tris": 2998,
   "dims": [
    1.571,
    0.658,
    0.797
   ],
-  "authors": [
-   "Kirill Sannikov"
-  ],
+  "file": "Sofa_01/Sofa_01.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/Sofa_01"
- },
- "spray_paint_bottles": {
-  "file": "spray_paint_bottles/spray_paint_bottles.glb",
-  "name": "Spray Paint Bottles",
-  "bytes": 114420,
-  "srcTris": 5040,
-  "tris": 2996,
-  "dims": [
-   0.158,
-   0.066,
-   0.229
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/spray_paint_bottles"
- },
- "standing_chalkboard_01": {
-  "file": "standing_chalkboard_01/standing_chalkboard_01.glb",
-  "name": "Standing Chalkboard 01",
-  "bytes": 92864,
-  "srcTris": 2372,
-  "tris": 2372,
-  "dims": [
-   0.92,
-   0.759,
-   1.509
-  ],
-  "authors": [
-   "ParzivalCG"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/standing_chalkboard_01"
- },
- "steel_frame_shelves_01": {
-  "file": "steel_frame_shelves_01/steel_frame_shelves_01.glb",
-  "name": "Steel Frame Shelves 01",
-  "bytes": 75868,
-  "srcTris": 4348,
-  "tris": 2999,
-  "dims": [
-   1.097,
-   0.502,
-   2.141
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/steel_frame_shelves_01"
- },
- "steel_frame_shelves_02": {
-  "file": "steel_frame_shelves_02/steel_frame_shelves_02.glb",
-  "name": "Steel Frame Shelves 02",
-  "bytes": 81016,
-  "srcTris": 4348,
-  "tris": 3000,
-  "dims": [
-   0.593,
-   0.502,
-   2.142
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/steel_frame_shelves_02"
- },
- "steel_frame_shelves_03": {
-  "file": "steel_frame_shelves_03/steel_frame_shelves_03.glb",
-  "name": "Steel Frame Shelves 03",
-  "bytes": 134680,
-  "srcTris": 8396,
-  "tris": 2498,
-  "dims": [
-   2.351,
-   0.721,
-   2.312
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/steel_frame_shelves_03"
- },
- "street_rat": {
-  "file": "street_rat/street_rat.glb",
-  "name": "Street Rat",
-  "bytes": 119764,
-  "srcTris": 57216,
-  "tris": 801,
-  "dims": [
-   0.032,
-   0.148,
-   0.034
-  ],
-  "authors": [
-   "Sean Buckley"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/street_rat"
- },
- "sweet_potato": {
-  "file": "sweet_potato/sweet_potato.glb",
-  "name": "Sweet Potato",
-  "bytes": 59732,
-  "srcTris": 2042,
-  "tris": 2042,
-  "dims": [
-   0.058,
-   0.061,
-   0.1
-  ],
-  "authors": [
-   "Jan Martens"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/sweet_potato"
- },
- "television_02": {
-  "file": "television_02/television_02.glb",
-  "name": "Television 02",
-  "bytes": 72032,
-  "srcTris": 2310,
-  "tris": 2310,
-  "dims": [
-   0.4,
-   0.35,
-   0.411
-  ],
-  "authors": [
-   "Benny Weimer"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/television_02"
- },
- "throw_pillows_01": {
-  "file": "throw_pillows_01/throw_pillows_01.glb",
-  "name": "Throw Pillows 01",
-  "bytes": 187700,
-  "srcTris": 6362,
-  "tris": 2998,
-  "dims": [
-   1.022,
-   0.627,
-   0.45
-  ],
-  "authors": [
-   "Serhii Khromov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/throw_pillows_01"
- },
- "tire_pump": {
-  "file": "tire_pump/tire_pump.glb",
-  "name": "Tire Pump",
-  "bytes": 89060,
-  "srcTris": 6572,
-  "tris": 2498,
-  "dims": [
-   0.255,
-   0.101,
-   0.58
-  ],
-  "authors": [
-   "Garrison Gager"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/tire_pump"
- },
- "tool_cart": {
-  "file": "tool_cart/tool_cart.glb",
-  "name": "Tool Cart",
-  "bytes": 149400,
-  "srcTris": 29394,
-  "tris": 4727,
-  "dims": [
-   1.273,
-   0.754,
-   0.965
-  ],
-  "authors": [
-   "Savva Zakharov"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/tool_cart"
- },
- "trashbag": {
-  "file": "trashbag/trashbag.glb",
-  "name": "Trashbag",
-  "bytes": 110444,
-  "srcTris": 4482,
-  "tris": 2428,
-  "dims": [
-   0.528,
-   0.463,
-   0.575
-  ],
-  "authors": [
-   "Benny Weimer"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/trashbag"
- },
- "tree_small_02": {
-  "file": "tree_small_02/tree_small_02.glb",
-  "name": "Tree Small 02",
-  "bytes": 489092,
-  "srcTris": 2062487,
-  "tris": 9491,
-  "dims": [
-   2.921,
-   4.293,
-   4.65
-  ],
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/tree_small_02"
- },
- "tree_stump_01": {
-  "file": "tree_stump_01/tree_stump_01.glb",
-  "name": "Tree Stump 01",
-  "bytes": 229816,
-  "srcTris": 41046,
-  "tris": 2997,
-  "dims": [
-   1.426,
-   1.59,
-   0.573
-  ],
-  "authors": [
-   "Rob Tuytel"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/tree_stump_01"
- },
- "utility_box_01": {
-  "file": "utility_box_01/utility_box_01.glb",
-  "name": "Utility Box 01",
-  "bytes": 89620,
-  "srcTris": 4404,
-  "tris": 2500,
-  "dims": [
-   0.52,
-   0.432,
-   1.12
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/utility_box_01"
- },
- "utility_box_02": {
-  "file": "utility_box_02/utility_box_02.glb",
-  "name": "Utility Box 02",
-  "bytes": 93728,
-  "srcTris": 6268,
-  "tris": 2500,
-  "dims": [
-   0.92,
-   0.432,
-   1.12
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/utility_box_02"
- },
- "vintage_day_bed": {
-  "file": "vintage_day_bed/vintage_day_bed.glb",
-  "name": "Vintage Day Bed",
-  "bytes": 149140,
-  "srcTris": 2715,
-  "tris": 2715,
-  "dims": [
-   1.973,
-   0.855,
-   1.127
-  ],
-  "authors": [
-   "Aron Łyczek"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/vintage_day_bed"
- },
- "vintage_electric_kettle": {
-  "file": "vintage_electric_kettle/vintage_electric_kettle.glb",
-  "name": "Vintage Electric Kettle",
-  "bytes": 140032,
-  "srcTris": 14838,
-  "tris": 3638,
-  "dims": [
-   0.321,
-   0.249,
-   0.305
-  ],
-  "authors": [
-   "SV Garip"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/vintage_electric_kettle"
- },
- "vintage_microwave": {
-  "file": "vintage_microwave/vintage_microwave.glb",
-  "name": "Vintage Microwave",
-  "bytes": 80876,
-  "srcTris": 8120,
-  "tris": 2999,
-  "dims": [
-   1.074,
-   0.746,
-   0.526
-  ],
-  "authors": [
-   "Adam Nekola"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/vintage_microwave"
- },
- "vintage_suitcase": {
-  "file": "vintage_suitcase/vintage_suitcase.glb",
-  "name": "Vintage Suitcase",
-  "bytes": 157032,
-  "srcTris": 16474,
-  "tris": 4026,
-  "dims": [
-   1.608,
-   0.239,
-   0.568
-  ],
-  "authors": [
-   "Maximilian Schuster"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/vintage_suitcase"
- },
- "water_manhole_cover": {
-  "file": "water_manhole_cover/water_manhole_cover.glb",
-  "name": "Water Manhole Cover",
-  "bytes": 131324,
-  "srcTris": 6301,
-  "tris": 2998,
-  "dims": [
-   0.691,
-   0.691,
-   0.068
-  ],
-  "authors": [
-   "Raunox"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/water_manhole_cover"
- },
- "watering_can_metal_01": {
-  "file": "watering_can_metal_01/watering_can_metal_01.glb",
-  "name": "Watering Can Metal 01",
-  "bytes": 153304,
-  "srcTris": 11837,
-  "tris": 2999,
-  "dims": [
-   0.191,
-   0.452,
-   0.197
-  ],
-  "authors": [
-   "Charles Nderitu"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/watering_can_metal_01"
- },
- "weed_plant_02": {
-  "file": "weed_plant_02/weed_plant_02.glb",
-  "name": "Weed Plant 02",
-  "bytes": 98388,
-  "srcTris": 11116,
-  "tris": 1741,
-  "dims": [
-   2.125,
-   0.291,
-   0.075
-  ],
-  "authors": [
-   "Rob Tuytel",
-   "Rico Cilliers"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/weed_plant_02"
+  "name": "Sofa 01",
+  "source": "https://polyhaven.com/a/Sofa_01",
+  "srcTris": 4101,
+  "tris": 2998
  },
  "WetFloorSign_01": {
-  "file": "WetFloorSign_01/WetFloorSign_01.glb",
-  "name": "Wet Floor Sign 01",
+  "authors": [
+   "Fran Calvente"
+  ],
   "bytes": 46716,
-  "srcTris": 228,
-  "tris": 228,
   "dims": [
    0.3,
    0.359,
    0.63
   ],
-  "authors": [
-   "Fran Calvente"
-  ],
+  "file": "WetFloorSign_01/WetFloorSign_01.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/WetFloorSign_01"
- },
- "wicker_basket_01": {
-  "file": "wicker_basket_01/wicker_basket_01.glb",
-  "name": "Wicker Basket 01",
-  "bytes": 138048,
-  "srcTris": 22276,
-  "tris": 2374,
-  "dims": [
-   0.383,
-   0.295,
-   0.117
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wicker_basket_01"
- },
- "wicker_basket_02": {
-  "file": "wicker_basket_02/wicker_basket_02.glb",
-  "name": "Wicker Basket 02",
-  "bytes": 178800,
-  "srcTris": 17850,
-  "tris": 2500,
-  "dims": [
-   0.375,
-   0.271,
-   0.218
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wicker_basket_02"
- },
- "wine_barrel_01": {
-  "file": "wine_barrel_01/wine_barrel_01.glb",
-  "name": "Wine Barrel 01",
-  "bytes": 134932,
-  "srcTris": 10820,
-  "tris": 3597,
-  "dims": [
-   0.742,
-   0.756,
-   0.871
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wine_barrel_01"
- },
- "wooden_barrels_01": {
-  "file": "wooden_barrels_01/wooden_barrels_01.glb",
-  "name": "Wooden Barrels 01",
-  "bytes": 455964,
-  "srcTris": 33142,
-  "tris": 14171,
-  "dims": [
-   4.44,
-   3.345,
-   0.957
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_barrels_01"
- },
- "wooden_bowl_02": {
-  "file": "wooden_bowl_02/wooden_bowl_02.glb",
-  "name": "Wooden Bowl 02",
-  "bytes": 169048,
-  "srcTris": 4666,
-  "tris": 2998,
-  "dims": [
-   0.131,
-   0.125,
-   0.073
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_bowl_02"
- },
- "wooden_broom": {
-  "file": "wooden_broom/wooden_broom.glb",
-  "name": "Wooden Broom",
-  "bytes": 216964,
-  "srcTris": 14258,
-  "tris": 2820,
-  "dims": [
-   0.49,
-   0.113,
-   1.454
-  ],
-  "authors": [
-   "Balen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_broom"
- },
- "wooden_bucket_01": {
-  "file": "wooden_bucket_01/wooden_bucket_01.glb",
-  "name": "Wooden Bucket 01",
-  "bytes": 120464,
-  "srcTris": 5116,
-  "tris": 3000,
-  "dims": [
-   0.367,
-   0.342,
-   0.55
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_bucket_01"
- },
- "wooden_bucket_02": {
-  "file": "wooden_bucket_02/wooden_bucket_02.glb",
-  "name": "Wooden Bucket 02",
-  "bytes": 140216,
-  "srcTris": 7252,
-  "tris": 3000,
-  "dims": [
-   0.615,
-   0.616,
-   0.35
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_bucket_02"
- },
- "wooden_candlestick": {
-  "file": "wooden_candlestick/wooden_candlestick.glb",
-  "name": "Wooden Candlestick",
-  "bytes": 133440,
-  "srcTris": 212992,
-  "tris": 3003,
-  "dims": [
-   0.098,
-   0.1,
-   0.22
-  ],
-  "authors": [
-   "Josh Dean"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_candlestick"
- },
- "wooden_crate_01": {
-  "file": "wooden_crate_01/wooden_crate_01.glb",
-  "name": "Wooden Crate 01",
-  "bytes": 103528,
-  "srcTris": 6576,
-  "tris": 1498,
-  "dims": [
-   0.825,
-   0.409,
-   0.35
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_crate_01"
- },
- "wooden_crate_02": {
-  "file": "wooden_crate_02/wooden_crate_02.glb",
-  "name": "Wooden Crate 02",
-  "bytes": 118040,
-  "srcTris": 5176,
-  "tris": 3000,
-  "dims": [
-   1.166,
-   0.529,
-   0.464
-  ],
-  "authors": [
-   "James Ray Cock",
-   "Jurita Burger"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_crate_02"
- },
- "wooden_cutting_board": {
-  "file": "wooden_cutting_board/wooden_cutting_board.glb",
-  "name": "Wooden Cutting Board",
-  "bytes": 84332,
-  "srcTris": 3520,
-  "tris": 3000,
-  "dims": [
-   0.45,
-   0.247,
-   0.041
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_cutting_board"
- },
- "wooden_display_shelves_01": {
-  "file": "wooden_display_shelves_01/wooden_display_shelves_01.glb",
-  "name": "Wooden Display Shelves 01",
-  "bytes": 77372,
-  "srcTris": 3174,
-  "tris": 3000,
-  "dims": [
-   1.078,
-   0.372,
-   1.556
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_display_shelves_01"
- },
- "wooden_ladder": {
-  "file": "wooden_ladder/wooden_ladder.glb",
-  "name": "Wooden Ladder",
-  "bytes": 134504,
-  "srcTris": 8492,
-  "tris": 3000,
-  "dims": [
-   0.959,
-   0.5,
-   1.335
-  ],
-  "authors": [
-   "Miroslav Turura"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_ladder"
- },
- "wooden_lantern_01": {
-  "file": "wooden_lantern_01/wooden_lantern_01.glb",
-  "name": "Wooden Lantern 01",
-  "bytes": 160452,
-  "srcTris": 8321,
-  "tris": 3030,
-  "dims": [
-   0.221,
-   0.235,
-   0.53
-  ],
-  "authors": [
-   "James Ray Cock"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_lantern_01"
- },
- "wooden_military_crate": {
-  "file": "wooden_military_crate/wooden_military_crate.glb",
-  "name": "Wooden Military Crate",
-  "bytes": 139988,
-  "srcTris": 22986,
-  "tris": 2998,
-  "dims": [
-   1.242,
-   0.52,
-   0.465
-  ],
-  "authors": [
-   "Prabhjinder Singh"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_military_crate"
- },
- "wooden_picnic_table": {
-  "file": "wooden_picnic_table/wooden_picnic_table.glb",
-  "name": "Wooden Picnic Table",
-  "bytes": 141932,
-  "srcTris": 10210,
-  "tris": 2998,
-  "dims": [
-   2.241,
-   3.022,
-   0.746
-  ],
-  "authors": [
-   "Ulan Cabanilla"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_picnic_table"
- },
- "wooden_stool_02": {
-  "file": "wooden_stool_02/wooden_stool_02.glb",
-  "name": "Wooden Stool 02",
-  "bytes": 140420,
-  "srcTris": 11146,
-  "tris": 3000,
-  "dims": [
-   0.265,
-   0.183,
-   0.182
-  ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
-  "license": "CC0",
-  "source": "https://polyhaven.com/a/wooden_stool_02"
+  "name": "Wet Floor Sign 01",
+  "source": "https://polyhaven.com/a/WetFloorSign_01",
+  "srcTris": 228,
+  "tris": 228
  },
  "WoodenTable_01": {
-  "file": "WoodenTable_01/WoodenTable_01.glb",
-  "name": "Wooden Table 01",
+  "authors": [
+   "Ethan Place"
+  ],
   "bytes": 89560,
-  "srcTris": 952,
-  "tris": 952,
   "dims": [
    1.8,
    0.657,
    0.549
   ],
-  "authors": [
-   "Ethan Place"
-  ],
+  "file": "WoodenTable_01/WoodenTable_01.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/WoodenTable_01"
+  "name": "Wooden Table 01",
+  "source": "https://polyhaven.com/a/WoodenTable_01",
+  "srcTris": 952,
+  "tris": 952
  },
  "WoodenTable_03": {
-  "file": "WoodenTable_03/WoodenTable_03.glb",
-  "name": "Wooden Table 03",
+  "authors": [
+   "Gabriel Radi\u0107"
+  ],
   "bytes": 106428,
-  "srcTris": 2298,
-  "tris": 2298,
   "dims": [
    1.327,
    0.562,
    0.83
   ],
-  "authors": [
-   "Gabriel Radić"
-  ],
+  "file": "WoodenTable_03/WoodenTable_03.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/WoodenTable_03"
+  "name": "Wooden Table 03",
+  "source": "https://polyhaven.com/a/WoodenTable_03",
+  "srcTris": 2298,
+  "tris": 2298
+ },
+ "alarm_clock_01": {
+  "authors": [
+   "Yann Kervran",
+   "James Ray Cock"
+  ],
+  "bytes": 107632,
+  "dims": [
+   0.228,
+   0.168,
+   0.174
+  ],
+  "file": "alarm_clock_01/alarm_clock_01.glb",
+  "license": "CC0",
+  "name": "Alarm Clock 01",
+  "source": "https://polyhaven.com/a/alarm_clock_01",
+  "srcTris": 8985,
+  "tris": 3399
+ },
+ "all_purpose_cleaner": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 62556,
+  "dims": [
+   0.157,
+   0.117,
+   0.32
+  ],
+  "file": "all_purpose_cleaner/all_purpose_cleaner.glb",
+  "license": "CC0",
+  "name": "All Purpose Cleaner",
+  "source": "https://polyhaven.com/a/all_purpose_cleaner",
+  "srcTris": 4624,
+  "tris": 3000
+ },
+ "anthurium_botany_01": {
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "bytes": 88220,
+  "dims": [
+   2.806,
+   1.801,
+   0.507
+  ],
+  "file": "anthurium_botany_01/anthurium_botany_01.glb",
+  "license": "CC0",
+  "name": "Anthurium Botany 01",
+  "source": "https://polyhaven.com/a/anthurium_botany_01",
+  "srcTris": 67152,
+  "tris": 3001
+ },
+ "antique_ceramic_vase_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 68808,
+  "dims": [
+   0.255,
+   0.255,
+   0.44
+  ],
+  "file": "antique_ceramic_vase_01/antique_ceramic_vase_01.glb",
+  "license": "CC0",
+  "name": "Antique Ceramic Vase 01",
+  "source": "https://polyhaven.com/a/antique_ceramic_vase_01",
+  "srcTris": 9408,
+  "tris": 3000
+ },
+ "bamboo_basket": {
+  "authors": [
+   "KOREA HERITAGE SERVICE [KHS]"
+  ],
+  "bytes": 79596,
+  "dims": [
+   0.817,
+   0.35,
+   0.782
+  ],
+  "file": "bamboo_basket/bamboo_basket.glb",
+  "license": "CC Attribution",
+  "name": "Bamboo_Basket",
+  "scale": 1.52199,
+  "source": "https://sketchfab.com/3d-models/bamboo-basket-6c7e1244d46c457fb6f3d6194663073b",
+  "srcTris": 1088,
+  "tris": 1088
+ },
+ "bananas": {
+  "authors": [
+   "Alexander Shulha"
+  ],
+  "bytes": 79352,
+  "dims": [
+   0.6,
+   0.244,
+   0.179
+  ],
+  "file": "bananas/bananas.glb",
+  "license": "CC0",
+  "name": "Bananas",
+  "source": "https://polyhaven.com/a/bananas",
+  "srcTris": 46868,
+  "tris": 2496
+ },
+ "banhmi_cart": {
+  "authors": [
+   "Khoa Nguyen"
+  ],
+  "bytes": 135240,
+  "dims": [
+   1.792,
+   1.9,
+   0.758
+  ],
+  "file": "banhmi_cart/banhmi_cart.glb",
+  "license": "CC Attribution",
+  "name": "BanhMi Cart",
+  "scale": 0.445,
+  "source": "https://sketchfab.com/3d-models/banhmi-cart-f45b8dfd3a874779ac18323399a10258",
+  "srcTris": 7130,
+  "tris": 3999
+ },
+ "bar_chair_round_01": {
+  "authors": [
+   "Dairon Sanchez"
+  ],
+  "bytes": 378936,
+  "dims": [
+   0.483,
+   0.486,
+   0.751
+  ],
+  "file": "bar_chair_round_01/bar_chair_round_01.glb",
+  "license": "CC0",
+  "name": "Bar Chair Round 01",
+  "source": "https://polyhaven.com/a/bar_chair_round_01",
+  "srcTris": 14373,
+  "tris": 14372
+ },
+ "barrel_03": {
+  "authors": [
+   "Serhii Khromov"
+  ],
+  "bytes": 93132,
+  "dims": [
+   0.634,
+   0.639,
+   0.93
+  ],
+  "file": "barrel_03/barrel_03.glb",
+  "license": "CC0",
+  "name": "Barrel 03",
+  "source": "https://polyhaven.com/a/barrel_03",
+  "srcTris": 1473,
+  "tris": 1473
+ },
+ "barrel_stove": {
+  "authors": [
+   "MP"
+  ],
+  "bytes": 121848,
+  "dims": [
+   0.599,
+   0.598,
+   0.856
+  ],
+  "file": "barrel_stove/barrel_stove.glb",
+  "license": "CC0",
+  "name": "Barrel Stove",
+  "source": "https://polyhaven.com/a/barrel_stove",
+  "srcTris": 9216,
+  "tris": 3046
+ },
+ "bike_city": {
+  "authors": [
+   "Justiinsa"
+  ],
+  "bytes": 46200,
+  "dims": [
+   0.475,
+   1.05,
+   1.632
+  ],
+  "file": "bike_city/bike_city.glb",
+  "license": "CC Attribution",
+  "name": "Bicycle",
+  "scale": 0.35749,
+  "source": "https://sketchfab.com/3d-models/bicycle-5539b4d5610b4f53858b88daa4f9a749",
+  "srcTris": 7900,
+  "tris": 4068
+ },
+ "bike_red": {
+  "authors": [
+   "patrakeevasveta"
+  ],
+  "bytes": 310684,
+  "dims": [
+   1.828,
+   1.05,
+   0.545
+  ],
+  "file": "bike_red/bike_red.glb",
+  "license": "CC Attribution",
+  "name": "Old red bicycle",
+  "scale": 0.95711,
+  "source": "https://sketchfab.com/3d-models/old-red-bicycle-577376dfd2f142359dbac143a49a2489",
+  "srcTris": 17956,
+  "tris": 5000
+ },
+ "birdcage": {
+  "authors": [
+   "shirlanne"
+  ],
+  "bytes": 209980,
+  "dims": [
+   0.11,
+   0.5,
+   0.125
+  ],
+  "file": "birdcage/birdcage.glb",
+  "license": "CC Attribution",
+  "name": "Bird Cage",
+  "scale": 0.00781,
+  "source": "https://sketchfab.com/3d-models/bird-cage-179d46b0cc3245c6941c2a35ae5c097b",
+  "srcTris": 7134,
+  "tris": 6990
+ },
+ "bleach_bottle": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 59276,
+  "dims": [
+   0.088,
+   0.061,
+   0.294
+  ],
+  "file": "bleach_bottle/bleach_bottle.glb",
+  "license": "CC0",
+  "name": "Bleach Bottle",
+  "source": "https://polyhaven.com/a/bleach_bottle",
+  "srcTris": 4052,
+  "tris": 3000
+ },
+ "boombox": {
+  "authors": [
+   "Thomas Paul Mouilleron"
+  ],
+  "bytes": 192684,
+  "dims": [
+   0.724,
+   0.186,
+   0.47
+  ],
+  "file": "boombox/boombox.glb",
+  "license": "CC0",
+  "name": "Boombox",
+  "source": "https://polyhaven.com/a/boombox",
+  "srcTris": 10168,
+  "tris": 2082
+ },
+ "brass_diya_lantern": {
+  "authors": [
+   "Bhargav Kubal"
+  ],
+  "bytes": 119824,
+  "dims": [
+   0.123,
+   0.123,
+   0.381
+  ],
+  "file": "brass_diya_lantern/brass_diya_lantern.glb",
+  "license": "CC0",
+  "name": "Brass Diya Lantern",
+  "source": "https://polyhaven.com/a/brass_diya_lantern",
+  "srcTris": 12742,
+  "tris": 3854
+ },
+ "brass_pan_01": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 79716,
+  "dims": [
+   0.191,
+   0.45,
+   0.053
+  ],
+  "file": "brass_pan_01/brass_pan_01.glb",
+  "license": "CC0",
+  "name": "Brass Pan 01",
+  "source": "https://polyhaven.com/a/brass_pan_01",
+  "srcTris": 4340,
+  "tris": 2999
+ },
+ "brass_pot_01": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 70548,
+  "dims": [
+   0.302,
+   0.302,
+   0.291
+  ],
+  "file": "brass_pot_01/brass_pot_01.glb",
+  "license": "CC0",
+  "name": "Brass Pot 01",
+  "source": "https://polyhaven.com/a/brass_pot_01",
+  "srcTris": 3760,
+  "tris": 3000
+ },
+ "brass_vase_01": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 60708,
+  "dims": [
+   0.227,
+   0.227,
+   0.692
+  ],
+  "file": "brass_vase_01/brass_vase_01.glb",
+  "license": "CC0",
+  "name": "Brass Vase 01",
+  "source": "https://polyhaven.com/a/brass_vase_01",
+  "srcTris": 21440,
+  "tris": 2999
+ },
+ "brass_vase_02": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 93924,
+  "dims": [
+   0.21,
+   0.21,
+   0.529
+  ],
+  "file": "brass_vase_02/brass_vase_02.glb",
+  "license": "CC0",
+  "name": "Brass Vase 02",
+  "source": "https://polyhaven.com/a/brass_vase_02",
+  "srcTris": 6890,
+  "tris": 2999
+ },
+ "buddha_happy": {
+  "authors": [
+   "Oskari Pahkala"
+  ],
+  "bytes": 307884,
+  "dims": [
+   1.143,
+   1.2,
+   0.717
+  ],
+  "file": "buddha_happy/buddha_happy.glb",
+  "license": "CC Attribution",
+  "name": "Happy buddha 3D photogrammetry",
+  "scale": 1.20892,
+  "source": "https://sketchfab.com/3d-models/happy-buddha-3d-photogrammetry-c72f9d45da634b78abf237f8219e4c4c",
+  "srcTris": 27840,
+  "tris": 4000
+ },
+ "caged_hanging_light": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 163688,
+  "dims": [
+   1.162,
+   0.315,
+   0.75
+  ],
+  "file": "caged_hanging_light/caged_hanging_light.glb",
+  "license": "CC0",
+  "name": "Caged Hanging Light",
+  "source": "https://polyhaven.com/a/caged_hanging_light",
+  "srcTris": 22893,
+  "tris": 2857
+ },
+ "calathea_orbifolia_01": {
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "bytes": 81092,
+  "dims": [
+   2.492,
+   1.194,
+   0.424
+  ],
+  "file": "calathea_orbifolia_01/calathea_orbifolia_01.glb",
+  "license": "CC0",
+  "name": "Calathea Orbifolia 01",
+  "source": "https://polyhaven.com/a/calathea_orbifolia_01",
+  "srcTris": 16688,
+  "tris": 3000
+ },
+ "can_rusted": {
+  "authors": [
+   "Rahul Chaudhary"
+  ],
+  "bytes": 115588,
+  "dims": [
+   0.125,
+   0.125,
+   0.151
+  ],
+  "file": "can_rusted/can_rusted.glb",
+  "license": "CC0",
+  "name": "Can Rusted",
+  "source": "https://polyhaven.com/a/can_rusted",
+  "srcTris": 3520,
+  "tris": 1562
+ },
+ "cardboard_box_01": {
+  "authors": [
+   "Rahul Chaudhary"
+  ],
+  "bytes": 82304,
+  "dims": [
+   0.387,
+   0.516,
+   0.342
+  ],
+  "file": "cardboard_box_01/cardboard_box_01.glb",
+  "license": "CC0",
+  "name": "Cardboard Box 01",
+  "source": "https://polyhaven.com/a/cardboard_box_01",
+  "srcTris": 16952,
+  "tris": 800
+ },
+ "carved_wooden_elephant": {
+  "authors": [
+   "Greg Zaal"
+  ],
+  "bytes": 108852,
+  "dims": [
+   0.109,
+   0.058,
+   0.096
+  ],
+  "file": "carved_wooden_elephant/carved_wooden_elephant.glb",
+  "license": "CC0",
+  "name": "Carved Wooden Elephant",
+  "source": "https://polyhaven.com/a/carved_wooden_elephant",
+  "srcTris": 2752,
+  "tris": 2752
+ },
+ "cement_bag": {
+  "authors": [
+   "PierreB3D"
+  ],
+  "bytes": 49340,
+  "dims": [
+   0.462,
+   0.7,
+   0.18
+  ],
+  "file": "cement_bag/cement_bag.glb",
+  "license": "CC0",
+  "name": "Cement Bag",
+  "source": "https://polyhaven.com/a/cement_bag",
+  "srcTris": 844,
+  "tris": 844
+ },
+ "ceramic_pot": {
+  "authors": [
+   "Aron \u0141yczek"
+  ],
+  "bytes": 82164,
+  "dims": [
+   0.656,
+   0.502,
+   0.372
+  ],
+  "file": "ceramic_pot/ceramic_pot.glb",
+  "license": "CC0",
+  "name": "Ceramic Pot",
+  "source": "https://polyhaven.com/a/ceramic_pot",
+  "srcTris": 3592,
+  "tris": 1500
+ },
+ "ceramic_vase_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 42716,
+  "dims": [
+   0.205,
+   0.206,
+   0.401
+  ],
+  "file": "ceramic_vase_01/ceramic_vase_01.glb",
+  "license": "CC0",
+  "name": "Ceramic Vase 01",
+  "source": "https://polyhaven.com/a/ceramic_vase_01",
+  "srcTris": 10296,
+  "tris": 3000
+ },
+ "ceramic_vase_02": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 83868,
+  "dims": [
+   0.22,
+   0.221,
+   0.309
+  ],
+  "file": "ceramic_vase_02/ceramic_vase_02.glb",
+  "license": "CC0",
+  "name": "Ceramic Vase 02",
+  "source": "https://polyhaven.com/a/ceramic_vase_02",
+  "srcTris": 11128,
+  "tris": 3000
+ },
+ "ceramic_vase_03": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 87912,
+  "dims": [
+   0.112,
+   0.112,
+   0.414
+  ],
+  "file": "ceramic_vase_03/ceramic_vase_03.glb",
+  "license": "CC0",
+  "name": "Ceramic Vase 03",
+  "source": "https://polyhaven.com/a/ceramic_vase_03",
+  "srcTris": 11136,
+  "tris": 3000
+ },
+ "ceramic_vase_04": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 65888,
+  "dims": [
+   0.183,
+   0.182,
+   0.342
+  ],
+  "file": "ceramic_vase_04/ceramic_vase_04.glb",
+  "license": "CC0",
+  "name": "Ceramic Vase 04",
+  "source": "https://polyhaven.com/a/ceramic_vase_04",
+  "srcTris": 9000,
+  "tris": 2999
+ },
+ "chinese_chandelier": {
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "bytes": 143188,
+  "dims": [
+   0.878,
+   0.879,
+   0.748
+  ],
+  "file": "chinese_chandelier/chinese_chandelier.glb",
+  "license": "CC0",
+  "name": "Chinese Chandelier",
+  "source": "https://polyhaven.com/a/chinese_chandelier",
+  "srcTris": 7828,
+  "tris": 2998
+ },
+ "chinese_stool": {
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "bytes": 66116,
+  "dims": [
+   0.599,
+   0.506,
+   0.631
+  ],
+  "file": "chinese_stool/chinese_stool.glb",
+  "license": "CC0",
+  "name": "Chinese Stool",
+  "source": "https://polyhaven.com/a/chinese_stool",
+  "srcTris": 1090,
+  "tris": 1090
+ },
+ "chinese_tea_table": {
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "bytes": 68044,
+  "dims": [
+   0.841,
+   0.836,
+   0.499
+  ],
+  "file": "chinese_tea_table/chinese_tea_table.glb",
+  "license": "CC0",
+  "name": "Chinese Tea Table",
+  "source": "https://polyhaven.com/a/chinese_tea_table",
+  "srcTris": 2508,
+  "tris": 2508
+ },
+ "cleaner_tin_01": {
+  "authors": [
+   "Tom Phillips"
+  ],
+  "bytes": 32252,
+  "dims": [
+   0.088,
+   0.088,
+   0.13
+  ],
+  "file": "cleaner_tin_01/cleaner_tin_01.glb",
+  "license": "CC0",
+  "name": "Cleaner Tin 01",
+  "source": "https://polyhaven.com/a/cleaner_tin_01",
+  "srcTris": 3560,
+  "tris": 762
+ },
+ "coconut_green": {
+  "authors": [
+   "RWA"
+  ],
+  "bytes": 34396,
+  "dims": [
+   0.35,
+   0.25,
+   0.342
+  ],
+  "file": "coconut_green/coconut_green.glb",
+  "license": "CC Attribution",
+  "name": "kelapa ijo (green coconut)",
+  "scale": 0.13689,
+  "source": "https://sketchfab.com/3d-models/kelapa-ijo-green-coconut-30eeeda617d84e939af46ecac2c63175",
+  "srcTris": 1244,
+  "tris": 1244
+ },
+ "coconut_palm": {
+  "authors": [
+   "evolveduk"
+  ],
+  "bytes": 1220312,
+  "dims": [
+   8.016,
+   8.0,
+   5.122
+  ],
+  "file": "coconut_palm/coconut_palm.glb",
+  "license": "CC Attribution",
+  "name": "Coconut Palm",
+  "scale": 1.27309,
+  "source": "https://sketchfab.com/3d-models/coconut-palm-26e787f2ff2e4c0fb004c3b0210805a3",
+  "srcTris": 6630,
+  "tris": 5994
+ },
+ "compost_bag_02": {
+  "authors": [
+   "Satyaki Mandal"
+  ],
+  "bytes": 121244,
+  "dims": [
+   0.539,
+   0.471,
+   0.434
+  ],
+  "file": "compost_bag_02/compost_bag_02.glb",
+  "license": "CC0",
+  "name": "Compost Bag 02",
+  "source": "https://polyhaven.com/a/compost_bag_02",
+  "srcTris": 12096,
+  "tris": 2998
+ },
+ "compost_bags": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 135508,
+  "dims": [
+   1.847,
+   0.946,
+   0.768
+  ],
+  "file": "compost_bags/compost_bags.glb",
+  "license": "CC0",
+  "name": "Compost Bags",
+  "source": "https://polyhaven.com/a/compost_bags",
+  "srcTris": 18708,
+  "tris": 3616
+ },
+ "concrete_cat_statue": {
+  "authors": [
+   "Rico Cilliers",
+   "Riley Queen"
+  ],
+  "bytes": 190432,
+  "dims": [
+   0.153,
+   0.25,
+   0.283
+  ],
+  "file": "concrete_cat_statue/concrete_cat_statue.glb",
+  "license": "CC0",
+  "name": "Concrete Cat Statue",
+  "source": "https://polyhaven.com/a/concrete_cat_statue",
+  "srcTris": 11950,
+  "tris": 2998
+ },
+ "concrete_road_barrier_02": {
+  "authors": [
+   "Amal Kumar"
+  ],
+  "bytes": 130648,
+  "dims": [
+   1.567,
+   0.442,
+   1.112
+  ],
+  "file": "concrete_road_barrier_02/concrete_road_barrier_02.glb",
+  "license": "CC0",
+  "name": "Concrete Road Barrier 02",
+  "source": "https://polyhaven.com/a/concrete_road_barrier_02",
+  "srcTris": 23822,
+  "tris": 1500
+ },
+ "cooler_box": {
+  "authors": [
+   "LT96"
+  ],
+  "bytes": 103312,
+  "dims": [
+   0.456,
+   0.42,
+   0.31
+  ],
+  "file": "cooler_box/cooler_box.glb",
+  "license": "CC Attribution",
+  "name": "Cooler Box",
+  "scale": 0.18296,
+  "source": "https://sketchfab.com/3d-models/cooler-box-22ecae8aa13c4384bba96e0a65297ca5",
+  "srcTris": 3457,
+  "tris": 3457
+ },
+ "covered_car": {
+  "authors": [
+   "MP"
+  ],
+  "bytes": 298228,
+  "dims": [
+   1.789,
+   4.38,
+   1.411
+  ],
+  "file": "covered_car/covered_car.glb",
+  "license": "CC0",
+  "name": "Covered Car",
+  "source": "https://polyhaven.com/a/covered_car",
+  "srcTris": 12592,
+  "tris": 7999
+ },
+ "croissant": {
+  "authors": [
+   "Greg Zaal",
+   "Dario Barresi"
+  ],
+  "bytes": 123192,
+  "dims": [
+   0.2,
+   0.076,
+   0.062
+  ],
+  "file": "croissant/croissant.glb",
+  "license": "CC0",
+  "name": "Croissant",
+  "source": "https://polyhaven.com/a/croissant",
+  "srcTris": 1990,
+  "tris": 1990
+ },
+ "dartboard": {
+  "authors": [
+   "Satyaki Mandal"
+  ],
+  "bytes": 175832,
+  "dims": [
+   0.451,
+   0.04,
+   0.451
+  ],
+  "file": "dartboard/dartboard.glb",
+  "license": "CC0",
+  "name": "Dartboard",
+  "source": "https://polyhaven.com/a/dartboard",
+  "srcTris": 6800,
+  "tris": 2999
+ },
+ "dining_table": {
+  "authors": [
+   "Aron \u0141yczek"
+  ],
+  "bytes": 107508,
+  "dims": [
+   2.256,
+   1.39,
+   0.877
+  ],
+  "file": "dining_table/dining_table.glb",
+  "license": "CC0",
+  "name": "Dining Table",
+  "source": "https://polyhaven.com/a/dining_table",
+  "srcTris": 1048,
+  "tris": 1048
+ },
+ "drawer_cabinet": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 98620,
+  "dims": [
+   1.141,
+   0.488,
+   1.881
+  ],
+  "file": "drawer_cabinet/drawer_cabinet.glb",
+  "license": "CC0",
+  "name": "Drawer Cabinet",
+  "source": "https://polyhaven.com/a/drawer_cabinet",
+  "srcTris": 26406,
+  "tris": 4666
+ },
+ "dumpster": {
+  "authors": [
+   "jmarcos28"
+  ],
+  "bytes": 374612,
+  "dims": [
+   1.853,
+   1.3,
+   1.003
+  ],
+  "file": "dumpster/dumpster.glb",
+  "license": "CC Attribution",
+  "name": "Dumpster",
+  "scale": 0.9284,
+  "source": "https://sketchfab.com/3d-models/dumpster-f80a2a0af6924562be10be7354b7a72f",
+  "srcTris": 3288,
+  "tris": 3288
+ },
+ "durian": {
+  "authors": [
+   "rainonec"
+  ],
+  "bytes": 292880,
+  "dims": [
+   0.165,
+   0.25,
+   0.171
+  ],
+  "file": "durian/durian.glb",
+  "license": "CC Attribution",
+  "name": "Durian",
+  "scale": 0.03788,
+  "source": "https://sketchfab.com/3d-models/durian-ed9ec114cf4145dc9ad20f2219a6875f",
+  "srcTris": 7648,
+  "tris": 7532
+ },
+ "dustpan": {
+  "authors": [
+   "Balen"
+  ],
+  "bytes": 99980,
+  "dims": [
+   0.332,
+   0.368,
+   0.1
+  ],
+  "file": "dustpan/dustpan.glb",
+  "license": "CC0",
+  "name": "Dustpan",
+  "source": "https://polyhaven.com/a/dustpan",
+  "srcTris": 4332,
+  "tris": 598
+ },
+ "elec_meter": {
+  "authors": [
+   "BarrySArt"
+  ],
+  "bytes": 83200,
+  "dims": [
+   0.671,
+   0.6,
+   0.077
+  ],
+  "file": "elec_meter/elec_meter.glb",
+  "license": "CC Attribution",
+  "name": "Electric Meter with fuse boxes",
+  "scale": 0.12535,
+  "source": "https://sketchfab.com/3d-models/electric-meter-with-fuse-boxes-33c41e0176cd41d8bbc40185683ee441",
+  "srcTris": 3100,
+  "tris": 3100
+ },
+ "electric_stove": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 111456,
+  "dims": [
+   0.503,
+   0.648,
+   0.859
+  ],
+  "file": "electric_stove/electric_stove.glb",
+  "license": "CC0",
+  "name": "Electric Stove",
+  "source": "https://polyhaven.com/a/electric_stove",
+  "srcTris": 13914,
+  "tris": 3485
+ },
+ "esky": {
+  "authors": [
+   "rileylane"
+  ],
+  "bytes": 443668,
+  "dims": [
+   0.755,
+   0.4,
+   0.427
+  ],
+  "file": "esky/esky.glb",
+  "license": "CC Attribution",
+  "name": "Esky Cooler",
+  "scale": 0.73656,
+  "source": "https://sketchfab.com/3d-models/esky-cooler-1424536a79474381b1a85f7691656b88",
+  "srcTris": 1372,
+  "tris": 1372
+ },
+ "exterior_aircon_unit": {
+  "authors": [
+   "Monsta3D"
+  ],
+  "bytes": 409688,
+  "dims": [
+   1.8,
+   0.374,
+   0.928
+  ],
+  "file": "exterior_aircon_unit/exterior_aircon_unit.glb",
+  "license": "CC0",
+  "name": "Exterior Aircon Unit",
+  "source": "https://polyhaven.com/a/exterior_aircon_unit",
+  "srcTris": 18986,
+  "tris": 4678
+ },
+ "fern_02": {
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "bytes": 76312,
+  "dims": [
+   1.973,
+   1.724,
+   0.428
+  ],
+  "file": "fern_02/fern_02.glb",
+  "license": "CC0",
+  "name": "Fern 02",
+  "source": "https://polyhaven.com/a/fern_02",
+  "srcTris": 6232,
+  "tris": 3000
+ },
+ "fire_hydrant": {
+  "authors": [
+   "Gon\u00e7alo Fel\u00edcio"
+  ],
+  "bytes": 184980,
+  "dims": [
+   0.875,
+   0.318,
+   0.799
+  ],
+  "file": "fire_hydrant/fire_hydrant.glb",
+  "license": "CC0",
+  "name": "Fire Hydrant",
+  "source": "https://polyhaven.com/a/fire_hydrant",
+  "srcTris": 86316,
+  "tris": 2992
+ },
+ "fish_knife": {
+  "authors": [
+   "Mateusz Sadek"
+  ],
+  "bytes": 42972,
+  "dims": [
+   0.029,
+   0.016,
+   0.216
+  ],
+  "file": "fish_knife/fish_knife.glb",
+  "license": "CC0",
+  "name": "Fish Knife",
+  "source": "https://polyhaven.com/a/fish_knife",
+  "srcTris": 2736,
+  "tris": 525
+ },
+ "fishermans_hat": {
+  "authors": [
+   "PierreB3D"
+  ],
+  "bytes": 103632,
+  "dims": [
+   0.324,
+   0.35,
+   0.124
+  ],
+  "file": "fishermans_hat/fishermans_hat.glb",
+  "license": "CC0",
+  "name": "Fishermans Hat",
+  "source": "https://polyhaven.com/a/fishermans_hat",
+  "srcTris": 10304,
+  "tris": 2998
+ },
+ "foam_cooler": {
+  "authors": [
+   "Lino Valcarcel"
+  ],
+  "bytes": 412240,
+  "dims": [
+   0.336,
+   0.35,
+   0.409
+  ],
+  "file": "foam_cooler/foam_cooler.glb",
+  "license": "CC Attribution",
+  "name": "Dominican Foam Cooler (3D Scan)",
+  "scale": 0.94013,
+  "source": "https://sketchfab.com/3d-models/dominican-foam-cooler-3d-scan-77a766a93b7d4a7baaa317770eab1278",
+  "srcTris": 1201,
+  "tris": 1201
+ },
+ "folding_wooden_stool": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 109528,
+  "dims": [
+   0.528,
+   0.547,
+   0.442
+  ],
+  "file": "folding_wooden_stool/folding_wooden_stool.glb",
+  "license": "CC0",
+  "name": "Folding Wooden Stool",
+  "source": "https://polyhaven.com/a/folding_wooden_stool",
+  "srcTris": 6324,
+  "tris": 1500
+ },
+ "food_ginger_01": {
+  "authors": [
+   "Oliver Harries"
+  ],
+  "bytes": 94308,
+  "dims": [
+   0.24,
+   0.147,
+   0.575
+  ],
+  "file": "food_ginger_01/food_ginger_01.glb",
+  "license": "CC0",
+  "name": "Food Ginger 01",
+  "source": "https://polyhaven.com/a/food_ginger_01",
+  "srcTris": 7205,
+  "tris": 2998
+ },
+ "food_lime_01": {
+  "authors": [
+   "Oliver Harries"
+  ],
+  "bytes": 87168,
+  "dims": [
+   0.06,
+   0.061,
+   0.075
+  ],
+  "file": "food_lime_01/food_lime_01.glb",
+  "license": "CC0",
+  "name": "Food Lime 01",
+  "source": "https://polyhaven.com/a/food_lime_01",
+  "srcTris": 8100,
+  "tris": 3000
+ },
+ "food_lychee_01": {
+  "authors": [
+   "Oliver Harries"
+  ],
+  "bytes": 37256,
+  "dims": [
+   0.041,
+   0.042,
+   0.051
+  ],
+  "file": "food_lychee_01/food_lychee_01.glb",
+  "license": "CC0",
+  "name": "Food Lychee 01",
+  "source": "https://polyhaven.com/a/food_lychee_01",
+  "srcTris": 6783,
+  "tris": 120
+ },
+ "food_stall": {
+  "authors": [
+   "DanielGrps"
+  ],
+  "bytes": 131496,
+  "dims": [
+   0.844,
+   2.4,
+   2.377
+  ],
+  "file": "food_stall/food_stall.glb",
+  "license": "CC Attribution",
+  "name": "Street Food Stall \u2013 Low Poly 3D Model",
+  "scale": 0.63822,
+  "source": "https://sketchfab.com/3d-models/street-food-stall-low-poly-3d-model-d5dcb1db6e6e40daba79dbcbcd8fcb41",
+  "srcTris": 13798,
+  "tris": 13797
+ },
+ "foodcart_sf": {
+  "authors": [
+   "NikolasSE"
+  ],
+  "bytes": 44876,
+  "dims": [
+   1.39,
+   2.1,
+   2.113
+  ],
+  "file": "foodcart_sf/foodcart_sf.glb",
+  "license": "CC Attribution",
+  "name": "Street food cart (low/mid-poly)",
+  "scale": 0.99909,
+  "source": "https://sketchfab.com/3d-models/street-food-cart-lowmid-poly-250f319d162f48f787082a72adc4f9c5",
+  "srcTris": 9645,
+  "tris": 4383
+ },
+ "football": {
+  "authors": [
+   "Amal Kumar"
+  ],
+  "bytes": 173784,
+  "dims": [
+   0.509,
+   0.222,
+   0.222
+  ],
+  "file": "football/football.glb",
+  "license": "CC0",
+  "name": "Football",
+  "source": "https://polyhaven.com/a/football",
+  "srcTris": 4296,
+  "tris": 2998
+ },
+ "fruit_stand": {
+  "authors": [
+   "Taylor L.E"
+  ],
+  "bytes": 1905296,
+  "dims": [
+   1.872,
+   1.6,
+   0.944
+  ],
+  "file": "fruit_stand/fruit_stand.glb",
+  "license": "CC Attribution",
+  "name": "Fruit Stand",
+  "scale": 0.01108,
+  "source": "https://sketchfab.com/3d-models/fruit-stand-06d4d493dc5f4c89a73db2b7c1c9e210",
+  "srcTris": 6960,
+  "tris": 4326
+ },
+ "fruit_stand2": {
+  "authors": [
+   "vijoyanto"
+  ],
+  "bytes": 2758024,
+  "dims": [
+   2.564,
+   1.5,
+   1.443
+  ],
+  "file": "fruit_stand2/fruit_stand2.glb",
+  "license": "CC Attribution",
+  "name": "Fruit Stand",
+  "scale": 0.02932,
+  "source": "https://sketchfab.com/3d-models/fruit-stand-b51a0d71217c400eb147d966249320ba",
+  "srcTris": 5360,
+  "tris": 4357
+ },
+ "garden_gloves_01": {
+  "authors": [
+   "Satyaki Mandal"
+  ],
+  "bytes": 179176,
+  "dims": [
+   0.227,
+   0.299,
+   0.076
+  ],
+  "file": "garden_gloves_01/garden_gloves_01.glb",
+  "license": "CC0",
+  "name": "Garden Gloves 01",
+  "source": "https://polyhaven.com/a/garden_gloves_01",
+  "srcTris": 6822,
+  "tris": 3000
+ },
+ "garden_hose_wall_mounted_01": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 156340,
+  "dims": [
+   0.467,
+   0.25,
+   0.557
+  ],
+  "file": "garden_hose_wall_mounted_01/garden_hose_wall_mounted_01.glb",
+  "license": "CC0",
+  "name": "Garden Hose Wall Mounted 01",
+  "source": "https://polyhaven.com/a/garden_hose_wall_mounted_01",
+  "srcTris": 11684,
+  "tris": 6954
+ },
+ "garden_sprinkler_01": {
+  "authors": [
+   "Amal Kumar"
+  ],
+  "bytes": 193440,
+  "dims": [
+   0.36,
+   0.249,
+   0.216
+  ],
+  "file": "garden_sprinkler_01/garden_sprinkler_01.glb",
+  "license": "CC0",
+  "name": "Garden Sprinkler 01",
+  "source": "https://polyhaven.com/a/garden_sprinkler_01",
+  "srcTris": 8192,
+  "tris": 3205
+ },
+ "hamburger_buns": {
+  "authors": [
+   "Alexander Shulha"
+  ],
+  "bytes": 109220,
+  "dims": [
+   0.397,
+   0.114,
+   0.063
+  ],
+  "file": "hamburger_buns/hamburger_buns.glb",
+  "license": "CC0",
+  "name": "Hamburger Buns",
+  "source": "https://polyhaven.com/a/hamburger_buns",
+  "srcTris": 11588,
+  "tris": 3000
+ },
+ "hand_truck": {
+  "authors": [
+   "Mutanzom3D"
+  ],
+  "bytes": 207708,
+  "dims": [
+   0.593,
+   0.693,
+   1.403
+  ],
+  "file": "hand_truck/hand_truck.glb",
+  "license": "CC0",
+  "name": "Hand Truck",
+  "source": "https://polyhaven.com/a/hand_truck",
+  "srcTris": 13220,
+  "tris": 5264
+ },
+ "hanging_industrial_lamp": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 165032,
+  "dims": [
+   0.55,
+   0.55,
+   1.355
+  ],
+  "file": "hanging_industrial_lamp/hanging_industrial_lamp.glb",
+  "license": "CC0",
+  "name": "Hanging Industrial Lamp",
+  "source": "https://polyhaven.com/a/hanging_industrial_lamp",
+  "srcTris": 9530,
+  "tris": 2976
+ },
+ "helmet": {
+  "authors": [
+   "zeleniy89"
+  ],
+  "bytes": 305460,
+  "dims": [
+   0.256,
+   0.28,
+   0.259
+  ],
+  "file": "helmet/helmet.glb",
+  "license": "CC Attribution",
+  "name": "motorcycle helmet classic",
+  "scale": 0.14,
+  "source": "https://sketchfab.com/3d-models/motorcycle-helmet-classic-a4d4ef2f17c843828cf24d538a9edbd3",
+  "srcTris": 3560,
+  "tris": 3560
+ },
+ "helmet2": {
+  "authors": [
+   "vicente betoret ferrero"
+  ],
+  "bytes": 123800,
+  "dims": [
+   0.213,
+   0.28,
+   0.177
+  ],
+  "file": "helmet2/helmet2.glb",
+  "license": "CC Attribution",
+  "name": "Motorcycle helmet",
+  "scale": 0.28152,
+  "source": "https://sketchfab.com/3d-models/motorcycle-helmet-62740f515253473f99021f3b7bfab04d",
+  "srcTris": 6592,
+  "tris": 4000
+ },
+ "industrial_pastic_container": {
+  "authors": [
+   "Galo Benivegna"
+  ],
+  "bytes": 137116,
+  "dims": [
+   0.476,
+   0.631,
+   0.423
+  ],
+  "file": "industrial_pastic_container/industrial_pastic_container.glb",
+  "license": "CC0",
+  "name": "Industrial Plastic Container",
+  "source": "https://polyhaven.com/a/industrial_pastic_container",
+  "srcTris": 7118,
+  "tris": 4184
+ },
+ "industrial_storage_cart": {
+  "authors": [
+   "Jule Bielitz"
+  ],
+  "bytes": 144160,
+  "dims": [
+   1.603,
+   1.103,
+   1.377
+  ],
+  "file": "industrial_storage_cart/industrial_storage_cart.glb",
+  "license": "CC0",
+  "name": "Industrial Storage Cart",
+  "source": "https://polyhaven.com/a/industrial_storage_cart",
+  "srcTris": 18902,
+  "tris": 6726
+ },
+ "industrial_wall_lamp": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 162440,
+  "dims": [
+   0.273,
+   0.14,
+   0.43
+  ],
+  "file": "industrial_wall_lamp/industrial_wall_lamp.glb",
+  "license": "CC0",
+  "name": "Industrial Wall Lamp",
+  "source": "https://polyhaven.com/a/industrial_wall_lamp",
+  "srcTris": 4446,
+  "tris": 2998
+ },
+ "island_tree_02": {
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "bytes": 565368,
+  "dims": [
+   8.486,
+   4.079,
+   3.409
+  ],
+  "file": "island_tree_02/island_tree_02.glb",
+  "license": "CC0",
+  "name": "Island Tree 02",
+  "source": "https://polyhaven.com/a/island_tree_02",
+  "srcTris": 1072213,
+  "tris": 9281
+ },
+ "jug_01": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 52656,
+  "dims": [
+   0.275,
+   0.168,
+   0.211
+  ],
+  "file": "jug_01/jug_01.glb",
+  "license": "CC0",
+  "name": "Jug 01",
+  "source": "https://polyhaven.com/a/jug_01",
+  "srcTris": 5770,
+  "tris": 2998
+ },
+ "korean_fire_extinguisher_01": {
+  "authors": [
+   "UM JOORIN"
+  ],
+  "bytes": 204644,
+  "dims": [
+   0.28,
+   0.367,
+   0.659
+  ],
+  "file": "korean_fire_extinguisher_01/korean_fire_extinguisher_01.glb",
+  "license": "CC0",
+  "name": "Korean Fire Extinguisher 01",
+  "source": "https://polyhaven.com/a/korean_fire_extinguisher_01",
+  "srcTris": 9913,
+  "tris": 3234
+ },
+ "ladder_sectioned_01": {
+  "authors": [
+   "MP"
+  ],
+  "bytes": 113756,
+  "dims": [
+   0.662,
+   0.178,
+   2.135
+  ],
+  "file": "ladder_sectioned_01/ladder_sectioned_01.glb",
+  "license": "CC0",
+  "name": "Ladder Sectioned 01",
+  "source": "https://polyhaven.com/a/ladder_sectioned_01",
+  "srcTris": 29140,
+  "tris": 3509
+ },
+ "lantern_chandelier_01": {
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "bytes": 289196,
+  "dims": [
+   0.579,
+   0.575,
+   0.878
+  ],
+  "file": "lantern_chandelier_01/lantern_chandelier_01.glb",
+  "license": "CC0",
+  "name": "Lantern Chandelier 01",
+  "source": "https://polyhaven.com/a/lantern_chandelier_01",
+  "srcTris": 5971,
+  "tris": 3103
+ },
+ "lemon": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 113184,
+  "dims": [
+   0.069,
+   0.068,
+   0.095
+  ],
+  "file": "lemon/lemon.glb",
+  "license": "CC0",
+  "name": "Lemon",
+  "source": "https://polyhaven.com/a/lemon",
+  "srcTris": 4012,
+  "tris": 3000
+ },
+ "life_jacket": {
+  "authors": [
+   "PierreB3D"
+  ],
+  "bytes": 112280,
+  "dims": [
+   0.696,
+   0.184,
+   0.992
+  ],
+  "file": "life_jacket/life_jacket.glb",
+  "license": "CC0",
+  "name": "Life Jacket",
+  "source": "https://polyhaven.com/a/life_jacket",
+  "srcTris": 8968,
+  "tris": 2998
+ },
+ "lifebuoy": {
+  "authors": [
+   "Hank Kaamura"
+  ],
+  "bytes": 142888,
+  "dims": [
+   0.783,
+   0.155,
+   0.841
+  ],
+  "file": "lifebuoy/lifebuoy.glb",
+  "license": "CC0",
+  "name": "Lifebuoy",
+  "source": "https://polyhaven.com/a/lifebuoy",
+  "srcTris": 10728,
+  "tris": 2998
+ },
+ "lightbulb_01": {
+  "authors": [
+   "Josh Dean"
+  ],
+  "bytes": 24324,
+  "dims": [
+   0.06,
+   0.06,
+   0.1
+  ],
+  "file": "lightbulb_01/lightbulb_01.glb",
+  "license": "CC0",
+  "name": "Lightbulb 01",
+  "source": "https://polyhaven.com/a/lightbulb_01",
+  "srcTris": 4372,
+  "tris": 336
+ },
+ "long_life_food": {
+  "authors": [
+   "Mia Pecina Zorko"
+  ],
+  "bytes": 120588,
+  "dims": [
+   0.524,
+   0.114,
+   0.238
+  ],
+  "file": "long_life_food/long_life_food.glb",
+  "license": "CC0",
+  "name": "Long Life Food",
+  "source": "https://polyhaven.com/a/long_life_food",
+  "srcTris": 4712,
+  "tris": 3000
+ },
+ "lpg_scan": {
+  "authors": [
+   "WheelchairDrift"
+  ],
+  "bytes": 261844,
+  "dims": [
+   0.316,
+   0.6,
+   0.317
+  ],
+  "file": "lpg_scan/lpg_scan.glb",
+  "license": "CC Attribution",
+  "name": "3D scanned LPG Cylinder(low Poly)",
+  "scale": 0.63201,
+  "source": "https://sketchfab.com/3d-models/3d-scanned-lpg-cylinderlow-poly-5db3564dd3054f098b8eefa5c5ae1aea",
+  "srcTris": 9743,
+  "tris": 4000
+ },
+ "mailbox": {
+  "authors": [
+   "yoyavova"
+  ],
+  "bytes": 389428,
+  "dims": [
+   0.723,
+   1.1,
+   0.498
+  ],
+  "file": "mailbox/mailbox.glb",
+  "license": "CC Attribution",
+  "name": "Old Mailbox",
+  "scale": 0.23009,
+  "source": "https://sketchfab.com/3d-models/old-mailbox-496244e610f340179abd8360ee185763",
+  "srcTris": 1854,
+  "tris": 1854
+ },
+ "metal_jerrycan": {
+  "authors": [
+   "Sean Buckley"
+  ],
+  "bytes": 141776,
+  "dims": [
+   0.35,
+   0.172,
+   0.455
+  ],
+  "file": "metal_jerrycan/metal_jerrycan.glb",
+  "license": "CC0",
+  "name": "Metal Jerrycan",
+  "source": "https://polyhaven.com/a/metal_jerrycan",
+  "srcTris": 20022,
+  "tris": 2999
+ },
+ "metal_jerrycan_green": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 147072,
+  "dims": [
+   0.374,
+   0.171,
+   0.501
+  ],
+  "file": "metal_jerrycan_green/metal_jerrycan_green.glb",
+  "license": "CC0",
+  "name": "Metal Jerrycan Green",
+  "source": "https://polyhaven.com/a/metal_jerrycan_green",
+  "srcTris": 9636,
+  "tris": 2498
+ },
+ "metal_jug": {
+  "authors": [
+   "Anzor Lezhava"
+  ],
+  "bytes": 68856,
+  "dims": [
+   0.197,
+   0.195,
+   0.288
+  ],
+  "file": "metal_jug/metal_jug.glb",
+  "license": "CC0",
+  "name": "Metal Jug",
+  "source": "https://polyhaven.com/a/metal_jug",
+  "srcTris": 6040,
+  "tris": 3000
+ },
+ "metal_stool_01": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 108548,
+  "dims": [
+   0.352,
+   0.355,
+   0.883
+  ],
+  "file": "metal_stool_01/metal_stool_01.glb",
+  "license": "CC0",
+  "name": "Metal Stool 01",
+  "source": "https://polyhaven.com/a/metal_stool_01",
+  "srcTris": 8334,
+  "tris": 2500
+ },
+ "metal_stool_02": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 119908,
+  "dims": [
+   0.448,
+   0.473,
+   0.458
+  ],
+  "file": "metal_stool_02/metal_stool_02.glb",
+  "license": "CC0",
+  "name": "Metal Stool 02",
+  "source": "https://polyhaven.com/a/metal_stool_02",
+  "srcTris": 6532,
+  "tris": 1999
+ },
+ "metal_stool_03": {
+  "authors": [
+   "Flo Tasser"
+  ],
+  "bytes": 124304,
+  "dims": [
+   0.461,
+   0.471,
+   1.023
+  ],
+  "file": "metal_stool_03/metal_stool_03.glb",
+  "license": "CC0",
+  "name": "Metal Stool 03",
+  "source": "https://polyhaven.com/a/metal_stool_03",
+  "srcTris": 6576,
+  "tris": 2998
+ },
+ "metal_tool_chest": {
+  "authors": [
+   "Yann Kervran",
+   "John Hutcheson"
+  ],
+  "bytes": 119176,
+  "dims": [
+   0.685,
+   0.407,
+   0.652
+  ],
+  "file": "metal_tool_chest/metal_tool_chest.glb",
+  "license": "CC0",
+  "name": "Metal Tool Chest",
+  "source": "https://polyhaven.com/a/metal_tool_chest",
+  "srcTris": 13360,
+  "tris": 2990
+ },
+ "metal_toolbox": {
+  "authors": [
+   "Mateusz Sadek"
+  ],
+  "bytes": 132696,
+  "dims": [
+   0.4,
+   0.292,
+   0.347
+  ],
+  "file": "metal_toolbox/metal_toolbox.glb",
+  "license": "CC0",
+  "name": "Metal Toolbox",
+  "source": "https://polyhaven.com/a/metal_toolbox",
+  "srcTris": 14228,
+  "tris": 3000
+ },
+ "metal_trash_can": {
+  "authors": [
+   "GurJas Studios"
+  ],
+  "bytes": 279784,
+  "dims": [
+   1.847,
+   0.556,
+   0.906
+  ],
+  "file": "metal_trash_can/metal_trash_can.glb",
+  "license": "CC0",
+  "name": "Metal Trash Can",
+  "source": "https://polyhaven.com/a/metal_trash_can",
+  "srcTris": 13960,
+  "tris": 3722
+ },
+ "mounted_fluorescent_lights": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 90916,
+  "dims": [
+   0.912,
+   0.645,
+   0.035
+  ],
+  "file": "mounted_fluorescent_lights/mounted_fluorescent_lights.glb",
+  "license": "CC0",
+  "name": "Mounted Fluorescent Lights",
+  "source": "https://polyhaven.com/a/mounted_fluorescent_lights",
+  "srcTris": 17820,
+  "tris": 2998
+ },
+ "multi_cleaner_5_litre": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 51332,
+  "dims": [
+   0.219,
+   0.106,
+   0.3
+  ],
+  "file": "multi_cleaner_5_litre/multi_cleaner_5_litre.glb",
+  "license": "CC0",
+  "name": "Multi Cleaner 5 Litre",
+  "source": "https://polyhaven.com/a/multi_cleaner_5_litre",
+  "srcTris": 4332,
+  "tris": 800
+ },
+ "multi_cleaner_bottle": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 62784,
+  "dims": [
+   0.088,
+   0.09,
+   0.229
+  ],
+  "file": "multi_cleaner_bottle/multi_cleaner_bottle.glb",
+  "license": "CC0",
+  "name": "Multi Cleaner Bottle",
+  "source": "https://polyhaven.com/a/multi_cleaner_bottle",
+  "srcTris": 6792,
+  "tris": 3000
+ },
+ "ocean_buoy": {
+  "authors": [
+   "Mateusz Sadek"
+  ],
+  "bytes": 174500,
+  "dims": [
+   1.067,
+   0.952,
+   2.656
+  ],
+  "file": "ocean_buoy/ocean_buoy.glb",
+  "license": "CC0",
+  "name": "Ocean Buoy",
+  "source": "https://polyhaven.com/a/ocean_buoy",
+  "srcTris": 12240,
+  "tris": 2991
+ },
+ "oil_tin": {
+  "authors": [
+   "Niklas"
+  ],
+  "bytes": 104652,
+  "dims": [
+   0.115,
+   0.154,
+   0.205
+  ],
+  "file": "oil_tin/oil_tin.glb",
+  "license": "CC0",
+  "name": "Oil Tin",
+  "source": "https://polyhaven.com/a/oil_tin",
+  "srcTris": 2834,
+  "tris": 2834
+ },
+ "old_tyre": {
+  "authors": [
+   "MP"
+  ],
+  "bytes": 113452,
+  "dims": [
+   0.6,
+   0.165,
+   0.6
+  ],
+  "file": "old_tyre/old_tyre.glb",
+  "license": "CC0",
+  "name": "Old Tyre",
+  "source": "https://polyhaven.com/a/old_tyre",
+  "srcTris": 2880,
+  "tris": 1998
+ },
+ "outdoor_table_chair_set_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 187108,
+  "dims": [
+   0.776,
+   1.831,
+   0.859
+  ],
+  "file": "outdoor_table_chair_set_01/outdoor_table_chair_set_01.glb",
+  "license": "CC0",
+  "name": "Outdoor Table Chair Set 01",
+  "source": "https://polyhaven.com/a/outdoor_table_chair_set_01",
+  "srcTris": 9828,
+  "tris": 5367
+ },
+ "pachira_aquatica_01": {
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "bytes": 189208,
+  "dims": [
+   6.869,
+   0.997,
+   1.904
+  ],
+  "file": "pachira_aquatica_01/pachira_aquatica_01.glb",
+  "license": "CC0",
+  "name": "Pachira Aquatica 01",
+  "source": "https://polyhaven.com/a/pachira_aquatica_01",
+  "srcTris": 76914,
+  "tris": 3995
+ },
+ "painted_wooden_bench": {
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "bytes": 258768,
+  "dims": [
+   1.165,
+   0.497,
+   0.889
+  ],
+  "file": "painted_wooden_bench/painted_wooden_bench.glb",
+  "license": "CC0",
+  "name": "Painted Wooden Bench",
+  "source": "https://polyhaven.com/a/painted_wooden_bench",
+  "srcTris": 630,
+  "tris": 630
+ },
+ "painted_wooden_chair_01": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 80116,
+  "dims": [
+   0.432,
+   0.54,
+   0.956
+  ],
+  "file": "painted_wooden_chair_01/painted_wooden_chair_01.glb",
+  "license": "CC0",
+  "name": "Painted Wooden Chair 01",
+  "source": "https://polyhaven.com/a/painted_wooden_chair_01",
+  "srcTris": 724,
+  "tris": 724
+ },
+ "painted_wooden_chair_02": {
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "bytes": 110140,
+  "dims": [
+   0.639,
+   0.662,
+   1.264
+  ],
+  "file": "painted_wooden_chair_02/painted_wooden_chair_02.glb",
+  "license": "CC0",
+  "name": "Painted Wooden Chair 02",
+  "source": "https://polyhaven.com/a/painted_wooden_chair_02",
+  "srcTris": 1246,
+  "tris": 1246
+ },
+ "painted_wooden_stool": {
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "bytes": 90104,
+  "dims": [
+   0.385,
+   0.406,
+   0.579
+  ],
+  "file": "painted_wooden_stool/painted_wooden_stool.glb",
+  "license": "CC0",
+  "name": "Painted Wooden Stool",
+  "source": "https://polyhaven.com/a/painted_wooden_stool",
+  "srcTris": 676,
+  "tris": 676
+ },
+ "painted_wooden_table": {
+  "authors": [
+   "Kirill Sannikov"
+  ],
+  "bytes": 51436,
+  "dims": [
+   2.406,
+   1.137,
+   0.959
+  ],
+  "file": "painted_wooden_table/painted_wooden_table.glb",
+  "license": "CC0",
+  "name": "Painted Wooden Table",
+  "source": "https://polyhaven.com/a/painted_wooden_table",
+  "srcTris": 600,
+  "tris": 600
+ },
+ "parasol_beach": {
+  "authors": [
+   "SpongeBob Solvetion Vincents"
+  ],
+  "bytes": 40356,
+  "dims": [
+   2.302,
+   2.3,
+   2.229
+  ],
+  "file": "parasol_beach/parasol_beach.glb",
+  "license": "CC Attribution",
+  "name": "Beach Umbrella Parasol",
+  "scale": 0.00378,
+  "source": "https://sketchfab.com/3d-models/beach-umbrella-parasol-32f72bc573424202a04bbb069c45a015",
+  "srcTris": 6086,
+  "tris": 3998
+ },
+ "planter_box_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 120112,
+  "dims": [
+   0.913,
+   0.414,
+   0.425
+  ],
+  "file": "planter_box_01/planter_box_01.glb",
+  "license": "CC0",
+  "name": "Planter Box 01",
+  "source": "https://polyhaven.com/a/planter_box_01",
+  "srcTris": 8094,
+  "tris": 2499
+ },
+ "planter_box_02": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 134232,
+  "dims": [
+   1.252,
+   0.467,
+   0.453
+  ],
+  "file": "planter_box_02/planter_box_02.glb",
+  "license": "CC0",
+  "name": "Planter Box 02",
+  "source": "https://polyhaven.com/a/planter_box_02",
+  "srcTris": 10944,
+  "tris": 2998
+ },
+ "planter_box_03": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 139888,
+  "dims": [
+   0.914,
+   0.656,
+   0.855
+  ],
+  "file": "planter_box_03/planter_box_03.glb",
+  "license": "CC0",
+  "name": "Planter Box 03",
+  "source": "https://polyhaven.com/a/planter_box_03",
+  "srcTris": 13112,
+  "tris": 2956
+ },
+ "planter_pot_clay": {
+  "authors": [
+   "Amal Kumar"
+  ],
+  "bytes": 65172,
+  "dims": [
+   0.266,
+   0.263,
+   0.222
+  ],
+  "file": "planter_pot_clay/planter_pot_clay.glb",
+  "license": "CC0",
+  "name": "Planter Pot Clay",
+  "source": "https://polyhaven.com/a/planter_pot_clay",
+  "srcTris": 3080,
+  "tris": 1000
+ },
+ "plastic_bottle_gallon": {
+  "authors": [
+   "Rahul Chaudhary"
+  ],
+  "bytes": 36468,
+  "dims": [
+   0.166,
+   0.126,
+   0.274
+  ],
+  "file": "plastic_bottle_gallon/plastic_bottle_gallon.glb",
+  "license": "CC0",
+  "name": "Plastic Bottle Gallon",
+  "source": "https://polyhaven.com/a/plastic_bottle_gallon",
+  "srcTris": 13728,
+  "tris": 800
+ },
+ "plastic_broom": {
+  "authors": [
+   "L"
+  ],
+  "bytes": 56128,
+  "dims": [
+   0.416,
+   0.567,
+   1.198
+  ],
+  "file": "plastic_broom/plastic_broom.glb",
+  "license": "CC0",
+  "name": "Plastic Broom",
+  "source": "https://polyhaven.com/a/plastic_broom",
+  "srcTris": 18736,
+  "tris": 1198
+ },
+ "plastic_chair": {
+  "authors": [
+   "iperbole"
+  ],
+  "bytes": 214852,
+  "dims": [
+   0.715,
+   0.82,
+   0.716
+  ],
+  "file": "plastic_chair/plastic_chair.glb",
+  "license": "CC Attribution",
+  "name": "Plastic chair",
+  "scale": 0.28895,
+  "source": "https://sketchfab.com/3d-models/plastic-chair-ef34e3f4c45348cfa92b993f3fc44531",
+  "srcTris": 4224,
+  "tris": 4224
+ },
+ "plastic_container": {
+  "authors": [
+   "PierreB3D"
+  ],
+  "bytes": 79216,
+  "dims": [
+   0.895,
+   0.626,
+   0.43
+  ],
+  "file": "plastic_container/plastic_container.glb",
+  "license": "CC0",
+  "name": "Plastic Container",
+  "source": "https://polyhaven.com/a/plastic_container",
+  "srcTris": 4070,
+  "tris": 2500
+ },
+ "plastic_crate_01": {
+  "authors": [
+   "PierreB3D"
+  ],
+  "bytes": 278044,
+  "dims": [
+   0.298,
+   0.408,
+   0.264
+  ],
+  "file": "plastic_crate_01/plastic_crate_01.glb",
+  "license": "CC0",
+  "name": "Plastic Crate 01",
+  "source": "https://polyhaven.com/a/plastic_crate_01",
+  "srcTris": 18320,
+  "tris": 10532
+ },
+ "plastic_crate_02": {
+  "authors": [
+   "Fabi_G"
+  ],
+  "bytes": 112180,
+  "dims": [
+   0.506,
+   0.406,
+   0.254
+  ],
+  "file": "plastic_crate_02/plastic_crate_02.glb",
+  "license": "CC0",
+  "name": "Plastic Crate 02",
+  "source": "https://polyhaven.com/a/plastic_crate_02",
+  "srcTris": 5840,
+  "tris": 3000
+ },
+ "plastic_crate_03": {
+  "authors": [
+   "Pacific Penguin"
+  ],
+  "bytes": 287300,
+  "dims": [
+   0.481,
+   0.265,
+   0.266
+  ],
+  "file": "plastic_crate_03/plastic_crate_03.glb",
+  "license": "CC0",
+  "name": "Plastic Crate 03",
+  "source": "https://polyhaven.com/a/plastic_crate_03",
+  "srcTris": 21740,
+  "tris": 11926
+ },
+ "plastic_jerrycan": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 130640,
+  "dims": [
+   0.268,
+   0.341,
+   0.318
+  ],
+  "file": "plastic_jerrycan/plastic_jerrycan.glb",
+  "license": "CC0",
+  "name": "Plastic Jerrycan",
+  "source": "https://polyhaven.com/a/plastic_jerrycan",
+  "srcTris": 7348,
+  "tris": 1498
+ },
+ "plastic_monobloc_chair_01": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 124896,
+  "dims": [
+   0.642,
+   0.628,
+   0.88
+  ],
+  "file": "plastic_monobloc_chair_01/plastic_monobloc_chair_01.glb",
+  "license": "CC0",
+  "name": "Plastic Monobloc Chair 01",
+  "source": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+  "srcTris": 3356,
+  "tris": 2498
+ },
+ "plastic_thermos": {
+  "authors": [
+   "PierreB3D"
+  ],
+  "bytes": 70280,
+  "dims": [
+   0.141,
+   0.109,
+   0.32
+  ],
+  "file": "plastic_thermos/plastic_thermos.glb",
+  "license": "CC0",
+  "name": "Plastic Thermos",
+  "source": "https://polyhaven.com/a/plastic_thermos",
+  "srcTris": 5514,
+  "tris": 3000
+ },
+ "plunger": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 79336,
+  "dims": [
+   0.172,
+   0.172,
+   0.421
+  ],
+  "file": "plunger/plunger.glb",
+  "license": "CC0",
+  "name": "Plunger",
+  "source": "https://polyhaven.com/a/plunger",
+  "srcTris": 3278,
+  "tris": 3000
+ },
+ "portable_generator": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 266956,
+  "dims": [
+   0.818,
+   0.564,
+   0.577
+  ],
+  "file": "portable_generator/portable_generator.glb",
+  "license": "CC0",
+  "name": "Portable Generator",
+  "source": "https://polyhaven.com/a/portable_generator",
+  "srcTris": 26419,
+  "tris": 9205
+ },
+ "pot_enamel_01": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 69816,
+  "dims": [
+   0.263,
+   0.18,
+   0.178
+  ],
+  "file": "pot_enamel_01/pot_enamel_01.glb",
+  "license": "CC0",
+  "name": "Pot Enamel 01",
+  "source": "https://polyhaven.com/a/pot_enamel_01",
+  "srcTris": 11416,
+  "tris": 3000
+ },
+ "potted_plant_01": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 335464,
+  "dims": [
+   0.589,
+   0.637,
+   1.351
+  ],
+  "file": "potted_plant_01/potted_plant_01.glb",
+  "license": "CC0",
+  "name": "Potted Plant 01",
+  "source": "https://polyhaven.com/a/potted_plant_01",
+  "srcTris": 176226,
+  "tris": 14721
+ },
+ "potted_plant_02": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 168604,
+  "dims": [
+   0.701,
+   0.657,
+   0.841
+  ],
+  "file": "potted_plant_02/potted_plant_02.glb",
+  "license": "CC0",
+  "name": "Potted Plant 02",
+  "source": "https://polyhaven.com/a/potted_plant_02",
+  "srcTris": 69806,
+  "tris": 3537
+ },
+ "potted_plant_04": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 149572,
+  "dims": [
+   0.17,
+   0.186,
+   0.268
+  ],
+  "file": "potted_plant_04/potted_plant_04.glb",
+  "license": "CC0",
+  "name": "Potted Plant 04",
+  "source": "https://polyhaven.com/a/potted_plant_04",
+  "srcTris": 8929,
+  "tris": 4022
+ },
+ "power_box_01": {
+  "authors": [
+   "Rico Cilliers",
+   "Yann Kervran"
+  ],
+  "bytes": 139372,
+  "dims": [
+   0.377,
+   0.418,
+   0.503
+  ],
+  "file": "power_box_01/power_box_01.glb",
+  "license": "CC0",
+  "name": "Power Box 01",
+  "source": "https://polyhaven.com/a/power_box_01",
+  "srcTris": 21272,
+  "tris": 4027
+ },
+ "propane_tank": {
+  "authors": [
+   "Slinc"
+  ],
+  "bytes": 99360,
+  "dims": [
+   0.337,
+   0.337,
+   0.554
+  ],
+  "file": "propane_tank/propane_tank.glb",
+  "license": "CC0",
+  "name": "Propane Tank",
+  "source": "https://polyhaven.com/a/propane_tank",
+  "srcTris": 5238,
+  "tris": 2331
+ },
+ "pull_chain_light_socket": {
+  "authors": [
+   "Josh Dean"
+  ],
+  "bytes": 119596,
+  "dims": [
+   0.11,
+   0.11,
+   0.165
+  ],
+  "file": "pull_chain_light_socket/pull_chain_light_socket.glb",
+  "license": "CC0",
+  "name": "Pull Chain Light Socket",
+  "source": "https://polyhaven.com/a/pull_chain_light_socket",
+  "srcTris": 10902,
+  "tris": 2999
+ },
+ "ramen_stall": {
+  "authors": [
+   "Seedy.Cn"
+  ],
+  "bytes": 174356,
+  "dims": [
+   2.103,
+   2.3,
+   1.29
+  ],
+  "file": "ramen_stall/ramen_stall.glb",
+  "license": "CC Attribution",
+  "name": "Ramen/Noodle Food stall",
+  "scale": 0.65725,
+  "source": "https://sketchfab.com/3d-models/ramennoodle-food-stall-e1b14d01f2594a2e820ea1a88c8eb087",
+  "srcTris": 2218,
+  "tris": 2218
+ },
+ "rubber_boots": {
+  "authors": [
+   "L"
+  ],
+  "bytes": 90948,
+  "dims": [
+   0.891,
+   0.269,
+   0.373
+  ],
+  "file": "rubber_boots/rubber_boots.glb",
+  "license": "CC0",
+  "name": "Rubber Boots",
+  "source": "https://polyhaven.com/a/rubber_boots",
+  "srcTris": 56128,
+  "tris": 4282
+ },
+ "rubber_duck_toy": {
+  "authors": [
+   "Plat251"
+  ],
+  "bytes": 48984,
+  "dims": [
+   0.214,
+   0.3,
+   0.286
+  ],
+  "file": "rubber_duck_toy/rubber_duck_toy.glb",
+  "license": "CC0",
+  "name": "Rubber Duck Toy",
+  "source": "https://polyhaven.com/a/rubber_duck_toy",
+  "srcTris": 4288,
+  "tris": 2998
+ },
+ "russian_food_cans_01": {
+  "authors": [
+   "Kosan Aziz"
+  ],
+  "bytes": 75312,
+  "dims": [
+   0.142,
+   0.046,
+   0.085
+  ],
+  "file": "russian_food_cans_01/russian_food_cans_01.glb",
+  "license": "CC0",
+  "name": "Russian Food Cans 01",
+  "source": "https://polyhaven.com/a/russian_food_cans_01",
+  "srcTris": 1348,
+  "tris": 1348
+ },
+ "rusted_spade_01": {
+  "authors": [
+   "Blemonade"
+  ],
+  "bytes": 112172,
+  "dims": [
+   0.168,
+   0.046,
+   1.101
+  ],
+  "file": "rusted_spade_01/rusted_spade_01.glb",
+  "license": "CC0",
+  "name": "Rusted Spade 01",
+  "source": "https://polyhaven.com/a/rusted_spade_01",
+  "srcTris": 11436,
+  "tris": 2998
+ },
+ "rusted_wheel_rim_01": {
+  "authors": [
+   "John Hutcheson"
+  ],
+  "bytes": 110928,
+  "dims": [
+   0.403,
+   0.154,
+   0.395
+  ],
+  "file": "rusted_wheel_rim_01/rusted_wheel_rim_01.glb",
+  "license": "CC0",
+  "name": "Rusted Wheel Rim 01",
+  "source": "https://polyhaven.com/a/rusted_wheel_rim_01",
+  "srcTris": 16440,
+  "tris": 2500
+ },
+ "scaffold": {
+  "authors": [
+   "Gunnar Correa"
+  ],
+  "bytes": 994224,
+  "dims": [
+   13.412,
+   4.0,
+   3.149
+  ],
+  "file": "scaffold/scaffold.glb",
+  "license": "CC Attribution",
+  "name": "Scaffolding",
+  "scale": 0.01019,
+  "source": "https://sketchfab.com/3d-models/scaffolding-56c63eb16e5b479883cf3189932b38c9",
+  "srcTris": 13208,
+  "tris": 8036
+ },
+ "security_camera_01": {
+  "authors": [
+   "Alexander Otterbeck",
+   "Yann Kervran"
+  ],
+  "bytes": 91532,
+  "dims": [
+   0.17,
+   0.554,
+   0.286
+  ],
+  "file": "security_camera_01/security_camera_01.glb",
+  "license": "CC0",
+  "name": "Security Camera 01",
+  "source": "https://polyhaven.com/a/security_camera_01",
+  "srcTris": 13571,
+  "tris": 3001
+ },
+ "security_camera_02": {
+  "authors": [
+   "Garrison Gager",
+   "Yann Kervran"
+  ],
+  "bytes": 84684,
+  "dims": [
+   0.141,
+   0.394,
+   0.209
+  ],
+  "file": "security_camera_02/security_camera_02.glb",
+  "license": "CC0",
+  "name": "Security Camera 02",
+  "source": "https://polyhaven.com/a/security_camera_02",
+  "srcTris": 12477,
+  "tris": 2998
+ },
+ "security_light": {
+  "authors": [
+   "Maximilian Schuster"
+  ],
+  "bytes": 144468,
+  "dims": [
+   0.323,
+   0.417,
+   0.531
+  ],
+  "file": "security_light/security_light.glb",
+  "license": "CC0",
+  "name": "Security Light",
+  "source": "https://polyhaven.com/a/security_light",
+  "srcTris": 4668,
+  "tris": 3044
+ },
+ "seeding_tray_01": {
+  "authors": [
+   "Satyaki Mandal"
+  ],
+  "bytes": 120684,
+  "dims": [
+   0.22,
+   0.22,
+   0.061
+  ],
+  "file": "seeding_tray_01/seeding_tray_01.glb",
+  "license": "CC0",
+  "name": "Seedling Tray 01",
+  "source": "https://polyhaven.com/a/seeding_tray_01",
+  "srcTris": 8334,
+  "tris": 3000
+ },
+ "shrub_03": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 110424,
+  "dims": [
+   1.367,
+   0.151,
+   0.403
+  ],
+  "file": "shrub_03/shrub_03.glb",
+  "license": "CC0",
+  "name": "Shrub 03",
+  "source": "https://polyhaven.com/a/shrub_03",
+  "srcTris": 8287,
+  "tris": 3499
+ },
+ "shrub_sorrel_01": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 74324,
+  "dims": [
+   0.352,
+   0.146,
+   0.058
+  ],
+  "file": "shrub_sorrel_01/shrub_sorrel_01.glb",
+  "license": "CC0",
+  "name": "Shrub Sorrel 01",
+  "source": "https://polyhaven.com/a/shrub_sorrel_01",
+  "srcTris": 3319,
+  "tris": 3000
+ },
+ "side_table_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 84876,
+  "dims": [
+   0.55,
+   0.45,
+   0.551
+  ],
+  "file": "side_table_01/side_table_01.glb",
+  "license": "CC0",
+  "name": "Side Table 01",
+  "source": "https://polyhaven.com/a/side_table_01",
+  "srcTris": 2756,
+  "tris": 2756
+ },
+ "sledgehammer_01": {
+  "authors": [
+   "Dylan Guzman"
+  ],
+  "bytes": 86904,
+  "dims": [
+   0.208,
+   0.09,
+   1.006
+  ],
+  "file": "sledgehammer_01/sledgehammer_01.glb",
+  "license": "CC0",
+  "name": "Sledgehammer 01",
+  "source": "https://polyhaven.com/a/sledgehammer_01",
+  "srcTris": 2596,
+  "tris": 2596
+ },
+ "small_lpg_tank": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 140212,
+  "dims": [
+   0.41,
+   0.409,
+   0.642
+  ],
+  "file": "small_lpg_tank/small_lpg_tank.glb",
+  "license": "CC0",
+  "name": "Small Lpg Tank",
+  "source": "https://polyhaven.com/a/small_lpg_tank",
+  "srcTris": 15042,
+  "tris": 2000
+ },
+ "small_wooden_table_01": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 54492,
+  "dims": [
+   0.916,
+   0.44,
+   0.533
+  ],
+  "file": "small_wooden_table_01/small_wooden_table_01.glb",
+  "license": "CC0",
+  "name": "Small Wooden Table 01",
+  "source": "https://polyhaven.com/a/small_wooden_table_01",
+  "srcTris": 3410,
+  "tris": 2499
+ },
+ "spray_paint_bottles": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 114420,
+  "dims": [
+   0.158,
+   0.066,
+   0.229
+  ],
+  "file": "spray_paint_bottles/spray_paint_bottles.glb",
+  "license": "CC0",
+  "name": "Spray Paint Bottles",
+  "source": "https://polyhaven.com/a/spray_paint_bottles",
+  "srcTris": 5040,
+  "tris": 2996
+ },
+ "standing_chalkboard_01": {
+  "authors": [
+   "ParzivalCG"
+  ],
+  "bytes": 92864,
+  "dims": [
+   0.92,
+   0.759,
+   1.509
+  ],
+  "file": "standing_chalkboard_01/standing_chalkboard_01.glb",
+  "license": "CC0",
+  "name": "Standing Chalkboard 01",
+  "source": "https://polyhaven.com/a/standing_chalkboard_01",
+  "srcTris": 2372,
+  "tris": 2372
+ },
+ "steel_frame_shelves_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 75868,
+  "dims": [
+   1.097,
+   0.502,
+   2.141
+  ],
+  "file": "steel_frame_shelves_01/steel_frame_shelves_01.glb",
+  "license": "CC0",
+  "name": "Steel Frame Shelves 01",
+  "source": "https://polyhaven.com/a/steel_frame_shelves_01",
+  "srcTris": 4348,
+  "tris": 2999
+ },
+ "steel_frame_shelves_02": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 81016,
+  "dims": [
+   0.593,
+   0.502,
+   2.142
+  ],
+  "file": "steel_frame_shelves_02/steel_frame_shelves_02.glb",
+  "license": "CC0",
+  "name": "Steel Frame Shelves 02",
+  "source": "https://polyhaven.com/a/steel_frame_shelves_02",
+  "srcTris": 4348,
+  "tris": 3000
+ },
+ "steel_frame_shelves_03": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 134680,
+  "dims": [
+   2.351,
+   0.721,
+   2.312
+  ],
+  "file": "steel_frame_shelves_03/steel_frame_shelves_03.glb",
+  "license": "CC0",
+  "name": "Steel Frame Shelves 03",
+  "source": "https://polyhaven.com/a/steel_frame_shelves_03",
+  "srcTris": 8396,
+  "tris": 2498
+ },
+ "street_rat": {
+  "authors": [
+   "Sean Buckley"
+  ],
+  "bytes": 119764,
+  "dims": [
+   0.032,
+   0.148,
+   0.034
+  ],
+  "file": "street_rat/street_rat.glb",
+  "license": "CC0",
+  "name": "Street Rat",
+  "source": "https://polyhaven.com/a/street_rat",
+  "srcTris": 57216,
+  "tris": 801
+ },
+ "sweet_potato": {
+  "authors": [
+   "Jan Martens"
+  ],
+  "bytes": 59732,
+  "dims": [
+   0.058,
+   0.061,
+   0.1
+  ],
+  "file": "sweet_potato/sweet_potato.glb",
+  "license": "CC0",
+  "name": "Sweet Potato",
+  "source": "https://polyhaven.com/a/sweet_potato",
+  "srcTris": 2042,
+  "tris": 2042
+ },
+ "television_02": {
+  "authors": [
+   "Benny Weimer"
+  ],
+  "bytes": 72032,
+  "dims": [
+   0.4,
+   0.35,
+   0.411
+  ],
+  "file": "television_02/television_02.glb",
+  "license": "CC0",
+  "name": "Television 02",
+  "source": "https://polyhaven.com/a/television_02",
+  "srcTris": 2310,
+  "tris": 2310
+ },
+ "throw_pillows_01": {
+  "authors": [
+   "Serhii Khromov"
+  ],
+  "bytes": 187700,
+  "dims": [
+   1.022,
+   0.627,
+   0.45
+  ],
+  "file": "throw_pillows_01/throw_pillows_01.glb",
+  "license": "CC0",
+  "name": "Throw Pillows 01",
+  "source": "https://polyhaven.com/a/throw_pillows_01",
+  "srcTris": 6362,
+  "tris": 2998
+ },
+ "tire_pump": {
+  "authors": [
+   "Garrison Gager"
+  ],
+  "bytes": 89060,
+  "dims": [
+   0.255,
+   0.101,
+   0.58
+  ],
+  "file": "tire_pump/tire_pump.glb",
+  "license": "CC0",
+  "name": "Tire Pump",
+  "source": "https://polyhaven.com/a/tire_pump",
+  "srcTris": 6572,
+  "tris": 2498
+ },
+ "tool_cart": {
+  "authors": [
+   "Savva Zakharov"
+  ],
+  "bytes": 149400,
+  "dims": [
+   1.273,
+   0.754,
+   0.965
+  ],
+  "file": "tool_cart/tool_cart.glb",
+  "license": "CC0",
+  "name": "Tool Cart",
+  "source": "https://polyhaven.com/a/tool_cart",
+  "srcTris": 29394,
+  "tris": 4727
+ },
+ "trashbag": {
+  "authors": [
+   "Benny Weimer"
+  ],
+  "bytes": 110444,
+  "dims": [
+   0.528,
+   0.463,
+   0.575
+  ],
+  "file": "trashbag/trashbag.glb",
+  "license": "CC0",
+  "name": "Trashbag",
+  "source": "https://polyhaven.com/a/trashbag",
+  "srcTris": 4482,
+  "tris": 2428
+ },
+ "tree_small_02": {
+  "authors": [
+   "Rico Cilliers"
+  ],
+  "bytes": 489092,
+  "dims": [
+   2.921,
+   4.293,
+   4.65
+  ],
+  "file": "tree_small_02/tree_small_02.glb",
+  "license": "CC0",
+  "name": "Tree Small 02",
+  "source": "https://polyhaven.com/a/tree_small_02",
+  "srcTris": 2062487,
+  "tris": 9491
+ },
+ "tree_stump_01": {
+  "authors": [
+   "Rob Tuytel"
+  ],
+  "bytes": 229816,
+  "dims": [
+   1.426,
+   1.59,
+   0.573
+  ],
+  "file": "tree_stump_01/tree_stump_01.glb",
+  "license": "CC0",
+  "name": "Tree Stump 01",
+  "source": "https://polyhaven.com/a/tree_stump_01",
+  "srcTris": 41046,
+  "tris": 2997
+ },
+ "umbrella_out": {
+  "authors": [
+   "Khoa Nguyen"
+  ],
+  "bytes": 63712,
+  "dims": [
+   5.514,
+   2.4,
+   2.602
+  ],
+  "file": "umbrella_out/umbrella_out.glb",
+  "license": "CC Attribution",
+  "name": "Outdoor umbrella",
+  "scale": 0.87571,
+  "source": "https://sketchfab.com/3d-models/outdoor-umbrella-258d0f6f96274a06b806e6f0ca399a8c",
+  "srcTris": 758,
+  "tris": 758
+ },
+ "umbrella_white": {
+  "authors": [
+   "Ngo.Phuoc.Truong"
+  ],
+  "bytes": 137496,
+  "dims": [
+   2.561,
+   2.4,
+   2.561
+  ],
+  "file": "umbrella_white/umbrella_white.glb",
+  "license": "CC Attribution",
+  "name": "White outdoor Umbrella",
+  "scale": 0.86464,
+  "source": "https://sketchfab.com/3d-models/white-outdoor-umbrella-d6c9705a4f8e421ea473196ab9910088",
+  "srcTris": 1650,
+  "tris": 1650
+ },
+ "utility_box_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 89620,
+  "dims": [
+   0.52,
+   0.432,
+   1.12
+  ],
+  "file": "utility_box_01/utility_box_01.glb",
+  "license": "CC0",
+  "name": "Utility Box 01",
+  "source": "https://polyhaven.com/a/utility_box_01",
+  "srcTris": 4404,
+  "tris": 2500
+ },
+ "utility_box_02": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 93728,
+  "dims": [
+   0.92,
+   0.432,
+   1.12
+  ],
+  "file": "utility_box_02/utility_box_02.glb",
+  "license": "CC0",
+  "name": "Utility Box 02",
+  "source": "https://polyhaven.com/a/utility_box_02",
+  "srcTris": 6268,
+  "tris": 2500
+ },
+ "vending": {
+  "authors": [
+   "RackRibs"
+  ],
+  "bytes": 157276,
+  "dims": [
+   0.947,
+   1.85,
+   1.162
+  ],
+  "file": "vending/vending.glb",
+  "license": "CC Attribution",
+  "name": "Vending Machine",
+  "scale": 0.80547,
+  "source": "https://sketchfab.com/3d-models/vending-machine-d62a741a00e04d84bc45b6ccb039cf8a",
+  "srcTris": 1625,
+  "tris": 1625
+ },
+ "vintage_day_bed": {
+  "authors": [
+   "Aron \u0141yczek"
+  ],
+  "bytes": 149140,
+  "dims": [
+   1.973,
+   0.855,
+   1.127
+  ],
+  "file": "vintage_day_bed/vintage_day_bed.glb",
+  "license": "CC0",
+  "name": "Vintage Day Bed",
+  "source": "https://polyhaven.com/a/vintage_day_bed",
+  "srcTris": 2715,
+  "tris": 2715
+ },
+ "vintage_electric_kettle": {
+  "authors": [
+   "SV Garip"
+  ],
+  "bytes": 140032,
+  "dims": [
+   0.321,
+   0.249,
+   0.305
+  ],
+  "file": "vintage_electric_kettle/vintage_electric_kettle.glb",
+  "license": "CC0",
+  "name": "Vintage Electric Kettle",
+  "source": "https://polyhaven.com/a/vintage_electric_kettle",
+  "srcTris": 14838,
+  "tris": 3638
+ },
+ "vintage_microwave": {
+  "authors": [
+   "Adam Nekola"
+  ],
+  "bytes": 80876,
+  "dims": [
+   1.074,
+   0.746,
+   0.526
+  ],
+  "file": "vintage_microwave/vintage_microwave.glb",
+  "license": "CC0",
+  "name": "Vintage Microwave",
+  "source": "https://polyhaven.com/a/vintage_microwave",
+  "srcTris": 8120,
+  "tris": 2999
+ },
+ "vintage_suitcase": {
+  "authors": [
+   "Maximilian Schuster"
+  ],
+  "bytes": 157032,
+  "dims": [
+   1.608,
+   0.239,
+   0.568
+  ],
+  "file": "vintage_suitcase/vintage_suitcase.glb",
+  "license": "CC0",
+  "name": "Vintage Suitcase",
+  "source": "https://polyhaven.com/a/vintage_suitcase",
+  "srcTris": 16474,
+  "tris": 4026
+ },
+ "vn_stool": {
+  "authors": [
+   "Saigon Sidewalk Assets"
+  ],
+  "bytes": 87708,
+  "dims": [
+   0.562,
+   0.45,
+   0.562
+  ],
+  "file": "vn_stool/vn_stool.glb",
+  "license": "CC Attribution",
+  "name": "Vietnamese Red Plastic Stool \u2014 Game-ready PBR",
+  "scale": 1.63368,
+  "source": "https://sketchfab.com/3d-models/vietnamese-red-plastic-stool-game-ready-pbr-f07bfecbffa648c3b61227760901942b",
+  "srcTris": 1500,
+  "tris": 1500
+ },
+ "water_manhole_cover": {
+  "authors": [
+   "Raunox"
+  ],
+  "bytes": 131324,
+  "dims": [
+   0.691,
+   0.691,
+   0.068
+  ],
+  "file": "water_manhole_cover/water_manhole_cover.glb",
+  "license": "CC0",
+  "name": "Water Manhole Cover",
+  "source": "https://polyhaven.com/a/water_manhole_cover",
+  "srcTris": 6301,
+  "tris": 2998
+ },
+ "watering_can_metal_01": {
+  "authors": [
+   "Charles Nderitu"
+  ],
+  "bytes": 153304,
+  "dims": [
+   0.191,
+   0.452,
+   0.197
+  ],
+  "file": "watering_can_metal_01/watering_can_metal_01.glb",
+  "license": "CC0",
+  "name": "Watering Can Metal 01",
+  "source": "https://polyhaven.com/a/watering_can_metal_01",
+  "srcTris": 11837,
+  "tris": 2999
+ },
+ "watermelon": {
+  "authors": [
+   "BB ARTS"
+  ],
+  "bytes": 150036,
+  "dims": [
+   0.513,
+   0.28,
+   0.522
+  ],
+  "file": "watermelon/watermelon.glb",
+  "license": "CC Attribution",
+  "name": "Watermelon",
+  "scale": 0.14102,
+  "source": "https://sketchfab.com/3d-models/watermelon-48e8bb1cbfa446f383ef64bcebaab5e6",
+  "srcTris": 6584,
+  "tris": 2464
+ },
+ "weed_plant_02": {
+  "authors": [
+   "Rob Tuytel",
+   "Rico Cilliers"
+  ],
+  "bytes": 98388,
+  "dims": [
+   2.125,
+   0.291,
+   0.075
+  ],
+  "file": "weed_plant_02/weed_plant_02.glb",
+  "license": "CC0",
+  "name": "Weed Plant 02",
+  "source": "https://polyhaven.com/a/weed_plant_02",
+  "srcTris": 11116,
+  "tris": 1741
+ },
+ "wheelie_bin": {
+  "authors": [
+   "BLENDERBROCPT"
+  ],
+  "bytes": 181436,
+  "dims": [
+   0.647,
+   1.07,
+   0.758
+  ],
+  "file": "wheelie_bin/wheelie_bin.glb",
+  "license": "CC Attribution",
+  "name": "wheelie bin game asset",
+  "scale": 0.97309,
+  "source": "https://sketchfab.com/3d-models/wheelie-bin-game-asset-390046444cab4de0b668fe702269b5c1",
+  "srcTris": 6834,
+  "tris": 3998
+ },
+ "wicker_basket_01": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 138048,
+  "dims": [
+   0.383,
+   0.295,
+   0.117
+  ],
+  "file": "wicker_basket_01/wicker_basket_01.glb",
+  "license": "CC0",
+  "name": "Wicker Basket 01",
+  "source": "https://polyhaven.com/a/wicker_basket_01",
+  "srcTris": 22276,
+  "tris": 2374
+ },
+ "wicker_basket_02": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 178800,
+  "dims": [
+   0.375,
+   0.271,
+   0.218
+  ],
+  "file": "wicker_basket_02/wicker_basket_02.glb",
+  "license": "CC0",
+  "name": "Wicker Basket 02",
+  "source": "https://polyhaven.com/a/wicker_basket_02",
+  "srcTris": 17850,
+  "tris": 2500
+ },
+ "wine_barrel_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 134932,
+  "dims": [
+   0.742,
+   0.756,
+   0.871
+  ],
+  "file": "wine_barrel_01/wine_barrel_01.glb",
+  "license": "CC0",
+  "name": "Wine Barrel 01",
+  "source": "https://polyhaven.com/a/wine_barrel_01",
+  "srcTris": 10820,
+  "tris": 3597
+ },
+ "wooden_barrels_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 455964,
+  "dims": [
+   4.44,
+   3.345,
+   0.957
+  ],
+  "file": "wooden_barrels_01/wooden_barrels_01.glb",
+  "license": "CC0",
+  "name": "Wooden Barrels 01",
+  "source": "https://polyhaven.com/a/wooden_barrels_01",
+  "srcTris": 33142,
+  "tris": 14171
+ },
+ "wooden_bowl_02": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 169048,
+  "dims": [
+   0.131,
+   0.125,
+   0.073
+  ],
+  "file": "wooden_bowl_02/wooden_bowl_02.glb",
+  "license": "CC0",
+  "name": "Wooden Bowl 02",
+  "source": "https://polyhaven.com/a/wooden_bowl_02",
+  "srcTris": 4666,
+  "tris": 2998
+ },
+ "wooden_broom": {
+  "authors": [
+   "Balen"
+  ],
+  "bytes": 216964,
+  "dims": [
+   0.49,
+   0.113,
+   1.454
+  ],
+  "file": "wooden_broom/wooden_broom.glb",
+  "license": "CC0",
+  "name": "Wooden Broom",
+  "source": "https://polyhaven.com/a/wooden_broom",
+  "srcTris": 14258,
+  "tris": 2820
+ },
+ "wooden_bucket_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 120464,
+  "dims": [
+   0.367,
+   0.342,
+   0.55
+  ],
+  "file": "wooden_bucket_01/wooden_bucket_01.glb",
+  "license": "CC0",
+  "name": "Wooden Bucket 01",
+  "source": "https://polyhaven.com/a/wooden_bucket_01",
+  "srcTris": 5116,
+  "tris": 3000
+ },
+ "wooden_bucket_02": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 140216,
+  "dims": [
+   0.615,
+   0.616,
+   0.35
+  ],
+  "file": "wooden_bucket_02/wooden_bucket_02.glb",
+  "license": "CC0",
+  "name": "Wooden Bucket 02",
+  "source": "https://polyhaven.com/a/wooden_bucket_02",
+  "srcTris": 7252,
+  "tris": 3000
+ },
+ "wooden_candlestick": {
+  "authors": [
+   "Josh Dean"
+  ],
+  "bytes": 133440,
+  "dims": [
+   0.098,
+   0.1,
+   0.22
+  ],
+  "file": "wooden_candlestick/wooden_candlestick.glb",
+  "license": "CC0",
+  "name": "Wooden Candlestick",
+  "source": "https://polyhaven.com/a/wooden_candlestick",
+  "srcTris": 212992,
+  "tris": 3003
+ },
+ "wooden_crate_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 103528,
+  "dims": [
+   0.825,
+   0.409,
+   0.35
+  ],
+  "file": "wooden_crate_01/wooden_crate_01.glb",
+  "license": "CC0",
+  "name": "Wooden Crate 01",
+  "source": "https://polyhaven.com/a/wooden_crate_01",
+  "srcTris": 6576,
+  "tris": 1498
+ },
+ "wooden_crate_02": {
+  "authors": [
+   "James Ray Cock",
+   "Jurita Burger"
+  ],
+  "bytes": 118040,
+  "dims": [
+   1.166,
+   0.529,
+   0.464
+  ],
+  "file": "wooden_crate_02/wooden_crate_02.glb",
+  "license": "CC0",
+  "name": "Wooden Crate 02",
+  "source": "https://polyhaven.com/a/wooden_crate_02",
+  "srcTris": 5176,
+  "tris": 3000
+ },
+ "wooden_cutting_board": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 84332,
+  "dims": [
+   0.45,
+   0.247,
+   0.041
+  ],
+  "file": "wooden_cutting_board/wooden_cutting_board.glb",
+  "license": "CC0",
+  "name": "Wooden Cutting Board",
+  "source": "https://polyhaven.com/a/wooden_cutting_board",
+  "srcTris": 3520,
+  "tris": 3000
+ },
+ "wooden_display_shelves_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 77372,
+  "dims": [
+   1.078,
+   0.372,
+   1.556
+  ],
+  "file": "wooden_display_shelves_01/wooden_display_shelves_01.glb",
+  "license": "CC0",
+  "name": "Wooden Display Shelves 01",
+  "source": "https://polyhaven.com/a/wooden_display_shelves_01",
+  "srcTris": 3174,
+  "tris": 3000
+ },
+ "wooden_ladder": {
+  "authors": [
+   "Miroslav Turura"
+  ],
+  "bytes": 134504,
+  "dims": [
+   0.959,
+   0.5,
+   1.335
+  ],
+  "file": "wooden_ladder/wooden_ladder.glb",
+  "license": "CC0",
+  "name": "Wooden Ladder",
+  "source": "https://polyhaven.com/a/wooden_ladder",
+  "srcTris": 8492,
+  "tris": 3000
+ },
+ "wooden_lantern_01": {
+  "authors": [
+   "James Ray Cock"
+  ],
+  "bytes": 160452,
+  "dims": [
+   0.221,
+   0.235,
+   0.53
+  ],
+  "file": "wooden_lantern_01/wooden_lantern_01.glb",
+  "license": "CC0",
+  "name": "Wooden Lantern 01",
+  "source": "https://polyhaven.com/a/wooden_lantern_01",
+  "srcTris": 8321,
+  "tris": 3030
+ },
+ "wooden_military_crate": {
+  "authors": [
+   "Prabhjinder Singh"
+  ],
+  "bytes": 139988,
+  "dims": [
+   1.242,
+   0.52,
+   0.465
+  ],
+  "file": "wooden_military_crate/wooden_military_crate.glb",
+  "license": "CC0",
+  "name": "Wooden Military Crate",
+  "source": "https://polyhaven.com/a/wooden_military_crate",
+  "srcTris": 22986,
+  "tris": 2998
+ },
+ "wooden_picnic_table": {
+  "authors": [
+   "Ulan Cabanilla"
+  ],
+  "bytes": 141932,
+  "dims": [
+   2.241,
+   3.022,
+   0.746
+  ],
+  "file": "wooden_picnic_table/wooden_picnic_table.glb",
+  "license": "CC0",
+  "name": "Wooden Picnic Table",
+  "source": "https://polyhaven.com/a/wooden_picnic_table",
+  "srcTris": 10210,
+  "tris": 2998
+ },
+ "wooden_stool_02": {
+  "authors": [
+   "Kuutti Siitonen"
+  ],
+  "bytes": 140420,
+  "dims": [
+   0.265,
+   0.183,
+   0.182
+  ],
+  "file": "wooden_stool_02/wooden_stool_02.glb",
+  "license": "CC0",
+  "name": "Wooden Stool 02",
+  "source": "https://polyhaven.com/a/wooden_stool_02",
+  "srcTris": 11146,
+  "tris": 3000
  },
  "worn_metal_rack": {
-  "file": "worn_metal_rack/worn_metal_rack.glb",
-  "name": "Worn Metal Rack",
+  "authors": [
+   "Luca B"
+  ],
   "bytes": 104068,
-  "srcTris": 6372,
-  "tris": 3046,
   "dims": [
    0.915,
    0.6,
    1.9
   ],
-  "authors": [
-   "Luca B"
-  ],
+  "file": "worn_metal_rack/worn_metal_rack.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/worn_metal_rack"
+  "name": "Worn Metal Rack",
+  "source": "https://polyhaven.com/a/worn_metal_rack",
+  "srcTris": 6372,
+  "tris": 3046
  },
  "yellow_onion": {
-  "file": "yellow_onion/yellow_onion.glb",
-  "name": "Yellow Onion",
+  "authors": [
+   "Kuutti Siitonen"
+  ],
   "bytes": 83280,
-  "srcTris": 5444,
-  "tris": 3000,
   "dims": [
    0.072,
    0.069,
    0.086
   ],
-  "authors": [
-   "Kuutti Siitonen"
-  ],
+  "file": "yellow_onion/yellow_onion.glb",
   "license": "CC0",
-  "source": "https://polyhaven.com/a/yellow_onion"
+  "name": "Yellow Onion",
+  "source": "https://polyhaven.com/a/yellow_onion",
+  "srcTris": 5444,
+  "tris": 3000
  }
 }
