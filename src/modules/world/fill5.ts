@@ -192,8 +192,8 @@ export function fill5(api: FillApi, seed: string) {
   }
 
   // ================================================================ 2. main road: coffee carts + vendor corners on the wide north sidewalk
-  for (let x = -120; x < 120; x += r.range(16, 30)) {
-    if (Math.abs(x) < 10 || (x > -50 && x < -18)) continue;
+  for (let x = -120; x < 120; x += r.range(8, 15)) {
+    if (Math.abs(x) < 10) continue;   // the soi mouth (the overpass stairs are kept out by put())
     const z = 1.6 + r.range(-0.2, 0.3);
     const kind = r.int(0, 6);
     const umbrella = (ux: number, uz: number) => { const id = r.pick(UMBRELLAS); if (has(id)) add(id, ux, groundHeight(ux, uz), uz, r.range(0, 6), { color: r.pick(UMB_COLS), tag: 'umbrellas' }); };
