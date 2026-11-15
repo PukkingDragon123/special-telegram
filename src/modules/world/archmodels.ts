@@ -2,15 +2,20 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { Assets } from '../../core/assets';
+import { DetailCull } from '../../core/detailcull';
 
 /**
  * ARCHITECTURE MODELS — real models from the shared library (public/assets/gen/lib/arch/*.glb, see catalog.json)
  * placed by the world builders (AC condensers on every facade, rooftop units, …). Builders record placements
  * during the build (world matrices); after the build the GLBs are loaded once and drawn as InstancedMeshes,
- * one per primitive per 64 m cell → a handful of draw calls, cells culled by distance, shadows only near.
+ * one per primitive per 16 m cell (tight bounds → three's frustum culling drops the cells behind the camera),
+ * distance-culled by DetailCull (follows the quality / frame-budget scale), shadows only within ~24 m.
  */
 
-const CELL = 64;
+const CELL = 16;
+/** draw distance of facade units (AC condensers, pole arms…) before DetailCull's quality scale */
+const FAR = 80;
+const SHADOW_NEAR = 24;
 
 interface Cell { meshes: THREE.InstancedMesh[]; center: THREE.Vector3; radius: number }
 
@@ -21,7 +26,7 @@ export class ArchModels {
   private _m = new THREE.Matrix4(); private _q = new THREE.Quaternion(); private _v = new THREE.Vector3(); private _s = new THREE.Vector3();
 
   /** forget placements (new world build) */
-  reset() { this.placements.clear(); this.cells = []; this.root = null; }
+  reset() { for (const c of this.cells) for (const m of c.meshes) DetailCull.remove(m); this.placements.clear(); this.cells = []; this.root = null; }
 
   /** record a placement: parent (current builder transform) × T(x,y,z) × Ry(yaw) × S */
   add(id: string, parent: THREE.Matrix4, x: number, y: number, z: number, yaw = 0, s: number | [number, number, number] = 1) {
@@ -80,6 +85,7 @@ export class ArchModels {
           im.castShadow = true; im.receiveShadow = true;
           im.name = 'arch:' + id;
           root.add(im);
+          DetailCull.add(im, FAR);
           cell.meshes.push(im);
         }
         this.cells.push(cell);
@@ -87,12 +93,11 @@ export class ArchModels {
     }));
   }
 
-  /** per frame (cheap): distance cull cells, shadows only near the camera */
-  update(cam: THREE.Vector3, far = 95) {
+  /** per frame (cheap): shadows only near the camera (visibility is DetailCull's) */
+  update(cam: THREE.Vector3) {
     for (const c of this.cells) {
-      const d = c.center.distanceTo(cam) - c.radius;
-      const vis = d < far, sh = d < 42;
-      for (const m of c.meshes) { m.visible = vis; m.castShadow = sh; }
+      const sh = c.center.distanceTo(cam) - c.radius < SHADOW_NEAR;
+      for (const m of c.meshes) m.castShadow = sh;
     }
   }
 }

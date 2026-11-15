@@ -431,7 +431,13 @@ export class PileBatch {
       e.m.push(new THREE.Matrix4().compose(new THREE.Vector3(p.x + off.x, p.y + ly, p.z + off.z), _pq, new THREE.Vector3(P.s[0] * sc, P.s[1] * sc, P.s[2] * sc)));
     }
   }
-  private obj(id: string, p: THREE.Vector3, yaw: number) { const o = realPropObject(id); o.position.copy(p); o.rotation.y = yaw; this.objs.push(o); }
+  /** one whole real prop (egg tray, banana hand, pork cut) — instanced with the piles, NOT a mesh per object
+   *  (a market row of egg trays was ~180 draw calls and ~0.2M tris as individual meshes) */
+  private obj(id: string, p: THREE.Vector3, yaw: number) {
+    const ck = 'obj:' + id;
+    let e = this.inst.get(ck); if (!e) this.inst.set(ck, (e = { id, m: [] }));
+    e.m.push(new THREE.Matrix4().compose(p.clone(), _pq.setFromAxisAngle(_UP, yaw), _ONE));
+  }
   /** build the instanced meshes into `parent` */
   flush(parent: THREE.Object3D) {
     for (const o of this.objs) parent.add(o);
@@ -459,7 +465,7 @@ export class PileBatch {
     this.inst.clear(); this.leaves = []; this.objs = [];
   }
 }
-const _UP = new THREE.Vector3(0, 1, 0), _pq = new THREE.Quaternion(), _pe = new THREE.Euler();
+const _UP = new THREE.Vector3(0, 1, 0), _pq = new THREE.Quaternion(), _pe = new THREE.Euler(), _ONE = new THREE.Vector3(1, 1, 1);
 
 /** photo heap (dome) — merged. Real produce when a model exists (piles batch), photo dome otherwise. */
 function heap(mg: Merge, path: string, p: THREE.Vector3, r: number, h: number, seed: number) {

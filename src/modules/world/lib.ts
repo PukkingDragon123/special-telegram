@@ -58,7 +58,7 @@ const physKind = (e: LibEntry) => (e.physics === 'dynamic' ? 'dyn' : e.physics =
 function farFactor(e: LibEntry) {
   if (e.far) return e.far;
   const s = Math.max(...e.size_m);
-  return s < 0.15 ? 0.35 : s < 0.35 ? 0.55 : s < 0.8 ? 0.8 : s < 2.5 ? 1.1 : 1.5;
+  return s < 0.15 ? 0.32 : s < 0.35 ? 0.45 : s < 0.8 ? 0.75 : s < 2.5 ? 1.1 : 1.5;   // shelf goods: ~15 m at low
 }
 
 /** Load the catalog (once) and register every model as `lib:<id>` with the RealProps instancer. */

@@ -2326,21 +2326,21 @@
   "tris": 3000
  },
  "potted_plant_01": {
-  "authors": [
-   "Rico Cilliers"
-  ],
-  "bytes": 335464,
+  "file": "potted_plant_01/potted_plant_01.glb",
+  "name": "Potted Plant 01",
+  "bytes": 260436,
+  "srcTris": 176226,
+  "tris": 7652,
   "dims": [
    0.589,
    0.637,
    1.351
   ],
-  "file": "potted_plant_01/potted_plant_01.glb",
+  "authors": [
+   "Rico Cilliers"
+  ],
   "license": "CC0",
-  "name": "Potted Plant 01",
-  "source": "https://polyhaven.com/a/potted_plant_01",
-  "srcTris": 176226,
-  "tris": 14721
+  "source": "https://polyhaven.com/a/potted_plant_01"
  },
  "potted_plant_02": {
   "authors": [

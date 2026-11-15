@@ -141,7 +141,7 @@ All are simplified with meshoptimizer and re-encoded (WebP textures ≤1K, mesho
 | Plunger (`plunger`) | https://polyhaven.com/a/plunger | James Ray Cock | CC0 | 77 KB |
 | Portable Generator (`portable_generator`) | https://polyhaven.com/a/portable_generator | James Ray Cock | CC0 | 261 KB |
 | Pot Enamel 01 (`pot_enamel_01`) | https://polyhaven.com/a/pot_enamel_01 | Kuutti Siitonen | CC0 | 68 KB |
-| Potted Plant 01 (`potted_plant_01`) | https://polyhaven.com/a/potted_plant_01 | Rico Cilliers | CC0 | 328 KB |
+| Potted Plant 01 (`potted_plant_01`) | https://polyhaven.com/a/potted_plant_01 | Rico Cilliers | CC0 | 254 KB |
 | Potted Plant 02 (`potted_plant_02`) | https://polyhaven.com/a/potted_plant_02 | Rico Cilliers | CC0 | 165 KB |
 | Potted Plant 04 (`potted_plant_04`) | https://polyhaven.com/a/potted_plant_04 | James Ray Cock | CC0 | 146 KB |
 | Power Box 01 (`power_box_01`) | https://polyhaven.com/a/power_box_01 | Rico Cilliers, Yann Kervran | CC0 | 136 KB |
@@ -214,7 +214,7 @@ All are simplified with meshoptimizer and re-encoded (WebP textures ≤1K, mesho
 | Worn Metal Rack (`worn_metal_rack`) | https://polyhaven.com/a/worn_metal_rack | Luca B | CC0 | 102 KB |
 | Yellow Onion (`yellow_onion`) | https://polyhaven.com/a/yellow_onion | Kuutti Siitonen | CC0 | 81 KB |
 
-Total: 31.6 MB in 207 models.
+Total: 31.5 MB in 207 models.
 
 ## Sketchfab (CC-BY / CC0)
 Models downloaded with scripts/sketchfab.py; scaled, simplified and re-encoded (WebP textures, meshopt).
