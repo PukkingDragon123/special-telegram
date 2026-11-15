@@ -49,5 +49,45 @@
   ],
   "license": "CC0",
   "source": "https://polyhaven.com/a/yellow_onion"
+ },
+ "mango": {
+  "file": "mango/mango.glb",
+  "bytes": 57784,
+  "tris": 1020,
+  "source": "sketchfab",
+  "uid": "e5fd174d7a2e4ac894e3e69a4550d1e2",
+  "license": "CC Attribution",
+  "author": "Meerschaum Digital",
+  "url": "https://sketchfab.com/3d-models/mango-e5fd174d7a2e4ac894e3e69a4550d1e2"
+ },
+ "crab_blue": {
+  "file": "crab_blue/crab_blue.glb",
+  "bytes": 1902032,
+  "tris": 172673,
+  "source": "sketchfab",
+  "uid": "6ba084804376461ca7efc1293364f047",
+  "license": "CC0 Public Domain",
+  "author": "ffish.asia / floraZia.com",
+  "url": "https://sketchfab.com/3d-models/cc0-blue-manna-crab-p-pelagicus-6ba084804376461ca7efc1293364f047"
+ },
+ "river_prawn": {
+  "file": "river_prawn/river_prawn.glb",
+  "bytes": 726356,
+  "tris": 78131,
+  "source": "sketchfab",
+  "uid": "36b7fdb36bdb430f831e64664bcc0aff",
+  "license": "CC0 Public Domain",
+  "author": "ffish.asia / floraZia.com",
+  "url": "https://sketchfab.com/3d-models/cc0-crane-river-prawn-36b7fdb36bdb430f831e64664bcc0aff"
+ },
+ "fish_whole": {
+  "file": "fish_whole/fish_whole.glb",
+  "bytes": 1206708,
+  "tris": 106702,
+  "source": "sketchfab",
+  "uid": "db497866bbbf49eeb6c8e398c2757a38",
+  "license": "CC0 Public Domain",
+  "author": "ffish.asia / floraZia.com",
+  "url": "https://sketchfab.com/3d-models/cc0-japanese-jack-mackerel-t-japonicus-db497866bbbf49eeb6c8e398c2757a38"
  }
 }

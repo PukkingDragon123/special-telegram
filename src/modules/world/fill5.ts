@@ -25,12 +25,17 @@ export interface FillApi {
   /** [w,h,d] metres */
   size: (id: string) => [number, number, number];
   treeAt?: (x: number, z: number, id: string) => boolean;
+  /** long things (bicycles, carts): a chain of footprint circles along the model's long axis */
+  putLong?: (id: string, x: number, z: number, yaw: number, o?: PlaceOpts & { y?: number }) => boolean;
 }
 
 const POT_PLANTS = ['fern', 'anthurium', 'calathea', 'sorrel'];
 const SMALL_GOODS = ['food_box', 'cans_food', 'oil_tin', 'bleach', 'cleaner_all', 'cleaner_spray', 'thermos'];
 const PRODUCE = ['sweet_potato', 'onion_y', 'lemon', 'lime_w', 'ginger'];
 const TABLE_TOPS = ['jug_clay', 'metal_jug', 'enamel_pot', 'wood_bowl', 'thermos', 'kettle'];
+const THAI_FRUIT = ['durian', 'coconut_g', 'watermelon', 'lemon', 'lime_w'];
+const UMBRELLAS = ['umbrella_w', 'umbrella_o', 'parasol'];
+const UMB_COLS = [0xd8382c, 0x2a62b8, 0xf2f0ea, 0x2a8a4a, 0xe8a020];
 
 export function fill5(api: FillApi, seed: string) {
   const { put, add, has, front, size } = api;
@@ -82,6 +87,11 @@ export function fill5(api: FillApi, seed: string) {
         add(id, x, y, z, f.out, { tag: 'awning lights' });
       }
     }
+    // ---- the electricity meter on the pier at eye height
+    if (has('elec_meter') && r.chance(0.35)) {
+      const [x, z] = f.at(A(r.chance(0.5) ? 0.035 : 0.965), 0.02);
+      add('elec_meter', x, groundHeight(x, z) + 1.6, z, f.out, { tag: 'electric meters' });
+    }
     // ---- a fluorescent tube under the awning of open shops (Bangkok: one bare tube per shopfront)
     if (!resid && ground !== 'shutter' && has('tube_light') && r.chance(0.55)) {
       const [x, z] = f.at(A(r.range(0.35, 0.65)), 0.5);
@@ -106,6 +116,9 @@ export function fill5(api: FillApi, seed: string) {
       }
       if (r.chance(0.5)) { const [x, z] = at(0.12, 0.28); put(r.pick(['enamel_pot', 'brass_pot', 'jug_clay']), x, z, r.range(0, 6), { tag: 'pots by the door' }); }
       if (r.chance(0.4)) { const [x, z] = at(-0.12, 0.25); put('cut_board', x, z, f.out, { rx: -0.25, probe: false, tag: 'chopping boards' }); }
+      if (r.chance(0.5)) { const [x, z] = at(0.22 * (sideT < 0.5 ? 1 : -1), 0.25); put(r.pick(['cooler', 'esky', 'foam_cooler']), x, z, f.out + r.range(-0.3, 0.3), { tag: 'ice coolers' }); }
+      if (r.chance(0.4)) { const [x, z] = at(-0.2 * (sideT < 0.5 ? 1 : -1), 0.22); put('lpg_scan', x, z, r.range(0, 6), { tag: 'lpg' }); }
+      for (let k = 0, n = r.chance(0.5) ? r.int(2, 4) : 0; k < n; k++) { const [x, z] = at(r.range(-0.2, 0.2), r.range(0.3, Math.max(0.35, f.depth))); put('vn_stool', x, z, r.range(0, 6), { tag: 'red stools' }); }
     } else if (/grocery|rice|food/.test(shop)) {
       // wooden produce crates with real veg on top, a tin shelf by the door
       for (let k = 0; k < 2; k++) {
@@ -148,6 +161,11 @@ export function fill5(api: FillApi, seed: string) {
       if (r.chance(0.35)) { const [x, z] = at(0.15, 0.3); if (put('cn_stool', x, z, r.range(0, 6), { tag: 'door stools' }) && r.chance(0.6)) onTop('cn_stool', x, z, 0, ['thermos', 'kettle', 'alarm_clock'], 1, 'stool things'); }
       if (r.chance(0.18)) { const [x, z] = at(0.05, 0.35); put(r.pick(['football', 'duck', 'boots']), x, z, r.range(0, 6), { tag: 'kids & boots' }); }
       if (r.chance(0.15)) { const [x, z] = at(-0.05, 0.3); put('sprinkler', x, z, r.range(0, 6), { tag: 'garden bits' }); }
+      // a bicycle parked along the facade
+      if (api.putLong && r.chance(0.3)) { const [x, z] = f.at(A(0.5 + r.range(-0.15, 0.15)), 0.32); api.putLong(r.pick(['bike_city', 'bike_red']), x, z, f.out + Math.PI / 2 + r.range(-0.06, 0.06)); }
+      // a song-bird cage hung from the awning (very Thai)
+      if (has('birdcage') && r.chance(0.25)) { const [x, z] = f.at(A(r.chance(0.5) ? 0.25 : 0.75), 0.35); add('birdcage', x, groundHeight(x, z) + 2.75, z, r.range(0, 6), { tag: 'bird cages' }); }
+      if (r.chance(0.2)) { const [x, z] = at(0.08, 0.3); if (put('plastic_chair', x, z, f.out + r.range(-0.6, 0.6), { tag: 'plastic chairs' }) && r.chance(0.4)) onTop('plastic_chair', x, z, 0, ['helmet', 'helmet2'], 1, 'helmets'); }
     } else {
       // closed / shuttered: the junk pile next to the shutter (old TV, microwave, drawers, barrels, suitcase)
       if (r.chance(0.55)) {
@@ -160,6 +178,8 @@ export function fill5(api: FillApi, seed: string) {
         else put('stove_el', x, z, f.out + Math.PI, { tag: 'junk' });
       }
       if (r.chance(0.35)) { const [x, z] = at(-0.12, 0.35); put('fert_bags', x, z, f.out + Math.PI / 2, { tag: 'bag stacks' }); }
+      // renovation: scaffolding against a closed facade on the wide sidewalks
+      if (f.depth >= 1.2 && r.chance(0.12)) { const [x, z] = f.at(A(0.5), 0.75); put('scaffold', x, z, f.out + Math.PI / 2, { probe: false, pad: 0.05, tag: 'scaffolding' }); }
     }
   }
 
@@ -167,8 +187,19 @@ export function fill5(api: FillApi, seed: string) {
   for (let x = -120; x < 120; x += r.range(16, 30)) {
     if (Math.abs(x) < 10 || (x > -50 && x < -18)) continue;
     const z = 1.6 + r.range(-0.2, 0.3);
-    const kind = r.int(0, 3);
-    if (kind === 0 && has('coffee_cart')) {
+    const kind = r.int(0, 6);
+    const umbrella = (ux: number, uz: number) => { const id = r.pick(UMBRELLAS); if (has(id)) add(id, ux, groundHeight(ux, uz), uz, r.range(0, 6), { color: r.pick(UMB_COLS), tag: 'umbrellas' }); };
+    if (kind >= 3) {
+      // a proper street-food setup: stall / cart, umbrella, red stools, an ice cooler and a gas tank
+      const sid = r.pick(['food_stall', 'ramen_stall', 'cart_sf', 'cart_banhmi', 'fruit_stand', 'fruit_stand2']);
+      if (put(sid, x, z, Math.PI + r.range(-0.15, 0.15), { tag: 'street stalls', pad: 0.15 })) {
+        if (!/stall/.test(sid)) umbrella(x + r.range(-0.4, 0.4), z + 0.4);
+        if (/fruit/.test(sid)) onTop(sid, x, z, Math.PI, THAI_FRUIT, r.int(6, 12), 'stall fruit');
+        for (let k = 0, n = r.int(2, 5); k < n; k++) put('vn_stool', x + r.range(-1.6, 1.6), z + r.range(1.0, 2.0), r.range(0, 6), { tag: 'red stools' });
+        put(r.pick(['cooler', 'esky', 'foam_cooler']), x + 1.35, z - 0.2, r.range(0, 6), { tag: 'ice coolers' });
+        put('lpg_scan', x - 1.3, z - 0.3, r.range(0, 6), { tag: 'lpg' });
+      }
+    } else if (kind === 0 && has('coffee_cart')) {
       if (put('coffee_cart', x, z, Math.PI + r.range(-0.2, 0.2), { tag: 'coffee carts', pad: 0.1 })) {
         for (const dx of [-1.3, 1.3]) put('bar_stool', x + dx, z + r.range(-0.2, 0.2), r.range(0, 6), { tag: 'bar stools' });
       }
@@ -178,10 +209,11 @@ export function fill5(api: FillApi, seed: string) {
         const cx = x + (k - 1) * 0.72, yaw = r.range(-0.1, 0.1);
         if (put('crate_wood2', cx, z, yaw, { phys: 'static', tag: 'produce crates' })) {
           const s = size('crate_wood2');
-          pile(cx, groundHeight(cx, z) + s[1] - 0.02, z, s[0] * 0.7, s[2] * 0.7, yaw, r.pick(PRODUCE), r.int(9, 15));
+          pile(cx, groundHeight(cx, z) + s[1] - 0.02, z, s[0] * 0.7, s[2] * 0.7, yaw, r.pick([...PRODUCE, ...THAI_FRUIT]), r.int(6, 12));
         }
       }
       put('cn_stool', x + 1.5, z + 0.3, r.range(0, 6), { tag: 'vendor stools' });
+      umbrella(x, z + 0.25);
     } else {
       // a picnic table under a tree / by the kerb, someone's thermos and enamel pot
       if (put('picnic_table', x, z + 0.2, r.range(-0.15, 0.15) + Math.PI / 2, { tag: 'picnic tables', pad: 0.1 })) onTop('picnic_table', x, z + 0.2, Math.PI / 2, TABLE_TOPS, r.int(1, 3), 'table tops');
@@ -190,7 +222,7 @@ export function fill5(api: FillApi, seed: string) {
   // south sidewalk: crates, barrels and plants along the shop fronts' kerb side
   for (let x = -118; x < 118; x += r.range(10, 18)) {
     const z = 24.9 + r.range(-0.15, 0.15);
-    put(r.pick(['fern', 'calathea', 'anthurium', 'crate_mil', 'wine_barrel', 'bucket_wood2']), x, z, r.range(0, 6), { tag: 'south kerb things' });
+    put(r.pick(['fern', 'calathea', 'anthurium', 'crate_mil', 'wine_barrel', 'bucket_wood2', 'wheelie', 'wheelie', 'mailbox']), x, z, r.range(0, 6), { tag: 'south kerb things' });
   }
 
   // ================================================================ 3. office plaza: coffee kiosk with bar stools, big plants, extinguisher by the lobby
@@ -199,6 +231,7 @@ export function fill5(api: FillApi, seed: string) {
     for (const x of [-60, -50, -38, -30]) put(r.pick(['pachira', 'calathea']), x, zP + r.range(-0.3, 0.3), r.range(0, 6), { scale: r.range(1.1, 1.4), tag: 'plaza plants' });
     if (put('coffee_cart', -55, zP + 1.6, Math.PI / 2, { tag: 'coffee carts', pad: 0.2 })) for (const dz of [-1.1, 1.1]) put('bar_stool', -53.6, zP + 1.6 + dz, r.range(0, 6), { tag: 'bar stools' });
     put('extinguisher', -44.5, OFFICE.z1 + 0.35, Math.PI, { tag: 'extinguishers' });
+    for (const x of [-41.2, -40.3]) put('vending', x, OFFICE.z1 + 0.55, Math.PI, { tag: 'vending machines' });
     put('dining_table', -34, zP + 1.8, 0, { tag: 'plaza tables' }) && onTop('dining_table', -34, zP + 1.8, 0, ['metal_jug', 'thermos'], 1, 'table tops');
   }
 
@@ -222,6 +255,9 @@ export function fill5(api: FillApi, seed: string) {
       else if (pick === 2) put('wood_lantern', x, zF, r.range(0, 6), { scale: 1.6, tag: 'wooden lanterns' });
       else put(r.pick(['jar_1', 'jar_4', 'vase_antique']), x, zF, r.range(0, 6), { scale: 1.8, tag: 'temple jars' });
     }
+    put('buddha_happy', TEMPLE.x1 - 6, TEMPLE.forecourtZ + 2.0, Math.PI, { tag: 'temple statues' });
+    put('vending', TEMPLE.x0 + 4.5, TEMPLE.forecourtZ + 1.0, Math.PI, { tag: 'vending machines' });
+    if (api.treeAt) for (const x of [TEMPLE.x0 + 8, TEMPLE.x0 + 30, TEMPLE.x1 - 14]) api.treeAt(x, TEMPLE.forecourtZ + 0.9, 'palm');
     for (let k = 0; k < 8; k++) put('candlestick', gx + r.range(-1.2, 1.2), TEMPLE.forecourtZ + 2.9 + r.range(-0.15, 0.15), r.range(0, 6), { scale: 1.5, pad: -0.05, tag: 'candles' });
   }
 
@@ -238,6 +274,7 @@ export function fill5(api: FillApi, seed: string) {
       else if (pick === 4) put(r.pick(['fern', 'sorrel', 'stump']), x, zB, r.range(0, 6), { scale: r.range(0.9, 1.3), tag: 'bank greenery' });
       else put('boots', x, zB, r.range(0, 6), { tag: 'rubber boots' });
     }
+    if (api.treeAt) for (let x = -105; x < 105; x += r.range(24, 36)) if (Math.abs(x) > 8) api.treeAt(x, zB - 0.2, 'palm');
     // lifebuoys hung on the road side of the canal railing (canal.ts: pipes at zS + 0.12, rails at 0.55 / 1.0 m)
     for (let x = -110; x < 110; x += r.range(20, 30)) { if (Math.abs(x) < 6 || !has('lifebuoy')) continue; add('lifebuoy', x, 0.42, CANAL.zS + 0.2, 0, { tag: 'lifebuoys' }); }
   }
@@ -251,6 +288,7 @@ export function fill5(api: FillApi, seed: string) {
       const z = e === 0 ? r.range(LOT.z0 + 1, LOT.z1 - 1) : e === 1 ? LOT.z0 + 0.8 + r.range(0, 1.2) : LOT.z1 - 0.9 - r.range(0, 1.2);
       put(r.pick(junk), x, z, r.range(0, 6), { rz: r.chance(0.25) ? r.range(-0.3, 0.3) : 0, tag: 'lot junk' });
     }
+    put('dumpster', LOT.x1 - 1.4, LOT.z1 - 1.2, Math.PI / 2, { tag: 'dumpsters' });
     for (let k = 0; k < 10; k++) put(r.pick(['fern', 'sorrel', 'shrub']), r.range(LOT.x0 + 1, LOT.x1 - 1), r.range(LOT.z0 + 1, LOT.z1 - 1), r.range(0, 6), { scale: r.range(0.9, 1.5), tag: 'lot weeds' });
   }
 
@@ -259,14 +297,16 @@ export function fill5(api: FillApi, seed: string) {
     for (const sx of [-1, 1]) {
       if (!r.chance(0.7)) continue;
       const x = sx * r.range(RROAD.x1 + 1.3, RROAD.x1 + 3.2);
-      const pick = r.int(0, 7);
+      const pick = r.int(0, 8);
       if (pick === 0) put('fert_bags', x, z, r.range(0, 6), { tag: 'farm bags' });
       else if (pick === 1) put('barrels_wood', x, z, r.range(0, 6), { tag: 'farm barrels' });
       else if (pick === 2) { put('seed_tray', x, z, r.range(0, 6), { tag: 'seed trays' }); put('seed_tray', x + 0.45, z + 0.1, r.range(0, 6), { tag: 'seed trays' }); }
       else if (pick === 3) put('stump', x, z, r.range(0, 6), { tag: 'stumps' });
       else if (pick === 4) put('spade', x, z, r.range(0, 6), { rx: -1.45, probe: false, tag: 'farm tools' });
       else if (pick === 5) put('bucket_wood2', x, z, r.range(0, 6), { tag: 'farm buckets' });
+      else if (pick === 6 && has('bamboo_basket')) { put('bamboo_basket', x, z, r.range(0, 6), { tag: 'bamboo baskets' }); }
       else put(r.pick(['fern', 'sorrel', 'pachira']), x, z, r.range(0, 6), { scale: r.range(1, 1.6), tag: 'roadside plants' });
+      if (api.treeAt && r.chance(0.12)) api.treeAt(sx * r.range(RROAD.x1 + 4, RROAD.x1 + 7), z + r.range(-2, 2), 'palm');
     }
   }
 
@@ -282,6 +322,8 @@ export function fill5(api: FillApi, seed: string) {
       else put('crate_wood2', x, zA, r.range(0, 6), { tag: 'apron crates' });
     }
     put('extinguisher', WHOLESALE.doorX + 3.2, WHOLESALE.z0 - 0.35, Math.PI, { tag: 'extinguishers' });
+    put('dumpster', WHOLESALE.x1 - 3, WHOLESALE.z0 - 1.7, 0, { tag: 'dumpsters' });
+    for (const dx of [-1.2, -2.1]) put('wheelie', WHOLESALE.x1 - 3 + dx - 1.2, WHOLESALE.z0 - 1.4, r.range(-0.3, 0.3), { tag: 'wheelie bins' });
   }
   void THREE;
 }

@@ -6,6 +6,8 @@ import { MAP_BOUNDS } from '../../game/mapplan';
 import { G, groups } from '../../sim/physics';
 import { MODELS, type RealProps, type PlaceOpts } from './realprops';
 import { libEntry } from './lib';
+import { fill5 } from './fill5';
+import { F5_SIZE } from './fill5-models';
 import { SOI_CROSSINGS } from './nav';
 import { PLASTIC_COLORS } from './props';
 import { ROWS, MARKET, ZEBRAS, OFFICE, CROAD, TEMPLE, POLES_MAIN_N, POLES_MAIN_S, groundHeight, type UnitSpec } from './layout';
@@ -71,7 +73,7 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
   const bikePaint = () => { let r = rng.range(0, paintW); for (const p of PAINTS) { r -= p[3]; if (r <= 0) return new THREE.Color(p[0], p[1], p[2]); } return new THREE.Color(0, 1, 1); };
   // RealProps ids first (same batch as the props agent's copies of a model), else the library id
   const pid = (id: string) => (MODELS[id] ? id : MODELS['lib:' + id] ? 'lib:' + id : null);
-  const sizeOf = (id: string): [number, number, number] => libEntry(id)?.size_m ?? OTHER_SIZE[id] ?? [0.4, 0.4, 0.4];
+  const sizeOf = (id: string): [number, number, number] => libEntry(id)?.size_m ?? F5_SIZE[id] ?? OTHER_SIZE[id] ?? [0.4, 0.4, 0.4];
 
   // ---------------------------------------------------------------- library upgrade of the scooter stand-in
   // The procedural 'scooter' (realprops-vehicle.ts) reads as a toy next to the photoscanned library mopeds, and
@@ -549,6 +551,13 @@ export function buildClutter(game: Game, real: RealProps, anchors: Record<string
     [-40, -163.3, 'tree_small'], [36, -163.3, 'tree_small'], [80, -163.3, 'tree_shrubby'], [-80, -163.3, 'tree_shrubby']] as [number, number, string][]) treeAt(x, z, id);
   for (let z = -186; z > -262; z -= rf.range(10, 16)) {
     for (const sx of [-1, 1]) if (rf.chance(0.55)) treeAt(sx * rf.range(4.5, 6.5), z, rf.chance(0.6) ? 'tree_shrubby' : 'tree_small');
+  }
+
+  // ================================================================ ROUND 5 FILL (fill5.ts): a third dense layer, every zone
+  if (!new URLSearchParams(location.search).has('nofill5')) {
+    const before = stats.placed;
+    fill5({ put, add, has, front, size: sizeOf, treeAt, putLong }, SEED + '-r5');
+    (stats as any).fill5 = stats.placed - before;
   }
 
   console.info(`[clutter] ${stats.placed} library props placed (${stats.tries} tries)`, stats.kinds);

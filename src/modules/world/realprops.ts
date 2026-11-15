@@ -12,6 +12,7 @@ import { TABLE_MODELS } from './realprops-table';
 import { STALL_MODELS } from './realprops-stall';
 import { VEHICLE_MODELS } from './realprops-vehicle';
 import { libEntry } from './lib';
+import { F5_MODELS } from './fill5-models';
 
 /** evaluated lazily (realprops-proc imports this module back: no top-level use across the cycle) */
 const procModel = (id: string): (() => Promise<ProcModel>) | undefined => BASE_PROC[id] ?? TABLE_MODELS[id] ?? STALL_MODELS[id] ?? VEHICLE_MODELS[id];
@@ -199,6 +200,8 @@ export const MODELS: Record<PropId, ModelDef> = {
   knife: M('fish_knife', { phys: 'none', far: 0.4 }),
   lychee: M('food_lychee_01', { phys: 'none', far: 0.3 }),
   lime: { path: 'gen/cooking/models/food_lime_01/food_lime_01.glb', file: 'food_lime_01', phys: 'none', far: 0.3 },
+  // ---- round 5 fill (Poly Haven CC0 + Sketchfab CC-BY; fill5-models.ts, placed by fill5.ts)
+  ...F5_MODELS,
   onion: { path: 'gen/cooking/models/yellow_onion/yellow_onion.glb', file: 'yellow_onion', phys: 'none', far: 0.3 },
 };
 
