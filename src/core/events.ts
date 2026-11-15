@@ -16,8 +16,18 @@ export class Emitter {
   emit<T = any>(type: string, data?: T) {
     const s = this.map.get(type);
     if (!s) return;
+    // slow-handler timing for the scene switch (window.__hpMarks['ev:<type>#<i>'] = ms, only ≥ 20 ms)
+    const timed = type === 'world:ready' || type === 'world:built';
+    let i = 0;
     for (const fn of [...s]) {
+      const t0 = timed ? performance.now() : 0;
       try { fn(data); } catch (e) { console.error(`[event ${type}]`, e); }
+      if (timed) {
+        const ms = performance.now() - t0;
+        const m = (globalThis as any).__hpMarks;
+        if (m && ms >= 20) m[`ev:${type}#${i}`] = `${Math.round(ms)} ${String(fn).replace(/\s+/g, ' ').slice(0, 70)}`;
+      }
+      i++;
     }
   }
   clear(type?: string) { type ? this.map.delete(type) : this.map.clear(); }
