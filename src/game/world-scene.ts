@@ -92,7 +92,11 @@ export class WorldScene implements SceneDef {
     marks.buildWorld = Math.round(performance.now() - tw);
     if (!game.world) game.world = buildStubWorld(game);
     if (background) {
+      // heavy view-independent world:ready work that is safe before the switch (shop interiors …) — modules opt in
+      await breathe();
+      game.events.emit('world:built', this.scene);
       // entity views (NPC rigs, items…) get built a few ms per frame by the game loop (views.prepareStep) …
+      await breathe();
       game.views.prepare(this.scene);
       while (!game.views.prepareStep(0)) await breathe();
       // … then programs + texture uploads for the post-process target, behind the cutscene (compileAsync = no stall)

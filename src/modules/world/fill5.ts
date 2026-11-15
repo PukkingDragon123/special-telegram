@@ -238,7 +238,16 @@ export function fill5(api: FillApi, seed: string) {
     const zP = OFFICE.z1 + 2.2;
     for (const x of [-60, -50, -38, -30]) put(r.pick(['pachira', 'calathea']), x, zP + r.range(-0.3, 0.3), r.range(0, 6), { scale: r.range(1.1, 1.4), tag: 'plaza plants' });
     if (put('coffee_cart', -55, zP + 1.6, Math.PI / 2, { tag: 'coffee carts', pad: 0.2 })) for (const dz of [-1.1, 1.1]) put('bar_stool', -53.6, zP + 1.6 + dz, r.range(0, 6), { tag: 'bar stools' });
-    put('extinguisher', -44.5, OFFICE.z1 + 0.35, Math.PI, { tag: 'extinguishers' });
+    put('extinguisher', -44.5, OFFICE.z1 + 0.65, Math.PI, { tag: 'extinguishers' });
+    // a row along the lobby: big pots, parked bicycles, bins, a smokers' corner with plastic stools
+    for (let x = OFFICE.plazaX0 + 3; x < OFFICE.plazaX1 - 2; x += r.range(3.2, 5)) {
+      if (Math.abs(x + 44.5) < 3) continue;   // the lobby doors
+      const pick = r.int(0, 5), z = OFFICE.z1 + 1.1 + r.range(-0.1, 0.2);
+      if (pick === 0 && api.putLong) api.putLong(r.pick(['bike_city', 'bike_red']), x, z, Math.PI / 2 + r.range(-0.08, 0.08));
+      else if (pick === 1) put('wheelie', x, z, r.range(-0.3, 0.3), { tag: 'wheelie bins' });
+      else if (pick === 2) { put('vn_stool', x, z, r.range(0, 6), { tag: 'red stools' }); put('vn_stool', x + 0.6, z + 0.2, r.range(0, 6), { tag: 'red stools' }); put('foam_cooler', x + 0.3, z + 0.7, r.range(0, 6), { tag: 'ice coolers' }); }
+      else put(r.pick(['pachira', 'calathea', 'anthurium']), x, z, r.range(0, 6), { scale: r.range(1.1, 1.4), tag: 'plaza plants' });
+    }
     put('dining_table', -34, zP + 1.8, 0, { tag: 'plaza tables' }) && onTop('dining_table', -34, zP + 1.8, 0, ['metal_jug', 'thermos'], 1, 'table tops');
   }
 

@@ -107,9 +107,16 @@ export default defineModule({
     makeApi(game);
     // the intro tells the broke gang to go to auntie → she offers credit (แปะโป้ง)
     game.events.on('intro:goMarket', () => { if (game.isHost) game.g.shopCreditOffer = true; });
-    game.events.on('world:ready', () => {
+    // the shop interiors are the heaviest world build step: do it while the world is still being staged in the
+    // background ('world:built', menu/casino on screen) — or at 'world:ready' when there was no staging
+    let shopsBuilt: unknown = null;
+    const build = () => {
+      if (game.scene && shopsBuilt === game.scene) return;
+      shopsBuilt = game.scene;
       try { buildShops(game); shoplab(game); } catch (e) { console.error('[shops] build', e); }
-    });
+    };
+    game.events.on('world:built', build);
+    game.events.on('world:ready', build);
     game.events.on('world:exit', () => { clearKeeperProxies(game); clearClient(); RT.clear(); });
   },
   buildWorld(game) {
