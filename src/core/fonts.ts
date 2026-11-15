@@ -39,6 +39,8 @@ export const F = {
   tech: '"Noto Sans Thai Looped"',
   prompt: '"Noto Sans Thai Looped"',
   jamjuree: '"Noto Sans Thai Looped"',
+  /** manga SFX / menace lettering: Dela Gothic One (OFL, katakana subset) with Thai falling back to Noto Black */
+  jpDisplay: '"Dela Gothic One", "Noto Sans Thai Looped"',
 } as const;
 
 const FILES: [string, string, string, string?][] = [
@@ -47,6 +49,7 @@ const FILES: [string, string, string, string?][] = [
   ['Trirong', 'Trirong-Regular', '400'], ['Trirong', 'Trirong-Bold', '700'], ['Trirong', 'Trirong-Black', '900'],
   ['Kodchasan', 'Kodchasan-Regular', '400'], ['Kodchasan', 'Kodchasan-SemiBold', '600'], ['Kodchasan', 'Kodchasan-Bold', '700'],
   ['Chonburi', 'Chonburi-Regular', '400'],
+  ['Dela Gothic One', 'DelaGothicOne', '400'],
 ,
   // legacy family names still written literally in some canvases → same clean Noto file (cached once)
   ...(['K2D', 'Sarabun', 'IBM Plex Sans Thai Looped', 'Krub', 'KoHo', 'Itim', 'Mali', 'Sriracha', 'Fahkwang', 'Pattaya', 'Niramit', 'Thasadith'] as const)
