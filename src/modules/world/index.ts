@@ -287,6 +287,47 @@ async function restoreWorldTextures(game: Game) {
   }
 }
 
+/**
+ * Shadow-caster budget: every module adds props that cast shadows; small ones (a lime, a tin, a stool) far away
+ * add a lot of shadow-pass draws/triangles for shadows nobody can see. Every ~0.5 s a slice of the scene is
+ * re-checked: meshes whose single item is small (≤ 0.7 m radius) cast only within SMALL_R metres of the camera,
+ * medium ones (≤ 2 m) within MED_R; everything else is left alone. The original flag is kept and restored.
+ */
+const _sb = { list: [] as THREE.Mesh[], i: 0, t: 0, scene: null as THREE.Scene | null };
+const _sbs = new THREE.Sphere();
+function shadowBudget(game: Game, cam: THREE.Vector3, force: boolean) {
+  const sc = game.scene;
+  if (!sc || new URLSearchParams(location.search).get('perfab') === '0') return;
+  const q = game.engine.quality;
+  const SMALL_R = q === 'low' ? 8 : q === 'medium' ? 11 : 15, MED_R = q === 'low' ? 18 : q === 'medium' ? 24 : 32;
+  // rebuild the candidate list every few seconds (props stream in)
+  _sb.t -= 1;
+  if (_sb.scene !== sc || _sb.t <= 0) {
+    _sb.scene = sc; _sb.t = 240; _sb.list = []; _sb.i = 0;
+    sc.traverse((o: any) => {
+      if (!o.isMesh || o.isSkinnedMesh) return;
+      if (o.userData.cast0 === undefined) { if (!o.castShadow) return; o.userData.cast0 = true; }
+      _sb.list.push(o);
+    });
+  }
+  const n = _sb.list.length;
+  if (!n) return;
+  const per = force ? n : Math.max(1, Math.ceil(n / 30));
+  for (let k = 0; k < per; k++) {
+    if (_sb.i >= n) _sb.i = 0;
+    const m: any = _sb.list[_sb.i++];
+    if (!m.parent || !m.userData.cast0) continue;
+    const g = m.geometry as THREE.BufferGeometry;
+    if (!g.boundingSphere) g.computeBoundingSphere();
+    const itemR = g.boundingSphere!.radius * (m.isInstancedMesh ? 1 : m.matrixWorld.getMaxScaleOnAxis());
+    if (itemR > 2) continue;   // big pieces (world chunks…) keep their own logic
+    if (m.isInstancedMesh) { if (!m.boundingSphere) m.computeBoundingSphere(); _sbs.copy(m.boundingSphere).applyMatrix4(m.matrixWorld); }
+    else _sbs.copy(g.boundingSphere!).applyMatrix4(m.matrixWorld);
+    const d = cam.distanceTo(_sbs.center) - _sbs.radius;
+    m.castShadow = d < (itemR <= 0.7 ? SMALL_R : MED_R);
+  }
+}
+
 function dispose() {
   DetailCull.clear();
   if (!S) return;
@@ -320,6 +361,7 @@ function frame(game: Game, dt: number) {
   // distance-cull small detail meshes — every 8 frames, and immediately when the camera jumped (teleport, respawn,
   // cutscene cut): otherwise whole house rows stayed hidden for 8 frames after a cut (visible pop-in)
   const jumped = _lastCull.distanceToSquared(_cam) > 64;
+  shadowBudget(game, _cam, jumped);
   if ((S.frameN++ & 7) === 0 || jumped) {
     _lastCull.copy(_cam);
     const far = game.engine.quality === 'low' ? 60 : game.engine.quality === 'medium' ? 80 : 110;

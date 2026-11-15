@@ -54,7 +54,7 @@ const SEAT_LOCAL: Record<number, THREE.Vector3> = {
 const SOFA_SEAT_Y = 0.395;                // cushion top (album.ts buildSofa)
 const PELVIS_ABOVE_SEAT = 0.1;
 /** where the seated guys look: the top of the Jenga tower on the coffee table */
-const TOWER_LOOK = new THREE.Vector3(-0.14, 0.58, -2.45);
+const TOWER_LOOK = new THREE.Vector3(-0.18, 0.58, -2.44);
 
 interface Bit { m: THREE.Matrix4; p: THREE.Vector3; v: THREE.Vector3; r: THREE.Euler; av: THREE.Vector3; life: number; s: number }
 
@@ -383,7 +383,7 @@ export class MenuScene implements SceneDef {
     for (const i of [2, 3, 0]) { const s = this.slots[i]; if (s?.rig && s.out === undefined && s.pop <= 0 && SLOTS[i].pose === 'jenga_pull') return s; }
     return null;
   }
-  private jgEnd = new THREE.Vector3(); private jgAx = new THREE.Vector3(); private jgTmp = new THREE.Vector3(); private jgExpr = '';
+  private jgEnd = new THREE.Vector3(); private jgAx = new THREE.Vector3(); private jgTmp = new THREE.Vector3(); private jgExpr = ''; private jgGap = 0;
   /**
    * Hand-driven pull with arm IK onto the real block: reach (fingers open), settle around the block end and pinch,
    * careful wiggling slide-out while the tower sways, a nervous hesitation when it wobbles, push it gently back,
@@ -401,7 +401,9 @@ export class MenuScene implements SceneDef {
     // block slide-out (m)
     const out = 0.04 * ease(2.1, 4.2, u) * (1 - ease(4.9, 6.2, u)) + 0.003 * ease(4.9, 6.2, u)
       + 0.0025 * Math.sin(u * 7.0) * ease(2.1, 2.5, u) * (1 - ease(4.0, 4.2, u));   // stick-slip
-    this.jenga.setPull(out);
+    // the block only moves while the fingers are really on it (last frame's wrist-to-target gap)
+    const onBlock = 1 - Math.max(0, Math.min(1, (this.jgGap - 0.012) / 0.03));
+    this.jenga.setPull(out * onBlock);
     this.jenga.grip(from, this.jgEnd, this.jgAx);   // end point follows the block
     const nervous = ease(4.0, 4.3, u) * (1 - ease(4.8, 5.6, u));
     this.jenga.wobble(Math.max(this.game.players().length >= 4 ? 1 : 0, out / 0.04 * 0.35 + nervous * 0.9));
@@ -418,11 +420,12 @@ export class MenuScene implements SceneDef {
     // scoot to the front edge of the seat while reaching (the tower is a long reach from the chair)
     const base: THREE.Vector3 = (s as any).jgBase && (s as any).jgRig === rig ? (s as any).jgBase : ((s as any).jgRig = rig, (s as any).jgBase = rig.root.position.clone());
     const toT = this.jgEnd.clone().sub(s.root.localToWorld(base.clone())).setY(0);
-    const scoot = toT.lengthSq() > 1e-6 ? toT.normalize().multiplyScalar(0.2 * ease(0.3, 1.4, u) * (1 - ease(6.8, 7.9, u))) : toT;
+    const scoot = toT.lengthSq() > 1e-6 ? toT.normalize().multiplyScalar(0.24 * ease(0.3, 1.4, u) * (1 - ease(6.8, 7.9, u))) : toT;
     s.root.updateMatrixWorld(true);
     const sl = s.root.worldToLocal(s.root.localToWorld(base.clone()).add(scoot));
     rig.root.position.set(sl.x, rig.root.position.y, sl.z);
     rig.reach(-1, w > 0.002 ? tgt : null, { w, shape });
+    this.jgGap = w > 0.9 ? rig.attach('hand_r').getWorldPosition(new THREE.Vector3()).distanceTo(tgt) : 0;
     rig.lookAt(w > 0.05 ? this.jgEnd : TOWER_LOOK);
     const ex = u < 0.6 ? 'neutral' : nervous > 0.4 ? 'scared' : u > 6.6 && u < 8 ? 'happy' : w > 0.3 ? 'determined' : 'neutral';
     if (ex !== this.jgExpr) { this.jgExpr = ex; rig.setExpression?.(ex, { fade: 0.25 }); }
@@ -1020,7 +1023,7 @@ export class MenuScene implements SceneDef {
     this.shake = 0.8;
     this.pushTarget = 0.5;
     this.backdrop.uniforms.uPulse.value = 1;
-    this.burst(new THREE.Vector3(-0.14, 0.6, -2.45), 90);
+    this.burst(new THREE.Vector3(-0.18, 0.6, -2.44), 90);
     for (const k of Object.keys(this.stickers)) if (k !== 'title') { this.ui.remove(this.stickers[k]); this.stickers[k] = null; }
     for (const s of this.slots) { this.ui.remove(s.tag); s.tag = null; this.ui.remove(s.ready); s.ready = null; }
     this.ui.remove(this.arrowTag); this.arrowTag = null;
