@@ -14,6 +14,10 @@ export interface SceneDef {
   update?(dt: number): void;
   /** Use a black fade when entering (default true). */
   fade?: boolean;
+  /** optional background build before the switch (world: built behind the casino cutscene) */
+  stage?(): Promise<void>;
+  /** throw away a staged-but-never-entered scene */
+  discard?(): void;
 }
 
 export class SceneManager {
@@ -32,6 +36,23 @@ export class SceneManager {
   }
 
   register(name: string, factory: () => SceneDef) { this.defs.set(name, factory); }
+
+  /** scene instances built in the background (prestage), handed to goto() when that scene is requested */
+  private staged = new Map<string, SceneDef>();
+  /** Start building a scene in the background (it must support stage()); goto(name) will then reuse it. */
+  prestage(name: string) {
+    if (this.staged.has(name) || this.currentName === name) return;
+    const f = this.defs.get(name);
+    if (!f) return;
+    const s = f();
+    if (!s.stage) return;
+    this.staged.set(name, s);
+    s.stage().catch((e) => console.error('[scenes] prestage', name, e));
+  }
+  dropStaged() {
+    for (const s of this.staged.values()) { try { s.discard?.(); } catch (e) { console.error(e); } }
+    this.staged.clear();
+  }
   has(name: string) { return this.defs.has(name); }
 
   /** HOST: switch everyone. Clients: request is ignored (they follow g.scene). */
@@ -45,7 +66,8 @@ export class SceneManager {
     const f = this.defs.get(name);
     if (!f) { console.warn('[scenes] unknown scene', name); this.currentName = name; return; }
     this.busy = true;
-    const next = f();
+    const next = this.staged.get(name) ?? f();
+    this.staged.delete(name);
     const fade = next.fade !== false;
     try {
       if (this.current && fade) await Overlay.fade(1, 0.45);

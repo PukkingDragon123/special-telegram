@@ -1,3 +1,4 @@
+import { sfxTexture } from '../memes/lettering';
 import * as THREE from 'three';
 import { tl, TL } from '../../core/util';
 import { F } from '../../core/fonts';
@@ -142,47 +143,9 @@ export function path(points: THREE.Vector3[]) {
 
 // ------------------------------------------------------------------ menace glyphs
 
-/** Brush-stroke katakana ゴ (go) / ド (do) drawn on a canvas — no CJK font required. */
-function drawGlyph(ctx: CanvasRenderingContext2D, kind: 'go' | 'do', S: number) {
-  const stroke = (pts: [number, number][], w: number) => {
-    ctx.lineWidth = w;
-    ctx.beginPath();
-    pts.forEach(([x, y], i) => (i ? ctx.lineTo(x * S, y * S) : ctx.moveTo(x * S, y * S)));
-    ctx.stroke();
-  };
-  const body = (w: number) => {
-    if (kind === 'go') {
-      stroke([[0.16, 0.28], [0.72, 0.24], [0.7, 0.8]], w);    // top bar + right side (コ)
-      stroke([[0.2, 0.8], [0.72, 0.78]], w);                   // bottom bar
-    } else {
-      stroke([[0.34, 0.14], [0.36, 0.88]], w);                 // ト stem
-      stroke([[0.38, 0.42], [0.68, 0.6]], w);                  // ト tick
-    }
-    // dakuten (two short strokes, top right)
-    stroke([[0.76, 0.08], [0.82, 0.22]], w * 0.62);
-    stroke([[0.88, 0.04], [0.94, 0.18]], w * 0.62);
-  };
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.strokeStyle = '#120318'; body(S * 0.2);                 // dark outline
-  ctx.strokeStyle = '#b02ad6'; body(S * 0.13);                // magenta-purple fill
-  ctx.strokeStyle = 'rgba(255,190,255,0.85)'; ctx.save(); ctx.translate(-S * 0.012, -S * 0.016); body(S * 0.035); ctx.restore(); // highlight
-}
-
-const glyphTex: Partial<Record<'go' | 'do', THREE.Texture>> = {};
+/** ゴ / ド menace glyphs: real typography (Dela Gothic One) with the printed-manga treatment (memes/lettering). */
 function glyphTexture(kind: 'go' | 'do') {
-  let t = glyphTex[kind];
-  if (t) return t;
-  const S = 256;
-  const cv = document.createElement('canvas');
-  cv.width = cv.height = S;
-  const ctx = cv.getContext('2d')!;
-  ctx.translate(S * 0.04, S * 0.06);
-  ctx.scale(0.9, 0.9);
-  drawGlyph(ctx, kind, S);
-  t = new THREE.CanvasTexture(cv);
-  t.colorSpace = THREE.SRGBColorSpace;
-  glyphTex[kind] = t;
-  return t;
+  return sfxTexture(kind === 'go' ? 'ゴ' : 'ド', 'menace', 200);
 }
 
 interface Glyph { s: THREE.Sprite; t: number; life: number; base: number; vel: THREE.Vector3; ph: number }
@@ -205,11 +168,13 @@ export class Menace {
       e.acc += raw * e.rate;
       while (e.acc >= 1) {
         e.acc -= 1;
-        const mat = new THREE.SpriteMaterial({ map: glyphTexture(e.kind), transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false });
+        const mat = new THREE.SpriteMaterial({ map: glyphTexture(e.kind), color: 0xeeeeee, transparent: true, depthWrite: false, depthTest: false, fog: false, toneMapped: false });
         const s = new THREE.Sprite(mat);
+        s.userData.aspect = (mat.map as THREE.CanvasTexture).image ? (mat.map as any).image.width / (mat.map as any).image.height : 1;
         const p = e.at();
         const i = this.glyphs.length;
-        p.addScaledVector(right, e.side * (0.55 + (i % 3) * 0.18)).add(V(0, -0.25 + (i % 4) * 0.22, 0));
+        // a staggered column beside the actor, like the panels: each new glyph a bit lower/outward
+        p.addScaledVector(right, e.side * (0.5 + (i % 2) * 0.16 + Math.random() * 0.06)).add(V(0, -0.35 + (i % 3) * 0.26, 0));
         s.position.copy(p);
         s.renderOrder = 20;
         const base = 0.32 + (i % 3) * 0.07;
@@ -224,8 +189,9 @@ export class Menace {
       // pop in with overshoot, throb, fade out
       const pop = k < 0.12 ? (k / 0.12) * 1.25 : k < 0.2 ? 1.25 - ((k - 0.12) / 0.08) * 0.25 : 1;
       const throb = 1 + Math.sin(g.t * 9 + g.ph) * 0.06;
-      g.s.scale.setScalar(g.base * pop * throb);
-      (g.s.material as THREE.SpriteMaterial).rotation = Math.sin(g.t * 3 + g.ph) * 0.08 - 0.12;
+      const asp = (g.s.userData.aspect as number) || 1;
+      g.s.scale.set(g.base * pop * throb * asp, g.base * pop * throb, 1);
+      (g.s.material as THREE.SpriteMaterial).rotation = Math.sin(g.t * 2.2 + g.ph) * 0.05 - 0.08;
       (g.s.material as THREE.SpriteMaterial).opacity = k > 0.75 ? 1 - (k - 0.75) / 0.25 : 1;
     }
     this.glyphs = this.glyphs.filter((g) => { if (g.t < g.life) return true; g.s.removeFromParent(); (g.s.material as THREE.Material).dispose(); return false; });

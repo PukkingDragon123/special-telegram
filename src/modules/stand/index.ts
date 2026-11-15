@@ -255,7 +255,9 @@ class StandShow {
     this.menace.emit(() => this.userHead().add(new THREE.Vector3(0, 0.2, 0)), 'do', 1.6, -1);
     Sound.play(Sound.has('slowmo_dramatic') ? 'slowmo_dramatic' : 'bass_boom', { vol: 0.8 });
     Sound.play('heartbeat_slow', { vol: 0.5 });
+    if (Sound.has('menace_rumble')) this.rumble = Sound.loop('menace_rumble', { vol: 0.55 });
   }
+  private rumble: any = null;
 
   private userObj(): THREE.Object3D | null { return this.run ? this.game.views.objectOf(this.run.go.user) : null; }
   private userHead(): THREE.Vector3 {
@@ -295,6 +297,7 @@ class StandShow {
       this.rig.update(raw);
       this.aura.update(t, k);
     }
+    if (t > 0.6 && t - raw <= 0.6 && Sound.has('stand_shing')) Sound.play('stand_shing', { vol: 0.85 });
     if (t > 1.2 && t - raw <= 1.2) this.overlay?.showCard(true);
     // ---- the thumb switch
     if (!R.clicked && t > 3.1) {
@@ -303,6 +306,7 @@ class StandShow {
       this.fx?.flash(0.1);
       Sound.play(Sound.has('record_scratch') ? 'record_scratch' : 'whoosh_swing', { vol: 0.9 });
       this.overlay?.showCard(false);
+      (this.game as any).memes?.stamp?.('カチッ', 'impact', { x: 0.62, y: 0.42, size: 1.0, life: 1.0 });
     }
     // ---- rewind 3.4–5.8 s: VHS rewind, smoke flies back into the wok
     if (!R.rewind && t > 3.4) {
@@ -320,6 +324,7 @@ class StandShow {
       this.overlay?.gray(false);
       this.fx?.focusLines(false);
       this.menace.stop();
+      this.rumble?.stop?.(0.5); this.rumble = null;
       Sound.play('sparkle_chime', { vol: 0.6 });
     }
 
@@ -401,6 +406,7 @@ class StandShow {
   }
 
   private finish(silent = false) {
+    this.rumble?.stop?.(0.4); this.rumble = null;
     const R = this.run;
     if (!R) return;
     this.run = null;

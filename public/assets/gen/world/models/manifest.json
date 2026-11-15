@@ -291,24 +291,6 @@
   "srcTris": 46868,
   "tris": 2496
  },
- "banhmi_cart": {
-  "authors": [
-   "Khoa Nguyen"
-  ],
-  "bytes": 135240,
-  "dims": [
-   1.792,
-   1.9,
-   0.758
-  ],
-  "file": "banhmi_cart/banhmi_cart.glb",
-  "license": "CC Attribution",
-  "name": "BanhMi Cart",
-  "scale": 0.445,
-  "source": "https://sketchfab.com/3d-models/banhmi-cart-f45b8dfd3a874779ac18323399a10258",
-  "srcTris": 7130,
-  "tris": 3999
- },
  "bar_chair_round_01": {
   "authors": [
    "Dairon Sanchez"
@@ -402,14 +384,14 @@
   ],
   "bytes": 209980,
   "dims": [
-   0.11,
-   0.5,
-   0.125
+   0.331,
+   1.5,
+   0.375
   ],
   "file": "birdcage/birdcage.glb",
   "license": "CC Attribution",
   "name": "Bird Cage",
-  "scale": 0.00781,
+  "scale": 0.02344,
   "source": "https://sketchfab.com/3d-models/bird-cage-179d46b0cc3245c6941c2a35ae5c097b",
   "srcTris": 7134,
   "tris": 6990
@@ -1038,7 +1020,7 @@
   "authors": [
    "rainonec"
   ],
-  "bytes": 292880,
+  "bytes": 259332,
   "dims": [
    0.165,
    0.25,
@@ -1050,7 +1032,7 @@
   "scale": 0.03788,
   "source": "https://sketchfab.com/3d-models/durian-ed9ec114cf4145dc9ad20f2219a6875f",
   "srcTris": 7648,
-  "tris": 7532
+  "tris": 4880
  },
  "dustpan": {
   "authors": [
@@ -1075,14 +1057,14 @@
   ],
   "bytes": 83200,
   "dims": [
-   0.671,
-   0.6,
-   0.077
+   1.231,
+   1.1,
+   0.14
   ],
   "file": "elec_meter/elec_meter.glb",
   "license": "CC Attribution",
   "name": "Electric Meter with fuse boxes",
-  "scale": 0.12535,
+  "scale": 0.2298,
   "source": "https://sketchfab.com/3d-models/electric-meter-with-fuse-boxes-33c41e0176cd41d8bbc40185683ee441",
   "srcTris": 3100,
   "tris": 3100
@@ -1293,24 +1275,6 @@
   "source": "https://polyhaven.com/a/food_lychee_01",
   "srcTris": 6783,
   "tris": 120
- },
- "food_stall": {
-  "authors": [
-   "DanielGrps"
-  ],
-  "bytes": 131496,
-  "dims": [
-   0.844,
-   2.4,
-   2.377
-  ],
-  "file": "food_stall/food_stall.glb",
-  "license": "CC Attribution",
-  "name": "Street Food Stall \u2013 Low Poly 3D Model",
-  "scale": 0.63822,
-  "source": "https://sketchfab.com/3d-models/street-food-stall-low-poly-3d-model-d5dcb1db6e6e40daba79dbcbcd8fcb41",
-  "srcTris": 13798,
-  "tris": 13797
  },
  "foodcart_sf": {
   "authors": [
@@ -2279,16 +2243,16 @@
   "authors": [
    "iperbole"
   ],
-  "bytes": 214852,
+  "bytes": 214848,
   "dims": [
-   0.715,
-   0.82,
-   0.716
+   0.41,
+   0.47,
+   0.411
   ],
   "file": "plastic_chair/plastic_chair.glb",
   "license": "CC Attribution",
   "name": "Plastic chair",
-  "scale": 0.28895,
+  "scale": 0.16562,
   "source": "https://sketchfab.com/3d-models/plastic-chair-ef34e3f4c45348cfa92b993f3fc44531",
   "srcTris": 4224,
   "tris": 4224
@@ -2566,24 +2530,6 @@
   "srcTris": 10902,
   "tris": 2999
  },
- "ramen_stall": {
-  "authors": [
-   "Seedy.Cn"
-  ],
-  "bytes": 174356,
-  "dims": [
-   2.103,
-   2.3,
-   1.29
-  ],
-  "file": "ramen_stall/ramen_stall.glb",
-  "license": "CC Attribution",
-  "name": "Ramen/Noodle Food stall",
-  "scale": 0.65725,
-  "source": "https://sketchfab.com/3d-models/ramennoodle-food-stall-e1b14d01f2594a2e820ea1a88c8eb087",
-  "srcTris": 2218,
-  "tris": 2218
- },
  "rubber_boots": {
   "authors": [
    "L"
@@ -2668,24 +2614,6 @@
   "source": "https://polyhaven.com/a/rusted_wheel_rim_01",
   "srcTris": 16440,
   "tris": 2500
- },
- "scaffold": {
-  "authors": [
-   "Gunnar Correa"
-  ],
-  "bytes": 994224,
-  "dims": [
-   13.412,
-   4.0,
-   3.149
-  ],
-  "file": "scaffold/scaffold.glb",
-  "license": "CC Attribution",
-  "name": "Scaffolding",
-  "scale": 0.01019,
-  "source": "https://sketchfab.com/3d-models/scaffolding-56c63eb16e5b479883cf3189932b38c9",
-  "srcTris": 13208,
-  "tris": 8036
  },
  "security_camera_01": {
   "authors": [
@@ -3097,24 +3025,6 @@
   "srcTris": 41046,
   "tris": 2997
  },
- "umbrella_out": {
-  "authors": [
-   "Khoa Nguyen"
-  ],
-  "bytes": 63712,
-  "dims": [
-   5.514,
-   2.4,
-   2.602
-  ],
-  "file": "umbrella_out/umbrella_out.glb",
-  "license": "CC Attribution",
-  "name": "Outdoor umbrella",
-  "scale": 0.87571,
-  "source": "https://sketchfab.com/3d-models/outdoor-umbrella-258d0f6f96274a06b806e6f0ca399a8c",
-  "srcTris": 758,
-  "tris": 758
- },
  "umbrella_white": {
   "authors": [
    "Ngo.Phuoc.Truong"
@@ -3166,24 +3076,6 @@
   "source": "https://polyhaven.com/a/utility_box_02",
   "srcTris": 6268,
   "tris": 2500
- },
- "vending": {
-  "authors": [
-   "RackRibs"
-  ],
-  "bytes": 157276,
-  "dims": [
-   0.947,
-   1.85,
-   1.162
-  ],
-  "file": "vending/vending.glb",
-  "license": "CC Attribution",
-  "name": "Vending Machine",
-  "scale": 0.80547,
-  "source": "https://sketchfab.com/3d-models/vending-machine-d62a741a00e04d84bc45b6ccb039cf8a",
-  "srcTris": 1625,
-  "tris": 1625
  },
  "vintage_day_bed": {
   "authors": [
@@ -3304,24 +3196,6 @@
   "source": "https://polyhaven.com/a/watering_can_metal_01",
   "srcTris": 11837,
   "tris": 2999
- },
- "watermelon": {
-  "authors": [
-   "BB ARTS"
-  ],
-  "bytes": 150036,
-  "dims": [
-   0.513,
-   0.28,
-   0.522
-  ],
-  "file": "watermelon/watermelon.glb",
-  "license": "CC Attribution",
-  "name": "Watermelon",
-  "scale": 0.14102,
-  "source": "https://sketchfab.com/3d-models/watermelon-48e8bb1cbfa446f383ef64bcebaab5e6",
-  "srcTris": 6584,
-  "tris": 2464
  },
  "weed_plant_02": {
   "authors": [

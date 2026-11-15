@@ -33,8 +33,8 @@ const POT_PLANTS = ['fern', 'anthurium', 'calathea', 'sorrel'];
 const SMALL_GOODS = ['food_box', 'cans_food', 'oil_tin', 'bleach', 'cleaner_all', 'cleaner_spray', 'thermos'];
 const PRODUCE = ['sweet_potato', 'onion_y', 'lemon', 'lime_w', 'ginger'];
 const TABLE_TOPS = ['jug_clay', 'metal_jug', 'enamel_pot', 'wood_bowl', 'thermos', 'kettle'];
-const THAI_FRUIT = ['durian', 'coconut_g', 'watermelon', 'lemon', 'lime_w'];
-const UMBRELLAS = ['umbrella_w', 'umbrella_o', 'parasol'];
+const THAI_FRUIT = ['durian', 'coconut_g', 'coconut_g', 'lemon', 'lime_w', 'sweet_potato'];
+const UMBRELLAS = ['umbrella_w', 'parasol'];
 const UMB_COLS = [0xd8382c, 0x2a62b8, 0xf2f0ea, 0x2a8a4a, 0xe8a020];
 
 export function fill5(api: FillApi, seed: string) {
@@ -90,7 +90,7 @@ export function fill5(api: FillApi, seed: string) {
     // ---- the electricity meter on the pier at eye height
     if (has('elec_meter') && r.chance(0.35)) {
       const [x, z] = f.at(A(r.chance(0.5) ? 0.035 : 0.965), 0.02);
-      add('elec_meter', x, groundHeight(x, z) + 1.6, z, f.out, { tag: 'electric meters' });
+      add('elec_meter', x, groundHeight(x, z) + 1.05, z, f.out, { tag: 'electric meters' });
     }
     // ---- a fluorescent tube under the awning of open shops (Bangkok: one bare tube per shopfront)
     if (!resid && ground !== 'shutter' && has('tube_light') && r.chance(0.55)) {
@@ -163,8 +163,8 @@ export function fill5(api: FillApi, seed: string) {
       if (r.chance(0.15)) { const [x, z] = at(-0.05, 0.3); put('sprinkler', x, z, r.range(0, 6), { tag: 'garden bits' }); }
       // a bicycle parked along the facade
       if (api.putLong && r.chance(0.3)) { const [x, z] = f.at(A(0.5 + r.range(-0.15, 0.15)), 0.32); api.putLong(r.pick(['bike_city', 'bike_red']), x, z, f.out + Math.PI / 2 + r.range(-0.06, 0.06)); }
-      // a song-bird cage hung from the awning (very Thai)
-      if (has('birdcage') && r.chance(0.25)) { const [x, z] = f.at(A(r.chance(0.5) ? 0.25 : 0.75), 0.35); add('birdcage', x, groundHeight(x, z) + 2.75, z, r.range(0, 6), { tag: 'bird cages' }); }
+      // a song-bird cage on its hook stand by the door (very Thai)
+      if (r.chance(0.22)) { const [x, z] = f.at(A(r.chance(0.5) ? 0.12 : 0.88), 0.3); put('birdcage', x, z, r.range(0, 6), { tag: 'bird cages' }); }
       if (r.chance(0.2)) { const [x, z] = at(0.08, 0.3); if (put('plastic_chair', x, z, f.out + r.range(-0.6, 0.6), { tag: 'plastic chairs' }) && r.chance(0.4)) onTop('plastic_chair', x, z, 0, ['helmet', 'helmet2'], 1, 'helmets'); }
     } else {
       // closed / shuttered: the junk pile next to the shutter (old TV, microwave, drawers, barrels, suitcase)
@@ -178,8 +178,8 @@ export function fill5(api: FillApi, seed: string) {
         else put('stove_el', x, z, f.out + Math.PI, { tag: 'junk' });
       }
       if (r.chance(0.35)) { const [x, z] = at(-0.12, 0.35); put('fert_bags', x, z, f.out + Math.PI / 2, { tag: 'bag stacks' }); }
-      // renovation: scaffolding against a closed facade on the wide sidewalks
-      if (f.depth >= 1.2 && r.chance(0.12)) { const [x, z] = f.at(A(0.5), 0.75); put('scaffold', x, z, f.out + Math.PI / 2, { probe: false, pad: 0.05, tag: 'scaffolding' }); }
+      // a wheelie bin out front on the wide sidewalks
+      if (f.depth >= 1.2 && r.chance(0.3)) { const [x, z] = f.at(A(0.5), 0.6); put('wheelie', x, z, f.out + r.range(-0.3, 0.3), { tag: 'wheelie bins' }); }
     }
   }
 
@@ -191,9 +191,9 @@ export function fill5(api: FillApi, seed: string) {
     const umbrella = (ux: number, uz: number) => { const id = r.pick(UMBRELLAS); if (has(id)) add(id, ux, groundHeight(ux, uz), uz, r.range(0, 6), { color: r.pick(UMB_COLS), tag: 'umbrellas' }); };
     if (kind >= 3) {
       // a proper street-food setup: stall / cart, umbrella, red stools, an ice cooler and a gas tank
-      const sid = r.pick(['food_stall', 'ramen_stall', 'cart_sf', 'cart_banhmi', 'fruit_stand', 'fruit_stand2']);
+      const sid = r.pick(['cart_sf', 'fruit_stand', 'fruit_stand2', 'fruit_stand2']);
       if (put(sid, x, z, Math.PI + r.range(-0.15, 0.15), { tag: 'street stalls', pad: 0.15 })) {
-        if (!/stall/.test(sid)) umbrella(x + r.range(-0.4, 0.4), z + 0.4);
+        if (sid === 'cart_sf' || r.chance(0.4)) umbrella(x + r.range(-0.4, 0.4), z + 0.4);
         if (/fruit/.test(sid)) onTop(sid, x, z, Math.PI, THAI_FRUIT, r.int(6, 12), 'stall fruit');
         for (let k = 0, n = r.int(2, 5); k < n; k++) put('vn_stool', x + r.range(-1.6, 1.6), z + r.range(1.0, 2.0), r.range(0, 6), { tag: 'red stools' });
         put(r.pick(['cooler', 'esky', 'foam_cooler']), x + 1.35, z - 0.2, r.range(0, 6), { tag: 'ice coolers' });
@@ -231,7 +231,6 @@ export function fill5(api: FillApi, seed: string) {
     for (const x of [-60, -50, -38, -30]) put(r.pick(['pachira', 'calathea']), x, zP + r.range(-0.3, 0.3), r.range(0, 6), { scale: r.range(1.1, 1.4), tag: 'plaza plants' });
     if (put('coffee_cart', -55, zP + 1.6, Math.PI / 2, { tag: 'coffee carts', pad: 0.2 })) for (const dz of [-1.1, 1.1]) put('bar_stool', -53.6, zP + 1.6 + dz, r.range(0, 6), { tag: 'bar stools' });
     put('extinguisher', -44.5, OFFICE.z1 + 0.35, Math.PI, { tag: 'extinguishers' });
-    for (const x of [-41.2, -40.3]) put('vending', x, OFFICE.z1 + 0.55, Math.PI, { tag: 'vending machines' });
     put('dining_table', -34, zP + 1.8, 0, { tag: 'plaza tables' }) && onTop('dining_table', -34, zP + 1.8, 0, ['metal_jug', 'thermos'], 1, 'table tops');
   }
 
@@ -256,7 +255,6 @@ export function fill5(api: FillApi, seed: string) {
       else put(r.pick(['jar_1', 'jar_4', 'vase_antique']), x, zF, r.range(0, 6), { scale: 1.8, tag: 'temple jars' });
     }
     put('buddha_happy', TEMPLE.x1 - 6, TEMPLE.forecourtZ + 2.0, Math.PI, { tag: 'temple statues' });
-    put('vending', TEMPLE.x0 + 4.5, TEMPLE.forecourtZ + 1.0, Math.PI, { tag: 'vending machines' });
     if (api.treeAt) for (const x of [TEMPLE.x0 + 8, TEMPLE.x0 + 30, TEMPLE.x1 - 14]) api.treeAt(x, TEMPLE.forecourtZ + 0.9, 'palm');
     for (let k = 0; k < 8; k++) put('candlestick', gx + r.range(-1.2, 1.2), TEMPLE.forecourtZ + 2.9 + r.range(-0.15, 0.15), r.range(0, 6), { scale: 1.5, pad: -0.05, tag: 'candles' });
   }

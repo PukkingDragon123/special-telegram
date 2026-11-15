@@ -266,7 +266,7 @@ export function buildNav(zones: Zone[]): Nav {
   nav.link(nav.nearestNode(ex, -44), nav.nearestNode(mx0, -44));
   // --- shop fronts & anchors (attach to nearest walk node)
   const att = (name: string, max = 12) => { const a = ANCHORS[name]; if (a) nav.attach(a.p[0], a.p[2], max, false, a.p[1]); };
-  for (const n of ['plastic_shop', 'gas_shop', 'kitchen_shop', 'convenience_store', 'auntie_stall', 'butcher_stall', 'veg_stall', 'egg_stall',
+  for (const n of ['plastic_shop', 'gas_shop', 'kitchen_shop', 'convenience_store', 'auntie_stall', 'butcher_stall', 'veg_stall', 'egg_stall', 'seafood_stall', 'dessert_stall',
     'cart_start', 'old_man_spot', 'tables_area', 'item_respawn', 'moto_taxi_stand', 'bus_stop', 'office_spot', 'market_spot', 'mainroad_spot',
     'cat_spot', 'spirit_house', 'temple_gate', 'pret_spot', 'homeless_spot']) att(n);
   nav.link(nav.nearestNode(ANCHORS.convenience_counter.p[0], ANCHORS.convenience_counter.p[2]), nav.add(ANCHORS.convenience_counter.p[0], ANCHORS.convenience_counter.p[2]));

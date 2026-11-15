@@ -60,6 +60,15 @@ export class Game {
   profile: { name: string; look: Look | null };
   /** World scene (gameplay). Built by WorldScene. */
   scene: THREE.Scene | null = null;
+  /**
+   * The world is being built in the background (menu lobby → casino cutscene) but is not the current scene yet:
+   * game.scene/world/physics already point at it so module buildWorld code (and its async tails) work as usual,
+   * while the frame loop keeps world-only modules and the physics step paused until the switch (world-scene.ts).
+   */
+  staging = false;
+  /** modules without buildWorld that still only make sense inside the world (paused while staging) */
+  private static readonly WORLD_ONLY = new Set(['cooking', 'combat', 'restaurant', 'stand']);
+  private worldOnly(m: { id: string; buildWorld?: unknown }) { return !!m.buildWorld || Game.WORLD_ONLY.has(m.id); }
   camera!: THREE.PerspectiveCamera;
   /** set by WorldScene: local first-person controller */
   player: any = null;
@@ -306,7 +315,7 @@ export class Game {
   // ------------------------------------------------------------------ loop
 
   private fixed(dt: number) {
-    if (!this.physics || !this.scene) return;
+    if (!this.physics || !this.scene || this.staging) return;
     // Clients have no dynamic bodies (only static world + kinematic players) but still need the
     // step to refresh the query pipeline used by the character controller and raycasts.
     if (this.isHost) this.events.emit('physics:pre', dt);
@@ -325,6 +334,7 @@ export class Game {
         n++;
         if (!this.g.paused) this.clock.hostAdvance(step);
         for (const m of this.modules) if (m.hostUpdate) {
+          if (this.staging && this.worldOnly(m as any)) continue;
           const t = this.prof ? performance.now() : 0;
           try { m.hostUpdate(this, step); } catch (e) { console.error(`[module ${m.id}] hostUpdate`, e); }
           if (this.prof) this.profAdd('host:' + m.id, t);
@@ -344,6 +354,7 @@ export class Game {
       if (this.psAcc >= 1 / NET_HZ) { this.psAcc = 0; this.sendPlayerState(); }
     }
     for (const m of this.modules) if (m.frame) {
+      if (this.staging && this.worldOnly(m as any)) continue;
       const t = this.prof ? performance.now() : 0;
       try { m.frame(this, dt); } catch (e) { console.error(`[module ${m.id}] frame`, e); }
       if (this.prof) this.profAdd(m.id, t);

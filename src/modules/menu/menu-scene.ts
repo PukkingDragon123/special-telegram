@@ -257,6 +257,9 @@ export class MenuScene implements SceneDef {
     const mx = Input.ndc.x * 0.012, my = Input.ndc.y * 0.008;
     c.position.set(ALBUM_CAM.pos.x + mx, ALBUM_CAM.pos.y + my + Math.sin(this.t * 0.8) * 0.004, ALBUM_CAM.pos.z - this.push);
     c.lookAt(ALBUM_CAM.look.x + Math.sin(sway) * 3, ALBUM_CAM.look.y, ALBUM_CAM.look.z);
+    // dev: window.__jgCam = { p:[x,y,z], l:[x,y,z], fov } frames a close debug view of the jenga hand
+    const dbg = (window as any).__jgCam;
+    if (dbg) { c.position.fromArray(dbg.p); c.lookAt(dbg.l[0], dbg.l[1], dbg.l[2]); if (dbg.fov && c.fov !== dbg.fov) { c.fov = dbg.fov; c.updateProjectionMatrix(); } }
     if (this.shake > 0) {
       this.shake = Math.max(0, this.shake - rdt * 2.5);
       c.position.x += (Math.random() - 0.5) * this.shake * 0.02;
@@ -391,7 +394,7 @@ export class MenuScene implements SceneDef {
     if (!rig.reach) return;
     (s as any).jgOn = true;
     if (s.block) s.block.visible = false;   // both hands are needed for the real thing
-    const P = 8.5, u = (this.t + s.i * 1.7) % P;
+    const P = 8.5, u = (window as any).__jgU ?? (this.t + s.i * 1.7) % P;   // dev: __jgU pins the loop time
     const from = rig.attach('hand_r').getWorldPosition(this.jgTmp);
     if (!this.jenga.grip(from, this.jgEnd, this.jgAx)) { rig.reach(-1, null); return; }
     const ease = (a: number, b: number, x: number) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };

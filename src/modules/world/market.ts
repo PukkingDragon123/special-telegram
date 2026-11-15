@@ -31,7 +31,7 @@ export function buildMarket(c: ShopCtx & { rng: RNG; fol: FoliageSys | null }) {
     const pts = [[px - fz * 2.9 - fx * 2.6, pz + fx * 2.9 - fz * 2.6], [px + fz * 2.9 + fx * 3.1, pz - fx * 2.9 + fz * 3.1]];
     reserved.push([Math.min(pts[0][0], pts[1][0]), Math.min(pts[0][1], pts[1][1]), Math.max(pts[0][0], pts[1][0]), Math.max(pts[0][1], pts[1][1])]);
   };
-  for (const n of ['auntie_stall', 'butcher_stall', 'veg_stall', 'egg_stall']) res(n);
+  for (const n of ['auntie_stall', 'butcher_stall', 'veg_stall', 'egg_stall', 'seafood_stall', 'dessert_stall']) res(n);
   const free = (r: R4) => !reserved.some((q) => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]);
 
   // ---------------------------------------------------------------- floor + drains + puddles

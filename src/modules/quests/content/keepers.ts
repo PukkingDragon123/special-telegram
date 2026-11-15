@@ -1,5 +1,16 @@
 import { Dialogues } from '../api';
-import { T, pick, role, back, info, wallet, hour, isUnlocked } from './common';
+import { T, pick, role, back, info, wallet, hour, day, isUnlocked } from './common';
+import type { DlgCtx, DlgOption } from '../api';
+import type { TL } from '../../../core/util';
+
+/** a "buy this recipe card" option (hidden once known; locked while too poor or `need` fails) */
+function card(id: string, text: TL, price: number, from: string, next: string, need?: (c: DlgCtx) => string | null): DlgOption {
+  return {
+    text, next, if: (c) => !isUnlocked(c.game, id),
+    lock: (c) => need?.(c) ?? (wallet(c) < price ? `ต้องมี ${price} ฿ (มี ${wallet(c)} ฿)` : null),
+    do: (c) => c.game.intent('quest.buyRecipe', { id, price, from }),
+  };
+}
 
 /* ============================================================================================
  * The nine shopkeepers. Personalities from shops/data.ts:
@@ -173,6 +184,81 @@ export function registerKeepers() {
       ] },
       info('card', T('ต้องมีทะเบียนการค้าค่ะ… พี่มีรถเข็นใช่ไหมคะ? งั้นก็นับเป็นธุรกิจค่ะ ยินดีด้วยค่ะ พี่เป็นเจ้าของกิจการแล้ว', "You need a business registration… you own a food cart? Then that counts. Congratulations, you're a business owner"), 'hi', { anim: 'celebrate' }),
       info('tip', T('ถูกกว่าตลาดค่ะ แต่ซื้อทีต้องแบกเยอะนะคะ น้ำมันห้าลิตร ข้าวสารห้ากิโล พี่แบกไหวไหมคะ', 'Cheaper than the market, but you carry a lot: 5 L of oil, 5 kg of rice. Can you lift it?'), 'hi'),
+    ],
+  });
+
+  // ---------------------------------------------------------------- เจ๊ปลา (Jeh Pla, seafood, loud & funny)
+  Dialogues.register({
+    id: 'k_seafood', match: role('shopkeeper:seafood_stall'), voice: 1.05,
+    barks: [T('กุ้งเป็นๆ ดีดได้!', 'live prawns, still jumping!'), T('ปลาสดตาใส ไม่สดเจ๊กินเอง!', 'clear-eyed fish, if not fresh I eat it myself!'), T('ปูม้าไข่แน่นๆ จ้า', 'blue crabs full of roe!'), T('อาตี๋ หลบน้ำแข็งด้วย!', 'mind the ice, kid!')],
+    start: (c) => (hour(c.game) < 7 ? 'early' : 'hi'),
+    nodes: [
+      { id: 'early', say: T('เรือเพิ่งเข้าเมื่อตีสี่! อาตี๋มาทันของดีพอดี ดูกุ้งแม่น้ำนี่ ตัวเท่าแขนเจ๊!', 'The boat came in at 4! You made it for the good stuff, look at these river prawns, big as my arm!'), anim: 'wave', options: [{ text: T('ว้าว ตัวโตจริง', 'Whoa, huge'), next: 'hi' }] },
+      { id: 'hi', say: (c) => T(pick(['ว่าไงอาตี๋ วันนี้เอาทะเลหรือเอาน้ำจืด?', 'มาๆ อาตี๋ ปลาตาใสๆ ไม่ใสเจ๊ควักตาให้ดูเลย!', 'อาตี๋ ทำหน้าเหมือนปลาเค็มเลย อดนอนมาเหรอ?']), pick(['Sea or river today?', 'Clear-eyed fish! If not, I pop the eye out for you!', 'You look like salted fish, no sleep?'])), anim: 'talk', options: [
+        { text: T('เจ๊มีสูตรทะเลขายไหมครับ?', 'Selling any seafood recipes?'), next: 'cards' },
+        { text: T('สูตรแพงๆ สำหรับลูกค้ารวยมีไหมครับ?', 'Something pricey for rich customers?'), next: 'prem', if: (c) => day(c.game) >= 2 },
+        { text: T('ทำปลา ทำกุ้งยังไงครับ?', 'How do I clean fish and prawns?'), next: 'tip' },
+        { text: T('เจ๊สวยเหมือนนางเงือกเลยครับ', 'You look like a mermaid, Jeh'), next: 'flirt' },
+      ] },
+      { id: 'cards', say: T('สูตรเจ๊ได้มาจากแม่ค้าข้าวแกงท่าเรือ สามสิบปีไม่เคยบอกใคร… วันนี้บอกอาตี๋ เพราะอาตี๋จ่ายตังค์', 'Got these from the pier curry lady, 30 years secret… telling you today, because you pay'), face: 'think', options: [
+        card('kaphrao_talay', T('กะเพราทะเล (80 ฿)', 'Seafood kaphrao (80 ฿)'), 80, 'seafood_stall', 'bought'),
+        card('muek_khai_khem', T('ปลาหมึกผัดไข่เค็ม (120 ฿)', 'Squid with salted egg (120 ฿)'), 120, 'seafood_stall', 'bought'),
+        card('hoi_thot', T('หอยทอดกรอบ (150 ฿)', 'Crispy oyster omelette (150 ฿)'), 150, 'seafood_stall', 'bought'),
+        { text: T('ไว้ก่อนครับ', 'Maybe later'), next: 'hi' },
+      ] },
+      { id: 'prem', say: T('ของไฮโซ! ลูกค้ากระเป๋าหนักเขาสั่งกันจานละหลายร้อย ของแพง ทำพังเจ๊ไม่รับคืนนะ', 'Hi-so stuff! Deep-pocket customers pay hundreds a plate. Expensive ingredients, ruin them and no refunds'), face: 'think', options: [
+        card('kung_phao', T('กุ้งแม่น้ำเผา (350 ฿)', 'Grilled river prawns (350 ฿)'), 350, 'seafood_stall', 'bought'),
+        card('khao_phat_pu', T('ข้าวผัดปู (250 ฿)', 'Crab fried rice (250 ฿)'), 250, 'seafood_stall', 'bought'),
+        card('pu_phat_phong_kari', T('ปูผัดผงกะหรี่ (450 ฿)', 'Curry-powder crab (450 ฿)'), 450, 'seafood_stall', 'bought', (c) => (day(c.game) < 3 ? 'วันที่ 3 ขึ้นไป' : null)),
+        card('pla_neung_manao', T('ปลากะพงนึ่งมะนาว (400 ฿)', 'Steamed lime sea bass (400 ฿)'), 400, 'seafood_stall', 'bought'),
+        { text: T('มีอีกไหมครับ', 'More?'), next: 'prem2' },
+        { text: T('ไว้ก่อนครับ', 'Maybe later'), next: 'hi' },
+      ] },
+      { id: 'prem2', say: T('อันนี้ของแพงจริง เจ๊เองยังไม่กล้ากิน', "These are seriously pricey, even I don't dare eat them"), face: 'think', options: [
+        card('tom_yam_nam_khon', T('ต้มยำกุ้งน้ำข้น (300 ฿)', 'Creamy tom yum (300 ฿)'), 300, 'seafood_stall', 'bought', (c) => (!isUnlocked(c.game, 'tom_yam') ? 'ต้องทำต้มยำเป็นก่อน' : null)),
+        card('yam_salmon', T('ยำแซลมอน (350 ฿)', 'Spicy salmon salad (350 ฿)'), 350, 'seafood_stall', 'bought'),
+        card('hoi_shell_noei', T('หอยเชลล์ผัดเนย (500 ฿)', 'Butter scallops (500 ฿)'), 500, 'seafood_stall', 'bought'),
+        card('kaphrao_wagyu', T('กะเพราวากิวทรัฟเฟิล (900 ฿)', 'Truffle wagyu kaphrao (900 ฿)'), 900, 'seafood_stall', 'wagyu', (c) => (day(c.game) < 3 ? 'วันที่ 3 ขึ้นไป' : null)),
+        { text: T('ไว้ก่อนครับ', 'Maybe later'), next: 'hi' },
+      ] },
+      info('bought', T('จำไว้นะอาตี๋ ทะเลต้องไฟแรง ผัดเร็ว ปลาหมึกผัดนานเหนียวเหมือนยางรถ กุ้งพอแดงก็ยกเลย!', 'Seafood: high heat, fast. Overcook squid and it turns to tyre rubber; prawns go red, take them off!'), 'hi', { anim: 'celebrate' }),
+      info('wagyu', T('กะเพราวากิว! ใส่น้ำมันทรัฟเฟิลสามหยดพอ เกินนั้นลูกค้าไฮโซจะบอกว่าเหม็นถุงเท้า… ไปซื้อวากิวที่แม็กโคร่งห้องเย็นนะ เจ๊ไม่ขายของบ้าบอแบบนั้น', 'Wagyu kaphrao! Three drops of truffle oil, more and the rich folk say it smells of socks… buy wagyu at Makrong\'s cold room, I don\'t sell nonsense like that'), 'hi', { anim: 'celebrate', face: 'shock' }),
+      info('tip', T('ปลาทั้งตัวเอาไปวางบนเขียง ล้างก่อน แล้วขอดเกล็ด ควักไส้ แล่ตามจังหวะ ปูก็เหมือนกัน ล้างแล้วสับ ถ้าขี้เกียจก็ซื้อกุ้งแกะแล้ว แพงกว่านิดเดียว', 'Whole fish on the board: rinse, scale, gut, fillet on the beat. Crab too: rinse then chop. Lazy? Buy peeled prawns, a bit pricier'), 'hi'),
+      { id: 'flirt', say: T('นางเงือก!? ฮ่าๆๆๆ เจ๊ชอบ! แต่ปากหวานไม่ทำให้ปลาสดนะอาตี๋ ราคาเดิม!', 'A MERMAID?! Hahaha, I like you! But sweet talk does not make fish fresh. Same price!'), face: 'shock', anim: 'celebrate', options: back('hi', T('ฮ่าๆ ไปละครับเจ๊', 'Haha, bye Jeh')) },
+    ],
+  });
+
+  // ---------------------------------------------------------------- ป้าหวาน (Auntie Waan, desserts, sweet)
+  Dialogues.register({
+    id: 'k_dessert', match: role('shopkeeper:dessert_stall'), voice: 1.32,
+    barks: [T('ขนมหวานจ้า หวานเหมือนคนขาย', 'sweets, sweet as the seller!'), T('มะม่วงน้ำดอกไม้ลูกสุดท้ายจ้า', 'last nam dok mai mangoes!'), T('กะทิคั้นสดๆ หอมๆ', 'freshly pressed coconut milk'), T('กินคาวต้องกินหวานนะลูก', 'after savoury comes sweet, dear')],
+    start: () => 'hi',
+    nodes: [
+      { id: 'hi', say: (c) => T(pick(['มาจ้ะหนู ชิมบัวลอยป้าก่อนไหม?', 'หนูขายของคาวใช่ไหม ขายหวานด้วยสิ ลูกค้ากินเสร็จเขาอยากได้ของหวาน', 'วันนี้ร้อน ทับทิมกรอบขายดีแน่ลูก']), pick(['Try my bua loi first?', 'You sell savoury? Sell sweets too, customers want dessert after', 'Hot today, red rubies will sell'])), anim: 'talk', options: [
+        { text: T('ป้าสอนทำขนมหน่อยครับ', 'Teach me a dessert?'), next: 'free', if: (c) => !isUnlocked(c.game, 'bua_loi') || !isUnlocked(c.game, 'kluay_buat_chi') },
+        { text: T('ป้ามีสูตรขนมขายไหมครับ?', 'Selling dessert recipes?'), next: 'cards' },
+        { text: T('ขนมต้องทำยังไงครับ?', 'How do desserts work?'), next: 'tip' },
+        { text: T('ป้าหวานกว่าขนมอีกครับ', "You're sweeter than your desserts"), next: 'flirt' },
+      ] },
+      { id: 'free', say: T('สอนฟรีจ้ะ ป้าไม่หวง บัวลอยกับกล้วยบวชชี ต้มกะทิกับน้ำตาลมะพร้าว ใส่กระทะไฟอ่อนๆ อย่าให้เดือดพล่าน กะทิจะแตกมัน', "Free, auntie doesn't mind. Bua loi and bananas in coconut milk: simmer coconut milk and palm sugar in the wok, gentle heat, never a hard boil or it splits"), anim: 'celebrate', options: [
+        { text: T('ขอบคุณครับป้า!', 'Thank you, auntie!'), do: (c) => { for (const id of ['bua_loi', 'kluay_buat_chi']) if (!isUnlocked(c.game, id)) c.game.intent('quest.buyRecipe', { id, price: 0, from: 'dessert_stall' }); }, next: 'hi' },
+      ] },
+      { id: 'cards', say: T('อันนี้สูตรขายจ้ะ ป้าก็ต้องกินต้องใช้ แต่ไม่แพงหรอก', 'These ones I sell, auntie has to eat too, but cheap'), face: 'think', options: [
+        card('khao_niao_mamuang', T('ข้าวเหนียวมะม่วง (100 ฿)', 'Mango sticky rice (100 ฿)'), 100, 'dessert_stall', 'bought'),
+        card('thapthim_krop', T('ทับทิมกรอบ (80 ฿)', 'Red rubies (80 ฿)'), 80, 'dessert_stall', 'bought'),
+        card('lot_chong_nam_kathi', T('ลอดช่องน้ำกะทิ (60 ฿)', 'Lod chong (60 ฿)'), 60, 'dessert_stall', 'bought'),
+        card('itim_kathi', T('ไอติมกะทิ (60 ฿)', 'Coconut ice cream (60 ฿)'), 60, 'dessert_stall', 'bought'),
+        { text: T('มีอีกไหมครับ', 'More?'), next: 'cards2' },
+        { text: T('ไว้ก่อนครับ', 'Maybe later'), next: 'hi' },
+      ] },
+      { id: 'cards2', say: T('ของวัยรุ่นจ้ะ เด็กๆ ชอบ', 'The trendy ones, kids love them'), options: [
+        card('bingsu_mamuang', T('บิงซูมะม่วง (150 ฿)', 'Mango bingsu (150 ฿)'), 150, 'dessert_stall', 'bought'),
+        card('roti_kluay_khai', T('โรตีกล้วยไข่ (100 ฿)', 'Banana-egg roti (100 ฿)'), 100, 'dessert_stall', 'bought'),
+        { text: T('ไว้ก่อนครับ', 'Maybe later'), next: 'hi' },
+      ] },
+      info('bought', T('ของหวานเย็นๆ ทำในกะละมังผสมขนมนะลูก ไม่ใช่กระทะร้อนๆ น้ำแข็งละลายหมด แล้วรีบเสิร์ฟ อย่าวางทิ้งไว้', 'Cold desserts go in the dessert basin, not a hot wok, or the ice melts. Then serve quickly, don\'t let it sit'), 'hi', { anim: 'celebrate' }),
+      info('tip', T('ขนมร้อนอย่างบัวลอยใช้กระทะไฟอ่อน ขนมเย็นอย่างทับทิมกรอบ ลอดช่อง บิงซู ใส่กะละมังผสม (ป้าขายใบละ 120) ตักใส่ถ้วย ลูกค้ากินข้าวเสร็จเขาสั่งของหวานต่อ ได้ตังค์สองต่อ!', 'Hot sweets like bua loi: wok, low heat. Cold ones like rubies, lod chong, bingsu: in the dessert basin (I sell it, 120). Customers order dessert after their meal, double money!'), 'hi'),
+      { id: 'flirt', say: T('อุ๊ยตาย! ปากหวานแบบนี้ ป้าแถมกะทิให้ถุงนึงเลย (ไม่จริงจ้ะ แต่ต่อราคาได้นะ)', 'Oh my! With a mouth that sweet you get a free bag of coconut milk (not really, but go ahead and haggle)'), face: 'shock', anim: 'celebrate', options: back('hi', T('ฮ่าๆ ไปละครับป้า', 'Haha, bye auntie')) },
     ],
   });
 }

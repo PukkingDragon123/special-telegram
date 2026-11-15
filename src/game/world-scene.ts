@@ -18,17 +18,55 @@ export class WorldScene implements SceneDef {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.04, 900);
   private offs: (() => void)[] = [];
+  /** background build (staged during the lobby / casino cutscene) — see stage() */
+  private staged: Promise<void> | null = null;
+  private stagedDone = false;
+  /** the staged build was thrown away (new session / failure): enter() must rebuild */
+  aborted = false;
 
   constructor(private game: Game) {}
 
+  /**
+   * Build the whole world WITHOUT showing it: physics, every module's buildWorld, shader programs and texture
+   * uploads. Runs while the menu / casino cutscene is on screen (game.staging pauses the world-only module
+   * frames and the physics step). enter() then only activates it: no loading screen at the switch.
+   */
+  stage(): Promise<void> {
+    if (!this.staged) {
+      this.game.staging = true;
+      (window as any).__hpMarks && ((window as any).__hpMarks.stageStart = Math.round(performance.now()));
+      this.staged = this.build(true).then(() => { this.stagedDone = true; const m = (window as any).__hpMarks; if (m) m.stageDone = Math.round(performance.now()); },
+        (e) => { console.error('[world] staged build failed', e); this.aborted = true; });
+    }
+    return this.staged;
+  }
+  get isStaged() { return this.stagedDone; }
+
   async enter() {
     const game = this.game;
+    const t0 = performance.now();
+    if (this.staged && !this.aborted) await this.staged;
+    if (!this.staged || this.aborted) { this.aborted = false; this.staged = null; await this.build(false); }
+    game.staging = false;
+    this.activate();
+    const marks = (window as any).__hpMarks;
+    if (marks) marks.worldSwitchMs = Math.round(performance.now() - t0);
+    // compile anything still missing (instant when the staged prewarm already did it)
+    await prewarmShaders(game.engine.renderer, this.scene, this.camera, this.stagedDone ? 1500 : 8000);
+  }
+
+  /** physics + every module's buildWorld (+ shader prewarm when staging in the background) */
+  private async build(background: boolean) {
+    const game = this.game;
+    // yield between heavy steps so the cutscene / menu keeps animating while the world builds behind it
+    const breathe = background ? () => new Promise<void>((r) => setTimeout(r, 16)) : () => Promise.resolve();
     this.scene.name = 'world';
     game.scene = this.scene;
     game.camera = this.camera;
     this.scene.add(this.camera);
     game.physics = await Physics.create();
     game.world = null;
+    await breathe();
     const marks = (window as any).__hpMarks ?? {};
     const tw = performance.now();
     // the `world` module (map, game.world) builds first; every other module then STARTS its buildWorld in the usual
@@ -45,12 +83,23 @@ export class WorldScene implements SceneDef {
     for (const m of withBuild.filter((x) => x.id === 'world')) { const p = run(m); done.set(m.id, p); await p; }
     for (const m of withBuild) {
       if (done.has(m.id)) continue;
+      await breathe();
       const deps = ((m as any).deps as string[] | undefined ?? []).map((d) => done.get(d)).filter(Boolean) as Promise<void>[];
       done.set(m.id, (deps.length ? Promise.all(deps) : Promise.resolve()).then(() => run(m)));
     }
     await Promise.all(done.values());
     marks.buildWorld = Math.round(performance.now() - tw);
     if (!game.world) game.world = buildStubWorld(game);
+    if (background) {
+      // programs + texture uploads for the post-process target, behind the cutscene (compileAsync = no stall)
+      await breathe();
+      await prewarmShaders(game.engine.renderer, this.scene, this.camera, 20000, true);
+    }
+  }
+
+  /** show the (built) world: view, UI, entity views, bodies, the local player */
+  private activate() {
+    const game = this.game;
     game.engine.setView(this.scene, this.camera);
     game.ui.setScene(this.scene, this.camera);
     game.views.activate(this.scene);
@@ -77,9 +126,19 @@ export class WorldScene implements SceneDef {
     }
     this.offs.push(game.engine.onFrame((f) => player.update(f.dt)));
     game.events.emit('world:ready', this.scene);
-    // compile every visible material now (behind the scene fade), not when it first enters the view — on
-    // Windows (ANGLE → D3D11) each program link is a 50–300 ms hitch mid-game otherwise
-    await prewarmShaders(game.engine.renderer, this.scene, this.camera, 8000);
+  }
+
+  /** throw away a staged (never shown) world — e.g. the session changed before the switch */
+  discard() {
+    const game = this.game;
+    this.aborted = true;
+    if (game.scene === this.scene) {
+      game.events.emit('world:exit', this.scene);
+      disposeObject(this.scene);
+      game.scene = null;
+      game.world = null;
+    }
+    game.staging = false;
   }
 
   // ---- pause (Esc / pointer lock lost) → the in-game pause menu (menu/pause.ts; ui4 owns this function)
@@ -130,7 +189,7 @@ export function compileTarget(renderer: THREE.WebGLRenderer): THREE.WebGLRenderT
 }
 
 /** renderer.compileAsync (KHR_parallel_shader_compile when available) with a time cap. */
-export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE.Object3D, camera: THREE.Camera, capMs = 6000) {
+export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE.Object3D, camera: THREE.Camera, capMs = 6000, background = false) {
   const t0 = performance.now();
   try {
     // compile for the target the scene really renders into (the composer's linear half-float buffer): compiling
@@ -168,7 +227,8 @@ export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE
     const img: any = t.image;
     if (!img || (t as any).isRenderTargetTexture || (img.width === undefined && !(t as any).isDataTexture)) continue;
     try { renderer.initTexture(t); n++; } catch {}
-    if (performance.now() - t1 > 30) { await new Promise((r) => setTimeout(r, 0)); t1 = performance.now(); }
+    // background (cutscene on screen): ≤ 4 ms of uploads per frame; behind a fade: 30 ms chunks
+    if (performance.now() - t1 > (background ? 4 : 30)) { await new Promise((r) => setTimeout(r, background ? 16 : 0)); t1 = performance.now(); }
   }
   const marks = (window as any).__hpMarks;
   if (marks) { marks.prewarmMs = Math.round(performance.now() - t0); marks.prewarmTex = n; }
@@ -178,4 +238,14 @@ export function installWorldScene(game: Game) {
   game.registerView('player', playerView(game));
   game.registerView('item', (e) => game.items.makeView(e));
   game.scenes.register('world', () => new WorldScene(game));
+  // PRELOAD: while the casino cutscene plays (session + seed are fixed by then), build the world behind it so the
+  // cut to gameplay is instant. ?nostage disables it.
+  if (!new URLSearchParams(location.search).has('nostage')) {
+    game.events.on('scene:entered', (name: string) => {
+      if (name !== 'casino') return;
+      setTimeout(() => { if (game.scenes.currentName === 'casino' && !game.scene) game.scenes.prestage('world'); }, 1200);
+    });
+    // a new session (host/join/leave) invalidates a staged world (new State, new seed)
+    game.events.on('net:session', () => game.scenes.dropStaged());
+  }
 }

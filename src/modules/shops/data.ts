@@ -48,6 +48,10 @@ export const PERSONALITIES: Record<string, Personality> = {
   gruff_uncle: { id: 'gruff_uncle', bargain: true, maxDiscount: 0.05, likes: { polite: 1.4, sweet: 0.0, funny: 0.6, rude: -3.0 }, patience: 2, madAt: -2.5, voice: 0.72, chases: true, callPlayer: 'ไอ้น้อง' },
   // เจ๊ไข่ — business-like egg & dry-goods seller
   business_jeh: { id: 'business_jeh', bargain: true, maxDiscount: 0.08, likes: { polite: 1.5, sweet: 0.5, funny: 0.5, rude: -2.2 }, patience: 2, madAt: -2.5, voice: 1.1, chases: true, callPlayer: 'น้อง' },
+  // เจ๊ปลา — loud fishmonger: lives on jokes, hates sweet talk ("ปากหวานไม่ทำให้ปลาสด"), quick to snap
+  fish_jeh: { id: 'fish_jeh', bargain: true, maxDiscount: 0.12, likes: { polite: 1.0, sweet: -0.4, funny: 2.2, rude: -2.8 }, patience: 2, madAt: -2.5, voice: 1.05, chases: true, callPlayer: 'อาตี๋' },
+  // ป้าหวาน — dessert auntie: melts at sweet talk, gives away a lot
+  sweet_auntie: { id: 'sweet_auntie', bargain: true, maxDiscount: 0.22, likes: { polite: 1.3, sweet: 2.4, funny: 1.2, rude: -2.0 }, patience: 3, madAt: -3.5, voice: 1.32, chases: true, callPlayer: 'หนู' },
   // 8-Twelve clerk — robot: "ราคาตามระบบค่ะ"
   robot_clerk: { id: 'robot_clerk', bargain: false, maxDiscount: 0, likes: { polite: 0, sweet: 0, funny: 0, rude: 0 }, patience: 1, madAt: -99, voice: 1.45, chases: false, callPlayer: 'คุณลูกค้า' },
   // แม็กโคร่ง cashier — "ราคาส่งแล้วค่ะ"
@@ -124,6 +128,24 @@ const R_RATNA = ['rat_na'];
 const R_TOMYAM = ['tom_yam'];
 const R_GARLIC = ['moo_kratiam'];
 const R_PHAKBUNG = ['phat_phak_bung'];
+// round 5: seafood / premium / dessert
+const R_SQUID = ['kaphrao_talay', 'muek_khai_khem'];
+const R_MUSSEL = ['kaphrao_talay'];
+const R_CRAB = ['pu_phat_phong_kari'];
+const R_CRABMEAT = ['khao_phat_pu'];
+const R_RPRAWN = ['kung_phao', 'tom_yam_nam_khon'];
+const R_OYSTER = ['hoi_thot'];
+const R_BASS = ['pla_neung_manao'];
+const R_SCALLOP = ['hoi_shell_noei'];
+const R_WAGYU = ['kaphrao_wagyu'];
+const R_SALMON = ['yam_salmon'];
+const R_STICKY = ['khao_niao_mamuang', 'itim_kathi'];
+const R_MANGO = ['khao_niao_mamuang', 'bingsu_mamuang'];
+const R_ICE = ['thapthim_krop', 'lot_chong_nam_kathi', 'bingsu_mamuang'];
+const R_COCO = ['khao_niao_mamuang', 'bua_loi', 'kluay_buat_chi', 'thapthim_krop', 'lot_chong_nam_kathi'];
+const R_PALM = ['bua_loi', 'kluay_buat_chi', 'lot_chong_nam_kathi'];
+const R_ROTI = ['roti_kluay_khai'];
+const R_BANANA = ['kluay_buat_chi', 'roti_kluay_khai'];
 
 export const SHOPS: ShopDef[] = [
   // ------------------------------------------------------------------ FRESH MARKET (05–14)
@@ -178,7 +200,8 @@ export const SHOPS: ShopDef[] = [
       { id: 'lemongrass', kinds: ['lemongrass'], fb: 'sfb_lemongrass', price: 10, unit: 'กำละ', qty: 6, show: 1, day: 99, recipes: R_TOMYAM },
       { id: 'galangal', kinds: ['galangal'], fb: 'sfb_galangal', price: 10, unit: 'ถุงละ', qty: 6, show: 1, day: 99, recipes: R_TOMYAM },
       { id: 'kaffir', kinds: ['kaffir_lime'], fb: 'sfb_kaffir_lime', price: 10, unit: 'ถุงละ', qty: 6, show: 1, day: 99, recipes: [...R_TOMYAM, ...R_CURRY] },
-      { id: 'mushroom', kinds: ['mushroom'], fb: 'sfb_mushroom', price: 30, unit: 'ถุงละ', qty: 5, show: 1, day: 99, recipes: R_TOMYAM },
+      { id: 'mushroom', kinds: ['mushroom'], fb: 'sfb_mushroom', price: 30, unit: 'ถุงละ', qty: 5, show: 1, day: 99, recipes: [...R_TOMYAM, 'tom_yam_nam_khon'] },
+      { id: 'sprouts', kinds: ['bean_sprouts'], fb: 'sfb_morning_glory', price: 10, unit: 'ถุงละ', qty: 6, show: 1, day: 99, recipes: R_OYSTER },
     ],
   },
   {
@@ -200,7 +223,54 @@ export const SHOPS: ShopDef[] = [
       { id: 'curry', kinds: ['curry_paste'], fb: 'sfb_curry_paste', price: 30, unit: 'ถุงละ', qty: 5, show: 1, day: 99, recipes: R_CURRY },
       { id: 'tomyum', kinds: ['tomyum_paste'], fb: 'sfb_tomyum_paste', price: 50, unit: 'กระปุกละ', qty: 4, show: 1, day: 99, recipes: R_TOMYAM },
       { id: 'starch', kinds: ['gravy_starch'], fb: 'sfb_gravy_starch', price: 18, unit: 'ถุงละ', qty: 4, show: 1, day: 99, recipes: R_RATNA },
-      { id: 'pepper', kinds: ['white_pepper'], fb: 'sfb_white_pepper', price: 32, unit: 'ขวดละ', qty: 3, show: 1, day: 99, recipes: R_GARLIC },
+      { id: 'pepper', kinds: ['white_pepper'], fb: 'sfb_white_pepper', price: 32, unit: 'ขวดละ', qty: 3, show: 1, day: 99, recipes: [...R_GARLIC, ...R_SCALLOP] },
+      { id: 'saltegg', kinds: ['salted_egg'], fb: 'sfb_egg', price: 10, unit: 'ฟองละ', qty: 12, show: 2, day: 99, recipes: ['muek_khai_khem'], label: { th: 'ไข่เค็มไชยา', en: 'Chaiya salted egg' } },
+      { id: 'currypow', kinds: ['curry_powder'], fb: 'sfb_white_pepper', price: 35, unit: 'ขวดละ', qty: 3, show: 1, day: 99, recipes: R_CRAB },
+      { id: 'evap', kinds: ['evaporated_milk'], fb: 'sfb_sugar', price: 24, unit: 'กระป๋องละ', qty: 4, show: 1, day: 99, recipes: [...R_CRAB, 'tom_yam_nam_khon'] },
+      { id: 'batter', kinds: ['batter'], fb: 'sfb_gravy_starch', price: 25, unit: 'ถุงละ', qty: 4, show: 1, day: 99, recipes: R_OYSTER, label: { th: 'แป้งหอยทอด', en: 'oyster-omelette batter' } },
+    ],
+  },
+  {
+    id: 'seafood_stall', name: { th: 'แผงอาหารทะเลเจ๊ปลา', en: "Jeh Pla's seafood stall" }, anchor: 'seafood_stall', kind: 'stall',
+    open: 5, close: 13, day: 2, radius: 3.8,
+    keeper: { name: { th: 'เจ๊ปลา', en: 'Jeh Pla' }, archetype: 'auntie_vendor', personality: 'fish_jeh', seed: 1505 },
+    closedNote: { th: 'ปลาหมดแล้ว! พรุ่งนี้ตีห้าเรือเข้า', en: 'Sold out — the boats come in at 5 am' },
+    lockedNote: { th: 'เจ๊ปลาออกเรืออยู่ เปิดแผงวันที่ 2', en: 'Jeh Pla is out on the boat — opens on day 2' },
+    stock: [
+      { id: 'shrimp', kinds: ['shrimp'], fb: 'sfb_shrimp', price: 90, unit: 'ถุงละ', qty: 8, show: 2 },
+      { id: 'squid', kinds: ['squid'], fb: 'sfb_shrimp', price: 85, unit: 'ถุงละ', qty: 8, show: 2 },
+      { id: 'mussels', kinds: ['mussels'], fb: 'sfb_shrimp', price: 50, unit: 'ถุงละ', qty: 8, show: 2, day: 99, recipes: R_MUSSEL },
+      { id: 'clams', kinds: ['clams'], fb: 'sfb_shrimp', price: 45, unit: 'ถุงละ', qty: 6, show: 1 },
+      { id: 'oysters', kinds: ['oysters'], fb: 'sfb_shrimp', price: 120, unit: 'ถาดละ', qty: 6, show: 1, day: 99, recipes: R_OYSTER },
+      { id: 'bass', kinds: ['sea_bass'], fb: 'sfb_shrimp', price: 180, unit: 'ตัวละ', qty: 5, show: 2, label: { th: 'ปลากะพงทั้งตัว (ขอดเกล็ดเอง)', en: 'whole sea bass (clean it yourself)' } },
+      { id: 'crab', kinds: ['crab_blue'], fb: 'sfb_shrimp', price: 280, unit: 'ตัวละ', qty: 4, show: 2, day: 99, recipes: R_CRAB, label: { th: 'ปูม้าเป็นๆ (สับเอง)', en: 'live blue crab (chop it yourself)' } },
+      { id: 'crabmeat', kinds: ['crab_meat'], fb: 'sfb_shrimp', price: 260, unit: 'กล่องละ', qty: 4, show: 1, day: 99, recipes: R_CRABMEAT, label: { th: 'เนื้อปูก้อน', en: 'lump crab meat' } },
+      { id: 'rprawn', kinds: ['river_prawn'], fb: 'sfb_shrimp', price: 450, unit: 'ถาดละ', qty: 4, show: 2, day: 99, recipes: R_RPRAWN, label: { th: 'กุ้งแม่น้ำตัวโต', en: 'jumbo river prawns' } },
+      { id: 'scallop', kinds: ['scallop'], fb: 'sfb_shrimp', price: 380, unit: 'ถาดละ', qty: 3, show: 1, day: 99, recipes: R_SCALLOP, label: { th: 'หอยเชลล์ฮอกไกโด', en: 'Hokkaido scallops' } },
+      { id: 'salmon', kinds: ['salmon'], fb: 'sfb_shrimp', price: 320, unit: 'ชิ้นละ', qty: 3, show: 1, day: 99, recipes: R_SALMON, label: { th: 'แซลมอนนอร์เวย์', en: 'Norwegian salmon' } },
+    ],
+  },
+  {
+    id: 'dessert_stall', name: { th: 'แผงขนมหวานป้าหวาน', en: "Auntie Waan's dessert stall" }, anchor: 'dessert_stall', kind: 'stall',
+    open: 6, close: 14, day: 1, radius: 3.8,
+    keeper: { name: { th: 'ป้าหวาน', en: 'Auntie Waan' }, archetype: 'auntie_vendor', personality: 'sweet_auntie', seed: 1606 },
+    closedNote: { th: 'ขนมหมดแล้วจ้า พรุ่งนี้หกโมง', en: 'All sold — 6 am tomorrow' },
+    stock: [
+      { id: 'coco', kinds: ['coconut_milk'], fb: 'sfb_sugar', price: 25, unit: 'ถุงละ', qty: 12, show: 2, label: { th: 'กะทิคั้นสด', en: 'fresh coconut milk' } },
+      { id: 'palm', kinds: ['palm_sugar'], fb: 'sfb_sugar', price: 20, unit: 'ก้อนละ', qty: 8, show: 1 },
+      { id: 'balls', kinds: ['bua_loi_balls'], fb: 'sfb_sugar', price: 20, unit: 'ถุงละ', qty: 8, show: 2, day: 99, recipes: ['bua_loi'] },
+      { id: 'banana', kinds: ['banana'], fb: 'sfb_sugar', price: 25, unit: 'หวีละ', qty: 6, show: 1, day: 99, recipes: R_BANANA },
+      { id: 'sticky', kinds: ['sticky_rice'], fb: 'sfb_sugar', price: 30, unit: 'ห่อละ', qty: 8, show: 2, day: 99, recipes: R_STICKY },
+      { id: 'mango', kinds: ['mango'], fb: 'sfb_sugar', price: 35, unit: 'ลูกละ', qty: 10, show: 3, day: 99, recipes: R_MANGO, label: { th: 'มะม่วงน้ำดอกไม้', en: 'nam dok mai mango' } },
+      { id: 'thapthim', kinds: ['thapthim'], fb: 'sfb_sugar', price: 25, unit: 'ถุงละ', qty: 6, show: 1, day: 99, recipes: ['thapthim_krop'] },
+      { id: 'lotchong', kinds: ['lot_chong'], fb: 'sfb_sugar', price: 20, unit: 'ถุงละ', qty: 6, show: 1, day: 99, recipes: ['lot_chong_nam_kathi'] },
+      { id: 'syrup', kinds: ['red_syrup'], fb: 'sfb_sugar', price: 35, unit: 'ขวดละ', qty: 4, show: 1, day: 99, recipes: ['thapthim_krop', 'bingsu_mamuang'] },
+      { id: 'ice', kinds: ['shaved_ice'], fb: 'sfb_sugar', price: 15, unit: 'ถุงละ', qty: 12, show: 2, day: 99, recipes: R_ICE },
+      { id: 'icecream', kinds: ['icecream_coconut'], fb: 'sfb_sugar', price: 60, unit: 'ถ้วยละ', qty: 6, show: 1, day: 99, recipes: ['itim_kathi'] },
+      { id: 'peanut', kinds: ['peanuts'], fb: 'sfb_sugar', price: 15, unit: 'ถุงละ', qty: 6, show: 1, day: 99, recipes: ['itim_kathi'] },
+      { id: 'condensed', kinds: ['condensed_milk'], fb: 'sfb_sugar', price: 28, unit: 'กระป๋องละ', qty: 6, show: 1, day: 99, recipes: [...R_ROTI, 'bingsu_mamuang'] },
+      { id: 'roti', kinds: ['roti_dough'], fb: 'sfb_sugar', price: 30, unit: 'ถุงละ', qty: 6, show: 1, day: 99, recipes: R_ROTI, label: { th: 'แป้งโรตีปั้นก้อน', en: 'roti dough balls' } },
+      { id: 'bowl', kinds: ['mix_bowl'], fb: 'sfb_sugar', price: 120, unit: 'ใบละ', qty: 2, show: 1, label: { th: 'กะละมังผสมขนม', en: 'dessert basin' } },
     ],
   },
   // ------------------------------------------------------------------ SHOPHOUSES
@@ -325,6 +395,15 @@ export const SHOPS: ShopDef[] = [
       { id: 'soda_red', kinds: ['soda_red'], fb: 'sfb_fanta', price: 15, unit: '', qty: 12, show: 2 },
       { id: 'm150', kinds: ['energy_drink', 'm150'], fb: 'sfb_m150', price: 12, unit: '', qty: 10, show: 2 },
       { id: 'beer', kinds: ['beer_can', 'beer_chang'], fb: 'sfb_beer', price: 45, unit: '', qty: 8, show: 2, alcohol: true },
+      // premium corner (ห้องเย็นพรีเมียม): unlocked by the hi-so recipe cards
+      { id: 'wagyu', kinds: ['wagyu'], fb: 'sfb_pork_sliced', price: 690, unit: 'ถาดละ', qty: 3, show: 1, day: 99, recipes: R_WAGYU, label: { th: 'เนื้อวากิว A5 สไลซ์', en: 'A5 wagyu, sliced' } },
+      { id: 'truffle', kinds: ['truffle_oil'], fb: 'sfb_cooking_oil', price: 890, unit: 'ขวดละ', qty: 2, show: 1, day: 99, recipes: R_WAGYU, label: { th: 'น้ำมันทรัฟเฟิล (ขวดจิ๋ว)', en: 'truffle oil (tiny bottle)' } },
+      { id: 'hommali', kinds: ['hommali_rice'], fb: 'sfb_rice_bag', price: 380, unit: 'ถุงละ', qty: 3, show: 1, day: 99, recipes: [...R_CRABMEAT, ...R_WAGYU], label: { th: 'ข้าวหอมมะลิทุ่งกุลา 5 กก.', en: 'Thung Kula hom mali 5 kg' } },
+      { id: 'butter', kinds: ['butter'], fb: 'sfb_cooking_oil', price: 95, unit: 'ก้อนละ', qty: 4, show: 1, day: 99, recipes: R_SCALLOP },
+      { id: 'salmon', kinds: ['salmon'], fb: 'sfb_pork_sliced', price: 299, unit: 'ชิ้นละ', qty: 3, show: 1, day: 99, recipes: R_SALMON, label: { th: 'แซลมอน (ห้องเย็น)', en: 'salmon (cold room)' } },
+      { id: 'scallop', kinds: ['scallop'], fb: 'sfb_shrimp', price: 359, unit: 'ถาดละ', qty: 3, show: 1, day: 99, recipes: R_SCALLOP, label: { th: 'หอยเชลล์แช่แข็ง', en: 'frozen scallops' } },
+      { id: 'coco1l', kinds: ['coconut_milk'], fb: 'sfb_sugar', price: 65, unit: 'กล่องละ', qty: 6, show: 1, day: 99, recipes: R_COCO, data: { g: 1000 }, label: { th: 'กะทิกล่อง 1 ลิตร', en: 'coconut milk 1 L' } },
+      { id: 'palm1k', kinds: ['palm_sugar'], fb: 'sfb_sugar', price: 55, unit: 'ถุงละ', qty: 4, show: 1, day: 99, recipes: R_PALM, data: { g: 1000 }, label: { th: 'น้ำตาลมะพร้าว 1 กก.', en: 'palm sugar 1 kg' } },
       { id: 'dogfood', kinds: ['dog_food'], fb: 'sfb_dog_food', price: 59, unit: '', qty: 6, show: 1, label: { th: 'อาหารหมา', en: 'dog food' } },
       { id: 'flashlight', kinds: ['flashlight'], fb: 'sfb_flashlight', price: 89, unit: '', qty: 4, show: 1, label: { th: 'ไฟฉาย', en: 'flashlight' } },
     ],

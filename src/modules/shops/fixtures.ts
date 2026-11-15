@@ -12,7 +12,7 @@ import { drinkRow, drinksMaterial, type DrinkKind } from './drinks';
 import { shrineShelf } from './shrine-shelf';
 import { packCell, packMaterial } from './packs';
 import { realPropObject } from '../world/realprops';
-import { PileBatch } from '../world/realprops-market';
+import { PileBatch, SeafoodBatch } from '../world/realprops-market';
 
 /**
  * FIXTURES — the physical shops: stall tables + canopies, shophouse display steps + counters +
@@ -170,6 +170,8 @@ const STALL_STYLE: Record<string, { tarp: number; sheet: number; backdrop: strin
   butcher_stall: { tarp: 0x2f5fa8, sheet: 0xc42a22, backdrop: 'pork_stall', decor: ['pork_table'], sign: 'หมูสด เขียงลุงหมึก' },
   veg_stall: { tarp: 0x3f8a3a, sheet: 0x2f62b8, backdrop: 'veg_backdrop', decor: ['heap_beans', 'heap_basil', 'heap_onion'], sign: 'ผักสด ป้าศรี' },
   egg_stall: { tarp: 0xd9a12a, sheet: 0xe8e0d0, backdrop: 'egg_display', decor: ['heap_eggs'], sign: 'ไข่สด ของแห้ง' },
+  seafood_stall: { tarp: 0x2a64b0, sheet: 0xeef2f4, backdrop: 'seafood', decor: [], sign: 'อาหารทะเลสด เจ๊ปลา' },
+  dessert_stall: { tarp: 0xd8487e, sheet: 0xf2e4c4, backdrop: 'dessert', decor: ['heap_mango', 'bananas', 'heap_mango'], sign: 'ขนมหวาน ป้าหวาน' },
 };
 
 /** what each functional stall keeps on its back shelf (pile keys from realprops-market PILES) */
@@ -178,6 +180,9 @@ const STALL_BACK: Record<string, string[]> = {
   butcher_stall: ['pork_table', 'heap_garlic', 'heap_chili', 'pork_table'],
   veg_stall: ['heap_beans', 'heap_basil', 'heap_onion', 'heap_tomato', 'heap_lime', 'heap_chili'],
   egg_stall: ['heap_eggs', 'heap_eggs', 'heap_garlic', 'heap_eggs', 'heap_shallot', 'heap_eggs'],
+  // sea:* = styrofoam tray of crushed ice with the catch on it (SeafoodBatch) instead of a crate of produce
+  seafood_stall: ['sea:fish', 'sea:shrimp', 'heap_lime', 'sea:fish', 'sea:shrimp', 'heap_chili'],
+  dessert_stall: ['heap_mango', 'bananas', 'heap_lime', 'heap_mango', 'bananas', 'heap_mango'],
 };
 const CRATE_COLS = [0x2f62b8, 0xc42a22, 0x2a9a4a, 0xe8b820, 0x2f62b8, 0xe8508a];
 
@@ -186,7 +191,7 @@ const CRATE_COLS = [0x2f62b8, 0xc42a22, 0x2a9a4a, 0xe8b820, 0x2f62b8, 0xe8508a];
  * (two levels) holding plastic crates heaped with real produce, rice sacks + a stacked crate tower on the floor,
  * and a canvas curtain on a bamboo rail behind it all — the stall reads as a deep, busy shop, not a photo.
  */
-function backDisplay(B: Batch, root: THREE.Object3D, fr: Frame, sid: string, st: { tarp: number; sheet: number }, z: number, W: number, piles: PileBatch) {
+function backDisplay(B: Batch, root: THREE.Object3D, fr: Frame, sid: string, st: { tarp: number; sheet: number }, z: number, W: number, piles: PileBatch, sea?: SeafoodBatch) {
   const legs = flat(0x55585c, 0.6, 0.5);
   const plank = pbr('wood_planks_old');
   const D = 0.5, H1 = 0.55, H2 = 1.05, L = W - 0.1;
@@ -203,6 +208,7 @@ function backDisplay(B: Batch, root: THREE.Object3D, fr: Frame, sid: string, st:
       crates.push(new THREE.Matrix4().makeRotationY(yaw).setPosition(fr.at(x, y, z)));
       cols.push(CRATE_COLS[(i + li * 2 + sid.length) % CRATE_COLS.length]);
       const key = keys[(i + li * 3) % keys.length];
+      if (key.startsWith('sea:') && sea) { sea.add(key.slice(4) as 'fish' | 'shrimp', fr.at(x, y + 0.26, z), fr.yaw, 0.46, 0.34, sid.length * 13 + i * 5 + li * 31); continue; }
       if (PileBatch.has(key)) piles.add(key, fr.at(x, y + 0.2, z), fr.yaw, 0.2, 0.15, sid.length * 13 + i * 5 + li * 31);
     }
   }
@@ -234,7 +240,8 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
   const root = new THREE.Group(); root.name = 'shop:' + s.id;
   const B = new Batch();
   const st = STALL_STYLE[s.id] ?? STALL_STYLE.auntie_stall;
-  const W = 2.6, D = 1.05, H = 0.8, zc = 0.95;
+  const W = s.stock.length > 12 ? 3.2 : 2.6, D = 1.05, H = 0.8, zc = 0.95;
+  const wet = st.backdrop === 'seafood';   // seafood: goods sit on a bed of crushed ice
   // table: steel legs, plank top, plastic sheet with overhang skirt
   const legs = flat(0x55585c, 0.6, 0.5);
   for (const [x, z] of [[-W / 2 + 0.06, zc - D / 2 + 0.06], [W / 2 - 0.06, zc - D / 2 + 0.06], [-W / 2 + 0.06, zc + D / 2 - 0.06], [W / 2 - 0.06, zc + D / 2 - 0.06]]) {
@@ -282,7 +289,20 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
   });
   // back display behind the keeper (real 3D, no photo): a 2-level plank shelf on steel legs stocked with
   // crates of produce, sacks on the floor, and a hanging canvas curtain closing the stall off
-  backDisplay(B, root, fr, s.id, st, zc + D / 2 + 1.2, W, piles);
+  const sea = wet ? new SeafoodBatch() : undefined;
+  backDisplay(B, root, fr, s.id, st, zc + D / 2 + 1.2, W, piles, sea);
+  if (wet && sea) {
+    // crushed-ice bed over the whole table top (lumpy, glossy) + styrofoam fish boxes and a water tub by the keeper
+    const ice = new THREE.PlaneGeometry(W - 0.06, D - 0.04, 40, 16).rotateX(-Math.PI / 2);
+    { const p = ice.getAttribute('position') as THREE.BufferAttribute; for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i); const edge = Math.min(1, (W / 2 - Math.abs(x)) * 12, (D / 2 - Math.abs(z)) * 12); p.setY(i, edge * (0.012 + 0.012 * Math.abs(Math.sin(x * 57.1 + z * 13.7) * Math.cos(z * 49.3 - x * 7.1)))); } ice.computeVertexNormals(); }
+    B.add(ice, mat('stall_ice', () => new THREE.MeshStandardMaterial({ color: 0xe6f2f8, roughness: 0.1, metalness: 0.05, emissive: new THREE.Color(0x203038), emissiveIntensity: 0.3 })), fr, 0, H + 0.012, zc);
+    sea.add('fish', fr.at(-W / 2 - 0.45, 0.62, zc + 0.1), fr.yaw + Math.PI / 2, 0.6, 0.4, 7);
+    sea.flush(root);
+    for (const [x, zz, yy, r] of [[-W / 2 - 0.45, zc + 0.1, 0, 0.1], [-W / 2 - 0.45, zc + 0.1, 0.31, -0.06]] as [number, number, number, number][]) {
+      const box = realPropObject('styro_box'); box.position.copy(fr.at(x, yy, zz)); box.rotation.y = fr.yaw + r; root.add(box);
+    }
+    const tub = realPropObject('bucket'); tub.position.copy(fr.at(W / 2 + 0.35, 0, zc + 0.75)); tub.rotation.y = fr.yaw; root.add(tub);
+  }
   piles.flush(root);
   B.flush(root);
   // spring scale hanging from the canopy (real model) + a rubber-keyed calculator on the table
@@ -308,7 +328,7 @@ function buildStall(game: Game, s: ShopDef, fr: Frame, kinds: Map<string, string
   rows.forEach((row, ri) => {
     const cw = (W - 0.2) / Math.max(1, row.length);
     const zRow = rows.length === 1 ? zc - 0.05 : (ri === 0 ? zc - 0.2 : zc + 0.27);
-    const y = rows.length === 1 || ri === 0 ? H + 0.014 : H + 0.172;
+    const y = (rows.length === 1 || ri === 0 ? H + 0.014 : H + 0.172) + (wet ? 0.016 : 0);
     row.forEach((stk, i) => {
       const xc = -W / 2 + 0.1 + cw * (i + 0.5);
       const grid = unitGrid(stk.show ?? 2, cw, rows.length === 1 ? 0.6 : 0.36);

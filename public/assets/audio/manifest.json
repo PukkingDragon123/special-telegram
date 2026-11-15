@@ -2037,5 +2037,185 @@
   "cat": "voice",
   "pitchVar": 0.04,
   "desc": "(ทั้งหมด)เท่าไรคะ/ครับ - how much (in total)? (customer). Native Thai speaker (U.S. Peace Corps Thai course, public domain)."
+ },
+ "anime_zoom_sting": {
+  "files": [
+   "meme/anime/anime_zoom_sting.mp3"
+  ],
+  "vol": 0.75,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Dramatic anime zoom: whoosh + orchestral stab (original synthesis, scripts-free numpy render)"
+ },
+ "dramatic_dun": {
+  "files": [
+   "meme/anime/dramatic_dun.mp3"
+  ],
+  "vol": 0.75,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Dun-dun-DUN dramatic brass stinger (original synthesis, scripts-free numpy render)"
+ },
+ "boom_heavy": {
+  "files": [
+   "meme/anime/boom_heavy.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Heavy deep bass boom for punchlines (original synthesis, scripts-free numpy render)"
+ },
+ "kira_kira": {
+  "files": [
+   "meme/anime/kira_kira.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Sparkle arpeggio (kira kira) for secrets (original synthesis, scripts-free numpy render)"
+ },
+ "anime_whoosh": {
+  "files": [
+   "meme/anime/anime_whoosh.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Anime teleport / speed whoosh (original synthesis, scripts-free numpy render)"
+ },
+ "anime_punch": {
+  "files": [
+   "meme/anime/anime_punch.mp3"
+  ],
+  "vol": 0.75,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Anime punch impact (original synthesis, scripts-free numpy render)"
+ },
+ "anime_punch_crit": {
+  "files": [
+   "meme/anime/anime_punch_crit.mp3"
+  ],
+  "vol": 0.85,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Critical punch: reverse swell + big hit + ring (original synthesis, scripts-free numpy render)"
+ },
+ "stand_shing": {
+  "files": [
+   "meme/anime/stand_shing.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Metallic shiiing stinger for the stand (original synthesis, scripts-free numpy render)"
+ },
+ "sad_violin": {
+  "files": [
+   "meme/anime/sad_violin.mp3"
+  ],
+  "vol": 0.55,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Sad violin phrase (money gone) (original synthesis, scripts-free numpy render)"
+ },
+ "oh_no_slide": {
+  "files": [
+   "meme/anime/oh_no_slide.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Cartoon descending slide + plucks (oh no) (original synthesis, scripts-free numpy render)"
+ },
+ "crowd_ooh": {
+  "files": [
+   "meme/anime/crowd_ooh.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Crowd oooh (original synthesis, scripts-free numpy render)"
+ },
+ "menace_rumble": {
+  "files": [
+   "meme/anime/menace_rumble.mp3"
+  ],
+  "vol": 0.6,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Menacing low rumble under ゴゴゴ glyphs (original synthesis, scripts-free numpy render)"
+ },
+ "ko_sting": {
+  "files": [
+   "meme/anime/ko_sting.mp3"
+  ],
+  "vol": 0.75,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Knocked-out sting (original synthesis, scripts-free numpy render)"
+ },
+ "mission_fanfare": {
+  "files": [
+   "meme/anime/mission_fanfare.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Short triumphant fanfare (first sale) (original synthesis, scripts-free numpy render)"
+ },
+ "savage_hit": {
+  "files": [
+   "meme/anime/savage_hit.mp3"
+  ],
+  "vol": 0.75,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Bonk + buzzer for savage comebacks (original synthesis, scripts-free numpy render)"
+ },
+ "anime_plip": {
+  "files": [
+   "meme/anime/anime_plip.mp3"
+  ],
+  "vol": 0.45,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Sweat-drop plip (original synthesis, scripts-free numpy render)"
+ },
+ "anime_pop": {
+  "files": [
+   "meme/anime/anime_pop.mp3"
+  ],
+  "vol": 0.45,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Anger-vein pop (original synthesis, scripts-free numpy render)"
+ },
+ "cartoon_bang": {
+  "files": [
+   "meme/anime/cartoon_bang.mp3"
+  ],
+  "vol": 0.7,
+  "loop": false,
+  "cat": "meme",
+  "pitchVar": 0.04,
+  "desc": "Cartoon bang for gunshot SFX text (original synthesis, scripts-free numpy render)"
  }
 }

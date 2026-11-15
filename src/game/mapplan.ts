@@ -41,6 +41,8 @@ export const ANCHORS: Record<string, AnchorPt> = {
   butcher_stall: { p: [16, 0.15, -48], yaw: 0 },
   veg_stall: { p: [16, 0.15, -62], yaw: Math.PI },
   egg_stall: { p: [22, 0.15, -55], yaw: -Math.PI / 2 },
+  seafood_stall: { p: [34, 0.15, -48], yaw: 0 },          // on the wet south aisle (drains)
+  dessert_stall: { p: [34, 0.15, -62], yaw: Math.PI },
   kitchen_shop: { p: [7.2, 0.15, -35], yaw: -Math.PI / 2 },
   plastic_shop: { p: [-7.2, 0.15, -27], yaw: Math.PI / 2 },
   gas_shop: { p: [-7.2, 0.15, -45], yaw: Math.PI / 2 },

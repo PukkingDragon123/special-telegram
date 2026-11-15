@@ -406,7 +406,8 @@ export function loadModel(id: PropId): Promise<Model | null> {
 }
 
 /** Start loading the models the world always needs (call early, e.g. module init). */
-export function preloadRealProps(ids: PropId[] = Object.keys(MODELS)) { for (const id of ids) loadModel(id); }
+/** round-5 fill models stream in on demand when placed (realprops build), they're not preloaded at boot */
+export function preloadRealProps(ids: PropId[] = Object.keys(MODELS).filter((k) => !(k in F5_MODELS))) { for (const id of ids) loadModel(id); }
 
 /**
  * A plain Object3D of a real prop for item visuals (restaurant chairs, shop goods…): sync, the meshes

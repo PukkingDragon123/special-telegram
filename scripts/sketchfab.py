@@ -2,7 +2,7 @@
 """
 Sketchfab model downloader + optimizer (CC0 / CC-BY / CC-BY-SA only → small game-ready GLBs).
 
-  python3 scripts/sketchfab.py <id>=<uid>:<height_m>[:tris=N] ...
+  python3 scripts/sketchfab.py <id>=<uid>:<height_m>[:tris=N][:error=F] ...
 
   id        local id (folder + file name under public/assets/gen/world/models/<id>/<id>.glb)
   uid       Sketchfab model uid
@@ -64,6 +64,7 @@ def main():
         uid, height = parts[0], float(parts[1]) if len(parts) > 1 else 0.0
         opts = dict(p.split('=') for p in parts[2:]) if len(parts) > 2 else {}
         tris_t = int(opts.get('tris', 4000))
+        err = opts.get('error', '0.004')
         try:
             info = curl_json(f'{API}/models/{uid}')
             lic = (info.get('license') or {})
@@ -87,7 +88,7 @@ def main():
             with tempfile.TemporaryDirectory() as td:
                 mid = os.path.join(td, 'm.glb')
                 gt('optimize', src, mid, '--compress', 'false', '--texture-compress', 'webp', '--texture-size', '1024',
-                   '--instance', 'false', '--simplify', 'true' if ratio < 0.98 else 'false', '--simplify-ratio', f'{ratio:.4f}', '--simplify-error', '0.004')
+                   '--instance', 'false', '--simplify', 'true' if ratio < 0.98 else 'false', '--simplify-ratio', f'{ratio:.4f}', '--simplify-error', str(err))
                 # bake the real-world scale into the root (so the game reads metres)
                 if abs(s - 1) > 1e-3:
                     scaled = os.path.join(td, 's.glb')

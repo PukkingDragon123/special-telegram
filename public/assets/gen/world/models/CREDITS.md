@@ -209,14 +209,11 @@ fridge front (gen/shops), product labels (img/labels), egg shell (gen/cooking), 
 ## Sketchfab (CC-BY / CC0)
 Models downloaded with scripts/sketchfab.py; scaled, simplified and re-encoded (WebP textures, meshopt).
 - **umbrella_white** — “White outdoor Umbrella” by Ngo.Phuoc.Truong, CC Attribution — https://sketchfab.com/3d-models/white-outdoor-umbrella-d6c9705a4f8e421ea473196ab9910088
-- **umbrella_out** — “Outdoor umbrella” by Khoa Nguyen, CC Attribution — https://sketchfab.com/3d-models/outdoor-umbrella-258d0f6f96274a06b806e6f0ca399a8c
 - **parasol_beach** — “Beach Umbrella Parasol” by SpongeBob Solvetion Vincents, CC Attribution — https://sketchfab.com/3d-models/beach-umbrella-parasol-32f72bc573424202a04bbb069c45a015
 - **foodcart_sf** — “Street food cart (low/mid-poly)” by NikolasSE, CC Attribution — https://sketchfab.com/3d-models/street-food-cart-lowmid-poly-250f319d162f48f787082a72adc4f9c5
-- **banhmi_cart** — “BanhMi Cart” by Khoa Nguyen, CC Attribution — https://sketchfab.com/3d-models/banhmi-cart-f45b8dfd3a874779ac18323399a10258
 - **cooler_box** — “Cooler Box” by LT96, CC Attribution — https://sketchfab.com/3d-models/cooler-box-22ecae8aa13c4384bba96e0a65297ca5
 - **foam_cooler** — “Dominican Foam Cooler (3D Scan)” by Lino Valcarcel, CC Attribution — https://sketchfab.com/3d-models/dominican-foam-cooler-3d-scan-77a766a93b7d4a7baaa317770eab1278
 - **esky** — “Esky Cooler” by rileylane, CC Attribution — https://sketchfab.com/3d-models/esky-cooler-1424536a79474381b1a85f7691656b88
-- **vending** — “Vending Machine” by RackRibs, CC Attribution — https://sketchfab.com/3d-models/vending-machine-d62a741a00e04d84bc45b6ccb039cf8a
 - **bike_city** — “Bicycle” by Justiinsa, CC Attribution — https://sketchfab.com/3d-models/bicycle-5539b4d5610b4f53858b88daa4f9a749
 - **bike_red** — “Old red bicycle” by patrakeevasveta, CC Attribution — https://sketchfab.com/3d-models/old-red-bicycle-577376dfd2f142359dbac143a49a2489
 - **wheelie_bin** — “wheelie bin game asset” by BLENDERBROCPT, CC Attribution — https://sketchfab.com/3d-models/wheelie-bin-game-asset-390046444cab4de0b668fe702269b5c1
@@ -224,19 +221,15 @@ Models downloaded with scripts/sketchfab.py; scaled, simplified and re-encoded (
 - **helmet** — “motorcycle helmet classic” by zeleniy89, CC Attribution — https://sketchfab.com/3d-models/motorcycle-helmet-classic-a4d4ef2f17c843828cf24d538a9edbd3
 - **helmet2** — “Motorcycle helmet” by vicente betoret ferrero, CC Attribution — https://sketchfab.com/3d-models/motorcycle-helmet-62740f515253473f99021f3b7bfab04d
 - **vn_stool** — “Vietnamese Red Plastic Stool — Game-ready PBR” by Saigon Sidewalk Assets, CC Attribution — https://sketchfab.com/3d-models/vietnamese-red-plastic-stool-game-ready-pbr-f07bfecbffa648c3b61227760901942b
-- **food_stall** — “Street Food Stall – Low Poly 3D Model” by DanielGrps, CC Attribution — https://sketchfab.com/3d-models/street-food-stall-low-poly-3d-model-d5dcb1db6e6e40daba79dbcbcd8fcb41
-- **ramen_stall** — “Ramen/Noodle Food stall” by Seedy.Cn, CC Attribution — https://sketchfab.com/3d-models/ramennoodle-food-stall-e1b14d01f2594a2e820ea1a88c8eb087
 - **fruit_stand** — “Fruit Stand” by Taylor L.E, CC Attribution — https://sketchfab.com/3d-models/fruit-stand-06d4d493dc5f4c89a73db2b7c1c9e210
 - **fruit_stand2** — “Fruit Stand” by vijoyanto, CC Attribution — https://sketchfab.com/3d-models/fruit-stand-b51a0d71217c400eb147d966249320ba
 - **buddha_happy** — “Happy buddha 3D photogrammetry” by Oskari Pahkala, CC Attribution — https://sketchfab.com/3d-models/happy-buddha-3d-photogrammetry-c72f9d45da634b78abf237f8219e4c4c
-- **elec_meter** — “Electric Meter with fuse boxes” by BarrySArt, CC Attribution — https://sketchfab.com/3d-models/electric-meter-with-fuse-boxes-33c41e0176cd41d8bbc40185683ee441
 - **lpg_scan** — “3D scanned LPG Cylinder(low Poly)” by WheelchairDrift, CC Attribution — https://sketchfab.com/3d-models/3d-scanned-lpg-cylinderlow-poly-5db3564dd3054f098b8eefa5c5ae1aea
 - **coconut_green** — “kelapa ijo (green coconut)” by RWA, CC Attribution — https://sketchfab.com/3d-models/kelapa-ijo-green-coconut-30eeeda617d84e939af46ecac2c63175
-- **durian** — “Durian” by rainonec, CC Attribution — https://sketchfab.com/3d-models/durian-ed9ec114cf4145dc9ad20f2219a6875f
-- **watermelon** — “Watermelon” by BB ARTS, CC Attribution — https://sketchfab.com/3d-models/watermelon-48e8bb1cbfa446f383ef64bcebaab5e6
 - **bamboo_basket** — “Bamboo_Basket” by KOREA HERITAGE SERVICE [KHS], CC Attribution — https://sketchfab.com/3d-models/bamboo-basket-6c7e1244d46c457fb6f3d6194663073b
-- **birdcage** — “Bird Cage” by shirlanne, CC Attribution — https://sketchfab.com/3d-models/bird-cage-179d46b0cc3245c6941c2a35ae5c097b
-- **scaffold** — “Scaffolding” by Gunnar Correa, CC Attribution — https://sketchfab.com/3d-models/scaffolding-56c63eb16e5b479883cf3189932b38c9
-- **plastic_chair** — “Plastic chair” by iperbole, CC Attribution — https://sketchfab.com/3d-models/plastic-chair-ef34e3f4c45348cfa92b993f3fc44531
 - **mailbox** — “Old Mailbox” by yoyavova, CC Attribution — https://sketchfab.com/3d-models/old-mailbox-496244e610f340179abd8360ee185763
 - **coconut_palm** — “Coconut Palm” by evolveduk, CC Attribution — https://sketchfab.com/3d-models/coconut-palm-26e787f2ff2e4c0fb004c3b0210805a3
+- **plastic_chair** — “Plastic chair” by iperbole, CC Attribution — https://sketchfab.com/3d-models/plastic-chair-ef34e3f4c45348cfa92b993f3fc44531
+- **birdcage** — “Bird Cage” by shirlanne, CC Attribution — https://sketchfab.com/3d-models/bird-cage-179d46b0cc3245c6941c2a35ae5c097b
+- **elec_meter** — “Electric Meter with fuse boxes” by BarrySArt, CC Attribution — https://sketchfab.com/3d-models/electric-meter-with-fuse-boxes-33c41e0176cd41d8bbc40185683ee441
+- **durian** — “Durian” by rainonec, CC Attribution — https://sketchfab.com/3d-models/durian-ed9ec114cf4145dc9ad20f2219a6875f
