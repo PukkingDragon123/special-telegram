@@ -181,13 +181,12 @@ function signCanvas() {
     c.fillStyle = '#7a0808'; c.fillRect(0, 346, 2048, 8);
     c.textAlign = 'center'; c.textBaseline = 'middle';
     c.lineJoin = 'round';
-    // sign-painter display face (Chonburi), no heavy outline: reads like a real printed vinyl sign
-    c.font = `400 200px ${F.display}`;
-    c.lineWidth = 8; c.strokeStyle = '#5a0606'; c.strokeText('ร้านเฮียผัด', 1024, 150);
-    c.fillStyle = '#fff6d8'; c.fillText('ร้านเฮียผัด', 1024, 150);
-    c.font = `700 70px ${F.news}`; c.fillStyle = '#5a0606';
+    // plain printed-vinyl lettering (Sarabun ExtraBold, solid fill, no outline)
+    c.font = `800 196px ${F.sign}`;
+    c.fillStyle = '#ffffff'; c.fillText('ร้านเฮียผัด', 1024, 150);
+    c.font = `700 68px ${F.sign}`; c.fillStyle = '#5a0606';
     c.fillText('อาหารตามสั่ง · กะเพรา · ข้าวผัด · ราดหน้า · ต้มยำ', 1024, 393);
-    c.font = `600 40px ${F.ui}`; c.fillStyle = '#ffe9a8';
+    c.font = `700 40px ${F.sign}`; c.fillStyle = '#ffe9a8';
     c.fillText('เปิดทุกวัน 06:00 – 24:00  โทร 08-1234-5678', 1024, 298);
   });
   const photo = (file: string, x: number) => Assets.image(FOOD + file).then((im) => {
@@ -208,8 +207,8 @@ function noticeCanvas() {
     c.fillStyle = '#f4f0e2'; c.fillRect(0, 0, 420, 600);
     c.fillStyle = 'rgba(120,100,60,0.12)'; for (let i = 0; i < 40; i++) c.fillRect(Math.random() * 420, Math.random() * 600, 30, 2);
     c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.font = `900 118px ${F.news}`; c.fillStyle = '#c01212'; c.fillText('ให้เช่า', 210, 92);
-    c.font = `700 40px ${F.news}`; c.fillStyle = '#1b2b6b'; c.fillText('FOR RENT', 210, 170);
+    c.font = `800 118px ${F.sign}`; c.fillStyle = '#c01212'; c.fillText('ให้เช่า', 210, 92);
+    c.font = `800 40px ${F.sign}`; c.fillStyle = '#1b2b6b'; c.fillText('FOR RENT', 210, 170);
     c.font = `400 34px ${F.hand}`; c.fillStyle = '#222';
     ['ห้องแถว 1 คูหา ทำเลทอง', 'หน้าร้านมีรถเข็นกะเพรา', 'มัดจำ 3,000 บ. / วันละ 150', 'ติดต่อ เจ๊ลำไย', '08-1234-5678', '(ไม่รับคนผัดค่าเช่า)'].forEach((l, i) => c.fillText(l, 210, 238 + i * 44));
     // tear-off phone strips (two already torn)
@@ -246,7 +245,7 @@ class WallMenu {
     c.fillStyle = '#1d2b22'; c.fillRect(0, 0, 1536, 576);
     c.fillStyle = '#ffd21a'; c.fillRect(0, 0, 1536, 92);
     c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.font = `400 62px ${F.display}`; c.fillStyle = '#7a0808'; c.fillText('เมนูร้านเฮียผัด', 768, 48);
+    c.font = `800 60px ${F.sign}`; c.fillStyle = '#7a0808'; c.fillText('เมนูร้านเฮียผัด', 768, 48);
     const cols = 4, cw = 1536 / cols;
     ids.slice(0, 8).forEach((r, i) => {
       const x = (i % cols) * cw + cw / 2, y = 150 + Math.floor(i / cols) * 220;
@@ -536,7 +535,7 @@ export class ShopHouse3D {
         c.fillStyle = '#fbf8ee'; c.fillRect(0, 0, 256, 360);
         c.fillStyle = '#b8860b'; c.fillRect(0, 0, 256, 120);
         c.textAlign = 'center'; c.textBaseline = 'middle';
-        c.font = `700 30px ${F.news}`; c.fillStyle = '#fff6d8'; c.fillText('ห้างทองเจ๊ลำไย', 128, 42);
+        c.font = `800 30px ${F.sign}`; c.fillStyle = '#fff6d8'; c.fillText('ห้างทองเจ๊ลำไย', 128, 42);
         c.font = `500 20px ${F.ui}`; c.fillText('ทองแท้ 99.99% ผ่อนได้', 128, 84);
         c.font = `700 34px ${F.heavy}`; c.fillStyle = '#9a1010'; c.fillText('พฤศจิกายน', 128, 152);
         c.font = `500 20px ${F.ui}`; c.fillStyle = '#333';
@@ -561,7 +560,7 @@ export class ShopHouse3D {
       const ban = canvasTex(1024, 180, (c) => {
         c.fillStyle = '#f4f0e0'; c.fillRect(0, 0, 1024, 180);
         c.textAlign = 'center'; c.textBaseline = 'middle';
-        c.font = `400 90px ${F.display}`; c.fillStyle = '#c01212'; c.fillText('เฮียผัด (ห้องแอร์)', 512, 92);
+        c.font = `800 90px ${F.sign}`; c.fillStyle = '#c01212'; c.fillText('เฮียผัด (ห้องแอร์)', 512, 92);
         c.fillStyle = '#888'; for (const x of [24, 1000]) for (const y of [24, 156]) { c.beginPath(); c.arc(x, y, 10, 0, Math.PI * 2); c.fill(); }
       });
       const banner = new THREE.Mesh(art('z+', 0.5, W - 0.5, yb + 0.02, y1 - 0.02, 0.045), new THREE.MeshStandardMaterial({ map: ban.t, roughness: 0.75, side: THREE.DoubleSide }));

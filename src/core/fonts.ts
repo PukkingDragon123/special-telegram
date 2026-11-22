@@ -39,11 +39,18 @@ export const F = {
   tech: '"Noto Sans Thai Looped"',
   prompt: '"Noto Sans Thai Looped"',
   jamjuree: '"Noto Sans Thai Looped"',
+  /** SIGNAGE + printed notices: Sarabun Bold/ExtraBold (OFL, looped) — the plain face of real Thai shop signs and
+   *  printed bills. Thai and Latin ship as two subset files under one family (unicode ranges). Solid fill, no outlines. */
+  sign: '"HP Sign", "Noto Sans Thai Looped"',
   /** manga SFX / menace lettering: Dela Gothic One (OFL, katakana subset) with Thai falling back to Noto Black */
   jpDisplay: '"Dela Gothic One", "Noto Sans Thai Looped"',
 } as const;
 
-const FILES: [string, string, string, string?][] = [
+const THAI_RANGE = 'U+0E01-0E5B, U+200C-200D, U+25CC';
+const LATIN_RANGE = 'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD';
+const FILES: [string, string, string, string?, string?][] = [
+  ['HP Sign', 'Sarabun-Thai-700', '700', 'normal', THAI_RANGE], ['HP Sign', 'Sarabun-Latin-700', '700', 'normal', LATIN_RANGE],
+  ['HP Sign', 'Sarabun-Thai-800', '800', 'normal', THAI_RANGE], ['HP Sign', 'Sarabun-Latin-800', '800', 'normal', LATIN_RANGE],
   ['Noto Sans Thai Looped', 'NotoSansThaiLooped', '100 900'], ['Noto Serif Thai', 'NotoSerifThai', '100 900'],
   ['Taviraj', 'Taviraj-Regular', '400'], ['Taviraj', 'Taviraj-Bold', '700'], ['Taviraj', 'Taviraj-Black', '900'],
   ['Trirong', 'Trirong-Regular', '400'], ['Trirong', 'Trirong-Bold', '700'], ['Trirong', 'Trirong-Black', '900'],
@@ -63,9 +70,9 @@ let loading: Promise<void> | null = null;
 export function loadFonts(): Promise<void> {
   if (loading) return loading;
   loading = Promise.all(
-    FILES.map(async ([fam, file, weight, style]) => {
+    FILES.map(async ([fam, file, weight, style, range]) => {
       try {
-        const ff = new FontFace(fam, `url(${asset('fonts/' + file + '.woff2')}) format("woff2")`, { weight, style: style ?? 'normal', display: 'block' } as any);
+        const ff = new FontFace(fam, `url(${asset('fonts/' + file + '.woff2')}) format("woff2")`, { weight, style: style ?? 'normal', display: 'block', ...(range ? { unicodeRange: range } : {}) } as any);
         await ff.load();
         (document as any).fonts.add(ff);
       } catch (e) {
