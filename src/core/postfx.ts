@@ -707,7 +707,13 @@ export class PostFX {
     this.inkPass.enabled = InkSettings.ink;
     INK_ON.value = InkSettings.ink ? 1 : 0;
     updateInkHulls(this.intH, this.intW);
-    this.composer.render(dt);
+    // The composer's depth texture lives on its FIRST buffer only. AO swaps the buffers, so a DOF pass right
+    // after it would sample that depth while writing into the very buffer it is attached to (WebGL "feedback
+    // loop" every frame of the casino / cutscene DOF shots, undefined results). DOF shots skip AO for the frame
+    // (the bokeh hides it anyway); the modules' own ao.enabled choice is restored right after.
+    const aoUser = this.ao.enabled;
+    if (aoUser && this.dofPass.enabled) this.ao.enabled = false;
+    try { this.composer.render(dt); } finally { this.ao.enabled = aoUser; }
   }
 }
 
