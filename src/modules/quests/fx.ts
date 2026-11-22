@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { LightPool } from '../../core/lightpool';
+const _cardL = new THREE.Vector3();
 import { L, T, TT } from '../../core/lang';
 import type { Game } from '../../game/game';
 import { Sound } from '../../core/audio';
@@ -66,7 +68,7 @@ function backdrop(w: number, h: number, opacity = 0.5) {
 }
 
 interface Marker { obj: THREE.Group; text: Text3D; kind: '!' | '?'; role: string; t: number; up: number }
-interface Card { group: THREE.Group; parts: Text3D[]; extra: THREE.Object3D[]; t: number; life: number; kind: 'start' | 'done' | 'recipe'; light?: THREE.PointLight }
+interface Card { group: THREE.Group; parts: Text3D[]; extra: THREE.Object3D[]; t: number; life: number; kind: 'start' | 'done' | 'recipe'; light?: boolean }
 
 export class QuestFX {
   private markers = new Map<string, Marker>();
@@ -270,7 +272,7 @@ export class QuestFX {
 
   // ------------------------------------------------------------------ cards
 
-  private card(kind: Card['kind'], build: (g: THREE.Group) => { parts: Text3D[]; extra?: THREE.Object3D[]; light?: THREE.PointLight }, life: number) {
+  private card(kind: Card['kind'], build: (g: THREE.Group) => { parts: Text3D[]; extra?: THREE.Object3D[]; light?: boolean }, life: number) {
     const run = () => {
       const group = new THREE.Group();
       group.renderOrder = 2200;
@@ -348,9 +350,6 @@ export class QuestFX {
           g.add(dish);
         }
       } catch (e) { console.warn('[quests] dish preview', e); dish = null; }
-      const light = new THREE.PointLight(0xfff0d8, 2.2, 1.6, 1.5);
-      light.position.set(0.1, 0.12, 0.35);
-      g.add(light);
       const a = new Text3D(TT('สูตรใหม่!', 'New recipe!'), CARD_BIG);
       const b = new Text3D(T(R.name), { ...CARD_MID, size: 0.036, color: 0xfff6e2 });
       const c = new Text3D('', CARD_SMALL);
@@ -360,7 +359,7 @@ export class QuestFX {
       for (const t of [a, b, c, s]) { t.popIn(0.025); g.add(t); }
       g.userData.dish = dish;
       g.userData.card = card;
-      return { parts: [a, b, c, s], extra: dish ? [dish, card] : [card], light };
+      return { parts: [a, b, c, s], extra: dish ? [dish, card] : [card], light: true };
     }, 4.2);
     Sound.play('level_up_fanfare', { vol: 0.6 });
     Sound.play('page_turn', { vol: 0.6, delay: 0.25 });
@@ -415,6 +414,8 @@ export class QuestFX {
         g.rotation.set(0.05, Math.PI * 2 * Ease.inOutCubic(spin) + Math.sin(c.t * 1.1) * 0.12, Math.sin(c.t * 0.7) * 0.03);
         const dish = g.userData.dish as THREE.Object3D | null;
         if (dish) dish.rotation.y = c.t * 1.2;
+        // warm key light on the card: the world's pooled point light (camera space), not a new light
+        if (c.light) LightPool.card(_cardL.set(g.position.x + 0.1 * g.scale.x, g.position.y + 0.12 * g.scale.x, g.position.z + 0.35 * g.scale.x), 2.2 * Math.min(1, g.scale.x));
       } else g.rotation.set(0, Math.sin(c.t * 1.2) * 0.06, Math.sin(c.t * 0.8) * 0.015);
       if (k >= 1) {
         g.removeFromParent();

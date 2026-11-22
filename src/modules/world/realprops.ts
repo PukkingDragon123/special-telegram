@@ -239,6 +239,22 @@ loader.setMeshoptDecoder(MeshoptDecoder);
 /** texture sources created by this system (GLB images, grey-normalised canvases, proc textures): their CPU copies are
  *  dropped after the GPU upload (the page sits at 2–3 GB under SwiftShader; every 100 MB counts) */
 export const ownedSources = new Set<THREE.Source>();
+/** released sources → small copies, re-attached when the WebGL context is restored */
+const lowRes = new Map<THREE.Source, ImageBitmap>();
+let lowResHooked = false;
+function keepLowRes(src: THREE.Source, img: any) {
+  const done = () => { try { if (img instanceof ImageBitmap) img.close(); else if (img instanceof HTMLCanvasElement) img.width = img.height = 1; } catch { /* gone */ } };
+  if (!img || !img.width || typeof createImageBitmap !== 'function') { done(); return; }
+  createImageBitmap(img, { resizeWidth: Math.max(1, img.width >> 2), resizeHeight: Math.max(1, img.height >> 2), resizeQuality: 'medium' } as any)
+    .then((b) => { lowRes.set(src, b); }).catch(() => { /* no fallback for this one */ }).finally(done);
+}
+export function hookLowResRestore(canvas: HTMLCanvasElement) {
+  if (lowResHooked) return;
+  lowResHooked = true;
+  canvas.addEventListener('webglcontextrestored', () => {
+    for (const [src, b] of lowRes) if (!src.data) { src.data = b; src.needsUpdate = true; }
+  }, false);
+}
 export function ownTexture<T extends THREE.Texture>(t: T): T { ownedSources.add(t.source); return t; }
 const TEX_SLOTS = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap', 'clearcoatMap', 'clearcoatNormalMap'] as const;
 const modelCache = new Map<string, Promise<Model | null>>();
@@ -772,6 +788,7 @@ export class RealProps {
   /** upload every texture my materials use, then drop the CPU copies of the sources I own */
   private releaseCpuTextures(game: Game) {
     const R = game.engine.renderer;
+    hookLowResRestore(R.domElement);
     const mats = new Set<THREE.Material>();
     for (const b of this.batches) for (const m of b.meshes) mats.add(m.material as THREE.Material);
     for (const o of this.objects) o.traverse((x) => { const mm = (x as THREE.Mesh).material; if (mm) (Array.isArray(mm) ? mm : [mm]).forEach((q) => mats.add(q)); });
@@ -787,8 +804,11 @@ export class RealProps {
         // the source may also back textures of models nobody placed yet: keep those
         done.add(src);
         const img = src.data as any;
-        if (typeof ImageBitmap !== 'undefined' && img instanceof ImageBitmap) { freed += img.width * img.height * 4; img.close(); }
-        else if (img instanceof HTMLCanvasElement) { freed += img.width * img.height * 4; img.width = img.height = 1; }
+        // keep a quarter-size copy (1/16 of the memory) so a WebGL context loss (driver reset, GPU switch) brings
+        // the props back slightly blurry instead of untextured; full size is only on the GPU
+        keepLowRes(src, img);
+        if (typeof ImageBitmap !== 'undefined' && img instanceof ImageBitmap) { freed += img.width * img.height * 4; }
+        else if (img instanceof HTMLCanvasElement) { freed += img.width * img.height * 4; }
         else if (img && img.width) freed += img.width * img.height * 4;
         src.data = null;
       }

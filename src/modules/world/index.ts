@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { uploadSliced } from '../../core/texupload';
 import { DetailCull } from '../../core/detailcull';
 import { ClothSpots } from '../cloth/api';
 import { defineModule } from '../../game/contracts';
@@ -277,7 +278,8 @@ function releaseCpuCopies(game: Game, assets: any) {
         try {
           const bmp = await createImageBitmap(cv0, { imageOrientation: a.tex.flipY ? 'flipY' : 'from-image', premultiplyAlpha: a.tex.premultiplyAlpha ? 'premultiply' : 'none', colorSpaceConversion: 'none' } as any);
           a.tex.image = bmp; a.tex.flipY = false; a.tex.needsUpdate = true;
-          R.initTexture(a.tex);
+          // 64 MB in one texSubImage2D was a long freeze behind the cutscene: upload in strips, one per frame
+          await uploadSliced(R, a.tex, bmp, nextFrame);
           if (cv0 !== bmp) { cv0.width = 1; cv0.height = 1; }
           await nextFrame();
           continue;
@@ -295,7 +297,14 @@ function releaseCpuCopies(game: Game, assets: any) {
   })().catch((e) => console.warn('[world] release', e));
   if (!restoreHooked) {
     restoreHooked = true;
-    R.domElement.addEventListener('webglcontextrestored', () => { restoreWorldTextures(game).catch((e) => console.warn('[world] restore', e)); }, false);
+    R.domElement.addEventListener('webglcontextrestored', () => {
+      // until the layers are decoded again, three must not upload the (released) null data: texSubImage3D(null)
+      // is an INVALID_OPERATION and left the arrays empty — allocate only, fill when the pixels are back
+      for (const t of [assets.tex?.alb, assets.tex?.nra] as (THREE.DataArrayTexture | undefined)[]) {
+        if (t && !(t.image as any).data) (t.source as any).dataReady = false;
+      }
+      restoreWorldTextures(game).catch((e) => console.warn('[world] restore', e));
+    }, false);
   }
 }
 
@@ -310,6 +319,7 @@ async function restoreWorldTextures(game: Game) {
   const fresh = await loadWorldTextures((tex.alb.image as any).width, worldMan);
   for (const [dst, src] of [[tex.alb, fresh.alb], [tex.nra, fresh.nra]] as const) {
     (dst.image as any).data = (src.image as any).data;
+    (dst.source as any).dataReady = true;
     dst.needsUpdate = true;
     dst.onUpdate = () => { dst.onUpdate = null; (dst.image as any).data = null; };
   }

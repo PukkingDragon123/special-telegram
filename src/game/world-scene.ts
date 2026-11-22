@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { LightPool } from '../core/lightpool';
 import type { Game } from './game';
 import type { SceneDef } from './scenes';
 import { Physics } from '../sim/physics';
@@ -72,6 +73,8 @@ export class WorldScene implements SceneDef {
     game.scene = this.scene;
     game.camera = this.camera;
     this.scene.add(this.camera);
+    // borrowed lights (flashlight, recipe card) exist from the start at 0: a light appearing mid-game recompiles every lit shader
+    LightPool.install(this.scene, this.camera);
     game.physics = await Physics.create();
     game.world = null;
     await breathe();
@@ -106,6 +109,9 @@ export class WorldScene implements SceneDef {
       await breathe();
       game.views.prepare(this.scene);
       while (!game.views.prepareStep(0)) await breathe();
+      // modules that decorate prepared views (ink hulls on pets / the cart …) do it now, so the shader warm-up
+      // below compiles those materials too instead of the first frames after the wake-up
+      await game.events.emitAsync('world:views', this.scene);
       // … then programs + texture uploads for the post-process target, behind the cutscene (compileAsync = no stall)
       await breathe();
       await prewarmShaders(game.engine.renderer, this.scene, this.camera, 180000, true);

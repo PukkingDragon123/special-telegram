@@ -211,6 +211,8 @@ class Anime {
       this.word(new THREE.Vector3(d.p[0], d.p[1] + 0.3, d.p[2]), 'จ๋อม!', '#8fd8ff', 0.15);
     });
     // host-local events (the host sees these; clients get the replicated consequences)
+    // staged world: hull pets / the cart before the shader warm-up (their hull programs compile behind the cutscene)
+    g.events.on('world:views', () => { try { this.hullPets(); } catch { /* visual only */ } });
     g.events.on('item:dropped', (d: { item: number; thrown?: boolean }) => {
       if (!d.thrown) return;
       setTimeout(() => {

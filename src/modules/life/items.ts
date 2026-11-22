@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { LightPool } from '../../core/lightpool';
+const _tA = new THREE.Vector3(), _tB = new THREE.Vector3();
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import { tl } from '../../core/util';
@@ -193,17 +195,14 @@ export function defineLifeItems(game: Game) {
       return g;
     },
     animate: (obj: THREE.Object3D, e: Ent, _dt: number, game: Game) => {
-      // a real light when carried at night (local only, no shadows)
+      // a real light when carried at night (local player only, no shadows) — the world's pooled torch light, so
+      // switching it on never changes the scene's light count (that would recompile every lit shader)
       const on = e.holder != null && game.clock.nightFactor > 0.25;
-      let L = obj.userData.light as THREE.SpotLight | undefined;
-      if (on && !L) {
-        L = new THREE.SpotLight(0xfff1d0, 30, 22, 0.42, 0.55, 1.6);
-        L.position.set(0.13, 0.03, 0);
-        L.target.position.set(1.5, 0.0, 0);
-        obj.add(L, L.target);
-        obj.userData.light = L;
+      const mine = on && e.holder === game.me?.id;
+      if (mine) {
+        obj.updateWorldMatrix(true, false);
+        LightPool.torch(obj.localToWorld(_tA.set(0.13, 0.03, 0)), obj.localToWorld(_tB.set(1.5, 0, 0)));
       }
-      if (L) L.visible = on;
       const lens = obj.getObjectByName('lens') as THREE.Mesh | undefined;
       if (lens) (lens.material as THREE.MeshStandardMaterial).emissiveIntensity = on ? 3 : 0;
     },
