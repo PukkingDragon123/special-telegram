@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import type { Game } from '../../game/game';
 import type { AnimName, CharacterRig, Expression, Look } from '../../game/contracts';
-import { F } from '../../core/fonts';
 import { Assets } from '../../core/assets';
 import { buildCartModel } from '../cooking/cart';
 import { Studio, settle, photo, hashStr, type ShotOpts } from './studio';
@@ -19,7 +18,7 @@ import { Studio, settle, photo, hashStr, type ShotOpts } from './studio';
 export const PW = 640, PH = 904;
 
 export interface PosterDef { id: string; cat: string; draw: (c: Ctx) => Promise<void> }
-interface Ctx { g: CanvasRenderingContext2D; game: Game; st: Studio; seed: number; paper: HTMLImageElement | null }
+interface Ctx { g: CanvasRenderingContext2D; game: Game; st: Studio; seed: number; paper?: null }
 
 const SRC = (n: string) => '/scripts/posters-src/' + n;
 const imgCache = new Map<string, Promise<HTMLImageElement | null>>();
@@ -206,10 +205,8 @@ export const POSTERS: PosterDef[] = [
 
   // ---------------------------------------------------------------- the movie (one-sheet: dark field, figure, title, billing block)
   { id: 'movie', cat: 'poster', draw: async ({ g, game, st }) => {
-    const night = await asset('img/newspaper/photos/traffic_night_color.jpg');
     box(g, 0, 0, PW, PH, '#0e0f12');
-    photo(g, night, 0, 0, PW, 520, { alpha: 0.55 });
-    box(g, 0, 470, PW, PH - 470, '#0e0f12');
+    box(g, 0, 0, PW, 650, '#1c2a3a');
     const h = await person(game, 'player', { anim: 'cook_stir', expr: 'determined', yaw: -0.4, hold: 'wok', look: { top: { id: 'chef_jacket', color: '#f2f0ea' } } });
     const shot = body(st, h, { crop: 'waist' });
     h.dispose();
@@ -243,14 +240,14 @@ export const POSTERS: PosterDef[] = [
   { id: 'meme_expect', cat: 'poster', draw: async ({ g, game, st }) => {
     box(g, 0, 0, PW, PH, WHT);
     const good = dish(game, { vis: { burn: 0, sauce: 0.6, herb: 1, chili: 0.7, size: 1.1, raw: 0 }, egg: 'crispy' });
-    const bad = dish(game, { vis: { burn: 1, sauce: 0.1, herb: 0.2, chili: 0.1, size: 0.55, raw: 0 }, egg: 'none', issues: ['burnt'] });
-    const half = async (y: number, label: string, obj: THREE.Object3D | null) => {
+    const bad = dish(game, { vis: { burn: 1, sauce: 0, herb: 0, chili: 0, size: 0.5, raw: 0 }, egg: 'none', portion: 70, issues: ['burnt'] });
+    const half = async (y: number, label: string, obj: THREE.Object3D | null, burnt = false) => {
       line(g, label, PW / 2, y + 62, HEAD, 54, BLK);
       box(g, 24, y + 84, PW - 48, PH / 2 - 108, '#e9e4da');
-      if (obj) { const s = await objShot(st, obj, { key: [-1, 2, -1.2], keyI: 2.2, rimI: 0.6, fov: 26 }); const w = PW * 0.7; g.drawImage(s, (PW - w) / 2, y + 100, w, s.height * (w / s.width)); }
+      if (obj) { const s = await objShot(st, obj, { key: [-1, 2, -1.2], keyI: 2.2, rimI: 0.6, fov: 26 }); const w = PW * 0.7; if (burnt) g.filter = 'brightness(0.5) sepia(0.5)'; g.drawImage(s, (PW - w) / 2, y + 100, w, s.height * (w / s.width)); g.filter = 'none'; }
     };
     await half(0, 'สั่งตามรูป', good);
-    await half(PH / 2, 'ได้ตามจริง', bad);
+    await half(PH / 2, 'ได้ตามจริง', bad, true);
   } },
 
   // ---------------------------------------------------------------- meme: no / yes (two rows, plain)

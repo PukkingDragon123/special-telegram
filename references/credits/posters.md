@@ -8,10 +8,7 @@ brands or characters. Backdrop photos:
 |---|---|---|---|---|
 | fight_night (blurred, graded backdrop) — `scripts/posters-src/boxing.jpg` | "Boxing Ring" (StockSnap PPBG50NAWP, via Openverse) | https://stocksnap.io/photo/PPBG50NAWP | StockSnap | CC0 1.0 |
 | lukthung (stage lights) — `scripts/posters-src/concert2.jpg` | "Concert Show" (StockSnap 5FGWJW4Z5D, via Openverse) | https://stocksnap.io/photo/5FGWJW4Z5D | StockSnap | CC0 1.0 |
-| (spare) — `scripts/posters-src/concert3.jpg` | "Music Concert" (StockSnap L695JG265J, via Openverse) | https://stocksnap.io/photo/L695JG265J | StockSnap | CC0 1.0 |
-| movie (wok fire) | `img/newspaper/photos/wok_fire_color.jpg` | see references/credits (newspaper photos) | — | as listed there |
 | shop_thanks (food photo) | `img/newspaper/photos/kaprao_egg_closeup_color.jpg` | see references/credits (newspaper photos) | — | as listed there |
 | meme_distracted (street) | `gen/menu/street/street_dusk.jpg` | see references/credits/menu.md | — | as listed there |
-| all (paper texture) | `textures/pbr/paper_creased` (ambientCG Paper003) | https://ambientcg.com/view?id=Paper003 | ambientCG | CC0 1.0 |
 
-Fonts: Chonburi, Taviraj, Trirong, Kodchasan, Dela Gothic One, Noto Sans Thai Looped (all SIL OFL, shipped in public/assets/fonts).
+Fonts: Sarabun Bold/ExtraBold (SIL OFL, @fontsource/sarabun → public/assets/fonts/Sarabun-*.woff2, also the sign face F.sign) and IBM Plex Sans Thai Looped (SIL OFL, @fontsource, build-time only → scripts/posters-src/fonts). Solid fills, no effects.
