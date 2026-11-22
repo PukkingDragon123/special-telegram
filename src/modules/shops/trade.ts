@@ -67,11 +67,19 @@ export function resolveKind(game: Game, st: StockDef): string {
   return st.fb;
 }
 
-export function buildShops(game: Game) {
+export function buildShops(game: Game): void;
+export function buildShops(game: Game, breathe: () => Promise<void>): Promise<void>;
+/** with `breathe`: yields between shops (staged world build behind the cutscene: no multi-second freeze) */
+export function buildShops(game: Game, breathe?: () => Promise<void>): void | Promise<void> {
   G = game;
   for (const rt of RT.values()) rt.fix?.root.removeFromParent();
   RT.clear();
-  for (const def of SHOPS) {
+  if (!breathe) { for (const def of SHOPS) buildOneShop(game, def); finishShops(game); return; }
+  return (async () => { for (const def of SHOPS) { buildOneShop(game, def); await breathe(); } finishShops(game); })();
+}
+
+function buildOneShop(game: Game, def: (typeof SHOPS)[number]) {
+  {
     const kinds = new Map(def.stock.map((st) => [st.id, resolveKind(game, st)]));
     let fix: ShopFix | null = null;
     try { fix = buildFixture(game, def, kinds); } catch (e) { console.error('[shops] fixture', def.id, e); }
@@ -93,6 +101,9 @@ export function buildShops(game: Game) {
     };
     RT.set(def.id, rt);
   }
+}
+
+function finishShops(game: Game) {
   // neighbours (market keepers gossip)
   for (const rt of RT.values()) rt.neighbour = () => {
     let best: Ent | null = null, bd = 16;

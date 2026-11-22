@@ -134,6 +134,16 @@ const LOOK: Record<string, Text3DOpts> = {
   },
 };
 
+// Bigger, easier-to-read floating lettering (user: "make floating 3d text a lot bigger"). Size AND wrap width scale
+// together, so line breaks stay the same and the words are simply larger in the world.
+const GROW: Record<string, number> = { say: 1.8, saySub: 1.6, shout: 1.7, shoutSub: 1.6, think: 1.75, thinkSub: 1.6, popup: 1.4, tag: 1.25, tagSub: 1.25 };
+for (const [k, f] of Object.entries(GROW)) {
+  const o = LOOK[k];
+  if (!o) continue;
+  if (o.size) o.size *= f;
+  if (o.maxWidth) o.maxWidth *= f;
+}
+
 /** map a canvas font family (F.*) onto the closest 3D face */
 export function font3DFromFamily(f?: string): Font3D | null {
   if (!f) return null;
@@ -329,16 +339,16 @@ export class UI3D {
   private subRootEl(): HTMLDivElement {
     if (this.subRoot) return this.subRoot;
     const st = document.createElement('style');
-    const sh = '1px 0 0 #0b0907,-1px 0 0 #0b0907,0 1px 0 #0b0907,0 -1px 0 #0b0907,1px 1px 0 #0b0907,-1px 1px 0 #0b0907,1px -1px 0 #0b0907,-1px -1px 0 #0b0907,0 2px 3px rgba(0,0,0,.55)';
+    const sh = '2px 0 0 #0b0907,-2px 0 0 #0b0907,0 2px 0 #0b0907,0 -2px 0 #0b0907,1.5px 1.5px 0 #0b0907,-1.5px 1.5px 0 #0b0907,1.5px -1.5px 0 #0b0907,-1.5px -1.5px 0 #0b0907,0 3px 5px rgba(0,0,0,.6)';
     st.textContent = `
-      .ui3d-subs{position:fixed;left:0;right:0;bottom:calc(13vh + 64px);pointer-events:none;z-index:8;font-family:${F.ui},sans-serif}
-      .ui3d-subs .col{position:absolute;bottom:0;display:flex;flex-direction:column;gap:6px;max-width:min(34vw,420px)}
+      .ui3d-subs{position:fixed;left:0;right:0;bottom:calc(13vh + 72px);pointer-events:none;z-index:8;font-family:${F.ui},sans-serif}
+      .ui3d-subs .col{position:absolute;bottom:0;display:flex;flex-direction:column;gap:8px;max-width:min(40vw,600px)}
       .ui3d-subs .col.l{left:clamp(12px,2vw,28px);align-items:flex-start;text-align:left}
       .ui3d-subs .col.r{right:clamp(12px,2vw,28px);align-items:flex-end;text-align:right}
       .ui3d-subs .col.c{left:50%;transform:translateX(-50%);align-items:center;text-align:center}
-      .ui3d-sub{color:#fff;font:600 clamp(13px,1.15vw,16px)/1.3 ${F.ui};text-shadow:${sh};opacity:0;transition:opacity .25s}
+      .ui3d-sub{color:#fff;font:600 clamp(19px,1.75vw,28px)/1.3 ${F.ui};text-shadow:${sh};opacity:0;transition:opacity .25s}
       .ui3d-sub.on{opacity:1}
-      .ui3d-sub b{display:block;font:700 11px/1.2 ${F.ui};opacity:.75}
+      .ui3d-sub b{display:block;font:700 clamp(14px,1.1vw,17px)/1.25 ${F.ui};opacity:.8}
       .ui3d-sub i{font-style:normal;font-weight:800;margin:0 .35em}`;
     document.head.appendChild(st);
     const r = (this.subRoot = document.createElement('div'));
@@ -357,6 +367,7 @@ export class UI3D {
       const esc = (v: any) => (typeof v === 'string' ? v : v && typeof v === 'object' ? T(v) : String(v ?? '')).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!));
       const text = esc(L.th ?? '');
       el.dataset.side = '';
+      el.dataset.raw = text;
       el.innerHTML = (L.name ? `<b>${esc(L.name)}</b>` : '') + `<span>${text}</span>`;
       requestAnimationFrame(() => el?.classList.add('on'));
     }
@@ -364,13 +375,19 @@ export class UI3D {
     if (el.dataset.side !== sk || el.parentElement !== col) {
       el.dataset.side = sk;
       const span = el.querySelector('span')!;
-      const raw = span.textContent ?? '';
-      span.innerHTML = side < 0 ? `<i>◀</i>${raw.replace(/^[◀▶]\s*/, '')}` : side > 0 ? `${raw.replace(/\s*[◀▶]$/, '')}<i>▶</i>` : raw;
+      const raw = el.dataset.raw ?? '';   // already escaped
+      span.innerHTML = side < 0 ? `<i>◀</i>${raw}` : side > 0 ? `${raw}<i>▶</i>` : raw;
       col.appendChild(el);
     }
     // at most 3 off-screen lines on screen: the oldest go first
     const all = root.querySelectorAll('.ui3d-sub');
     if (all.length > 3) all[0].remove();
+  }
+  /** A screen subtitle with no 3D line (e.g. a friend's cardboard sign that is too far / off-screen to read). */
+  subtitle(text: string, name?: string, dur = 5) {
+    const L = { th: text, name, sub2d: null } as unknown as Live;
+    this.subOn(L, 0);
+    setTimeout(() => this.subOff(L), dur * 1000);
   }
   private subOff(L: Live) {
     const el = L.sub2d;

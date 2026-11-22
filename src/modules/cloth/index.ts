@@ -424,9 +424,13 @@ export class ClothWorld {
     g.batch = bt; bt.garments.push(g); this.garments.push(g);
   }
 
-  build(only?: LineSpot[]) {
+  async build(only?: LineSpot[]) {
     const t0 = performance.now();
     const game = this.game;
+    // the settle simulation of ~hundreds of garments is seconds of CPU: while the world is staged behind the
+    // menu / cutscene, give the frame back every ~8 ms instead of freezing the cutscene for the whole build
+    let tY = performance.now();
+    const breathe = async () => { if (game.staging && performance.now() - tY > 8) { await new Promise((r) => setTimeout(r, 0)); tY = performance.now(); } };
     game.scene!.add(this.root);
     const pegs: THREE.Matrix4[] = [], pegCol: THREE.Color[] = [], ropes: THREE.BufferGeometry[] = [];
     const hangers: { m: THREE.Matrix4; wire: boolean; c: THREE.Color }[] = [];
@@ -436,9 +440,10 @@ export class ClothWorld {
     for (const s of spots) {
       try { if (s.kind === 'line') this.buildLine(s, pegs, pegCol, ropes); else this.buildRail(s, hangers); }
       catch (e) { console.warn('[cloth] spot failed', e); }
+      await breathe();
     }
-    if (!only) for (const t of ClothSpots.tarps) { try { this.buildTarp(t); } catch (e) { console.warn('[cloth] tarp failed', e); } }
-    if (!only) for (const c of ClothSpots.curtains) { try { this.buildCurtain(c); } catch (e) { console.warn('[cloth] curtain failed', e); } }
+    if (!only) for (const t of ClothSpots.tarps) { try { this.buildTarp(t); } catch (e) { console.warn('[cloth] tarp failed', e); } await breathe(); }
+    if (!only) for (const c of ClothSpots.curtains) { try { this.buildCurtain(c); } catch (e) { console.warn('[cloth] curtain failed', e); } await breathe(); }
     for (const b of this.batches.values()) b.finalize(this.root);
     // pegs (instanced)
     if (pegs.length) {
@@ -705,7 +710,8 @@ export default defineModule({
   async buildWorld(game) {
     CW?.dispose();
     CW = new ClothWorld(game);
-    CW.build();
+    const cw = CW;
+    await cw.build();
   },
   frame(game, dt) {
     if (!CW) {

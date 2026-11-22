@@ -13,6 +13,17 @@ export class Emitter {
     const off = this.on<T>(type, (d) => { off(); fn(d); });
     return off;
   }
+  /** emit, then wait for every promise a handler returned (staged world build: async world:built work) */
+  async emitAsync<T = any>(type: string, data?: T): Promise<void> {
+    const s = this.map.get(type);
+    if (!s) return;
+    const waits: Promise<unknown>[] = [];
+    for (const fn of [...s]) {
+      try { const r: any = (fn as any)(data); if (r && typeof r.then === 'function') waits.push(r.catch((e: unknown) => console.error(`[event ${type}]`, e))); }
+      catch (e) { console.error(`[event ${type}]`, e); }
+    }
+    await Promise.all(waits);
+  }
   emit<T = any>(type: string, data?: T) {
     const s = this.map.get(type);
     if (!s) return;

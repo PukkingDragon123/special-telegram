@@ -1,0 +1,70 @@
+{
+ "items": [
+  {
+   "id": "casino_drama",
+   "file": "casino_drama.webp",
+   "cat": "casino",
+   "aspect": 0.708
+  },
+  {
+   "id": "casino_pose",
+   "file": "casino_pose.webp",
+   "cat": "casino",
+   "aspect": 0.708
+  },
+  {
+   "id": "casino_wanted",
+   "file": "casino_wanted.webp",
+   "cat": "casino",
+   "aspect": 0.708
+  },
+  {
+   "id": "election",
+   "file": "election.webp",
+   "cat": "poster",
+   "aspect": 0.708
+  },
+  {
+   "id": "fight_night",
+   "file": "fight_night.webp",
+   "cat": "poster",
+   "aspect": 0.708
+  },
+  {
+   "id": "lukthung",
+   "file": "lukthung.webp",
+   "cat": "poster",
+   "aspect": 0.708
+  },
+  {
+   "id": "meme_distracted",
+   "file": "meme_distracted.webp",
+   "cat": "poster",
+   "aspect": 0.708
+  },
+  {
+   "id": "meme_expect",
+   "file": "meme_expect.webp",
+   "cat": "poster",
+   "aspect": 0.708
+  },
+  {
+   "id": "meme_nope",
+   "file": "meme_nope.webp",
+   "cat": "poster",
+   "aspect": 0.708
+  },
+  {
+   "id": "movie",
+   "file": "movie.webp",
+   "cat": "poster",
+   "aspect": 0.708
+  },
+  {
+   "id": "shop_thanks",
+   "file": "shop_thanks.webp",
+   "cat": "shop",
+   "aspect": 0.708
+  }
+ ]
+}

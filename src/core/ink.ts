@@ -38,21 +38,27 @@ export const LOOK_STYLE: 'realistic' | 'anime' = (() => {
 })();
 const flag = (name: string, def: boolean) => { const v = params.get(name); return v === null ? def : v !== '0'; };
 
-/** saved outline strength (0 = off … 1.5), default 1 */
+/** default outline strength: subtle — thin dark silhouettes that read as contact definition, not a comic/cel look */
+export const OUTLINE_DEFAULT = 0.35;
+/** saved outline strength (0 = off … 1.5), default OUTLINE_DEFAULT */
 export function savedOutline(): number {
   const q = params.get('outline');
   if (q !== null && q !== '' && isFinite(+q)) return Math.max(0, Math.min(1.5, +q));
   let v: string | null = null;
-  try { v = localStorage.getItem('hp.outline'); } catch {}
-  const n = v === null ? 1 : +v;
-  return isFinite(n) ? Math.max(0, Math.min(1.5, n)) : 1;
+  try {
+    // v2: the old default (1 = bold comic ink) read as heavy cel shading → everyone starts from the subtle default once
+    if (localStorage.getItem('hp.outlineV') !== '2') { localStorage.removeItem('hp.outline'); localStorage.setItem('hp.outlineV', '2'); }
+    v = localStorage.getItem('hp.outline');
+  } catch {}
+  const n = v === null ? OUTLINE_DEFAULT : +v;
+  return isFinite(n) ? Math.max(0, Math.min(1.5, n)) : OUTLINE_DEFAULT;
 }
 
 export const InkSettings = {
   ink: flag('ink', savedOutline() > 0),
   cel: flag('cel', LOOK_STYLE === 'anime'),
   /** outline strength multiplier (line opacity + hull width) */
-  strength: savedOutline() || 1,
+  strength: savedOutline() || OUTLINE_DEFAULT,
 };
 
 // ------------------------------------------------------------------ shared uniforms
@@ -336,8 +342,8 @@ export interface InkParams {
 
 export const INK_DEFAULTS: InkParams = LOOK_STYLE === 'anime'
   ? { silPx: 1.6, creasePx: 1.0, silT: [0.012, 0.045], crT: [0.75, 1.6], creaseK: 0.85, fade: [30, 85], jitter: 0.6 }
-  // inked realism: clean silhouettes, only strong creases, steady lines (comic-realistic, not sketchy)
-  : { silPx: 2.1, creasePx: 0.9, silT: [0.01, 0.034], crT: [0.95, 2.1], creaseK: 0.55, fade: [36, 100], jitter: 0.2 };
+  // realistic: thin silhouettes only (creases nearly off), steady lines, gone with distance — definition, not comic ink
+  : { silPx: 1.6, creasePx: 0.8, silT: [0.012, 0.04], crT: [1.3, 2.6], creaseK: 0.15, fade: [24, 70], jitter: 0 };
 
 export class InkEdgePass extends Pass {
   readonly target: THREE.WebGLRenderTarget;
@@ -441,7 +447,7 @@ export class InkEffect extends Effect {
         ['inkCol', new THREE.Uniform(new THREE.Color(0.0085, 0.006, 0.005))],
         ['inkK', new THREE.Uniform(InkSettings.ink ? Math.min(1, InkSettings.strength) : 0)],
         // realistic: near-black ink (only a hint of the local colour); anime: tinted ink
-        ['tintK', new THREE.Uniform(LOOK_STYLE === 'anime' ? 0.55 : 0.1)],
+        ['tintK', new THREE.Uniform(LOOK_STYLE === 'anime' ? 0.55 : 0.45)],
         ['glowK', new THREE.Uniform(LOOK_STYLE === 'anime' ? 0.12 : 0.08)],
       ]),
     });
@@ -622,7 +628,7 @@ export function updateInkHulls(renderH: number, renderW: number) {
   HULL_U.uRes.value.set(Math.max(1, renderW), Math.max(1, renderH));
   HULL_U.uPxScale.value = renderH / 1080;
   // inked realism: character/pet hulls a bit bolder than the world lines (clear figure-ground)
-  HULL_U.uOn.value = InkSettings.ink ? InkSettings.strength * (LOOK_STYLE === 'anime' ? 1 : 1.2) : 0;
+  HULL_U.uOn.value = InkSettings.ink ? InkSettings.strength * (LOOK_STYLE === 'anime' ? 1 : 0.9) : 0;
   for (const t of tracks.values()) {
     if ((frameN + t.stagger) % 30 === 0) {
       if (!inScene(t.root)) {

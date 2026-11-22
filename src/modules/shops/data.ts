@@ -407,6 +407,7 @@ export const SHOPS: ShopDef[] = [
       { id: 'palm1k', kinds: ['palm_sugar'], fb: 'sfb_sugar', price: 55, unit: 'ถุงละ', qty: 4, show: 1, day: 99, recipes: R_PALM, data: { g: 1000 }, label: { th: 'น้ำตาลมะพร้าว 1 กก.', en: 'palm sugar 1 kg' } },
       { id: 'dogfood', kinds: ['dog_food'], fb: 'sfb_dog_food', price: 59, unit: '', qty: 6, show: 1, label: { th: 'อาหารหมา', en: 'dog food' } },
       { id: 'flashlight', kinds: ['flashlight'], fb: 'sfb_flashlight', price: 89, unit: '', qty: 4, show: 1, label: { th: 'ไฟฉาย', en: 'flashlight' } },
+      { id: 'crayon', kinds: ['crayon'], fb: 'crayon', price: 12, unit: 'แท่งละ', qty: 12, show: 2, label: { th: 'สีเทียน', en: 'crayon' } },
     ],
   },
   // ------------------------------------------------------------------ แม็กโคร่ง WHOLESALE (Day 3, cheap bulk, far away)

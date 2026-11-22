@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import type { Game } from '../../game/game';
 import type { Ent } from '../../sim/state';
 import type { Look } from '../../game/contracts';
-import { round, tl } from '../../core/util';
+import { round, tl, type TL } from '../../core/util';
 import { cl } from './lines';
 import { G } from '../../sim/physics';
 
@@ -101,6 +101,44 @@ export class CombatHost {
     } as any);
     this.brains.set(e.id, { st: 'idle', t: 0, target: null, next: 0, hits: 0, shots: 0, home: p.clone() });
     return e;
+  }
+
+  // ------------------------------------------------------------------ public: something a player did made people mad
+  /**
+   * Vandalism & co (crayon module): `n` angry people of `kind` turn up near `at` and come for the player.
+   * `gun` thugs walk up and then pull the pistol (they can kill you). Returns the spawned npc ids.
+   */
+  provoke(pl: Ent, at: ArrayLike<number>, o: { kind: Kind; n?: number; gun?: boolean; heat?: number; line?: TL; dist?: number }): number[] {
+    if (!this.enabled || !pl?.p || pl.cbDown) return [];
+    const out: number[] = [];
+    const g = this.groupN++;
+    const base = V(at);
+    for (let k = 0; k < (o.n ?? 1); k++) {
+      const p = this.near(base, (o.dist ?? 6) + k * 1.4);
+      const e = this.spawnNpc(o.kind, p, 'cb_street');
+      const b = this.brains.get(e.id)!;
+      b.group = g;
+      if (o.gun && o.kind === 'thug') e.gun = true;
+      this.face(e, pl.p);
+      this.engage(e, b, pl.id);
+      if (k === 0) {
+        if (o.line) { this.game.say(e.id, o.line, { style: 'shout', duration: 2.6 }); e.talking = true; b.talkOff = this.now + 2; }
+        else this.say(e, o.kind === 'auntie' ? 'auntie' : 'fight');
+      }
+      // gunmen: walk in, then draw and shoot
+      if (e.gun) {
+        const id = e.id, pid = pl.id;
+        setTimeout(() => {
+          const e2 = this.game.state.get(id), b2 = this.brains.get(id), p2 = this.playerById(pid);
+          if (!e2?.p || !b2 || !p2?.p || e2.cbSt !== 'ok' || b2.st !== 'fight' || p2.cbDown) return;
+          if (this.dist(e2, p2) > 18) return;
+          this.set(e2, b2, 'aim'); e2.gunOut = true; e2.aimAt = pid; this.say(e2, 'gun');
+        }, 2200 + k * 900);
+      }
+      out.push(e.id);
+    }
+    if (o.heat) this.addHeat(pl, o.heat);
+    return out;
   }
 
   // ------------------------------------------------------------------ the punch (intent)

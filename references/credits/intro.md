@@ -13,8 +13,8 @@ seamless offset blend, luminance keying). Audio comes from the shared manifest (
 | slots.jpg (col 3) | "Slots 002" | https://www.flickr.com/photos/87249144@N08/53619899779/ | FolsomNatural | CC BY 2.0 |
 | chips.jpg | "Casino Chips" (four chip faces) | https://www.flickr.com/photos/91198056@N00/6323461933/ | Wapster | CC BY 2.0 |
 | roulette.jpg | cruise-ship casino roulette wheel (ellipse → top-down disc) | https://www.flickr.com/photos/126288307@N05/15731994527/ | Watts (watts_photos) | Public Domain Mark 1.0 |
-| cards.jpg (A♥, K♥, 9♦) | "Playing card heart A/K, diamond 9" SVG | https://commons.wikimedia.org/wiki/File:Playing_card_heart_A.svg (+ _K, diamond_9) | Cburnett | CC BY-SA 3.0 / GFDL |
-| cards.jpg (back) | "Card back 01" SVG | https://commons.wikimedia.org/wiki/File:Card_back_01.svg | David Bellot | LGPL |
+| cards.jpg (A♥, K♥, 9♦) | "Vector Playing Cards" PNG 1.3 (ace_of_hearts, king_of_hearts2, 9_of_diamonds) | https://opengameart.org/content/playing-cards-vector-png | Byron Knoll | Public Domain / CC0 |
+| cards.jpg (back) | red damask back composed from damask.jpg (this table) | — | — | as damask.jpg |
 | wine_label.jpg | "Chateau Branaire Ducru 2010" (label crop) | https://www.flickr.com/photos/62243473@N05/10759307646/ | Dominic Lockyer (Fareham Wine) | CC BY 2.0 |
 | champagne_label.jpg | "Hambledon Vineyard Brut 2010" (label crop) | https://www.flickr.com/photos/62243473@N05/10669729816/ | Dominic Lockyer (Fareham Wine) | CC BY 2.0 |
 | neon_casino.png | "Fremont Casino Neon Sign" (letters keyed) | https://www.flickr.com/photos/93283041@N00/35941477295/ | Jared | CC BY 2.0 |

@@ -109,7 +109,8 @@ function labelTex(key: string, th: string, en: string, bg: string, fg: string, a
   let t = labelTexCache.get(key);
   if (t) return t;
   const c = document.createElement('canvas'); c.width = w; c.height = h;
-  const x = c.getContext('2d')!;
+  // read back below (paper grain): a CPU canvas avoids a synchronous GPU readback per label during the world build
+  const x = c.getContext('2d', { willReadFrequently: true })!;
   const gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, bg); gr.addColorStop(1, shade(bg, -0.18));
   x.fillStyle = gr; x.fillRect(0, 0, w, h);
   x.fillStyle = accent; x.globalAlpha = 0.9; x.fillRect(0, h * 0.68, w, h * 0.08); x.globalAlpha = 1;

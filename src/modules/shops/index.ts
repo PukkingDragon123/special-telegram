@@ -110,9 +110,15 @@ export default defineModule({
     // the shop interiors are the heaviest world build step: do it while the world is still being staged in the
     // background ('world:built', menu/casino on screen) — or at 'world:ready' when there was no staging
     let shopsBuilt: unknown = null;
-    const build = () => {
+    const build = (): void | Promise<void> => {
       if (game.scene && shopsBuilt === game.scene) return;
       shopsBuilt = game.scene;
+      // staged (cutscene on screen): one shop per slice instead of one multi-second freeze; world-scene awaits it
+      if (game.staging) {
+        let tY = performance.now();
+        const breathe = async () => { if (performance.now() - tY > 8) { await new Promise((r) => setTimeout(r, 0)); tY = performance.now(); } };
+        return buildShops(game, breathe).then(() => shoplab(game)).catch((e) => console.error('[shops] build', e));
+      }
       try { buildShops(game); shoplab(game); } catch (e) { console.error('[shops] build', e); }
     };
     game.events.on('world:built', build);

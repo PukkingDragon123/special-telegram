@@ -37,7 +37,7 @@ export function proceduralCanvas(kind: ProcKind, o: ProcOpts = {}): HTMLCanvasEl
   const S = o.size ?? 256;
   const cv = document.createElement('canvas');
   cv.width = cv.height = S;
-  const ctx = cv.getContext('2d')!;
+  const ctx = cv.getContext('2d', { willReadFrequently: true })!;
   const img = ctx.createImageData(S, S);
   const d = img.data;
   const N = new Noise(o.seed ?? kind);

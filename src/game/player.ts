@@ -57,6 +57,11 @@ export class LocalPlayer {
   private tpBlend = 0;
   private landDip = 0;
   private wasGrounded = true;
+  private airT = 0;
+  private jumped = false;
+  private fallV = 0;
+  /** smoothed visual height of the body (step-ups / kerbs ease instead of snapping) */
+  private visY = NaN;
   /** virtual eye camera used for interaction rays in third person */
   readonly aimCam = new THREE.PerspectiveCamera(72, 1, 0.04, 50);
   private wasLocked = false;
@@ -111,6 +116,7 @@ export class LocalPlayer {
     this.body?.setNextKinematicTranslation({ x: p[0], y: p[1] + this.height / 2, z: p[2] });
     this.body?.setTranslation({ x: p[0], y: p[1] + this.height / 2, z: p[2] }, true);
     this.writeEnt();
+    this.placeBody(1 / 60, true);
     this.placeCamera(1 / 60, true);
   }
 
@@ -199,26 +205,37 @@ export class LocalPlayer {
     const accel = this.grounded ? 14 : 3;
     this.vel.x += (target.x - this.vel.x) * damp(accel, dt);
     this.vel.z += (target.z - this.vel.z) * damp(accel, dt);
-    if (this.grounded && playing && Input.wasPressed('Space') && !overloaded) { this.vel.y = 4.2; this.grounded = false; Sound.play('grunt', { vol: 0.25 }); }
+    if (this.grounded && playing && Input.wasPressed('Space') && !overloaded) { this.vel.y = 4.2; this.grounded = false; this.jumped = true; this.airT = 1; Sound.play('grunt', { vol: 0.25 }); }
     this.vel.y -= 18 * dt;
     if (this.vel.y < -30) this.vel.y = -30;
     const desired = { x: this.vel.x * dt, y: this.vel.y * dt, z: this.vel.z * dt };
+    // the collider only moves when the 60 Hz physics step runs: on high-refresh screens (or uneven frames) the
+    // controller would query from a stale position and re-apply its ground snap / autostep every frame → the body
+    // and view hopped up and down. Query from where the player really is.
+    this.collider.setTranslation({ x: this.pos.x, y: this.pos.y + this.height / 2, z: this.pos.z });
     this.kcc.computeColliderMovement(this.collider, desired, undefined, groups(G.PLAYER, G.STATIC | G.ITEM | G.PLAYER | G.NPC | G.VEHICLE));
     const mv = this.kcc.computedMovement();
-    this.grounded = this.kcc.computedGrounded();
-    if (this.grounded && this.vel.y < 0) this.vel.y = -1;
+    const g0 = this.kcc.computedGrounded();
+    // grounded hysteresis: one airborne frame stepping off a kerb is not a fall (no landing dip, no anim flicker)
+    if (g0) this.airT = 0; else this.airT += dt;
+    this.grounded = g0 || (this.airT < 0.12 && this.vel.y <= 0 && !this.jumped);
+    if (g0) this.jumped = false;
+    if (g0 && this.vel.y < 0) this.vel.y = -1;
     this.pos.x += mv.x; this.pos.y += mv.y; this.pos.z += mv.z;
     if (this.pos.y < -20) this.teleport(this.game.world?.anchor('player_spawn')?.p ?? [0, 0, 0]);
     this.body.setNextKinematicTranslation({ x: this.pos.x, y: this.pos.y + this.height / 2, z: this.pos.z });
-    const hs = Math.hypot(mv.x, mv.z) / Math.max(dt, 1e-4);
-    this.speedNow += (hs - this.speedNow) * damp(10, dt);
+    // ground speed: what we actually moved, but averaged over time (mv/dt is noisy with uneven frames and made the
+    // walk/idle blend flicker); capped by the intended speed so a frame hitch can't spike it
+    const hs = Math.min(Math.hypot(mv.x, mv.z) / Math.max(dt, 1e-4), Math.hypot(this.vel.x, this.vel.z) + 0.2);
+    this.speedNow += (hs - this.speedNow) * damp(6, dt);
     // body facing: first person = camera yaw; third person = turn smoothly toward the walking direction
     if (this.view === 'fp' || this.mode === 'external') this.bodyYaw = this.yaw;
     else if (hs > 0.35 && Math.hypot(this.vel.x, this.vel.z) > 0.3) {
       const want = Math.atan2(-this.vel.x, -this.vel.z);
       this.bodyYaw = dampAngle(this.bodyYaw, want, run ? 9 : 7, dt);
     }
-    if (!this.wasGrounded && this.grounded) this.landDip = Math.min(0.12, Math.max(0.03, -this.vel.y * 0.02));
+    if (!this.wasGrounded && this.grounded && this.fallV < -3) this.landDip = Math.min(0.1, -this.fallV * 0.012);
+    this.fallV = this.grounded ? 0 : Math.min(this.fallV, this.vel.y);
     this.wasGrounded = this.grounded;
     this.writeEnt();
 
@@ -252,6 +269,7 @@ export class LocalPlayer {
 
     // ---- camera first, so interaction aims through this frame's crosshair
     items.updateViewModel(dt, this.speedNow, this.lookDX, this.lookDY);
+    this.placeBody(dt, false);
     this.placeCamera(dt, false);
     // ---- interaction (third person aims from the eyes toward whatever is under the crosshair)
     // cooking close-up (cooking module): may dolly the camera onto the wok; returns true while it owns the view
@@ -298,6 +316,16 @@ export class LocalPlayer {
     this.game.sfx(key, [this.pos.x, this.pos.y, this.pos.z], { vol: 0.35 });
   }
 
+  /** where the visible body stands: same frame as the camera, kerbs/steps eased (≈ 60 ms) instead of snapping */
+  bodyPos(out: THREE.Vector3) { return out.set(this.pos.x, Number.isFinite(this.visY) ? this.visY : this.pos.y, this.pos.z); }
+  private placeBody(dt: number, snap: boolean) {
+    const y = this.pos.y;
+    if (snap || !Number.isFinite(this.visY) || !this.grounded || Math.abs(y - this.visY) > 0.6) this.visY = y;
+    else this.visY += (y - this.visY) * damp(18, dt);
+    const v = this.game.views.of(this.game.localPlayerId).find((v: any) => v.rig) as any;
+    if (v?.object) { this.bodyPos(v.object.position); v.object.rotation.set(0, this.bodyYaw, 0); }
+  }
+
   placeCamera(dt: number, snap: boolean) {
     if (this.mode === 'external') return;
     const me = this.me;
@@ -311,8 +339,9 @@ export class LocalPlayer {
     this.tpBlend += ((this.view === 'tp' ? 1 : 0) - this.tpBlend) * (snap ? 1 : damp(9, dt));
     if (this.view === 'tp') {
       // ---- third person: over the right shoulder, pitch-dependent height/distance, collision-safe
-      const bobY = Math.abs(Math.sin(this.bobT)) * 0.018 * this.bob;
-      const pivot = new THREE.Vector3(this.pos.x, this.pos.y + this.eye - 0.08 + bobY - this.landDip * 0.6, this.pos.z);
+      const eyeT = this.pos.y + this.eye - 0.08;
+      this.eyeY = snap || !this.eyeY ? eyeT : this.eyeY + (eyeT - this.eyeY) * damp(12, dt);
+      const pivot = new THREE.Vector3(this.pos.x, this.eyeY - this.landDip * 0.5, this.pos.z);
       const fwd = new THREE.Vector3(-Math.sin(this.yaw) * Math.cos(this.pitch), Math.sin(this.pitch), -Math.cos(this.yaw) * Math.cos(this.pitch));
       const want = (crouch ? 2.1 : 2.75) + (this.pitch < 0 ? -this.pitch * 0.5 : 0) + run * 0.35;
       const shoulder = crouch ? 0.38 : 0.48;
@@ -348,13 +377,14 @@ export class LocalPlayer {
       if (rig?.root && !rig.root.visible) rig.root.visible = true;
       if (rig && this.fpSet !== rig) { this.fpSet = rig; rig.setFirstPerson(true); }
       if (this.pitch < -0.96) this.pitch = -0.96;   // first-person look-down limit (also after views/cutscenes set pitch)
-      const bobY = Math.abs(Math.sin(this.bobT)) * 0.045 * this.bob;
-      const bobX = Math.cos(this.bobT) * 0.025 * this.bob;
+      // a gentle head bob (≈1 cm): big bobs read as the character glitching up and down
+      const bobY = (1 - Math.cos(this.bobT * 2)) * 0.5 * 0.011 * this.bob;
+      const bobX = Math.cos(this.bobT) * 0.008 * this.bob;
       // steady eye height from the capsule (NOT the animated skeleton: the walk lean / hip drop made the view bounce
       // 15 cm and sink ~40 cm while walking). Smoothed so kerbs/steps don't jolt the view; a small classic head bob.
       const eyeTarget = this.pos.y + this.eye - 0.02;
       this.eyeY = snap || !this.eyeY ? eyeTarget : this.eyeY + (eyeTarget - this.eyeY) * damp(16, dt);
-      cam.position.set(this.pos.x, this.eyeY + bobY * 0.6 - this.landDip, this.pos.z);
+      cam.position.set(this.pos.x, this.eyeY + bobY - this.landDip, this.pos.z);
       cam.position.addScaledVector(right, bobX);
       // a little in front of the eyes, along the view, so the (head-less) body never fills the view when looking down
       const fwdX = -Math.sin(this.yaw) * Math.cos(this.pitch), fwdZ = -Math.cos(this.yaw) * Math.cos(this.pitch);
@@ -362,7 +392,7 @@ export class LocalPlayer {
       const outK = 0.07 + 0.035 * Math.max(0, Math.min(1, -this.pitch / 0.96));
       cam.position.x += -Math.sin(this.yaw) * outK; cam.position.z += -Math.cos(this.yaw) * outK; cam.position.y += Math.sin(this.pitch) * 0.05;
       void fwdX; void fwdZ;
-      cam.rotation.set(this.pitch, this.yaw, Math.cos(this.bobT) * 0.004 * this.bob, 'YXZ');
+      cam.rotation.set(this.pitch, this.yaw, Math.cos(this.bobT) * 0.0015 * this.bob, 'YXZ');
     }
     this.fovKick += (run * 6 - this.fovKick) * damp(4, dt);
     const fov = this.baseFov + this.fovKick - this.tpBlend * 4;
@@ -401,7 +431,7 @@ export function playerView(game: Game) {
         const lj = JSON.stringify(e.look);
         if (lj !== lookJson) { lookJson = lj; rig.setLook(e.look); if (local && fp) rig.setFirstPerson(true); }
         if (local && game.player) {
-          root.position.copy(game.player.pos);
+          game.player.bodyPos(root.position);
           root.rotation.set(0, game.player.bodyYaw, 0);
           speed = game.player.speedNow;
           const wantFp = game.player.firstPerson;

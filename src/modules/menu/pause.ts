@@ -176,7 +176,7 @@ export class PauseMenu {
     row(TT('มุมกล้อง', 'Camera'), opts([{ v: 'fp', t: TT('บุคคลที่หนึ่ง', 'First person') }, { v: 'tp', t: TT('บุคคลที่สาม', 'Third person') }], curView, (v) => { x.view = v as 'fp' | 'tp'; saveExtra(x); applyExtra(game, x); }));
     row(TT('มุมมอง (FOV)', 'Field of view'), slider(60, 95, 1, x.fov, (v) => { x.fov = v; saveExtra(x); applyExtra(game, x); }));
     if (hasMotionBlur(game)) row(TT('เบลอตอนเคลื่อนไหว', 'Motion blur'), opts([{ v: '1', t: TT('เปิด', 'On') }, { v: '0', t: TT('ปิด', 'Off') }], x.motionBlur ? '1' : '0', (v) => { x.motionBlur = v === '1'; saveExtra(x); applyExtra(game, x); }));
-    { const post: any = eng.post; if (typeof post?.setOutline === 'function') row(TT('เส้นขอบดำ', 'Black outlines'), opts([{ v: '0', t: TT('ปิด', 'Off') }, { v: '0.6', t: TT('บาง', 'Light') }, { v: '1', t: TT('ปกติ', 'Normal') }, { v: '1.4', t: TT('หนา', 'Bold') }], String(post.outline ?? 1), (v) => { post.setOutline(Number(v)); })); }
+    { const post: any = eng.post; if (typeof post?.setOutline === 'function') row(TT('เส้นขอบดำ', 'Black outlines'), opts([{ v: '0', t: TT('ปิด', 'Off') }, { v: '0.35', t: TT('บางๆ', 'Subtle') }, { v: '0.7', t: TT('ปกติ', 'Normal') }, { v: '1.2', t: TT('หนา', 'Bold') }], String(post.outline ?? 0.35), (v) => { post.setOutline(Number(v)); })); }
     row(TT('ขนาดตัวหนังสือ', 'Text size'), opts([{ v: '0.9', t: TT('เล็ก', 'Small') }, { v: '1', t: TT('ปกติ', 'Normal') }, { v: '1.2', t: TT('ใหญ่', 'Large') }], String(x.textScale), (v) => { x.textScale = Number(v); saveExtra(x); applyExtra(game, x); }));
     box.appendChild(back);
   }

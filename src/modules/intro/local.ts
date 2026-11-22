@@ -321,14 +321,14 @@ export class IntroLocal {
     const shots: Shot[] = [
       pov,
       { dur: WAKE_T.stretch - WAKE_T.up, enter: () => { post.fade = 0; (post as any).setDOF?.(false); }, pose: crane(game, id, { h0: 5.2, h1: 1.75, r0: 0.4, r1: 2.6, az: 0.5, az1: 0.25, lookY: 0.4, lookY1: 0.85, fov: 52, fov1: 44 }), ease: easeOut },
-      { dur: WAKE_T.look - WAKE_T.stretch, pose: orbit(game, id, { r: 2.5, h: 1.45, az0: 0.75, az1: 0.2, lookY: 1.1, fov: 40, fov1: 36 }), focus: () => subject(game, id)?.head ?? null },
+      // (no DOF focus in the wake: its full-screen passes were a big part of the wake-up frame cost on high)
+      { dur: WAKE_T.look - WAKE_T.stretch, pose: orbit(game, id, { r: 2.5, h: 1.45, az0: 0.75, az1: 0.2, lookY: 1.1, fov: 40, fov1: 36 }) },
       {
         dur: WAKE_T.end - WAKE_T.look, drift: 1.2,
         pose: (k) => {
           if (!toOld && g.introOld && game.state.get(g.introOld)) toOld = ots(game, id, g.introOld, { side: 1, back: 1.35, push: 0.5, fov: 42, fov1: 32, lift: 0.28 });
           return toOld ? toOld(k) : fixed(() => game.player!.pos.clone().add(V(0, 1.9, 0)), () => this.cartPos(1))(k);
         },
-        focus: () => this.entHead(g.introOld) ?? this.cartPos(1),
       },
     ];
     this.cine.play('wake', shots, { handBack: 1.0, onEnd: () => this.endWake() });

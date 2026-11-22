@@ -165,7 +165,7 @@ function signTexture() {
   weatherSign(x, 512, 128, { seed: 5, surface: 'vinyl', wear: 0.3 });
   fridgeSign = new THREE.CanvasTexture(c); fridgeSign.colorSpace = THREE.SRGBColorSpace; fridgeSign.anisotropy = 8;
   // fonts may arrive later: redraw once
-  (document as any).fonts?.ready?.then(() => { x.fillStyle = grd; x.fillRect(0, 0, 512, 128); x.fillStyle = '#fff4e0'; x.font = `800 74px ${F.heavy}`; x.fillText('เย็นเจี๊ยบ!', 256, 58); x.font = `600 22px ${F.ui}`; x.fillText('ICE COLD · แช่เย็นทุกขวด', 256, 108); fridgeSign!.needsUpdate = true; });
+  (document as any).fonts?.ready?.then(() => { x.fillStyle = grd; x.fillRect(0, 0, 512, 128); x.fillStyle = '#fff4e0'; x.font = `400 72px ${F.display}`; x.fillText('เย็นเจี๊ยบ!', 256, 58); x.font = `600 22px ${F.ui}`; x.fillText('ICE COLD · แช่เย็นทุกขวด', 256, 108); fridgeSign!.needsUpdate = true; });
   return fridgeSign;
 }
 

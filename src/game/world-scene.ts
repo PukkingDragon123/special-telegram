@@ -54,6 +54,13 @@ export class WorldScene implements SceneDef {
     if (marks) marks.worldSwitchMs = Math.round(performance.now() - t0);
     // compile anything still missing (instant when the staged prewarm already did it)
     await prewarmShaders(game.engine.renderer, this.scene, this.camera, this.stagedDone ? 1500 : 8000);
+    // things that finished loading after the staged warm-up (late GLBs, spawned views): upload them a few per
+    // frame now, nearest first, instead of on the frame they first come into view
+    if (game.scene === this.scene) {
+      const me = game.player?.pos;
+      warmRender(game.engine.renderer, this.scene, this.camera, { budgetMs: 3, near: me ? [me.x, me.y, me.z] : undefined, background: true, tag: 'late', alive: () => game.scene === this.scene })
+        .catch((e) => console.warn('[world] warm', e));
+    }
   }
 
   /** physics + every module's buildWorld (+ shader prewarm when staging in the background) */
@@ -94,7 +101,7 @@ export class WorldScene implements SceneDef {
     if (background) {
       // heavy view-independent world:ready work that is safe before the switch (shop interiors …) — modules opt in
       await breathe();
-      game.events.emit('world:built', this.scene);
+      await game.events.emitAsync('world:built', this.scene);
       // entity views (NPC rigs, items…) get built a few ms per frame by the game loop (views.prepareStep) …
       await breathe();
       game.views.prepare(this.scene);
@@ -102,6 +109,12 @@ export class WorldScene implements SceneDef {
       // … then programs + texture uploads for the post-process target, behind the cutscene (compileAsync = no stall)
       await breathe();
       await prewarmShaders(game.engine.renderer, this.scene, this.camera, 180000, true);
+      // … and finally DRAW everything once (a few objects per frame, into a 4×4 target): geometry buffers,
+      // textures of hidden things, the real program variants (+ their first-use link queries) and the shadow
+      // depth programs all happen here instead of in the first seconds of the wake-up
+      await breathe();
+      const a = game.world?.anchors?.['wake_' + (game.me?.slot ?? 0)] ?? game.world?.anchor?.('player_spawn');
+      await warmRender(game.engine.renderer, this.scene, this.camera, { budgetMs: 5, near: a?.p, background: true });
     }
   }
 
@@ -248,6 +261,113 @@ export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE
   }
   const marks = (window as any).__hpMarks;
   if (marks) { marks.prewarmMs = Math.round(performance.now() - t0); marks.prewarmTex = n; }
+}
+
+/**
+ * Draw every renderable of `scene` once, a slice per frame, into a tiny off-screen target (any render target gives
+ * the same program variants as the composer's input buffer: linear output, no tone mapping). Each slice draws
+ * light-weight PROXIES (same geometry, material, skeleton, instance buffers and shadow flags) in a small proxy scene
+ * that carries the world's environment, fog and copies of its currently-on lights (with 4×4 shadow maps) — so the
+ * program keys match the game's exactly, the shadow pass warms the depth programs, and a slice costs only its own
+ * objects (no traversal of the whole world, no big shadow-map clears). Uploaded this way: geometry buffers,
+ * textures (also of hidden / distance-culled things), programs + their first-use link queries. Objects drawn once
+ * are remembered; the list is re-scanned at the end so things that streamed in meanwhile are done too.
+ */
+const warmed = new WeakSet<object>();
+let warmRT: THREE.WebGLRenderTarget | null = null;
+const warmCam = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+const proxyScene = new THREE.Scene();
+let proxyLightSig = '';
+function proxyOf(x: any): THREE.Object3D | null {
+  let p: any;
+  if (x.isSkinnedMesh) { p = new THREE.SkinnedMesh(x.geometry, x.material); p.bindMode = x.bindMode; if (x.skeleton) p.bind(x.skeleton, x.bindMatrix); }
+  else if (x.isInstancedMesh) {
+    p = new THREE.InstancedMesh(x.geometry, x.material, 0);
+    p.instanceMatrix = x.instanceMatrix; p.instanceColor = x.instanceColor; p.morphTexture = x.morphTexture ?? null; p.count = x.count;
+  }
+  else if (x.isMesh) p = new THREE.Mesh(x.geometry, x.material);
+  else if (x.isLineSegments) p = new THREE.LineSegments(x.geometry, x.material);
+  else if (x.isLineLoop) p = new THREE.LineLoop(x.geometry, x.material);
+  else if (x.isLine) p = new THREE.Line(x.geometry, x.material);
+  else if (x.isPoints) p = new THREE.Points(x.geometry, x.material);
+  else if (x.isSprite) p = new THREE.Sprite(x.material);
+  else return null;
+  if (x.morphTargetInfluences) { p.morphTargetInfluences = x.morphTargetInfluences; p.morphTargetDictionary = x.morphTargetDictionary; }
+  p.castShadow = x.castShadow; p.receiveShadow = x.receiveShadow;
+  p.frustumCulled = false;
+  p.matrixAutoUpdate = false; p.matrixWorldAutoUpdate = false;
+  p.matrixWorld.copy(x.matrixWorld);
+  return p;
+}
+/** mirror the lights that are ON in the world right now (their count / kind / shadow flags are part of every program key) */
+function syncProxyLights(scene: THREE.Scene) {
+  const on: THREE.Light[] = [];
+  scene.traverseVisible((o: any) => { if (o.isLight) on.push(o); });
+  const sig = on.map((l: any) => `${l.type}${l.castShadow ? 's' : ''}${l.map ? 'm' : ''}`).join(',');
+  proxyScene.environment = scene.environment;
+  (proxyScene as any).environmentIntensity = (scene as any).environmentIntensity ?? 1;
+  proxyScene.fog = scene.fog;
+  if (sig === proxyLightSig) return;
+  proxyLightSig = sig;
+  for (const c of [...proxyScene.children]) if ((c as any).isLight) { proxyScene.remove(c); (c as any).shadow?.dispose?.(); }
+  for (const l of on as any[]) {
+    const c = l.clone(false);
+    if (c.shadow) { c.shadow.mapSize.set(4, 4); c.shadow.map = null; }
+    proxyScene.add(c);
+    if (c.target) proxyScene.add(c.target);
+  }
+}
+export async function warmRender(renderer: THREE.WebGLRenderer, scene: THREE.Scene, _camera: THREE.Camera,
+  o: { budgetMs: number; near?: ArrayLike<number>; background?: boolean; alive?: () => boolean; tag?: string }): Promise<number> {
+  if (new URLSearchParams(location.search).has('nowarm')) return 0;
+  const t0 = performance.now();
+  warmRT ??= new THREE.WebGLRenderTarget(4, 4, { depthBuffer: true });
+  const yieldFrame = () => new Promise<void>((r) => setTimeout(r, o.background ? 16 : 0));
+  let total = 0, frames = 0, perObj = 0.3;
+  for (let pass = 0; pass < 4; pass++) {
+    scene.updateMatrixWorld();
+    const list: THREE.Object3D[] = [];
+    scene.traverse((x: any) => {
+      if (x.isLight || warmed.has(x) || !x.material) return;
+      if ((x.isMesh || x.isLine || x.isPoints) && !x.geometry) return;
+      if (x.isInstancedMesh && x.count === 0) return;
+      if (x.isMesh || x.isLine || x.isPoints || x.isSprite) list.push(x);
+    });
+    if (!list.length) break;
+    if (o.near) {
+      const p = new THREE.Vector3(), n = new THREE.Vector3(o.near[0], o.near[1], o.near[2]);
+      const d = new Map<THREE.Object3D, number>();
+      for (const x of list) d.set(x, p.setFromMatrixPosition(x.matrixWorld).distanceToSquared(n));
+      list.sort((a, b) => d.get(a)! - d.get(b)!);
+    }
+    let i = 0;
+    while (i < list.length) {
+      if (o.alive && !o.alive()) return total;
+      const tb = performance.now();
+      syncProxyLights(scene);
+      const n = Math.max(1, Math.min(300, Math.floor(o.budgetMs / Math.max(0.01, perObj))));
+      const batch = list.slice(i, i + n); i += n;
+      const proxies: THREE.Object3D[] = [];
+      for (const x of batch) { warmed.add(x); const p = proxyOf(x); if (p) { proxies.push(p); proxyScene.add(p); } }
+      const prevTarget = renderer.getRenderTarget(), prevAuto = renderer.shadowMap.autoUpdate, prevNeeds = renderer.shadowMap.needsUpdate;
+      try {
+        renderer.setRenderTarget(warmRT);
+        renderer.shadowMap.autoUpdate = true;
+        renderer.render(proxyScene, warmCam);
+      } catch (e) { console.warn('[world] warm render', e); }
+      finally {
+        renderer.setRenderTarget(prevTarget);
+        renderer.shadowMap.autoUpdate = prevAuto; renderer.shadowMap.needsUpdate = prevNeeds;
+        for (const p of proxies) proxyScene.remove(p);
+      }
+      total += batch.length; frames++;
+      perObj = perObj * 0.6 + ((performance.now() - tb) / batch.length) * 0.4;
+      if (i < list.length) await yieldFrame();
+    }
+  }
+  const marks = (window as any).__hpMarks;
+  if (marks) marks['warm:' + (o.tag ?? 'staged')] = `${total} objs ${frames} slices ${Math.round(performance.now() - t0)} ms`;
+  return total;
 }
 
 export function installWorldScene(game: Game) {

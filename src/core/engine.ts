@@ -95,6 +95,9 @@ export class Engine {
   constructor(container: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance', stencil: false, preserveDrawingBuffer: params.has('capture') });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    // production: don't query link status / info logs per program (each one is a synchronous GPU round trip that
+    // waits for the compile to finish — the main cause of first-sight hitches). ?shadercheck turns it back on.
+    this.renderer.debug.checkShaderErrors = params.has('shadercheck') || (import.meta.env.DEV && !params.has('noshadercheck'));
     this.renderer.toneMapping = THREE.NoToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;

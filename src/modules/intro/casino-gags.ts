@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { F } from '../../core/fonts';
 import { weatherSign } from '../world/signfx';
+import { Assets } from '../../core/assets';
 
 /* ============================================================================================
  * Casino set gags (homage only — original names, no real people, no copied characters):
@@ -37,37 +38,22 @@ function framed(wm: number, hm: number, px: number, draw: Draw, frameCol = 0x1c1
   return g;
 }
 
+/** a framed print of a pre-rendered poster (public/assets/gen/posters, made by scripts/posters.mjs) */
+function framedPoster(wm: number, hm: number, id: string, frameCol = 0x1c1410) {
+  const g = new THREE.Group();
+  const map = Assets.texture(`gen/posters/${id}.webp`, { srgb: true, wrap: false });
+  const pic = new THREE.Mesh(new THREE.PlaneGeometry(wm, hm), new THREE.MeshStandardMaterial({ map, roughness: 0.6, metalness: 0 }));
+  pic.position.z = 0.012;
+  const fr = new THREE.Mesh(new THREE.BoxGeometry(wm + 0.06, hm + 0.06, 0.02), new THREE.MeshStandardMaterial({ color: frameCol, roughness: 0.5, metalness: 0.3 }));
+  g.add(fr, pic);
+  return g;
+}
+
 const center = (x: CanvasRenderingContext2D, s: string, y: number, w: number, font: string, fill: string, stroke?: string, lw = 0) => {
   x.font = font; x.textAlign = 'center'; x.textBaseline = 'middle';
   if (stroke && lw) { x.lineWidth = lw; x.strokeStyle = stroke; x.lineJoin = 'round'; x.strokeText(s, w / 2, y); }
   x.fillStyle = fill; x.fillText(s, w / 2, y);
 };
-
-/** dramatic standing-pose silhouette (original stick-figure-ish shapes) */
-function poseSilhouette(x: CanvasRenderingContext2D, cx: number, base: number, s: number, kind: number, col: string) {
-  x.save();
-  x.translate(cx, base); x.scale(s, s);
-  x.fillStyle = col; x.strokeStyle = col; x.lineCap = 'round'; x.lineJoin = 'round';
-  const limb = (pts: number[][], wdt: number) => { x.lineWidth = wdt; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]); for (const p of pts.slice(1)) x.lineTo(p[0], p[1]); x.stroke(); };
-  // long coat body
-  x.beginPath();
-  if (kind === 0) { x.moveTo(-18, -150); x.lineTo(18, -150); x.lineTo(34, -40); x.lineTo(-30, -40); }
-  else { x.moveTo(-16, -150); x.lineTo(20, -148); x.lineTo(40, -38); x.lineTo(-38, -46); }
-  x.closePath(); x.fill();
-  // head + cap
-  x.beginPath(); x.arc(0, -168, 15, 0, Math.PI * 2); x.fill();
-  x.fillRect(-20, -186, 40, 9); x.fillRect(-6, -182, 30, 5);
-  if (kind === 0) {
-    limb([[-16, -140], [-40, -110], [-14, -160]], 10);   // hand framing the face
-    limb([[16, -140], [52, -150], [70, -168]], 10);      // pointing up and out
-    limb([[-12, -40], [-26, 0]], 12); limb([[12, -40], [30, 0]], 12);
-  } else {
-    limb([[-16, -140], [-48, -128], [-60, -96]], 10);
-    limb([[18, -140], [10, -175]], 10);                  // hand on the cap brim
-    limb([[-14, -44], [-6, 0]], 12); limb([[16, -42], [44, -4]], 12);
-  }
-  x.restore();
-}
 
 export interface GagSet { root: THREE.Group; update(t: number): void; dispose(): void }
 
@@ -86,37 +72,9 @@ export function buildCasinoGags(): GagSet {
   // ---- south wall (behind the players), facing the room (-z)
   const southWall = (o: THREE.Object3D, x: number, y: number) => { o.scale.setScalar(1.35); o.position.set(x, y, Z1 - 0.05); o.rotation.y = Math.PI; root.add(o); };
 
-  // 1) prime-time slap-kiss drama poster
-  southWall(framed(1.1, 1.55, 512, (x, w, h) => {
-    const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#5a0a18'); g.addColorStop(1, '#14040a');
-    x.fillStyle = g; x.fillRect(0, 0, w, h);
-    // two faces in profile, one slapping (abstract shapes)
-    x.fillStyle = '#e8b49a'; x.beginPath(); x.ellipse(w * 0.32, h * 0.42, 70, 92, -0.2, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#d9a088'; x.beginPath(); x.ellipse(w * 0.7, h * 0.4, 66, 88, 0.35, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#e8b49a'; x.beginPath(); x.ellipse(w * 0.5, h * 0.33, 34, 18, -0.6, 0, Math.PI * 2); x.fill();   // the hand
-    x.strokeStyle = '#fff4c8'; x.lineWidth = 5; for (let i = 0; i < 6; i++) { x.beginPath(); x.moveTo(w * 0.55 + i * 6, h * 0.24 + i * 9); x.lineTo(w * 0.62 + i * 8, h * 0.2 + i * 9); x.stroke(); }
-    center(x, 'เพี๊ยะ!!', h * 0.16, w, `900 64px ${F.heavy}`, '#ffe14a', '#3a0000', 10);
-    center(x, 'ตบให้สุด หยุดที่รัก', h * 0.7, w, `900 56px ${F.heavy}`, '#ffffff', '#3a0010', 10);
-    center(x, 'ละครหลังข่าว · ตอนจบ (อีกแล้ว) EP.99', h * 0.79, w, `700 26px ${F.ui}`, '#ffd0d8');
-    center(x, 'จันทร์–อังคาร 20.30 น. · ตบจริง เจ็บจริง ร้องไห้จริง', h * 0.86, w, `600 22px ${F.ui}`, '#ffffff');
-    center(x, '"SLAP ME TILL I LOVE YOU" — prime-time drama', h * 0.93, w, `600 20px ${F.ui}`, '#ff9fb2');
-  }), -9.5, 2.5);
-
-  // 2) "standing pose championship" fight-night poster
-  southWall(framed(1.2, 1.6, 512, (x, w, h) => {
-    const g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#2a1a4a'); g.addColorStop(1, '#0e0a1a');
-    x.fillStyle = g; x.fillRect(0, 0, w, h);
-    // speed rays
-    x.strokeStyle = 'rgba(255,220,120,0.18)'; x.lineWidth = 3;
-    for (let i = 0; i < 40; i++) { const a = (i / 40) * Math.PI * 2; x.beginPath(); x.moveTo(w / 2, h * 0.45); x.lineTo(w / 2 + Math.cos(a) * 700, h * 0.45 + Math.sin(a) * 700); x.stroke(); }
-    poseSilhouette(x, w * 0.3, h * 0.66, 1.25, 0, '#0a0610');
-    poseSilhouette(x, w * 0.72, h * 0.66, 1.2, 1, '#0a0610');
-    center(x, 'ศึกยืนท่าเท่', h * 0.1, w, `900 66px ${F.heavy}`, '#ffd34a', '#2a0a00', 10);
-    center(x, 'STANDING POSE CHAMPIONSHIP', h * 0.18, w, `800 26px ${F.ui}`, '#ffffff');
-    center(x, 'ไม่ต้องต่อย แค่ยืนให้น่ากลัวที่สุด', h * 0.76, w, `800 30px ${F.ui}`, '#ffffff', '#000', 6);
-    center(x, 'ゴゴゴゴ  ·  คืนวันเสาร์ ห้องวีไอพี', h * 0.84, w, `700 26px ${F.ui}`, '#ffb4f0');
-    center(x, 'NO PUNCHES. JUST MENACE.', h * 0.92, w, `800 24px ${F.ui}`, '#ffd34a');
-  }), -5.4, 2.55);
+  // 1) prime-time slap-kiss drama poster + 2) "standing pose championship" fight night (studio renders of the cast)
+  southWall(framedPoster(1.1, 1.1 * 904 / 640, 'casino_drama'), -9.5, 2.5);
+  southWall(framedPoster(1.15, 1.15 * 904 / 640, 'casino_pose'), -5.4, 2.55);
 
   // 3) house rules lightbox (matte print, not glowing)
   southWall(framed(1.3, 0.62, 512, (x, w, h) => {
@@ -128,16 +86,7 @@ export function buildCasinoGags(): GagSet {
   }, 0x3a2a1a), 5.6, 2.35);
 
   // 4) WANTED notice: the tall guy in the long coat who sighs all night
-  southWall(framed(0.72, 0.98, 384, (x, w, h) => {
-    x.fillStyle = '#e6d6b0'; x.fillRect(0, 0, w, h);
-    center(x, 'ตามหา!', 48, w, `900 64px ${F.heavy}`, '#5a1a0a');
-    x.fillStyle = '#cbb890'; x.fillRect(60, 90, w - 120, 240);
-    poseSilhouette(x, w / 2, 320, 1.0, 1, '#2a2018');
-    center(x, 'ชายหมวกดำ เสื้อโค้ทยาว', 362, w, `800 26px ${F.ui}`, '#3a2010');
-    center(x, 'ถอนหายใจ "เฮ้อ… ยาเระๆ" ทุก 5 นาที', 398, w, `600 20px ${F.ui}`, '#3a2010');
-    center(x, 'ค่าหัว: ข้าวมันไก่ 1 จาน', 440, w, `800 22px ${F.ui}`, '#8a1a10');
-    center(x, 'WANTED: tall man, long coat, sighs a lot', 478, w, `600 16px ${F.ui}`, '#5a4020');
-  }, 0x4a3420), 8.2, 2.45);
+  southWall(framedPoster(0.72, 0.72 * 904 / 640, 'casino_wanted', 0x4a3420), 8.2, 2.45);
 
   // 5) cocktail menu of puns on the west wall above the slot banks
   {

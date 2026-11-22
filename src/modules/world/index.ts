@@ -247,16 +247,31 @@ function releaseCpuCopies(game: Game, assets: any) {
   if (released) return;
   released = true;
   const R = game.engine.renderer;
-  try {
-    for (const t of [assets.tex?.alb, assets.tex?.nra]) {
+  // the uploads are big (two texture arrays + three 4096² atlases, ~350 MB at high): one array LAYER / one atlas
+  // per frame instead of all in a single task (that froze the cutscene for a long beat while the world built)
+  // (only while the world is staged behind the menu / cutscene; a direct build uploads at once — nothing is shown
+  // until the next frame anyway, and a half-uploaded array would render black)
+  const sliced = !!game.staging;
+  const nextFrame = () => (sliced ? new Promise<void>((r) => setTimeout(r, 16)) : Promise.resolve());
+  (async () => {
+    for (const t of [assets.tex?.alb, assets.tex?.nra] as (THREE.DataArrayTexture | undefined)[]) {
       if (!t) continue;
-      R.initTexture(t);
+      const depth = (t.image as any).depth | 0;
+      if (depth > 1 && typeof (t as any).addLayerUpdate === 'function') {
+        for (let k = 0; k < depth; k++) {
+          // first pass allocates the whole array (texStorage3D) and uploads layer 0; then one layer per frame
+          t.addLayerUpdate(k); t.needsUpdate = true;
+          R.initTexture(t);
+          await nextFrame();
+        }
+      } else { R.initTexture(t); await nextFrame(); }
       t.onUpdate = null;
       (t.image as any).data = null;
     }
     for (const a of [assets.decals, assets.signs?.atlas, assets.fol?.atlas]) {
       if (!a?.tex) continue;
       R.initTexture(a.tex);
+      await nextFrame();
       const cv = a.canvas ?? a.tex.image;
       if (!cv || !('width' in cv) || typeof createImageBitmap !== 'function') continue;
       // keep the pixels as an ImageBitmap (flip baked in, three can't flip bitmaps), then shrink the canvas
@@ -264,7 +279,7 @@ function releaseCpuCopies(game: Game, assets: any) {
         .then((bmp) => { a.tex.image = bmp; a.tex.flipY = false; if (cv !== bmp) { cv.width = 1; cv.height = 1; } })
         .catch(() => { /* keep the canvas: a restore can still re-upload it */ });
     }
-  } catch (e) { console.warn('[world] release', e); }
+  })().catch((e) => console.warn('[world] release', e));
   if (!restoreHooked) {
     restoreHooked = true;
     R.domElement.addEventListener('webglcontextrestored', () => { restoreWorldTextures(game).catch((e) => console.warn('[world] restore', e)); }, false);

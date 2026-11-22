@@ -80,7 +80,7 @@ class VoiceSys {
   duration(text: string | undefined | null, rate = 1) {
     if (!text) return 0;
     const e = this.man[voiceKey(text)];
-    return e ? e[1] / Math.max(0.3, rate) : 0;
+    return e ? e[1] / Math.max(0.3, Math.max(0.84, Math.min(1.1, 1 + (rate - 1) * 0.55))) : 0;
   }
 
   /** prefetch clips for lines that are about to play (cutscene beats) */
@@ -138,7 +138,10 @@ class VoiceSys {
     const ctx = Sound.ctx;
     if (!e || !ctx || Sound.muted) return null;
     if (o.channel !== undefined) { this.channels.get(o.channel)?.stop(0.08); }
-    const rate = Math.max(0.5, Math.min(1.6, (o.rate ?? 1) * (Sound.timeScale || 1)));
+    // character rates only lightly colour the voice now (playbackRate changes pace too, and +30 % sounded rushed);
+    // the takes themselves were slowed to a natural pace offline (scripts/voice/pace.py)
+    const r0 = o.rate ?? 1;
+    const rate = Math.max(0.5, Math.min(1.6, Math.max(0.84, Math.min(1.1, 1 + (r0 - 1) * 0.55)) * (Sound.timeScale || 1)));
     const fxKind = o.fx ?? 'none';
     const dur = e[1] / rate;
     const gain = ctx.createGain();

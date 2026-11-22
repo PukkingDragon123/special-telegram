@@ -1038,7 +1038,7 @@ function warehouseFacade(game: Game, B: Batch, root: THREE.Object3D, door: Frame
       x.fillStyle = g; x.fillRect(0, 0, 1600, 260);
       x.fillStyle = '#ffd23a'; x.fillRect(0, 232, 1600, 28);
       x.textAlign = 'center'; x.textBaseline = 'middle';
-      x.fillStyle = '#ffd23a'; x.font = `900 150px ${F.heavy}`; x.fillText('แม็กโคร่ง ขายส่ง', 800, 112);
+      x.fillStyle = '#ffd23a'; x.font = `400 150px ${F.display}`; x.fillText('แม็กโคร่ง ขายส่ง', 800, 112);
       x.fillStyle = '#7a0a0e'; x.font = `800 30px ${F.ui}`; x.fillText('ถูกทั้งโกดัง · เปิด 24 ชม. · WHOLESALE', 800, 246);
       const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
       return new THREE.MeshStandardMaterial({ map: t, emissive: new THREE.Color(0xffffff), emissiveMap: t, emissiveIntensity: 0.3, roughness: 0.45 });

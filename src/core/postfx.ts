@@ -313,10 +313,10 @@ const LOOKS_ANIME: Record<string, GradeParams> = {
  * night with cool shadows. Kept close to neutral so PBR materials read as the real thing.
  */
 const LOOKS_REAL: Record<string, GradeParams> = {
-  // (a touch more saturation/contrast than plain photo: sits better with the black ink outlines)
-  thaiDay: { lift: [0.004, 0.005, 0.007], gamma: [1.0, 1.0, 0.99], gain: [1.04, 1.02, 0.98], saturation: 1.1, contrast: 1.06, tint: [1, 1, 0.99], split: 0.25 },
-  golden: { lift: [0.012, 0.007, 0.003], gamma: [1.02, 0.99, 0.93], gain: [1.1, 1.01, 0.86], saturation: 1.1, contrast: 1.07, tint: [1.01, 0.99, 0.94], split: 0.4 },
-  night: { lift: [0.0, 0.004, 0.009], gamma: [0.98, 1.0, 1.03], gain: [1.02, 1.0, 1.02], saturation: 1.05, contrast: 1.08, tint: [0.99, 1, 1.01], split: 0.45 },
+  // filmic photo grade: ACES already adds contrast/saturation, so stay near neutral (no poster-colour cartoon look)
+  thaiDay: { lift: [0.005, 0.006, 0.008], gamma: [1.0, 1.0, 0.99], gain: [1.03, 1.015, 0.985], saturation: 1.03, contrast: 1.03, tint: [1, 1, 0.99], split: 0.2 },
+  golden: { lift: [0.012, 0.007, 0.003], gamma: [1.02, 0.99, 0.94], gain: [1.08, 1.01, 0.88], saturation: 1.05, contrast: 1.04, tint: [1.01, 0.99, 0.95], split: 0.35 },
+  night: { lift: [0.002, 0.005, 0.01], gamma: [0.98, 1.0, 1.03], gain: [1.02, 1.0, 1.02], saturation: 1.0, contrast: 1.05, tint: [0.99, 1, 1.01], split: 0.4 },
   casino: { lift: [0.012, 0.0, 0.0], gamma: [1.03, 0.98, 0.92], gain: [1.08, 0.99, 0.85], saturation: 1.08, contrast: 1.05, tint: [1, 0.98, 0.93] },
   dream: LOOKS_ANIME.dream,
   album: LOOKS_ANIME.album,
@@ -433,7 +433,7 @@ export class PostFX {
     // realistic: ACES filmic (photographic contrast + highlight roll-off); anime: AgX (flatter, cel-friendly)
     this.tone = new ToneMappingEffect({ mode: LOOK_STYLE === 'anime' ? ToneMappingMode.AGX : ToneMappingMode.ACES_FILMIC });
     this.grade = new GradeEffect();
-    this.vignette = new VignetteEffect({ offset: 0.28, darkness: 0.5 });
+    this.vignette = new VignetteEffect({ offset: 0.32, darkness: LOOK_STYLE === 'anime' ? 0.5 : 0.34 });
     this.noise = new GrainEffect();
     this.shafts = new SunShaftsEffect(28);
     this.mainPass = this.makeMainPass(camera, true);

@@ -145,6 +145,14 @@ export async function loadSigns(atlasSize = 4096): Promise<SignSys | null> {
     items.push({ id, url: 'gen/world/' + it.file, w, h });
     list.push({ id, cat: String(it.cat).split(','), glow: it.glow ?? 0 });
   }
+  // our own printed posters (studio renders of the cast + real photos; scripts/posters.mjs): only the street ones
+  const posters = await Assets.jsonSafe<any>('gen/posters/manifest.json', null);
+  for (const it of posters?.items ?? []) {
+    if (it.cat !== 'poster') continue;
+    const id = 'p:' + it.id, a = it.aspect ?? 0.708;
+    items.push({ id, url: 'gen/posters/' + it.file, w: Math.round(400 * a), h: 400 });
+    list.push({ id, cat: ['poster'], glow: 0 });
+  }
   // anything new in the manifest (player-shop hiaphat_*, blank carriers and emissive masks are not world dressing)
   for (const it of marr) {
     const f = String(it?.file ?? '').replace(/\.png$/, '');
