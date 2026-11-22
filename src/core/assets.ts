@@ -51,6 +51,39 @@ class AssetSys {
   private ktx2: KTX2Loader | null = null;
   /** counters for the perf readout */
   ktxStats = { ok: 0, fail: 0 };
+  /** the renderer (eager GPU uploads) */
+  private R: THREE.WebGLRenderer | null = null;
+  /**
+   * Textures whose pixels just arrived, uploaded a few per frame (≤ ~3 ms) instead of all on the first frame that
+   * shows them — streamed-in props near each other otherwise bunched a dozen texture uploads + mipmap builds into
+   * one frame. ?noeager turns it off.
+   */
+  private upQ: (THREE.Texture | THREE.Object3D)[] = [];
+  private upPumping = false;
+  private eagerUpload(ts: (THREE.Texture | THREE.Object3D)[]) {
+    if (!this.R || params.has('noeager') || !ts.length) return;
+    for (const t of ts) this.upQ.push(t);
+    if (this.upPumping) return;
+    this.upPumping = true;
+    const pump = () => {
+      const t0 = performance.now();
+      while (this.upQ.length && performance.now() - t0 < 3) {
+        const t: any = this.upQ.shift()!;
+        if (t.isObject3D) {
+          const ts = new Set<THREE.Texture>();
+          t.traverse((o: any) => {
+            const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+            for (const m of ms) for (const k in m) { const v = m[k]; if (v && v.isTexture) ts.add(v); }
+          });
+          this.upQ.unshift(...ts);
+          continue;
+        }
+        try { if (t.image && t.version > 0) this.R!.initTexture(t); } catch { /* the first render will retry */ }
+      }
+      if (this.upQ.length) requestAnimationFrame(pump); else this.upPumping = false;
+    };
+    requestAnimationFrame(pump);
+  }
   private jsonCache = new Map<string, Promise<any>>();
   private imgCache = new Map<string, Promise<HTMLImageElement>>();
   private matCache = new Map<string, THREE.Material>();
@@ -69,6 +102,7 @@ class AssetSys {
 
   /** Give the loaders the renderer (KTX2 needs it to pick the GPU's compressed format: BC7/BC1/BC3, ETC2, ASTC…). */
   useRenderer(r: THREE.WebGLRenderer) {
+    this.R = r;
     if (this.ktx2 || !Object.keys(KTX2_MAP).length || params.has('noktx')) return;
     try {
       this.ktx2 = new KTX2Loader().setTranscoderPath(`${BASE}basis/`).setWorkerLimit(2).detectSupport(r);
@@ -136,6 +170,7 @@ class AssetSys {
           e.loaded = true;
           for (const v of e.variants) v.needsUpdate = true;
           finish();
+          this.eagerUpload(e.variants);
         };
         const fail = () => {
           if (settled) return; settled = true;
@@ -155,6 +190,7 @@ class AssetSys {
           e.loaded = true;
           this.ktxStats.ok++;
           finish();
+          this.eagerUpload(e.variants);
         }, undefined, (err) => {
           console.warn('[assets] KTX2 failed, using the original', path, err);
           e.ktxPending = false;
@@ -254,7 +290,18 @@ class AssetSys {
     return t;
   }
 
-  async glb(path: string) { return this.track(this.gltf.loadAsync(this.url(path))); }
+  async glb(path: string) {
+    const g = await this.track(this.gltf.loadAsync(this.url(path)));
+    this.uploadSoon(g.scene);
+    return g;
+  }
+
+  /** queue every texture of a freshly loaded model for the budgeted per-frame upload (see eagerUpload). The model
+   *  is expanded only when its turn comes, so textures a loader swapped out meanwhile (recolours…) are skipped. */
+  uploadSoon(root: THREE.Object3D | null | undefined) {
+    if (!root || !this.R) return;
+    this.eagerUpload([root as any]);
+  }
 
   async loadManifests() {
     this.pbrManifest = await this.jsonSafe('textures/pbr/manifest.json', {});

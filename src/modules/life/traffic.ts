@@ -175,8 +175,9 @@ export class Traffic {
     // pooled spot lights for the nearest oncoming headlights (night)
     const nSpots = q >= 1 ? 3 : 1;
     for (let i = 0; i < nSpots; i++) {
+      // ALWAYS visible (intensity 0 when unused): the number of visible lights is part of every lit shader's
+      // program key — toggling `visible` recompiled every lit material on screen whenever a car came by at night
       const s = new THREE.SpotLight(0xfff0d0, 0, 28, 0.55, 0.6, 1.4);
-      s.visible = false;
       g.add(s, s.target);
       this.spots.push(s);
     }
@@ -652,8 +653,7 @@ export class Traffic {
     near.sort((a, b) => a.pos.distanceToSquared(cam) - b.pos.distanceToSquared(cam));
     this.spots.forEach((s, i) => {
       const vh = near[i];
-      if (!vh || night < 0.2) { s.visible = false; return; }
-      s.visible = true;
+      if (!vh || night < 0.2) { s.intensity = 0; return; }
       s.intensity = 22 * night;
       const fwd = new THREE.Vector3(-Math.sin(vh.yaw), 0, -Math.cos(vh.yaw));
       s.position.copy(vh.pos).addScaledVector(fwd, vh.def.len / 2).setY(vh.pos.y + 0.9);

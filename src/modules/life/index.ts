@@ -79,6 +79,14 @@ export default defineModule({
     life.crowd.init();
     life.eggs.init();
     game.events.on('net:session', () => life?.clock.reset());
+    // staged world (built behind the menu / cutscene): the crowd + traffic meshes (and traffic's headlight spot
+    // lights, part of every lit program key) go in before the shader prewarm / upload pass instead of on the
+    // wake-up frame; onWorldReady still does the rest (their build() calls are idempotent)
+    game.events.on('world:built', () => {
+      if (!life || !game.staging) return;
+      try { if (params.get('crowd') !== '0') life.crowd.build(); if (params.get('traffic') !== '0') life.traffic.build(); }
+      catch (e) { console.error('[life] staged build', e); }
+    });
     game.events.on('world:ready', () => onWorldReady(game));
     game.events.on('world:exit', () => {
       if (!life) return;

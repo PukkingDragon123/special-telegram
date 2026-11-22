@@ -280,6 +280,7 @@ const proxyScene = new THREE.Scene();
 let proxyLightSig = '';
 function proxyOf(x: any): THREE.Object3D | null {
   let p: any;
+  if (x.isBatchedMesh) return null;
   if (x.isSkinnedMesh) { p = new THREE.SkinnedMesh(x.geometry, x.material); p.bindMode = x.bindMode; if (x.skeleton) p.bind(x.skeleton, x.bindMatrix); }
   else if (x.isInstancedMesh) {
     p = new THREE.InstancedMesh(x.geometry, x.material, 0);
@@ -294,6 +295,9 @@ function proxyOf(x: any): THREE.Object3D | null {
   else return null;
   if (x.morphTargetInfluences) { p.morphTargetInfluences = x.morphTargetInfluences; p.morphTargetDictionary = x.morphTargetDictionary; }
   p.castShadow = x.castShadow; p.receiveShadow = x.receiveShadow;
+  // the shadow pass uses these (alpha-cut foliage / cut-outs have their own depth programs)
+  if (x.customDepthMaterial) p.customDepthMaterial = x.customDepthMaterial;
+  if (x.customDistanceMaterial) p.customDistanceMaterial = x.customDistanceMaterial;
   p.frustumCulled = false;
   p.matrixAutoUpdate = false; p.matrixWorldAutoUpdate = false;
   p.matrixWorld.copy(x.matrixWorld);

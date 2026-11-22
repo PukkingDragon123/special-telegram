@@ -143,6 +143,7 @@ export function libLoad(id: string): Promise<LibAsset | null> {
       const e = byId.get(id);
       if (!e) { console.warn('[lib] unknown model', id); return null; }
       const gltf = await loader.loadAsync(Assets.url(BASE + e.file));
+      Assets.uploadSoon(gltf.scene);
       gltf.scene.updateMatrixWorld(true);
       const byMat = new Map<THREE.Material, { gs: THREE.BufferGeometry[]; name: string }>();
       gltf.scene.traverse((o) => {
