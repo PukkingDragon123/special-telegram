@@ -90,19 +90,27 @@ export async function optimizeAssets(publicDir, { log = console.log, cacheDir = 
 /** Vite plugin: inline the remap into index.html, swap converted files into the build output, prune unused files. */
 export function hpAssets() {
   let result = { map: {}, files: {} };
+  let ktx = { map: {}, files: {} };
   let cfg;
   return {
     name: 'hp-assets',
     configResolved(c) { cfg = c; },
     async buildStart() {
       if (cfg.command !== 'build' || process.env.HP_NO_ASSET_OPT) return;
-      result = await optimizeAssets(cfg.publicDir, { log: (m) => cfg.logger.info(m) });
+      const { buildKtx2 } = await import('./ktx2.mjs');
+      [result, ktx] = await Promise.all([
+        optimizeAssets(cfg.publicDir, { log: (m) => cfg.logger.info(m) }),
+        buildKtx2(cfg.publicDir, { log: (m) => cfg.logger.info(m) }),
+      ]);
     },
     transformIndexHtml() {
-      if (cfg.command !== 'build' || !Object.keys(result.map).length) return;
-      return [{ tag: 'script', children: `window.__HP_REMAP__=${JSON.stringify(result.map)};`, injectTo: 'head-prepend' }];
+      if (cfg.command !== 'build') return;
+      const tags = [];
+      if (Object.keys(result.map).length) tags.push({ tag: 'script', children: `window.__HP_REMAP__=${JSON.stringify(result.map)};`, injectTo: 'head-prepend' });
+      if (Object.keys(ktx.map).length) tags.push({ tag: 'script', children: `window.__HP_KTX2__=${JSON.stringify(ktx.map)};`, injectTo: 'head-prepend' });
+      return tags;
     },
-    closeBundle() {
+    async closeBundle() {
       if (cfg.command !== 'build') return;
       const outDir = path.resolve(cfg.root, cfg.build.outDir);
       const aDir = path.join(outDir, 'assets');
@@ -115,6 +123,15 @@ export function hpAssets() {
         fs.unlinkSync(orig);
         swapped++;
       }
+      // GPU-compressed copies (KTX2) + the Basis transcoder they need
+      let kn = 0;
+      for (const [krel, cache] of Object.entries(ktx.files)) {
+        const dst = path.join(aDir, krel);
+        fs.mkdirSync(path.dirname(dst), { recursive: true });
+        fs.copyFileSync(cache, dst);
+        kn++;
+      }
+      if (kn) { const { copyTranscoder } = await import('./ktx2.mjs'); copyTranscoder(outDir); cfg.logger.info(`[hp-ktx2] ${kn} KTX2 textures + basis transcoder copied`); }
       for (const f of walk(outDir)) {
         const rel = path.relative(outDir, f).split(path.sep).join('/');
         if (PRUNE.some((r) => r.test(rel))) { freed += fs.statSync(f).size; fs.unlinkSync(f); pruned++; }

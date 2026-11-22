@@ -1,7 +1,13 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { asset } from './util';
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import { asset, BASE, params } from './util';
+
+/** production builds: GPU-compressed copies of GPU-only textures (scripts/ktx2.mjs): original rel → .ktx2 rel */
+const KTX2_MAP: Record<string, string> = (globalThis as any).__HP_KTX2__ ?? {};
+/** one shared image/KTX2 source per path; `variants` are the per-options clones that share it */
+interface TexEntry { tex: THREE.Texture | null; loaded: boolean; variants: THREE.Texture[]; ktx?: THREE.CompressedTexture; ktxPending?: boolean }
 import { proceduralTexture } from './proctex';
 
 export interface TexOpts {
@@ -40,7 +46,11 @@ class AssetSys {
   readonly rgbe = new RGBELoader();
   readonly gltf = new GLTFLoader();
   private texCache = new Map<string, THREE.Texture>();
-  private baseTex = new Map<string, { tex: THREE.Texture | null; loaded: boolean; variants: THREE.Texture[] }>();
+  private baseTex = new Map<string, TexEntry>();
+  /** KTX2 (Basis) transcoder; set up by useRenderer() when the build ships KTX2 textures */
+  private ktx2: KTX2Loader | null = null;
+  /** counters for the perf readout */
+  ktxStats = { ok: 0, fail: 0 };
   private jsonCache = new Map<string, Promise<any>>();
   private imgCache = new Map<string, Promise<HTMLImageElement>>();
   private matCache = new Map<string, THREE.Material>();
@@ -57,6 +67,38 @@ class AssetSys {
     return p.finally(() => { this.pending--; this.loaded++; this.onProgress?.(this.loaded, this.pending); });
   }
 
+  /** Give the loaders the renderer (KTX2 needs it to pick the GPU's compressed format: BC7/BC1/BC3, ETC2, ASTC…). */
+  useRenderer(r: THREE.WebGLRenderer) {
+    if (this.ktx2 || !Object.keys(KTX2_MAP).length || params.has('noktx')) return;
+    try {
+      this.ktx2 = new KTX2Loader().setTranscoderPath(`${BASE}basis/`).setWorkerLimit(2).detectSupport(r);
+      this.gltf.setKTX2Loader(this.ktx2);
+    } catch (e) { console.warn('[assets] KTX2 unavailable', e); this.ktx2 = null; }
+  }
+
+  /** KTX2 arrived: give a variant (a CompressedTexture) the transcoded mip chain and format */
+  private static asCompressed(v: THREE.Texture, ct: THREE.CompressedTexture) {
+    const t: any = v;
+    t.image = ct.image;
+    t.mipmaps = ct.mipmaps;
+    t.format = ct.format;
+    t.type = ct.type;
+    t.generateMipmaps = false;
+    t.flipY = false;              // compressed blocks can't be flipped: the encoder stored them bottom-up (--lower_left_maps_to_s0t0)
+    if (t.minFilter === THREE.LinearMipmapLinearFilter && ct.mipmaps.length <= 1) t.minFilter = THREE.LinearFilter;
+    v.needsUpdate = true;
+  }
+
+  /** KTX2 failed: turn a variant back into an ordinary image texture (the original file loads next) */
+  private static asImage(v: THREE.Texture) {
+    const t: any = v;
+    t.isCompressedTexture = false;
+    t.mipmaps = [];
+    t.generateMipmaps = true;
+    t.flipY = v.userData.hpFlipY ?? true;
+    t.version = 0;
+  }
+
   /** Non-blocking texture getter (cached per url+opts). */
   texture(path: string, opts: TexOpts = {}): THREE.Texture {
     const key = path + JSON.stringify(opts);
@@ -65,40 +107,93 @@ class AssetSys {
     // All variants (different repeat / colour space) share one image source.
     let entry = this.baseTex.get(path);
     if (!entry) {
-      const e: { tex: THREE.Texture | null; loaded: boolean; variants: THREE.Texture[] } = (entry = { tex: null, loaded: false, variants: [] });
+      const e: TexEntry = (entry = { tex: null, loaded: false, variants: [] });
       this.baseTex.set(path, e);
       this.pending++;
+      const rel = path.replace(/^(\.\/)?\/?(assets\/)?/, '');
+      const kpath = this.ktx2 && !/^(https?:|data:|blob:)/.test(path) ? KTX2_MAP[rel] : undefined;
+      // GPU-compressed copy: no image decode, ~4× less VRAM. The base is a real CompressedTexture so every clone
+      // (ours, and other modules' t.clone() for their own repeat) keeps the compressed upload path.
+      const base = (e.tex = kpath ? new THREE.CompressedTexture([], 0, 0) : new THREE.Texture());
+      if (kpath) {
+        e.ktxPending = true;
+        // no image yet (like a pending image Texture): three skips the upload even if someone sets needsUpdate
+        // ("no image data"), instead of uploading an empty mip chain. The Source is shared by every clone.
+        (base as any).image = null;
+        AssetSys.trackClones(base, e);
+      }
+      const finish = () => { this.pending--; this.loaded++; this.onProgress?.(this.loaded, this.pending); };
       // HTMLImageElement + decode(): the image is decoded off the main thread BEFORE three uploads it, instead of
       // a synchronous decode inside texImage2D on the first frame that shows it (a hitch per texture)
-      const base = (e.tex = new THREE.Texture());
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.decoding = 'async';
-      let settled = false;
-      const ok = () => {
-        if (settled) return; settled = true;
-        base.image = img;
-        e.loaded = true;
-        for (const v of e.variants) v.needsUpdate = true;
-        this.pending--; this.loaded++; this.onProgress?.(this.loaded, this.pending);
+      const loadImage = () => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.decoding = 'async';
+        let settled = false;
+        const ok = () => {
+          if (settled) return; settled = true;
+          base.image = img;
+          e.loaded = true;
+          for (const v of e.variants) v.needsUpdate = true;
+          finish();
+        };
+        const fail = () => {
+          if (settled) return; settled = true;
+          console.warn('[assets] missing texture', path);
+          this.pending--; this.onProgress?.(this.loaded, this.pending);
+        };
+        img.onload = () => { img.decode().then(ok, ok); };
+        img.onerror = fail;
+        img.src = this.url(path);
       };
-      const fail = () => {
-        if (settled) return; settled = true;
-        console.warn('[assets] missing texture', path);
-        this.pending--; this.onProgress?.(this.loaded, this.pending);
-      };
-      img.onload = () => { img.decode().then(ok, ok); };
-      img.onerror = fail;
-      img.src = this.url(path);
+      if (kpath) {
+        this.ktx2!.load(asset(kpath), (ct) => {
+          e.ktxPending = false;
+          e.ktx = ct;
+          AssetSys.asCompressed(base, ct);
+          for (const v of e.variants) AssetSys.asCompressed(v, ct);
+          e.loaded = true;
+          this.ktxStats.ok++;
+          finish();
+        }, undefined, (err) => {
+          console.warn('[assets] KTX2 failed, using the original', path, err);
+          e.ktxPending = false;
+          this.ktxStats.fail++;
+          AssetSys.asImage(base);
+          for (const v of e.variants) AssetSys.asImage(v);
+          loadImage();
+        });
+      } else loadImage();
     }
     t = entry.tex!.clone();
+    t.userData.hpFlipY = opts.flipY ?? true;
     this.applyOpts(t, opts);
+    if (entry.ktx) AssetSys.asCompressed(t, entry.ktx);
+    else if (entry.ktxPending) { t.flipY = false; AssetSys.trackClones(t, entry); }
     // clone() bumps version; keep 0 until the shared image arrives (avoids 'no image data' warnings)
     if (entry.loaded) t.needsUpdate = true;
     else t.version = 0;
-    entry.variants.push(t);
+    if (!entry.variants.includes(t)) entry.variants.push(t);
     this.texCache.set(key, t);
     return t;
+  }
+
+  /** While a KTX2 load is pending, clones of `t` (anyone's) are registered as variants: they get the mip chain
+   *  when it arrives, and never try to upload the empty placeholder meanwhile */
+  private static trackClones(t: THREE.Texture, e: TexEntry) {
+    const own = Object.getPrototypeOf(t).clone as () => THREE.Texture;
+    (t as any).clone = function (this: THREE.Texture) {
+      const c = own.call(this);
+      if (e.ktxPending) { c.version = 0; e.variants.push(c); AssetSys.trackClones(c, e); }
+      else if (e.ktx) AssetSys.asCompressed(c, e.ktx);
+      else {
+        // KTX2 failed → image fallback: the clone is still a CompressedTexture instance, make it a plain one
+        AssetSys.asImage(c);
+        if (e.loaded) c.needsUpdate = true; else e.variants.push(c);
+        AssetSys.trackClones(c, e);
+      }
+      return c;
+    };
   }
 
   async loadTexture(path: string, opts: TexOpts = {}): Promise<THREE.Texture> {

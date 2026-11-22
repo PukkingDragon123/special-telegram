@@ -102,6 +102,7 @@ export class Engine {
     // draw-call / triangle counters cover the whole frame (scene + shadows + reflection + post), reset per frame
     this.renderer.info.autoReset = false;
     this.canvas = this.renderer.domElement;
+    Assets.useRenderer(this.renderer);
     this.canvas.tabIndex = 0;
     container.appendChild(this.canvas);
     Assets.maxAnisotropy = Math.min(16, this.renderer.capabilities.getMaxAnisotropy());

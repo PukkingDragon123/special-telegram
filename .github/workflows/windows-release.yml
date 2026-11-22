@@ -18,6 +18,20 @@ jobs:
           path: node_modules/.cache/hp-assets
           key: hp-assets-v1-${{ hashFiles('public/assets/**/*.png', 'public/assets/**/*.jpg', 'public/assets/**/*.jpeg') }}
           restore-keys: hp-assets-v1-
+      # GPU texture compression (scripts/ktx2.mjs): KTX-Software's toktx; encoded KTX2 files are content-keyed and cached
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/hp-ktx2
+          key: hp-ktx2-v1-${{ hashFiles('public/assets/textures/**', 'public/assets/gen/**', 'scripts/ktx2.mjs', 'scripts/ktx2-list.txt') }}
+          restore-keys: hp-ktx2-v1-
+      - name: Install toktx (KTX-Software 4.4.0)
+        continue-on-error: true   # without it the build just ships the WebP/JPG originals
+        run: |
+          curl -sSL -o ktx.tar.bz2 https://github.com/KhronosGroup/KTX-Software/releases/download/v4.4.0/KTX-Software-4.4.0-Linux-x86_64.tar.bz2
+          mkdir -p "$RUNNER_TEMP/ktx" && tar -xjf ktx.tar.bz2 -C "$RUNNER_TEMP/ktx" --strip-components=1
+          echo "HP_TOKTX=$RUNNER_TEMP/ktx/bin/toktx" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$RUNNER_TEMP/ktx/lib" >> "$GITHUB_ENV"
+          LD_LIBRARY_PATH="$RUNNER_TEMP/ktx/lib" "$RUNNER_TEMP/ktx/bin/toktx" --version
       - run: npm ci && npm run build
       - run: du -sh dist && du -sh dist/assets/* | sort -h | tail -8
       - name: Package Electron app

@@ -29,7 +29,15 @@ function serve(cb, i = 0) {
     const f = path.join(ROOT, path.normalize(p));
     if (!f.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
     const send = (file, st) => {
-      res.writeHead(200, { 'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Content-Length': st.size });
+      // Cacheable responses: Chromium keeps them in its HTTP cache, and V8 only stores compiled code (its code
+      // cache, which skips parsing/compiling the multi-MB game bundle on the next launch) for scripts that come
+      // from the HTTP cache. Vite's content-hashed bundles never change → immutable; everything else revalidates
+      // (ETag → 304, no body) so a new release is picked up at once.
+      const etag = `"${st.size.toString(36)}-${Math.floor(st.mtimeMs).toString(36)}"`;
+      const hashed = /-[A-Za-z0-9_-]{8}\.(js|css)$/.test(file);
+      const head = { ETag: etag, 'Cache-Control': hashed ? 'public, max-age=31536000, immutable' : 'no-cache' };
+      if (req.headers['if-none-match'] === etag) { res.writeHead(304, head); return res.end(); }
+      res.writeHead(200, { ...head, 'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Content-Length': st.size });
       fs.createReadStream(file).pipe(res);
     };
     fs.stat(f, (err, st) => {
