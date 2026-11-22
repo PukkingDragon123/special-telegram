@@ -99,6 +99,10 @@ export default defineModule({
       const p = w ? game.items.worldPos(w) : null;
       if (p) fx.flare(p.add(new THREE.Vector3(0, 0.08, 0)), d.k ?? 0.6);
     });
+    // staged world (built behind the menu / cutscene): spawn the cart now so its view — and its two point lights,
+    // which are part of every lit shader's program key — exist when the world's shaders are prewarmed. Spawned
+    // only at world:ready, the light count changed at the wake-up and every lit material recompiled on screen.
+    game.events.on('world:built', () => ensureCart(game));
     game.events.on('world:ready', () => {
       registerFoodSounds();
       if (game.scene) fx.attach(game.scene);
