@@ -35,6 +35,39 @@ const BUDGET: Record<Quality, { dpr: number; startMP: number; minMP: number; max
  *  - onLate: after onFrame, before render (camera follow, UI billboards).
  * `timeScale` slows game time (slow-motion cutscenes); rawDt is real time.
  */
+/**
+ * Material.clone()/copy() deep-copies userData with JSON.parse(JSON.stringify(...)). Several modules keep textures,
+ * shader objects or uniforms in material.userData — stringifying a Texture runs its toJSON, which serialises the
+ * whole IMAGE to a base64 data URL (seconds for a few big maps: the multi-second freeze while props were set up
+ * behind the cutscene). Same result for plain data, but class instances (textures, colours, uniforms, objects…)
+ * are now shared by reference instead of turned into useless JSON blobs.
+ */
+function cloneUserData(v: any, depth = 0): any {
+  if (v === null || typeof v !== 'object') return typeof v === 'function' ? undefined : v;
+  if (depth > 8) return v;
+  if (Array.isArray(v)) return v.map((x) => { const c = cloneUserData(x, depth + 1); return c === undefined ? null : c; });
+  // small math values get their own copy (callers may tweak them); textures / objects / uniforms are shared
+  if (v.isColor || v.isVector2 || v.isVector3 || v.isVector4 || v.isQuaternion || v.isEuler || v.isMatrix3 || v.isMatrix4) return v.clone();
+  const proto = Object.getPrototypeOf(v);
+  if (proto !== Object.prototype && proto !== null) return v;
+  const out: any = {};
+  for (const k in v) { const c = cloneUserData(v[k], depth + 1); if (c !== undefined) out[k] = c; }
+  return out;
+}
+// same for Object3D / Texture copies (props cloned per placement keep lights, rigs, textures… in userData)
+for (const P of [THREE.Material.prototype, THREE.Object3D.prototype, THREE.Texture.prototype] as any[]) {
+  if (Object.prototype.hasOwnProperty.call(P, '__hpCopy')) continue;
+  const orig = P.copy;
+  P.__hpCopy = true;
+  P.copy = function (this: any, source: any, ...rest: any[]) {
+    const ud = source.userData;
+    source.userData = {};
+    try { orig.call(this, source, ...rest); } finally { source.userData = ud; }
+    this.userData = cloneUserData(ud) ?? {};
+    return this;
+  };
+}
+
 export class Engine {
   readonly renderer: THREE.WebGLRenderer;
   readonly canvas: HTMLCanvasElement;

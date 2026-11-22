@@ -291,9 +291,7 @@ class AssetSys {
   }
 
   async glb(path: string) {
-    const g = await this.track(this.gltf.loadAsync(this.url(path)));
-    this.uploadSoon(g.scene);
-    return g;
+    return this.track(this.gltf.loadAsync(this.url(path)));
   }
 
   /** queue every texture of a freshly loaded model for the budgeted per-frame upload (see eagerUpload). The model

@@ -57,8 +57,8 @@ export class WorldScene implements SceneDef {
     // things that finished loading after the staged warm-up (late GLBs, spawned views): upload them a few per
     // frame now, nearest first, instead of on the frame they first come into view
     if (game.scene === this.scene) {
-      const me = game.player?.pos;
-      warmRender(game.engine.renderer, this.scene, this.camera, { budgetMs: 3, near: me ? [me.x, me.y, me.z] : undefined, background: true, tag: 'late', alive: () => game.scene === this.scene })
+      const near = () => { const me = game.player?.pos; return me ? [me.x, me.y, me.z] : undefined; };
+      warmRender(game.engine.renderer, this.scene, this.camera, { budgetMs: 3, near, background: true, tag: 'late', watch: true, alive: () => game.scene === this.scene })
         .catch((e) => console.warn('[world] warm', e));
     }
   }
@@ -274,6 +274,7 @@ export async function prewarmShaders(renderer: THREE.WebGLRenderer, scene: THREE
  * are remembered; the list is re-scanned at the end so things that streamed in meanwhile are done too.
  */
 const warmed = new WeakSet<object>();
+const params_noAsyncWarm = typeof location !== 'undefined' && new URLSearchParams(location.search).has('nowarmasync');
 let warmRT: THREE.WebGLRenderTarget | null = null;
 const warmCam = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
 const proxyScene = new THREE.Scene();
@@ -322,24 +323,55 @@ function syncProxyLights(scene: THREE.Scene) {
   }
 }
 export async function warmRender(renderer: THREE.WebGLRenderer, scene: THREE.Scene, _camera: THREE.Camera,
-  o: { budgetMs: number; near?: ArrayLike<number>; background?: boolean; alive?: () => boolean; tag?: string }): Promise<number> {
+  o: { budgetMs: number; near?: ArrayLike<number> | (() => ArrayLike<number> | undefined); background?: boolean; alive?: () => boolean; tag?: string; watch?: boolean; hiddenR?: number }): Promise<number> {
   if (new URLSearchParams(location.search).has('nowarm')) return 0;
   const t0 = performance.now();
   warmRT ??= new THREE.WebGLRenderTarget(4, 4, { depthBuffer: true });
   const yieldFrame = () => new Promise<void>((r) => setTimeout(r, o.background ? 16 : 0));
-  let total = 0, frames = 0, perObj = 0.3;
-  for (let pass = 0; pass < 4; pass++) {
+  let total = 0, frames = 0, perObj = 0.3, scanEvery = 2500;
+  // watch: keep going for the whole session — models that stream in later get compiled (in parallel, no stall)
+  // and uploaded while they are still out of view, instead of on the frame they first appear
+  for (let pass = 0; o.watch || pass < 4; pass++) {
+    if (o.watch && pass >= 2) {
+      await new Promise((r) => setTimeout(r, scanEvery));
+      if (o.alive && !o.alive()) return total;
+    }
+    const ts = performance.now();
     scene.updateMatrixWorld();
     const list: THREE.Object3D[] = [];
-    scene.traverse((x: any) => {
-      if (x.isLight || warmed.has(x) || !x.material) return;
-      if ((x.isMesh || x.isLine || x.isPoints) && !x.geometry) return;
-      if (x.isInstancedMesh && x.count === 0) return;
-      if (x.isMesh || x.isLine || x.isPoints || x.isSprite) list.push(x);
-    });
-    if (!list.length) break;
-    if (o.near) {
-      const p = new THREE.Vector3(), n = new THREE.Vector3(o.near[0], o.near[1], o.near[2]);
+    // visible things: all of them (they are drawn whenever they are in the frustum). HIDDEN things (distance-culled
+    // props, closed interiors…) only within hiddenR of the player / wake spot — the rest is left for later passes
+    // as the player comes closer (watch mode prefetches them before they appear), so far-away hidden textures don't
+    // all sit in video memory from the start
+    const nearP = typeof o.near === 'function' ? o.near() : o.near;
+    const np = nearP ? new THREE.Vector3(nearP[0], nearP[1], nearP[2]) : null;
+    const hr2 = (o.hiddenR ?? 45) ** 2;
+    const wp = new THREE.Vector3();
+    const walk = (x: any, vis: boolean) => {
+      const v = vis && x.visible;
+      if (!x.isLight && !warmed.has(x) && x.material && !(x.isInstancedMesh && x.count === 0)
+        && (x.isSprite || ((x.isMesh || x.isLine || x.isPoints) && x.geometry))) {
+        if (v || !np) list.push(x);
+        else {
+          // merged / instanced meshes sit at the origin: use their bounding sphere (centre − radius)
+          const bs = x.isInstancedMesh ? x.boundingSphere : x.geometry?.boundingSphere;
+          let r = 0;
+          if (bs) { wp.copy(bs.center).applyMatrix4(x.matrixWorld); r = bs.radius * x.matrixWorld.getMaxScaleOnAxis(); }
+          else wp.setFromMatrixPosition(x.matrixWorld);
+          const d = Math.max(0, wp.distanceTo(np) - r);
+          if (d * d < hr2) list.push(x);
+        }
+      }
+      const ch = x.children;
+      for (let k = 0; k < ch.length; k++) walk(ch[k], v);
+    };
+    walk(scene, true);
+    // a big scene makes the scan itself cost a few ms: back off so it stays a rare blip
+    const scanMs = performance.now() - ts;
+    scanEvery = scanMs > 4 ? Math.min(20000, scanEvery * 2) : Math.max(2500, scanEvery * 0.8);
+    if (!list.length) { if (o.watch) continue; break; }
+    if (np) {
+      const p = new THREE.Vector3(), n = np;
       const d = new Map<THREE.Object3D, number>();
       for (const x of list) d.set(x, p.setFromMatrixPosition(x.matrixWorld).distanceToSquared(n));
       list.sort((a, b) => d.get(a)! - d.get(b)!);
@@ -353,6 +385,17 @@ export async function warmRender(renderer: THREE.WebGLRenderer, scene: THREE.Sce
       const batch = list.slice(i, i + n); i += n;
       const proxies: THREE.Object3D[] = [];
       for (const x of batch) { warmed.add(x); const p = proxyOf(x); if (p) { proxies.push(p); proxyScene.add(p); } }
+      // programs first, with KHR_parallel_shader_compile (compileAsync): the driver compiles them off the main
+      // thread and the draw below then only links/queries finished programs instead of stalling on the compile
+      let tw = 0;
+      if (!params_noAsyncWarm) {
+        const prev = renderer.getRenderTarget();
+        let pc: Promise<unknown> | null = null;
+        try { renderer.setRenderTarget(warmRT); pc = renderer.compileAsync(proxyScene, warmCam); } catch { /* the draw compiles */ }
+        finally { renderer.setRenderTarget(prev); }
+        if (pc) { const ta = performance.now(); await Promise.race([pc, new Promise((r) => setTimeout(r, 4000))]); tw = performance.now() - ta; }
+        if (o.alive && !o.alive()) { for (const p of proxies) proxyScene.remove(p); return total; }
+      }
       const prevTarget = renderer.getRenderTarget(), prevAuto = renderer.shadowMap.autoUpdate, prevNeeds = renderer.shadowMap.needsUpdate;
       try {
         renderer.setRenderTarget(warmRT);
@@ -365,9 +408,11 @@ export async function warmRender(renderer: THREE.WebGLRenderer, scene: THREE.Sce
         for (const p of proxies) proxyScene.remove(p);
       }
       total += batch.length; frames++;
-      perObj = perObj * 0.6 + ((performance.now() - tb) / batch.length) * 0.4;
+      perObj = perObj * 0.6 + ((performance.now() - tb - tw) / batch.length) * 0.4;
       if (i < list.length) await yieldFrame();
     }
+    const mk = (window as any).__hpMarks;
+    if (mk) mk['warm:' + (o.tag ?? 'staged')] = `${total} objs ${frames} slices ${Math.round(performance.now() - t0)} ms`;
   }
   const marks = (window as any).__hpMarks;
   if (marks) marks['warm:' + (o.tag ?? 'staged')] = `${total} objs ${frames} slices ${Math.round(performance.now() - t0)} ms`;

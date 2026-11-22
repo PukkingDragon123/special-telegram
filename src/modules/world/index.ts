@@ -270,6 +270,19 @@ function releaseCpuCopies(game: Game, assets: any) {
     }
     for (const a of [assets.decals, assets.signs?.atlas, assets.fol?.atlas]) {
       if (!a?.tex) continue;
+      // staged: make the ImageBitmap FIRST (off the main thread) and upload that — uploading the 4096² canvas
+      // itself read it back synchronously, one long freeze per atlas behind the cutscene
+      const cv0 = a.canvas ?? a.tex.image;
+      if (sliced && cv0 && 'width' in cv0 && typeof createImageBitmap === 'function' && !(cv0 instanceof ImageBitmap)) {
+        try {
+          const bmp = await createImageBitmap(cv0, { imageOrientation: a.tex.flipY ? 'flipY' : 'from-image', premultiplyAlpha: a.tex.premultiplyAlpha ? 'premultiply' : 'none', colorSpaceConversion: 'none' } as any);
+          a.tex.image = bmp; a.tex.flipY = false; a.tex.needsUpdate = true;
+          R.initTexture(a.tex);
+          if (cv0 !== bmp) { cv0.width = 1; cv0.height = 1; }
+          await nextFrame();
+          continue;
+        } catch { /* fall through: upload the canvas */ }
+      }
       R.initTexture(a.tex);
       await nextFrame();
       const cv = a.canvas ?? a.tex.image;

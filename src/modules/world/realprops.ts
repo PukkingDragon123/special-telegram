@@ -372,7 +372,6 @@ function finishModel(parts: ModelPart[], def: ModelDef): Model {
 
 async function loadGlb(def: ModelDef): Promise<Model | null> {
   const gltf = await loader.loadAsync(Assets.url(def.path ?? `gen/world/models/${def.file}/${def.file}.glb`));
-  Assets.uploadSoon(gltf.scene);
   gltf.scene.updateMatrixWorld(true);
   const byMat = new Map<THREE.Material, THREE.BufferGeometry[]>();
   const under = (o: THREE.Object3D) => { for (let p: THREE.Object3D | null = o; p; p = p.parent) if (p.name === def.node) return true; return false; };
